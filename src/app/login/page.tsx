@@ -1,10 +1,9 @@
-﻿'use client';
+'use client';
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-import { AssetPlaceholder } from '@/components/primitives';
 import { Button } from '@/components/ui/button';
 import { useSupabase } from '@/components/providers/supabase-provider';
 import {
@@ -13,14 +12,6 @@ import {
   DEMO_PASSWORD,
   isDemoMode,
 } from '@/lib/supabase/demo-client';
-
-const backgroundPlaceholder = {
-  label: 'Login background loop',
-  fileName: 'login-background.mp4',
-  placement: 'public/assets/login',
-  recommendedDimensions: '1920x1080 | MP4 20s',
-  type: 'video' as const,
-};
 
 const DEMO_ENABLED = isDemoMode();
 
@@ -68,11 +59,10 @@ export default function LoginPage() {
 
   return (
     <main className="relative flex min-h-screen items-center justify-center overflow-hidden">
-      <AssetPlaceholder
-        {...backgroundPlaceholder}
-        className="absolute inset-0 h-full w-full rounded-none"
-      />
-      <div className="absolute inset-0 bg-foreground/55" aria-hidden />
+      <video className="absolute inset-0 size-full object-cover" autoPlay muted loop playsInline>
+        <source src="/assets/concept/sustainable.mp4" />
+      </video>
+      <div className="absolute inset-0 bg-foreground/60" aria-hidden />
 
       <div className="relative z-10 mx-auto w-full max-w-lg rounded-[36px] border border-white/30 bg-white/20 p-10 shadow-[0_45px_120px_rgba(20,12,8,0.55)] backdrop-blur-xl">
         <p className="font-display text-xs uppercase tracking-[0.35em] text-white/70">

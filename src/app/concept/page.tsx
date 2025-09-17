@@ -1,17 +1,9 @@
-﻿import type { Metadata } from 'next';
+import type { Metadata } from 'next';
 
 import { AssetPlaceholder, GlowTitle } from '@/components/primitives';
 import { getClientLogos, getConceptNarrative } from '@/lib/cms/fetchers';
 
 import { ConceptNarrative } from './_components/concept-narrative';
-
-const heroPlaceholder = {
-  label: 'Concept hero still',
-  fileName: 'concept-hero.jpg',
-  placement: 'public/assets/concept',
-  recommendedDimensions: '2560x1440 | JPG',
-  type: 'image' as const,
-};
 
 const pillarPlaceholders = [
   {
@@ -52,19 +44,19 @@ export default async function ConceptPage() {
   return (
     <main className="flex flex-col gap-24 pb-32">
       <section className="relative flex min-h-[70vh] flex-col justify-end gap-10 px-6 pt-24 sm:px-10 lg:px-20">
-        <AssetPlaceholder
-          {...heroPlaceholder}
-          className="absolute inset-0 h-full w-full rounded-none"
-        />
-        <div className="relative z-10 space-y-8 rounded-[48px] border border-white/40 bg-white/70 p-10 backdrop-blur">
+        <video className="absolute inset-0 size-full object-cover" autoPlay muted loop playsInline>
+          <source src="/assets/concept/sustainable.mp4" />
+        </video>
+        <div className="absolute inset-0 bg-gradient-to-br from-black/40 via-black/15 to-transparent" />
+        <div className="relative z-10 space-y-8 rounded-[48px] border border-white/40 bg-white/85 p-10 backdrop-blur">
           <GlowTitle
             eyebrow="Beeyondtheworld Concept"
             title="Journey-first storytelling for tomorrow"
-            description="We choreograph collaborative expeditions that balance creative ambition, regenerative logistics, and measurable CSR outcomes. Replace the background with your signature key visual."
+            description="We choreograph collaborative expeditions that balance creative ambition, regenerative logistics, and measurable CSR outcomes."
             align="left"
             glowTone="honey"
           />
-          <div className="flex flex-wrap gap-4 text-[11px] uppercase tracking-[0.45em] text-foreground/55">
+          <div className="flex flex-wrap gap-4 text-[11px] uppercase tracking-[0.45em] text-foreground/60">
             <span className="rounded-full border border-foreground/25 px-4 py-2">
               Co-travel labs
             </span>

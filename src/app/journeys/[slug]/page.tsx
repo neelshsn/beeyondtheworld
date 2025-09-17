@@ -1,70 +1,69 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
 import { GlowTitle, ShowcaseMediaGallery } from '@/components/primitives';
 import { Button } from '@/components/ui/button';
-import { campaignShowcases } from '@/data/showcases';
+import { journeyShowcases } from '@/data/showcases';
 
-interface CampaignPageProps {
+interface JourneyPageProps {
   params: { slug: string };
 }
 
 export function generateStaticParams() {
-  return campaignShowcases.map((campaign) => ({ slug: campaign.slug }));
+  return journeyShowcases.map((journey) => ({ slug: journey.slug }));
 }
 
-export function generateMetadata({ params }: CampaignPageProps): Metadata {
-  const campaign = campaignShowcases.find((item) => item.slug === params.slug);
+export function generateMetadata({ params }: JourneyPageProps): Metadata {
+  const journey = journeyShowcases.find((item) => item.slug === params.slug);
 
-  if (!campaign) {
+  if (!journey) {
     return {
-      title: 'Campaign not found - Beeyondtheworld',
+      title: 'Journey not found - Beeyondtheworld',
     };
   }
 
   return {
-    title: `${campaign.title} - Beeyondtheworld`,
-    description: campaign.summary,
+    title: `${journey.title} - Beeyondtheworld`,
+    description: journey.summary,
   };
 }
 
-export default function CampaignPage({ params }: CampaignPageProps) {
-  const campaign = campaignShowcases.find((item) => item.slug === params.slug);
+export default function JourneyPage({ params }: JourneyPageProps) {
+  const journey = journeyShowcases.find((item) => item.slug === params.slug);
 
-  if (!campaign) {
+  if (!journey) {
     notFound();
   }
 
   return (
     <main className="flex flex-col gap-24 pb-24">
       <section className="relative flex min-h-[90vh] flex-col justify-end overflow-hidden">
-        <video
-          className="absolute inset-0 size-full object-cover"
-          autoPlay
-          muted
-          loop
-          playsInline
-          poster={campaign.hero.poster}
-        >
-          <source src={campaign.hero.src} />
-        </video>
-        <div className="absolute inset-0 bg-gradient-to-b from-black/75 via-black/25 to-white/10" />
+        <Image
+          src={journey.hero.src}
+          alt={journey.hero.alt}
+          fill
+          className="object-cover"
+          sizes="100vw"
+          priority
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/25 to-white/10" />
         <div className="relative z-10 flex flex-col gap-10 px-6 pb-20 pt-24 text-white sm:px-10 lg:px-20">
           <div className="flex flex-wrap items-center gap-4 text-xs uppercase tracking-[0.45em] text-white/70">
-            <span>{campaign.destination}</span>
+            <span>{journey.locale}</span>
             <span className="h-px flex-1 bg-white/40" aria-hidden />
-            <span>{campaign.hero.caption}</span>
+            <span>{journey.timeframe}</span>
           </div>
           <GlowTitle
-            eyebrow={campaign.hero.loopLabel ?? 'Campaign film'}
-            title={campaign.title}
-            description={campaign.headline}
+            eyebrow={journey.hero.overlayLabel ?? 'Journey residency'}
+            title={journey.title}
+            description={journey.headline}
             align="left"
             glowTone="honey"
           />
           <div className="flex flex-wrap gap-3 text-[11px] uppercase tracking-[0.35em] text-white/75">
-            {campaign.highlights.map((highlight) => (
+            {journey.highlights.map((highlight) => (
               <span key={highlight} className="rounded-full border border-white/40 px-4 py-2">
                 {highlight}
               </span>
@@ -76,19 +75,19 @@ export default function CampaignPage({ params }: CampaignPageProps) {
       <section className="grid gap-10 px-6 sm:px-10 lg:grid-cols-[1.05fr_0.95fr] lg:px-20">
         <div className="space-y-8 rounded-[36px] border border-foreground/15 bg-white/80 p-10 text-foreground shadow-[0_32px_120px_rgba(15,20,30,0.12)]">
           <p className="font-display text-xs uppercase tracking-[0.4em] text-foreground/55">
-            Story development
+            Narrative arc
           </p>
           <div className="space-y-4 text-sm leading-relaxed text-foreground/70">
-            {campaign.story.map((paragraph) => (
+            {journey.story.map((paragraph) => (
               <p key={paragraph}>{paragraph}</p>
             ))}
           </div>
           <div className="rounded-[28px] border border-foreground/15 bg-white/70 p-6">
             <p className="font-display text-xs uppercase tracking-[0.35em] text-foreground/55">
-              Impact markers
+              Logistics in place
             </p>
             <ul className="mt-4 space-y-2 text-sm text-foreground/70">
-              {campaign.impact.map((item) => (
+              {journey.logistics.map((item) => (
                 <li key={item}>- {item}</li>
               ))}
             </ul>
@@ -96,26 +95,15 @@ export default function CampaignPage({ params }: CampaignPageProps) {
         </div>
         <div className="space-y-8 rounded-[36px] border border-foreground/15 bg-white/80 p-10 text-foreground shadow-[0_32px_120px_rgba(15,20,30,0.12)]">
           <p className="font-display text-xs uppercase tracking-[0.4em] text-foreground/55">
-            Credits
+            Residency overview
           </p>
-          <ul className="space-y-3 text-sm uppercase tracking-[0.18em] text-foreground/70">
-            {campaign.credits.map((credit) => (
-              <li
-                key={`${credit.role}-${credit.value}`}
-                className="flex flex-wrap justify-between gap-3"
-              >
-                <span>{credit.role}</span>
-                <span className="text-foreground/50">{credit.value}</span>
-              </li>
-            ))}
-          </ul>
-          <p className="text-sm leading-relaxed text-foreground/70">{campaign.summary}</p>
-          {campaign.cta ? (
+          <p className="text-sm leading-relaxed text-foreground/70">{journey.summary}</p>
+          {journey.cta ? (
             <Button
               asChild
               className="rounded-full border border-foreground/30 bg-foreground/90 px-8 py-4 text-[11px] uppercase tracking-[0.4em] text-white hover:bg-foreground"
             >
-              <Link href={campaign.cta.href}>{campaign.cta.label}</Link>
+              <Link href={journey.cta.href}>{journey.cta.label}</Link>
             </Button>
           ) : null}
         </div>
@@ -123,13 +111,13 @@ export default function CampaignPage({ params }: CampaignPageProps) {
 
       <section className="space-y-12 px-6 sm:px-10 lg:px-20">
         <GlowTitle
-          eyebrow="Gallery and motion"
-          title="Dive into the campaign suite"
-          description="Click to expand the stills and motion edits delivered to the maison."
+          eyebrow="Immersive gallery"
+          title="Preview the residency atmosphere"
+          description="Click any frame to open it in full screen. Still and motion assets are graded for board previews and client walk-throughs."
           align="center"
           glowTone="dawn"
         />
-        <ShowcaseMediaGallery items={campaign.gallery} />
+        <ShowcaseMediaGallery items={journey.gallery} />
       </section>
     </main>
   );
