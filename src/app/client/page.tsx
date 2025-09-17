@@ -5,6 +5,7 @@ import { CalendarDays, Compass, MapPin, Sparkles } from 'lucide-react';
 import { SeasonCarousel } from '@/app/client/_components/season-carousel';
 import { ClientJourneyDashboard } from '@/app/client/_components/client-journey-dashboard';
 import { GlowTitle } from '@/components/primitives';
+import SplitText from '@/components/SplitText';
 import { Button } from '@/components/ui/button';
 import { clientJourneys } from '@/data/client-journeys';
 
@@ -28,7 +29,15 @@ export default function ClientHomePage() {
             <div className="space-y-6">
               <GlowTitle
                 eyebrow="Spotlight residency"
-                title={spotlightJourney.title}
+                title={
+                  <SplitText
+                    text={spotlightJourney.title}
+                    tag="h2"
+                    splitType="words"
+                    className="font-display text-4xl uppercase leading-[1.1] text-white sm:text-5xl md:text-6xl"
+                    textAlign="left"
+                  />
+                }
                 description={spotlightJourney.summary}
                 align="left"
                 glowTone="honey"
@@ -89,7 +98,15 @@ export default function ClientHomePage() {
       <section className="space-y-6">
         <GlowTitle
           eyebrow="Client journeys"
-          title="Navigate upcoming residencies"
+          title={
+            <SplitText
+              text="Navigate upcoming residencies"
+              tag="h2"
+              splitType="words"
+              className="font-display text-4xl uppercase leading-[1.1] text-foreground sm:text-5xl md:text-6xl"
+              textAlign="left"
+            />
+          }
           description="Filter by destination, budget, or season, explore the gallery previews, then dive into the dedicated sheet."
           align="left"
           glowTone="honey"

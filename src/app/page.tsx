@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 
 import { GlowTitle } from '@/components/primitives';
+import SplitText from '@/components/SplitText';
 import { Button } from '@/components/ui/button';
 import { campaignShowcases, journeyShowcases } from '@/data/showcases';
 import type { CampaignShowcase, JourneyShowcase } from '@/data/showcases';
@@ -263,9 +264,13 @@ export default async function Home() {
           <p className="flex items-center gap-2 text-xs uppercase tracking-[0.45em] text-white/70">
             <Wand2 className="size-4" aria-hidden /> Beeyondtheworld Atelier
           </p>
-          <h1 className="font-display text-5xl uppercase leading-tight tracking-[0.18em] text-white sm:text-6xl">
-            Co-travel productions for fashion and lifestyle maisons
-          </h1>
+          <SplitText
+            text="Co-travel productions for fashion and lifestyle maisons"
+            tag="h1"
+            splitType="words, chars"
+            className="font-display text-5xl uppercase leading-tight tracking-[0.18em] text-white sm:text-6xl"
+            textAlign="left"
+          />
           <p className="text-white/82 max-w-2xl text-sm leading-relaxed">
             Beeyondtheworld is a creative production agency and digital platform. We script
             immersive journeys, pool non-competing maisons on each co-travel, and deliver
@@ -302,7 +307,15 @@ export default async function Home() {
       <section className="bg-gradient-to-b from-white via-stone-50 to-white px-6 py-24 sm:px-10 lg:px-20">
         <GlowTitle
           eyebrow="What we do"
-          title="Creative productions shared across co-travels"
+          title={
+            <SplitText
+              text="Creative productions shared across co-travels"
+              tag="h2"
+              splitType="words"
+              className="font-display text-4xl uppercase leading-[1.1] text-foreground sm:text-5xl md:text-6xl"
+              textAlign="left"
+            />
+          }
           description="Every journey is curated so multiple maisons can travel together, share logistics, and leave with campaign-ready films and photos tailored to their world."
           align="left"
           glowTone="dawn"
@@ -362,7 +375,15 @@ export default async function Home() {
       <section className="px-6 py-24 sm:px-10 lg:px-20">
         <GlowTitle
           eyebrow="Platform"
-          title="One showroom, one private client portal"
+          title={
+            <SplitText
+              text="One showroom, one private client portal"
+              tag="h2"
+              splitType="words"
+              className="font-display text-4xl uppercase leading-[1.1] text-foreground sm:text-5xl md:text-6xl"
+              textAlign="left"
+            />
+          }
           description="The public face attracts new maisons while the private side lets clients explore, align, and export their journeys."
           align="left"
           glowTone="honey"
@@ -402,7 +423,15 @@ export default async function Home() {
         <div className="overflow-hidden rounded-3xl border border-foreground/15 bg-gradient-to-r from-amber-100 via-white to-amber-50/80 p-10 text-foreground shadow-[0_40px_140px_-80px_rgba(142,98,30,0.45)]">
           <GlowTitle
             eyebrow="Bee-inspired"
-            title={beeNarrative.title}
+            title={
+              <SplitText
+                text={beeNarrative.title}
+                tag="h2"
+                splitType="words"
+                className="font-display text-4xl uppercase leading-[1.1] text-foreground sm:text-5xl md:text-6xl"
+                textAlign="left"
+              />
+            }
             description={beeNarrative.description}
             align="left"
             glowTone="honey"

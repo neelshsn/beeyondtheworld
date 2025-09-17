@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation';
 import { CalendarDays, Compass, MapPin, Sparkles, Waypoints } from 'lucide-react';
 
 import { GlowTitle, ShowcaseMediaGallery } from '@/components/primitives';
+import SplitText from '@/components/SplitText';
 import { Button } from '@/components/ui/button';
 import { journeyShowcases } from '@/data/showcases';
 
@@ -64,7 +65,15 @@ export default function JourneyPage({ params }: JourneyPageProps) {
           </div>
           <GlowTitle
             eyebrow={journey.hero.overlayLabel ?? 'Journey residency'}
-            title={journey.title}
+            title={
+              <SplitText
+                text={journey.title}
+                tag="h2"
+                splitType="words"
+                className="font-display text-4xl uppercase leading-[1.1] text-white sm:text-5xl md:text-6xl"
+                textAlign="left"
+              />
+            }
             description={journey.headline}
             align="left"
             glowTone="honey"

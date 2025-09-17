@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import SplitText from '@/components/SplitText';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { KeyRound, Lock, Mail } from 'lucide-react';
 
@@ -69,9 +70,16 @@ export default function LoginPage() {
         <p className="flex items-center gap-2 font-display text-xs uppercase tracking-[0.35em] text-white/70">
           <Lock className="size-4" aria-hidden /> Client access
         </p>
-        <h1 className="mt-4 flex items-center gap-3 font-display text-3xl uppercase tracking-[0.2em] text-white">
-          <KeyRound className="size-6" aria-hidden /> Beeyondtheworld client space
-        </h1>
+        <div className="mt-4 flex items-center gap-3">
+          <KeyRound className="size-6" aria-hidden />
+          <SplitText
+            text="Beeyondtheworld client space"
+            tag="h1"
+            splitType="chars"
+            className="font-display text-3xl uppercase tracking-[0.2em] text-white"
+            textAlign="left"
+          />
+        </div>
         <p className="mt-3 text-sm text-white/80">
           The client portal hosts your private co-travel dashboard, journey sheets, and exports.
           Accounts are curated by our team; use the credentials provided by your producer.

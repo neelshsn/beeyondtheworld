@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react';
 
 import { AssetPlaceholder, GlowTitle } from '@/components/primitives';
+import SplitText from '@/components/SplitText';
 import { Button } from '@/components/ui/button';
 
 const heroPlaceholder = {
@@ -101,7 +102,15 @@ export default function ContactPage() {
         <div className="relative z-10 space-y-8 rounded-[48px] border border-white/40 bg-white/75 p-10 backdrop-blur">
           <GlowTitle
             eyebrow="Start a project"
-            title="Start your co-travel conversation"
+            title={
+              <SplitText
+                text="Start your co-travel conversation"
+                tag="h2"
+                splitType="words"
+                className="font-display text-4xl uppercase leading-[1.1] text-foreground sm:text-5xl md:text-6xl"
+                textAlign="left"
+              />
+            }
             description="This form is for maisons exploring Beeyondtheworld. Share the essentials and we will suggest the right co-travel, budget frame, and companion brands within 48 hours."
             align="left"
             glowTone="umber"

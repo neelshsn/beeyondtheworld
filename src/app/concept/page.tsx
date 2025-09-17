@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { Leaf, Globe, Handshake } from 'lucide-react';
 
 import { AssetPlaceholder, GlowTitle } from '@/components/primitives';
+import SplitText from '@/components/SplitText';
 import { getClientLogos, getConceptNarrative } from '@/lib/cms/fetchers';
 
 import { ConceptNarrative } from './_components/concept-narrative';
@@ -59,7 +60,15 @@ export default async function ConceptPage() {
         <div className="relative z-10 space-y-8 rounded-[48px] border border-white/40 bg-white/85 p-10 backdrop-blur">
           <GlowTitle
             eyebrow="Beeyondtheworld Concept"
-            title="Journey-first storytelling for tomorrow"
+            title={
+              <SplitText
+                text="Journey-first storytelling for tomorrow"
+                tag="h2"
+                splitType="words"
+                className="font-display text-4xl uppercase leading-[1.1] text-foreground sm:text-5xl md:text-6xl"
+                textAlign="left"
+              />
+            }
             description="We pool non-competing maisons on the same journey, share logistics, and return with campaign-ready motion and stills anchored in sustainability."
             align="left"
             glowTone="honey"

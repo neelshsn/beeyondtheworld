@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { CalendarDays, Clapperboard, MapPin, Sparkles } from 'lucide-react';
 
 import { GlowTitle, ShowcaseMediaGallery } from '@/components/primitives';
+import SplitText from '@/components/SplitText';
 import { Button } from '@/components/ui/button';
 import { campaignShowcases } from '@/data/showcases';
 
@@ -65,7 +66,15 @@ export default function CampaignPage({ params }: CampaignPageProps) {
           </div>
           <GlowTitle
             eyebrow={campaign.hero.loopLabel ?? 'Campaign film'}
-            title={campaign.title}
+            title={
+              <SplitText
+                text={campaign.title}
+                tag="h2"
+                splitType="words"
+                className="font-display text-4xl uppercase leading-[1.1] text-white sm:text-5xl md:text-6xl"
+                textAlign="left"
+              />
+            }
             description={campaign.headline}
             align="left"
             glowTone="honey"
