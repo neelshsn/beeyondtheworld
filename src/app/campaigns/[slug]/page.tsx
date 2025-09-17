@@ -1,17 +1,11 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import dynamic from 'next/dynamic';
 import { CalendarDays, Clapperboard, MapPin, Sparkles } from 'lucide-react';
 
-import { GlowTitle } from '@/components/primitives';
+import { GlowTitle, ShowcaseMediaGallery } from '@/components/primitives';
 import { Button } from '@/components/ui/button';
 import { campaignShowcases } from '@/data/showcases';
-
-const ShowcaseMediaGallery = dynamic(
-  () => import('@/components/primitives/media-lightbox').then((mod) => mod.ShowcaseMediaGallery),
-  { ssr: false }
-);
 
 interface CampaignPageProps {
   params: { slug: string };
@@ -90,33 +84,57 @@ export default function CampaignPage({ params }: CampaignPageProps) {
         </div>
       </section>
 
+      <section className="space-y-10 px-6 sm:px-10 lg:px-20">
+        <GlowTitle
+          eyebrow="Campaign narrative"
+          title={`How ${campaign.title} unfolds`}
+          description={campaign.summary}
+          align="left"
+          glowTone="dawn"
+        />
+        <div className="grid gap-6 md:grid-cols-2">
+          {campaign.story.map((paragraph, index) => (
+            <div
+              key={paragraph}
+              className="flex h-full flex-col gap-4 rounded-2xl border border-foreground/15 bg-white/80 p-6 text-foreground shadow-[0_32px_120px_rgba(15,20,30,0.12)]"
+            >
+              <span className="flex items-center gap-3 text-xs uppercase tracking-[0.35em] text-foreground/55">
+                <Sparkles className="size-3.5" aria-hidden /> Sequence{' '}
+                {String(index + 1).padStart(2, '0')}
+              </span>
+              <p className="text-sm leading-relaxed text-foreground/75">{paragraph}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
       <section className="grid gap-10 px-6 sm:px-10 lg:grid-cols-[1.05fr_0.95fr] lg:px-20">
         <div className="space-y-8 rounded-2xl border border-foreground/15 bg-white/80 p-10 text-foreground shadow-[0_32px_120px_rgba(15,20,30,0.12)]">
           <p className="flex items-center gap-2 font-display text-xs uppercase tracking-[0.4em] text-foreground/55">
-            <Sparkles className="size-4" aria-hidden /> Story development
+            <CalendarDays className="size-4" aria-hidden /> Impact markers
           </p>
-          <div className="space-y-4 text-sm leading-relaxed text-foreground/70">
-            {campaign.story.map((paragraph) => (
-              <p key={paragraph}>{paragraph}</p>
+          <ul className="space-y-3 text-sm text-foreground/70">
+            {campaign.impact.map((item) => (
+              <li key={item} className="flex items-start gap-3">
+                <span className="mt-1 size-1.5 rounded-full bg-foreground/25" aria-hidden />
+                <span>{item}</span>
+              </li>
             ))}
-          </div>
-          <div className="rounded-2xl border border-foreground/15 bg-white/70 p-6">
-            <p className="flex items-center gap-2 font-display text-xs uppercase tracking-[0.35em] text-foreground/55">
-              <CalendarDays className="size-4" aria-hidden /> Impact markers
-            </p>
-            <ul className="mt-4 space-y-2 text-sm text-foreground/70">
-              {campaign.impact.map((item) => (
-                <li key={item} className="flex items-start gap-3">
-                  <span className="mt-1 size-1.5 rounded-full bg-foreground/30" aria-hidden />
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
+          </ul>
+          <div className="flex flex-wrap gap-3 text-[11px] uppercase tracking-[0.32em] text-foreground/65">
+            {campaign.highlights.map((highlight) => (
+              <span
+                key={highlight}
+                className="rounded-full border border-foreground/25 bg-white/70 px-4 py-2"
+              >
+                {highlight}
+              </span>
+            ))}
           </div>
         </div>
         <div className="space-y-8 rounded-2xl border border-foreground/15 bg-white/80 p-10 text-foreground shadow-[0_32px_120px_rgba(15,20,30,0.12)]">
           <p className="flex items-center gap-2 font-display text-xs uppercase tracking-[0.4em] text-foreground/55">
-            <Clapperboard className="size-4" aria-hidden /> Credits
+            <Clapperboard className="size-4" aria-hidden /> Credits & delivery
           </p>
           <ul className="space-y-3 text-sm uppercase tracking-[0.18em] text-foreground/70">
             {campaign.credits.map((credit) => (
@@ -129,7 +147,6 @@ export default function CampaignPage({ params }: CampaignPageProps) {
               </li>
             ))}
           </ul>
-          <p className="text-sm leading-relaxed text-foreground/70">{campaign.summary}</p>
           {campaign.cta ? (
             <Button
               asChild
@@ -144,8 +161,8 @@ export default function CampaignPage({ params }: CampaignPageProps) {
       <section className="space-y-12 px-6 sm:px-10 lg:px-20">
         <GlowTitle
           eyebrow="Gallery and motion"
-          title="Dive into the campaign suite"
-          description="Click to expand the stills and motion edits delivered to the maison."
+          title={`Dive into ${campaign.title}`}
+          description={`Stills and loops ready for maison launch, retail, and PR drops.`}
           align="center"
           glowTone="dawn"
         />
