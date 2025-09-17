@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { motion } from 'framer-motion';
 import type { ReactNode } from 'react';
@@ -25,9 +25,9 @@ const descriptionVariants = {
 };
 
 const glowPalette = {
-  honey: 'from-[#f0cc7b]/65 via-[#f6ede1]/45 to-transparent',
-  umber: 'from-[#7b5433]/40 via-[#f6ede1]/28 to-transparent',
-  dawn: 'from-[#f9e9d0]/60 via-[#f6ede1]/40 to-transparent',
+  honey: 'from-white/55 via-white/25 to-transparent',
+  umber: 'from-white/40 via-white/20 to-transparent',
+  dawn: 'from-white/50 via-white/22 to-transparent',
 };
 
 export type GlowTone = keyof typeof glowPalette;
@@ -90,7 +90,9 @@ export function GlowTitle({
               )}
             />
           </span>
-          <span className="text-glow drop-shadow-[0_16px_64px_rgba(235,180,80,0.45)]">{title}</span>
+          <span className="text-glow drop-shadow-[0_16px_64px_rgba(255,255,255,0.35)]">
+            {title}
+          </span>
         </span>
       </motion.h2>
       {description ? (
