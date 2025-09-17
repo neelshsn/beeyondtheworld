@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { KeyRound, Lock, Mail } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { useSupabase } from '@/components/providers/supabase-provider';
@@ -65,11 +66,11 @@ export default function LoginPage() {
       <div className="absolute inset-0 bg-foreground/60" aria-hidden />
 
       <div className="relative z-10 mx-auto w-full max-w-lg rounded-[36px] border border-white/30 bg-white/20 p-10 shadow-[0_45px_120px_rgba(20,12,8,0.55)] backdrop-blur-xl">
-        <p className="font-display text-xs uppercase tracking-[0.35em] text-white/70">
-          Client access
+        <p className="flex items-center gap-2 font-display text-xs uppercase tracking-[0.35em] text-white/70">
+          <Lock className="size-4" aria-hidden /> Client access
         </p>
-        <h1 className="mt-4 font-display text-3xl uppercase tracking-[0.2em] text-white">
-          Beeyondtheworld client space
+        <h1 className="mt-4 flex items-center gap-3 font-display text-3xl uppercase tracking-[0.2em] text-white">
+          <KeyRound className="size-6" aria-hidden /> Beeyondtheworld client space
         </h1>
         <p className="mt-3 text-sm text-white/80">
           Accounts are curated by our team. Use the credentials supplied by your producer to access
@@ -79,10 +80,10 @@ export default function LoginPage() {
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-2">
             <label
-              className="font-display text-xs uppercase tracking-[0.3em] text-white/70"
+              className="flex items-center gap-2 font-display text-xs uppercase tracking-[0.3em] text-white/70"
               htmlFor="email"
             >
-              Email
+              <Mail className="size-4" aria-hidden /> Email
             </label>
             <input
               id="email"
@@ -97,10 +98,10 @@ export default function LoginPage() {
 
           <div className="space-y-2">
             <label
-              className="font-display text-xs uppercase tracking-[0.3em] text-white/70"
+              className="flex items-center gap-2 font-display text-xs uppercase tracking-[0.3em] text-white/70"
               htmlFor="password"
             >
-              Password
+              <KeyRound className="size-4" aria-hidden /> Password
             </label>
             <input
               id="password"

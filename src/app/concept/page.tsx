@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 
+import { Leaf, Globe, Handshake } from 'lucide-react';
+
 import { AssetPlaceholder, GlowTitle } from '@/components/primitives';
 import { getClientLogos, getConceptNarrative } from '@/lib/cms/fetchers';
 
@@ -57,13 +59,15 @@ export default async function ConceptPage() {
             glowTone="honey"
           />
           <div className="flex flex-wrap gap-4 text-[11px] uppercase tracking-[0.45em] text-foreground/60">
-            <span className="rounded-full border border-foreground/25 px-4 py-2">
-              Co-travel labs
+            <span className="flex items-center gap-2 rounded-full border border-foreground/25 px-4 py-2">
+              <Handshake className="size-4" aria-hidden /> Co-travel labs
             </span>
-            <span className="rounded-full border border-foreground/25 px-4 py-2">
-              Sustainable sets
+            <span className="flex items-center gap-2 rounded-full border border-foreground/25 px-4 py-2">
+              <Leaf className="size-4" aria-hidden /> Sustainable sets
             </span>
-            <span className="rounded-full border border-foreground/25 px-4 py-2">CSR charter</span>
+            <span className="flex items-center gap-2 rounded-full border border-foreground/25 px-4 py-2">
+              <Globe className="size-4" aria-hidden /> CSR charter
+            </span>
           </div>
         </div>
       </section>

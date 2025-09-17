@@ -1,126 +1,270 @@
-﻿import type { ClientJourney } from '@/types/client';
+import type { ClientJourney } from '@/types/client';
 
 export const clientJourneys: ClientJourney[] = [
   {
-    id: 'journey-italy-tuscany-venice',
-    slug: 'italy-tuscany-venice',
-    title: 'ITALY - TOSCANE & VENICE',
-    country: 'Italy',
-    regionTags: ['Tuscany', 'Venice', 'Montepulciano'],
-    season: 'Spring Summer',
-    budgetRange: '180k - 240k EUR',
-    startDate: '2025-05-08',
-    endDate: '2025-05-16',
+    id: 'journey-philippines-deep-blue',
+    slug: 'philippines-deep-blue',
+    title: 'Philippines Deep Blue Residency',
+    country: 'Philippines',
+    regionTags: ['Palawan', 'Siargao', 'Coron'],
+    season: 'Fall Winter',
+    budgetRange: '320k - 380k EUR',
+    startDate: '2025-10-05',
+    endDate: '2025-11-02',
     summary:
-      "A cinematic escape across Tuscany's rolling vineyards and Venice's moonlit canals, choreographing couture moments, artisan encounters, and signature hospitality for maison VIPs.",
-    heroVideo: 'https://cdn.coverr.co/videos/coverr-venetian-evening-1080p.mp4',
-    heroPoster:
-      'https://images.unsplash.com/photo-1526154480052-28d5f4c60b97?auto=format&fit=crop&w=1600&q=80',
+      'Floating ateliers drift between hidden lagoons and jungle canopy cinemas to script sun-drenched storytelling with regenerative impact for reef communities.',
+    heroVideo: 'https://cdn.coverr.co/videos/coverr-floating-on-the-blue-ocean-1080p.mp4',
+    heroPoster: '/assets/journeys/philippines/philippines-gallery-01.png',
     moodboard: [
-      'https://images.unsplash.com/photo-1514894780887-121968d00567?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1526129318478-bbf3c95ea094?auto=format&fit=crop&w=1200&q=80',
+      '/assets/journeys/philippines/philippines-gallery-03.png',
+      '/assets/journeys/philippines/philippines-gallery-07.png',
+      '/assets/journeys/philippines/philippines-gallery-12.png',
     ],
-    creativeDirector: 'DA - Aurelie Nocturne',
-    logisticsLead: 'Logistics - Matteo Santorini',
+    creativeDirector: 'DA - Isla Navarro',
+    logisticsLead: 'Logistics - Mateo Dela Cruz',
     deliverables: [
-      '3 hero films + 6 reels',
-      '24 editorial stills',
-      'Client hospitality playbook',
-      'CSR impact brief',
+      'Hero film cut + 3 teaser reels',
+      'Underwater capsule stills',
+      'Hospitality activation blueprint',
+      'Impact report with reef partners',
+    ],
+    attachments: [],
+    sections: [
+      {
+        id: 'catamaran-lab',
+        title: 'CATAMARAN COLOR LAB',
+        description:
+          'Daybreak palette workshops aboard the catamaran with textile artisans translating reef hues into maison swatches.',
+        highlights: [
+          'Floating atelier with regenerative textiles',
+          'Analog projection tests on sails',
+          'Seaplane scouting for lagoon reveals',
+        ],
+        media: [
+          {
+            id: 'catamaran-image-1',
+            type: 'image',
+            url: '/assets/journeys/philippines/philippines-gallery-04.png',
+            alt: 'Wooden sailboat cruising emerald waters at golden hour',
+          },
+        ],
+      },
+      {
+        id: 'jungle-cinema',
+        title: 'JUNGLE CINEMA SESSION',
+        description:
+          'Immersive night cinema with reef-safe lighting to capture storytelling rituals alongside island collectives.',
+        highlights: [
+          'Bioluminescent-inspired lighting rig',
+          'Live scoring with island musicians',
+          'Underwater camera rehearsals',
+        ],
+        media: [
+          {
+            id: 'jungle-image-1',
+            type: 'image',
+            url: '/assets/journeys/philippines/philippines-gallery-07.png',
+            alt: 'Jungle canopy amphitheatre overlooking the sea',
+          },
+        ],
+      },
+      {
+        id: 'floating-banquet',
+        title: 'FLOATING BANQUET',
+        description:
+          'Lagoon-side finale featuring regenerative gastronomy, sonic storytelling, and immersive styling reveals.',
+        highlights: [
+          'Floating tables with reef-friendly decor',
+          'Live documentation suites on catamaran decks',
+          'Impact pledges recorded with local partners',
+        ],
+        media: [
+          {
+            id: 'banquet-image-1',
+            type: 'image',
+            url: '/assets/journeys/philippines/philippines-gallery-10.png',
+            alt: 'Chef plating Filipino tasting menu on floating deck',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'journey-mallorca-serra-studio',
+    slug: 'mallorca-serra-studio',
+    title: 'Mallorca Serra Studio',
+    country: 'Spain',
+    regionTags: ['Deia', 'Tramuntana', 'Es Vedra'],
+    season: 'Spring Summer',
+    budgetRange: '260k - 310k EUR',
+    startDate: '2025-05-12',
+    endDate: '2025-06-04',
+    summary:
+      'Slow-living creative residency across Tramuntana fincas, cliffside sound baths, and sunset sail capsules for Mediterranean drops.',
+    heroVideo: 'https://cdn.coverr.co/videos/coverr-sea-and-mountains-1080p.mp4',
+    heroPoster: '/assets/journeys/mallorca/mallorca-gallery-06.png',
+    moodboard: [
+      '/assets/journeys/mallorca/mallorca-gallery-02.png',
+      '/assets/journeys/mallorca/mallorca-gallery-09.png',
+      '/assets/journeys/mallorca/mallorca-gallery-18.png',
+    ],
+    creativeDirector: 'DA - Louna Serrat',
+    logisticsLead: 'Logistics - Pau Mirallet',
+    deliverables: [
+      'Hero film + 4 scenic loops',
+      'Editorial still kit for press drop',
+      'Hospitality playbook for maison guests',
+      'Sound bath audio stems',
     ],
     attachments: [
       {
-        label: 'Staging blueprint',
-        fileName: 'Italy - toscane & venise.pdf',
+        label: 'Residency overview',
+        fileName: 'mallorca-journey-overview.pdf',
       },
     ],
     sections: [
       {
-        id: 'montepulciano',
-        title: 'MONTEPULCIANO SUNRISE',
+        id: 'olive-terraces',
+        title: 'OLIVE TERRACE RUNWAY',
         description:
-          'Private takeover of a 12th-century borgo for sunrise storytelling. Fluid silks echo vineyard rows while analog projections bathe facades in peach light.',
+          'Sunrise film run weaving through olive terraces with analog super 8 coverage and bespoke styling pods.',
         highlights: [
-          'Drone ballet at golden hour',
-          'Florist residency with wild rose botanicals',
-          'Intimate tasting with regenerative wine collective',
+          'Finca takeover for wardrobe & glam',
+          'Sunrise kinetic capture',
+          'Local ceramist collaboration corner',
         ],
         media: [
           {
-            id: 'montepulciano-image-1',
+            id: 'terrace-image-1',
             type: 'image',
-            url: 'https://images.unsplash.com/photo-1470123383396-71b45dc3b44c?auto=format&fit=crop&w=1400&q=80',
-            alt: 'Sunrise over Tuscan vineyards with couture model',
-          },
-          {
-            id: 'montepulciano-video-1',
-            type: 'video',
-            url: 'https://cdn.coverr.co/videos/coverr-sunrise-over-the-tuscan-vineyard-1080p.mp4',
-            alt: 'Sun-drenched vineyards',
+            url: '/assets/journeys/mallorca/mallorca-gallery-04.png',
+            alt: 'Stone village street in Deia under warm light',
           },
         ],
       },
       {
-        id: 'dolce-vita',
-        title: 'DOLCE VITA TABLEAUX',
+        id: 'es-vedra-sail',
+        title: 'ES VEDRA SAIL WINDOW',
         description:
-          'A curated procession through hidden courtyards in Florence, choreographing live still lifes with artisans, bespoke gelato experiences, and luminous styling cues.',
+          'Afternoon sail around Es Vedra for 16mm coverage, sound baths, and floating atelier pop-up.',
         highlights: [
-          'Cinematic still-life vignettes',
-          'Slow food atelier pairing',
-          'Guest styling bar with couture milliner',
+          'Vintage sailboat with modular production pod',
+          'Live Balearic scoring onboard',
+          'Sunset styling reveal on deck',
         ],
         media: [
           {
-            id: 'dolce-vita-image-1',
+            id: 'vedra-image-1',
             type: 'image',
-            url: 'https://images.unsplash.com/photo-1466978913421-dad2ebd01d17?auto=format&fit=crop&w=1400&q=80',
-            alt: 'Florence courtyard dinner',
+            url: '/assets/journeys/mallorca/mallorca-gallery-06.png',
+            alt: 'Es Vedra island shot from sailboat deck',
           },
         ],
       },
       {
-        id: 'dear-venice',
-        title: "DEAR VENICE'S ROMANCE",
+        id: 'cliff-sound-bath',
+        title: 'CLIFF SOUND BATH',
         description:
-          'Moonlit gondola choreography and mirrors over canal waters. Bespoke soundscapes and suspended floral spheres for couture unveilings under San Giorgio Maggiore.',
+          'Twilight sound bath and tasting pairing on Tramuntana cliffs with projection-mapped scenography.',
         highlights: [
-          'Private lagoon pyrotechnics',
-          'Immersive binaural concert',
-          'Glass artisans live craft showcase',
+          'Sound bath produced with Balearic composers',
+          'Lighting design with sustainable rig',
+          'In-situ atelier for artisan collaborations',
         ],
         media: [
           {
-            id: 'venice-image-1',
+            id: 'cliff-image-1',
             type: 'image',
-            url: 'https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=1400&q=80',
-            alt: 'Evening gondolas in Venice',
+            url: '/assets/journeys/mallorca/mallorca-gallery-13.png',
+            alt: 'Mountain road descending into narrow gorge',
           },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'journey-cyclades-light-tale',
+    slug: 'cyclades-light-tale',
+    title: 'Cyclades Light Tale',
+    country: 'Greece',
+    regionTags: ['Santorini', 'Mykonos', 'Milos'],
+    season: 'Fall Winter',
+    budgetRange: '290k - 340k EUR',
+    startDate: '2025-09-04',
+    endDate: '2025-09-21',
+    summary:
+      'An odyssey of sunrise caldera reveals, Klimata dinners, and dual-format filming delivering both campaign-grade assets and maison lore.',
+    heroVideo: 'https://cdn.coverr.co/videos/coverr-santorini-with-a-boat-1080p.mp4',
+    heroPoster: '/assets/journeys/greece/greece-gallery-08.png',
+    moodboard: [
+      '/assets/journeys/greece/greece-gallery-01.png',
+      '/assets/journeys/greece/greece-gallery-11.png',
+      '/assets/journeys/greece/greece-gallery-19.png',
+    ],
+    creativeDirector: 'DA - Thalia Vrettos',
+    logisticsLead: 'Logistics - Niko Spartalis',
+    deliverables: [
+      'Hero film + 5 modular edits',
+      'Still suite for e-commerce refresh',
+      'Hospitality & tasting playbook',
+      'Impact capsule on local partnerships',
+    ],
+    attachments: [],
+    sections: [
+      {
+        id: 'oia-sunrise',
+        title: 'OIA SUNRISE OPENER',
+        description:
+          'Sunrise reveal above the caldera with dual camera teams capturing couture fittings and slow portraiture.',
+        highlights: [
+          'Dual format capture (digital + 16mm)',
+          'Bougainvillea styling takeovers',
+          'Guest hospitality capsule at dawn',
+        ],
+        media: [
           {
-            id: 'venice-video-1',
-            type: 'video',
-            url: 'https://cdn.coverr.co/videos/coverr-venice-gondolas-1080p.mp4',
-            alt: 'Gondolas moving in Venice',
+            id: 'oia-image-1',
+            type: 'image',
+            url: '/assets/journeys/greece/greece-gallery-01.png',
+            alt: 'View over Santorini caldera at first light',
           },
         ],
       },
       {
-        id: 'golden-hours',
-        title: 'GOLDEN HOURS',
+        id: 'klima-dinner',
+        title: 'KLIMA DINNER CHOREO',
         description:
-          'A twilight finale at a lagoon-side palazzo featuring immersive holo projections and culinary storytelling bridging land and sea.',
+          'Lantern-lit dinners in Milos boathouses with live gastronomy and artisan showcases.',
         highlights: [
-          'Golden-hour drone capture with narrators',
-          'Sustainable banquet with Michelin duo',
-          'NFT concierge gifting experience',
+          'Custom lantern lighting rig',
+          'Culinary collaboration with local chefs',
+          'Live craft storytelling capsules',
         ],
         media: [
           {
-            id: 'golden-hours-image-1',
+            id: 'klima-image-1',
             type: 'image',
-            url: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1400&q=80',
-            alt: 'Lagoon-side event at sunset',
+            url: '/assets/journeys/greece/greece-gallery-08.png',
+            alt: 'Santorini restaurant terrace at sunset',
+          },
+        ],
+      },
+      {
+        id: 'caique-transfer',
+        title: 'CAIQUE TRANSFER ARC',
+        description:
+          'Slow travel legs aboard a restored caique converted into a mobile production hub.',
+        highlights: [
+          'Onboard wardrobe & glam pods',
+          'Live grading bay for daily selects',
+          'Acoustic score sessions at sea',
+        ],
+        media: [
+          {
+            id: 'caique-image-1',
+            type: 'image',
+            url: '/assets/journeys/greece/greece-gallery-15.png',
+            alt: 'Sea horizon with traditional wooden boat',
           },
         ],
       },

@@ -2,10 +2,17 @@ import Image from 'next/image';
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import dynamic from 'next/dynamic';
+import { CalendarDays, Compass, MapPin, Sparkles, Waypoints } from 'lucide-react';
 
-import { GlowTitle, ShowcaseMediaGallery } from '@/components/primitives';
+import { GlowTitle } from '@/components/primitives';
 import { Button } from '@/components/ui/button';
 import { journeyShowcases } from '@/data/showcases';
+
+const ShowcaseMediaGallery = dynamic(
+  () => import('@/components/primitives/media-lightbox').then((mod) => mod.ShowcaseMediaGallery),
+  { ssr: false }
+);
 
 interface JourneyPageProps {
   params: { slug: string };
@@ -51,9 +58,15 @@ export default function JourneyPage({ params }: JourneyPageProps) {
         <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/25 to-white/10" />
         <div className="relative z-10 flex flex-col gap-10 px-6 pb-20 pt-24 text-white sm:px-10 lg:px-20">
           <div className="flex flex-wrap items-center gap-4 text-xs uppercase tracking-[0.45em] text-white/70">
-            <span>{journey.locale}</span>
+            <span className="flex items-center gap-2">
+              <MapPin className="size-4" aria-hidden />
+              {journey.locale}
+            </span>
             <span className="h-px flex-1 bg-white/40" aria-hidden />
-            <span>{journey.timeframe}</span>
+            <span className="flex items-center gap-2">
+              <CalendarDays className="size-4" aria-hidden />
+              {journey.timeframe}
+            </span>
           </div>
           <GlowTitle
             eyebrow={journey.hero.overlayLabel ?? 'Journey residency'}
@@ -64,7 +77,11 @@ export default function JourneyPage({ params }: JourneyPageProps) {
           />
           <div className="flex flex-wrap gap-3 text-[11px] uppercase tracking-[0.35em] text-white/75">
             {journey.highlights.map((highlight) => (
-              <span key={highlight} className="rounded-full border border-white/40 px-4 py-2">
+              <span
+                key={highlight}
+                className="flex items-center gap-2 rounded-full border border-white/40 px-4 py-2"
+              >
+                <Sparkles className="size-3.5" aria-hidden />
                 {highlight}
               </span>
             ))}
@@ -73,29 +90,32 @@ export default function JourneyPage({ params }: JourneyPageProps) {
       </section>
 
       <section className="grid gap-10 px-6 sm:px-10 lg:grid-cols-[1.05fr_0.95fr] lg:px-20">
-        <div className="space-y-8 rounded-[36px] border border-foreground/15 bg-white/80 p-10 text-foreground shadow-[0_32px_120px_rgba(15,20,30,0.12)]">
-          <p className="font-display text-xs uppercase tracking-[0.4em] text-foreground/55">
-            Narrative arc
+        <div className="space-y-8 rounded-2xl border border-foreground/15 bg-white/80 p-10 text-foreground shadow-[0_32px_120px_rgba(15,20,30,0.12)]">
+          <p className="flex items-center gap-2 font-display text-xs uppercase tracking-[0.4em] text-foreground/55">
+            <Sparkles className="size-4" aria-hidden /> Narrative arc
           </p>
           <div className="space-y-4 text-sm leading-relaxed text-foreground/70">
             {journey.story.map((paragraph) => (
               <p key={paragraph}>{paragraph}</p>
             ))}
           </div>
-          <div className="rounded-[28px] border border-foreground/15 bg-white/70 p-6">
-            <p className="font-display text-xs uppercase tracking-[0.35em] text-foreground/55">
-              Logistics in place
+          <div className="rounded-2xl border border-foreground/15 bg-white/70 p-6">
+            <p className="flex items-center gap-2 font-display text-xs uppercase tracking-[0.35em] text-foreground/55">
+              <Waypoints className="size-4" aria-hidden /> Logistics in place
             </p>
             <ul className="mt-4 space-y-2 text-sm text-foreground/70">
               {journey.logistics.map((item) => (
-                <li key={item}>- {item}</li>
+                <li key={item} className="flex items-start gap-3">
+                  <span className="mt-1 size-1.5 rounded-full bg-foreground/30" aria-hidden />
+                  <span>{item}</span>
+                </li>
               ))}
             </ul>
           </div>
         </div>
-        <div className="space-y-8 rounded-[36px] border border-foreground/15 bg-white/80 p-10 text-foreground shadow-[0_32px_120px_rgba(15,20,30,0.12)]">
-          <p className="font-display text-xs uppercase tracking-[0.4em] text-foreground/55">
-            Residency overview
+        <div className="space-y-8 rounded-2xl border border-foreground/15 bg-white/80 p-10 text-foreground shadow-[0_32px_120px_rgba(15,20,30,0.12)]">
+          <p className="flex items-center gap-2 font-display text-xs uppercase tracking-[0.4em] text-foreground/55">
+            <Compass className="size-4" aria-hidden /> Residency overview
           </p>
           <p className="text-sm leading-relaxed text-foreground/70">{journey.summary}</p>
           {journey.cta ? (

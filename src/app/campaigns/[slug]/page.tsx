@@ -1,10 +1,17 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import dynamic from 'next/dynamic';
+import { CalendarDays, Clapperboard, MapPin, Sparkles } from 'lucide-react';
 
-import { GlowTitle, ShowcaseMediaGallery } from '@/components/primitives';
+import { GlowTitle } from '@/components/primitives';
 import { Button } from '@/components/ui/button';
 import { campaignShowcases } from '@/data/showcases';
+
+const ShowcaseMediaGallery = dynamic(
+  () => import('@/components/primitives/media-lightbox').then((mod) => mod.ShowcaseMediaGallery),
+  { ssr: false }
+);
 
 interface CampaignPageProps {
   params: { slug: string };
@@ -52,9 +59,15 @@ export default function CampaignPage({ params }: CampaignPageProps) {
         <div className="absolute inset-0 bg-gradient-to-b from-black/75 via-black/25 to-white/10" />
         <div className="relative z-10 flex flex-col gap-10 px-6 pb-20 pt-24 text-white sm:px-10 lg:px-20">
           <div className="flex flex-wrap items-center gap-4 text-xs uppercase tracking-[0.45em] text-white/70">
-            <span>{campaign.destination}</span>
+            <span className="flex items-center gap-2">
+              <MapPin className="size-4" aria-hidden />
+              {campaign.destination}
+            </span>
             <span className="h-px flex-1 bg-white/40" aria-hidden />
-            <span>{campaign.hero.caption}</span>
+            <span className="flex items-center gap-2">
+              <Clapperboard className="size-4" aria-hidden />
+              {campaign.hero.caption}
+            </span>
           </div>
           <GlowTitle
             eyebrow={campaign.hero.loopLabel ?? 'Campaign film'}
@@ -65,7 +78,11 @@ export default function CampaignPage({ params }: CampaignPageProps) {
           />
           <div className="flex flex-wrap gap-3 text-[11px] uppercase tracking-[0.35em] text-white/75">
             {campaign.highlights.map((highlight) => (
-              <span key={highlight} className="rounded-full border border-white/40 px-4 py-2">
+              <span
+                key={highlight}
+                className="flex items-center gap-2 rounded-full border border-white/40 px-4 py-2"
+              >
+                <Sparkles className="size-3.5" aria-hidden />
                 {highlight}
               </span>
             ))}
@@ -74,29 +91,32 @@ export default function CampaignPage({ params }: CampaignPageProps) {
       </section>
 
       <section className="grid gap-10 px-6 sm:px-10 lg:grid-cols-[1.05fr_0.95fr] lg:px-20">
-        <div className="space-y-8 rounded-[36px] border border-foreground/15 bg-white/80 p-10 text-foreground shadow-[0_32px_120px_rgba(15,20,30,0.12)]">
-          <p className="font-display text-xs uppercase tracking-[0.4em] text-foreground/55">
-            Story development
+        <div className="space-y-8 rounded-2xl border border-foreground/15 bg-white/80 p-10 text-foreground shadow-[0_32px_120px_rgba(15,20,30,0.12)]">
+          <p className="flex items-center gap-2 font-display text-xs uppercase tracking-[0.4em] text-foreground/55">
+            <Sparkles className="size-4" aria-hidden /> Story development
           </p>
           <div className="space-y-4 text-sm leading-relaxed text-foreground/70">
             {campaign.story.map((paragraph) => (
               <p key={paragraph}>{paragraph}</p>
             ))}
           </div>
-          <div className="rounded-[28px] border border-foreground/15 bg-white/70 p-6">
-            <p className="font-display text-xs uppercase tracking-[0.35em] text-foreground/55">
-              Impact markers
+          <div className="rounded-2xl border border-foreground/15 bg-white/70 p-6">
+            <p className="flex items-center gap-2 font-display text-xs uppercase tracking-[0.35em] text-foreground/55">
+              <CalendarDays className="size-4" aria-hidden /> Impact markers
             </p>
             <ul className="mt-4 space-y-2 text-sm text-foreground/70">
               {campaign.impact.map((item) => (
-                <li key={item}>- {item}</li>
+                <li key={item} className="flex items-start gap-3">
+                  <span className="mt-1 size-1.5 rounded-full bg-foreground/30" aria-hidden />
+                  <span>{item}</span>
+                </li>
               ))}
             </ul>
           </div>
         </div>
-        <div className="space-y-8 rounded-[36px] border border-foreground/15 bg-white/80 p-10 text-foreground shadow-[0_32px_120px_rgba(15,20,30,0.12)]">
-          <p className="font-display text-xs uppercase tracking-[0.4em] text-foreground/55">
-            Credits
+        <div className="space-y-8 rounded-2xl border border-foreground/15 bg-white/80 p-10 text-foreground shadow-[0_32px_120px_rgba(15,20,30,0.12)]">
+          <p className="flex items-center gap-2 font-display text-xs uppercase tracking-[0.4em] text-foreground/55">
+            <Clapperboard className="size-4" aria-hidden /> Credits
           </p>
           <ul className="space-y-3 text-sm uppercase tracking-[0.18em] text-foreground/70">
             {campaign.credits.map((credit) => (
