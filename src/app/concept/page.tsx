@@ -9,28 +9,34 @@ import { ConceptNarrative } from './_components/concept-narrative';
 
 const pillarPlaceholders = [
   {
-    id: 'co-travel',
-    title: 'Co-travel methodology',
-    label: 'Co-travel mood still',
+    id: 'creative-platform',
+    title: 'Creative agency + platform',
+    label: 'Co-travel briefing still',
     fileName: 'concept-co-travel.jpg',
     placement: 'public/assets/concept',
     recommendedDimensions: '1920x1280 | JPG',
+    description:
+      'We unite creative direction, production, and delivery. Journeys are scripted end-to-end so maisons board a co-travel and leave with tailored campaigns.',
   },
   {
-    id: 'sustainability',
-    title: 'Sustainable production',
-    label: 'Sustainability artifact',
+    id: 'co-travel-model',
+    title: 'The co-travel model',
+    label: 'Shared logistics visual',
     fileName: 'concept-sustainability.jpg',
     placement: 'public/assets/concept',
     recommendedDimensions: '1920x1280 | JPG',
+    description:
+      'Multiple non-competing brands share flights, models, crew, and locations. Each maison keeps its own narrative while benefiting from economies of scale.',
   },
   {
-    id: 'rse-charter',
-    title: 'RSE charter',
-    label: 'RSE documentation still',
+    id: 'csr-impact',
+    title: 'CSR & impact',
+    label: 'Impact documentation still',
     fileName: 'concept-rse.jpg',
     placement: 'public/assets/concept',
     recommendedDimensions: '1920x1280 | JPG',
+    description:
+      'Every journey collaborates with local associations, lowers footprint through mutualised logistics, and ships with reporting for CSR certifications.',
   },
 ];
 
@@ -54,7 +60,7 @@ export default async function ConceptPage() {
           <GlowTitle
             eyebrow="Beeyondtheworld Concept"
             title="Journey-first storytelling for tomorrow"
-            description="We choreograph collaborative expeditions that balance creative ambition, regenerative logistics, and measurable CSR outcomes."
+            description="We pool non-competing maisons on the same journey, share logistics, and return with campaign-ready motion and stills anchored in sustainability."
             align="left"
             glowTone="honey"
           />
@@ -87,10 +93,7 @@ export default async function ConceptPage() {
               <h3 className="mt-6 font-display text-xl uppercase tracking-[0.24em] text-foreground">
                 {pillar.title}
               </h3>
-              <p className="mt-3 text-sm text-foreground/70">
-                Use this card to highlight the promise with a key visual or infographic. Add the
-                supporting copy via the CMS.
-              </p>
+              <p className="mt-3 text-sm text-foreground/70">{pillar.description}</p>
             </div>
           ))}
         </div>

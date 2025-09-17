@@ -101,8 +101,8 @@ export default function ContactPage() {
         <div className="relative z-10 space-y-8 rounded-[48px] border border-white/40 bg-white/75 p-10 backdrop-blur">
           <GlowTitle
             eyebrow="Start a project"
-            title="Tell us about the journey you want to craft"
-            description="This form is designed for brands without a client account yet. Share the essentials; we respond within 48 hours with a proposed co-travel itinerary."
+            title="Start your co-travel conversation"
+            description="This form is for maisons exploring Beeyondtheworld. Share the essentials and we will suggest the right co-travel, budget frame, and companion brands within 48 hours."
             align="left"
             glowTone="umber"
           />

@@ -73,8 +73,8 @@ export default function LoginPage() {
           <KeyRound className="size-6" aria-hidden /> Beeyondtheworld client space
         </h1>
         <p className="mt-3 text-sm text-white/80">
-          Accounts are curated by our team. Use the credentials supplied by your producer to access
-          live journeys.
+          The client portal hosts your private co-travel dashboard, journey sheets, and exports.
+          Accounts are curated by our team; use the credentials provided by your producer.
         </p>
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>

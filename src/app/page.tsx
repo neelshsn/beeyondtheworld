@@ -1,6 +1,17 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { CalendarDays, Clapperboard, Compass, MapPin, Sparkles, Wand2 } from 'lucide-react';
+import {
+  CalendarDays,
+  Clapperboard,
+  Compass,
+  Globe,
+  Leaf,
+  Lock,
+  MapPin,
+  Sparkles,
+  Users,
+  Wand2,
+} from 'lucide-react';
 
 import { GlowTitle } from '@/components/primitives';
 import { Button } from '@/components/ui/button';
@@ -154,14 +165,91 @@ export default async function Home() {
 
   const heroStats = [
     {
-      icon: Compass,
-      label: 'Residencies scripted with on-ground partners',
+      icon: Wand2,
+      label: 'Creative production agency + digital platform',
     },
     {
-      icon: Clapperboard,
-      label: 'Campaign films already in market',
+      icon: Users,
+      label: 'Co-travel journeys pooling 3-4 complementary maisons',
+    },
+    {
+      icon: Leaf,
+      label: 'Shared logistics that lower cost and carbon impact',
     },
   ];
+
+  const overviewHighlights = [
+    {
+      icon: Sparkles,
+      title: 'What Beeyondtheworld is',
+      description:
+        'Beeyondtheworld is a creative production agency and digital platform for fashion and lifestyle brands. We choreograph immersive trips and return with campaign-ready motion and stills.',
+      bullets: [
+        'Creative direction, production, and digital delivery united in one atelier',
+        'Destinations curated for storytelling, hospitality, and local resonance',
+      ],
+    },
+    {
+      icon: Users,
+      title: 'The co-travel difference',
+      description:
+        'We pool several non-competing maisons on the same journey. Each brand receives its own art direction while sharing logistics, crew, talents, and infrastructure.',
+      bullets: [
+        'Economies of scale across flights, accommodation, equipment, and teams',
+        'Distinct creative capsules for every maison�no narrative overlap',
+        'Think Uber Pool for fashion productions: smarter, leaner, more collaborative',
+      ],
+    },
+    {
+      icon: Leaf,
+      title: 'Why it matters',
+      description:
+        'Budgets are tightening while CSR commitments grow. Co-travel helps maisons deliver luxury storytelling with measurable sustainability impact.',
+      bullets: [
+        'Lower carbon footprint through shared logistics and regenerative partners',
+        'CSR documentation and impact reporting built into every journey',
+        'Premium output�films, photos, experiential lore�at reduced cost',
+      ],
+    },
+  ];
+
+  const platformColumns = [
+    {
+      icon: Globe,
+      title: 'Public showroom',
+      description:
+        'The front door of the platform attracts new maisons. It presents immersive hero films, alternating journey teasers, delivered campaigns, and the co-travel philosophy.',
+      bullets: [
+        'Homepage: cinematic hero loop with journeys and campaigns in rotation',
+        'Campaigns: produced work with motion-first galleries and credits',
+        'Concept: the co-travel model, CSR commitments, and impact pillars',
+        'Contact: glassmorphic form to open new collaborations',
+      ],
+    },
+    {
+      icon: Lock,
+      title: 'Private client portal',
+      description:
+        'Existing clients sign in to explore the journeys curated for them, review logistics, and export decks in branded PDF format.',
+      bullets: [
+        'Login: secure access with immersive background loops',
+        'Dashboard: horizontal carousel of upcoming journeys with filters',
+        'Journey sheets: interactive sections covering art direction, logistics, and budgets',
+        'PDF export: maison-ready deck for internal alignment',
+      ],
+    },
+  ];
+
+  const beeNarrative = {
+    title: 'Why the bee guides us',
+    description:
+      'Bees travel from flower to flower, gathering raw nectar and transforming it into honey. We move from destination to destination, collect cultural and natural inspiration, and shape it into high-value campaign content.',
+    bullets: [
+      'The journeys are our pollination flights�each stop adds new flavour and insight',
+      'The creative teams are the hive where narratives are blended and refined',
+      'The final deliverables�films, photos, experiential lore�are the honey we share with maisons',
+    ],
+  };
 
   return (
     <main className="flex flex-col">
@@ -176,12 +264,13 @@ export default async function Home() {
             <Wand2 className="size-4" aria-hidden /> Beeyondtheworld Atelier
           </p>
           <h1 className="font-display text-5xl uppercase leading-tight tracking-[0.18em] text-white sm:text-6xl">
-            Tailor-made journeys for heritage maisons
+            Co-travel productions for fashion and lifestyle maisons
           </h1>
           <p className="text-white/82 max-w-2xl text-sm leading-relaxed">
-            Discover our 2025 residencies and the cinematic tales already delivered for partnering
-            maisons. Each card opens a full sheet with immersive media, logistics, and impact
-            breakdowns ready for your review.
+            Beeyondtheworld is a creative production agency and digital platform. We script
+            immersive journeys, pool non-competing maisons on each co-travel, and deliver
+            campaign-ready films and photos with shared logistics, lower footprint, and richer
+            storytelling.
           </p>
           <div className="flex flex-wrap items-center gap-6">
             <Button
@@ -210,6 +299,47 @@ export default async function Home() {
         </div>
       </section>
 
+      <section className="bg-gradient-to-b from-white via-stone-50 to-white px-6 py-24 sm:px-10 lg:px-20">
+        <GlowTitle
+          eyebrow="What we do"
+          title="Creative productions shared across co-travels"
+          description="Every journey is curated so multiple maisons can travel together, share logistics, and leave with campaign-ready films and photos tailored to their world."
+          align="left"
+          glowTone="dawn"
+        />
+        <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
+          {overviewHighlights.map((point) => {
+            const Icon = point.icon;
+            return (
+              <div
+                key={point.title}
+                className="flex h-full flex-col gap-4 rounded-2xl border border-foreground/15 bg-white/80 p-6 text-foreground shadow-[0_30px_120px_-70px_rgba(24,32,56,0.65)]"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="flex size-11 items-center justify-center rounded-full border border-foreground/20 bg-white/80">
+                    <Icon className="size-5" aria-hidden />
+                  </span>
+                  <h3 className="font-display text-lg uppercase tracking-[0.28em]">
+                    {point.title}
+                  </h3>
+                </div>
+                <p className="text-sm leading-relaxed text-foreground/75">{point.description}</p>
+                {point.bullets ? (
+                  <ul className="space-y-2 text-sm text-foreground/65">
+                    {point.bullets.map((item) => (
+                      <li key={item} className="flex items-start gap-3">
+                        <span className="mt-1 size-1.5 rounded-full bg-foreground/25" aria-hidden />
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
       <section className="flex flex-col gap-14 bg-gradient-to-b from-white via-white to-stone-100 px-6 py-24 sm:px-10 lg:px-20">
         <GlowTitle
           eyebrow="Journeys & campaigns"
@@ -226,6 +356,65 @@ export default async function Home() {
               <CampaignCard key={entry.id} campaign={entry.campaign} />
             ) : null
           )}
+        </div>
+      </section>
+
+      <section className="px-6 py-24 sm:px-10 lg:px-20">
+        <GlowTitle
+          eyebrow="Platform"
+          title="One showroom, one private client portal"
+          description="The public face attracts new maisons while the private side lets clients explore, align, and export their journeys."
+          align="left"
+          glowTone="honey"
+        />
+        <div className="mt-10 grid gap-8 lg:grid-cols-2">
+          {platformColumns.map((column) => {
+            const Icon = column.icon;
+            return (
+              <div
+                key={column.title}
+                className="flex h-full flex-col gap-4 rounded-2xl border border-foreground/15 bg-white/80 p-6 text-foreground shadow-[0_32px_120px_-70px_rgba(24,32,56,0.45)]"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="bg-white/82 flex size-11 items-center justify-center rounded-full border border-foreground/20">
+                    <Icon className="size-5" aria-hidden />
+                  </span>
+                  <h3 className="font-display text-lg uppercase tracking-[0.28em]">
+                    {column.title}
+                  </h3>
+                </div>
+                <p className="text-sm leading-relaxed text-foreground/75">{column.description}</p>
+                <ul className="space-y-2 text-sm text-foreground/65">
+                  {column.bullets.map((item) => (
+                    <li key={item} className="flex items-start gap-3">
+                      <span className="mt-1 size-1.5 rounded-full bg-foreground/25" aria-hidden />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      <section className="px-6 py-20 sm:px-10 lg:px-20">
+        <div className="overflow-hidden rounded-3xl border border-foreground/15 bg-gradient-to-r from-amber-100 via-white to-amber-50/80 p-10 text-foreground shadow-[0_40px_140px_-80px_rgba(142,98,30,0.45)]">
+          <GlowTitle
+            eyebrow="Bee-inspired"
+            title={beeNarrative.title}
+            description={beeNarrative.description}
+            align="left"
+            glowTone="honey"
+          />
+          <ul className="mt-8 space-y-3 text-sm text-foreground/70">
+            {beeNarrative.bullets.map((item) => (
+              <li key={item} className="flex items-start gap-3">
+                <span className="mt-1 size-1.5 rounded-full bg-foreground/25" aria-hidden />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
 
