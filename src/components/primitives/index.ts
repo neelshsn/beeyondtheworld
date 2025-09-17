@@ -1,4 +1,4 @@
-﻿export * from './glow-title';
+export * from './glow-title';
 export * from './glass-card';
 export * from './immersive-video';
 export * from './journey-carousel';

@@ -1,7 +1,6 @@
-﻿import Link from 'next/link';
+import Link from 'next/link';
 import type { Metadata } from 'next';
 
-import { LoadingSplash } from '@/components/primitives';
 import { SupabaseProvider } from '@/components/providers/supabase-provider';
 import { adam, avenir, saintBartogenia } from '@/lib/fonts';
 import { getSupabaseServerClient } from '@/lib/supabase/server-client';
@@ -46,7 +45,6 @@ export default async function RootLayout({
     >
       <body className="bg-background font-sans text-foreground">
         <SupabaseProvider initialSession={session}>
-          <LoadingSplash />
           <div className="relative flex min-h-screen flex-col">
             <div
               className="pointer-events-none fixed inset-0 z-[-3] bg-hero-gradient opacity-60"
