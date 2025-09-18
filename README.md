@@ -72,7 +72,7 @@ src/
   lib/supabase/                 # Browser & server clients
   types/                        # Shared typings
 cms/schemas/                    # Sanity schema definitions
-public/fonts/                   # ADAM / Avenir / Saint Bartogenia
+../fonts/                     # Love / Adam / Avenir / Saint Bartogenia (shared)
 public/pdfs/                    # Deck + journey attachments
 ```
 
@@ -106,3 +106,4 @@ Use these as-is in a Sanity Studio or adapt to Contentful models with equivalent
 2. Wire Sanity content fetching in `src/lib/cms/fetchers.ts` once datasets are published.
 3. Expand private journeys by querying CMS or Supabase-specific tables.
 4. Add automated PDF generation (e.g., via serverless functions) if browser print is insufficient.
+   "# beeyondtheworld"
