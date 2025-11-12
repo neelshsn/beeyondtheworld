@@ -84,6 +84,7 @@ const config: Config = {
         'soft-pulse': 'soft-pulse 5s ease-in-out infinite',
       },
       fontFamily: {
+        title: ['var(--font-love)', 'sans-serif'],
         display: ['var(--font-adam)', 'sans-serif'],
         sans: ['var(--font-avenir)', 'sans-serif'],
         script: ['var(--font-saint)', 'cursive'],

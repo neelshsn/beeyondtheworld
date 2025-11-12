@@ -1,4 +1,4 @@
-﻿@tailwind base;
+@tailwind base;
 @tailwind components;
 @tailwind utilities;
 
@@ -29,7 +29,11 @@
   --glow-honey: rgba(235, 180, 80, 0.42);
   --glow-umber: rgba(94, 68, 52, 0.32);
   --glow-dawn: rgba(255, 233, 204, 0.6);
+  --menu-bg: rgba(255, 255, 250, 0.82);
+  --menu-shadow: 0 40px 120px -45px rgba(87, 62, 38, 0.45);
+  --menu-accent: #d9a259;
   --loader-duration: 2200ms;
+  --bee-ease: cubic-bezier(0.16, 1, 0.3, 1);
   color-scheme: light;
 }
 
@@ -59,6 +63,10 @@
   --glow-honey: rgba(235, 180, 80, 0.24);
   --glow-umber: rgba(40, 26, 18, 0.4);
   --glow-dawn: rgba(240, 206, 160, 0.28);
+  --menu-bg: rgba(24, 20, 16, 0.85);
+  --menu-shadow: 0 50px 140px -60px rgba(0, 0, 0, 0.75);
+  --menu-accent: #f0b976;
+  --bee-ease: cubic-bezier(0.16, 1, 0.3, 1);
   color-scheme: dark;
 }
 
@@ -80,7 +88,7 @@
   h2,
   h3,
   h4 {
-    @apply font-display uppercase tracking-[0.18em];
+    @apply font-title uppercase tracking-[0.18em];
   }
 
   ::selection {
@@ -120,6 +128,40 @@
       radial-gradient(circle at 80% 25%, var(--glow-dawn), transparent 70%);
     opacity: 0.4;
     pointer-events: none;
+  }
+
+  .marquee-wrapper {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .marquee-wrapper::before,
+  .marquee-wrapper::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 96px;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .marquee-wrapper::before {
+    left: 0;
+    background: linear-gradient(to right, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0));
+  }
+
+  .marquee-wrapper::after {
+    right: 0;
+    background: linear-gradient(to left, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0));
+  }
+
+  .dark .marquee-wrapper::before {
+    background: linear-gradient(to right, rgba(18, 18, 18, 0.9), rgba(18, 18, 18, 0));
+  }
+
+  .dark .marquee-wrapper::after {
+    background: linear-gradient(to left, rgba(18, 18, 18, 0.9), rgba(18, 18, 18, 0));
   }
 }
 
@@ -163,6 +205,20 @@
       0 0 18px rgba(235, 180, 80, 0.55);
   }
 
+  .marquee-track {
+    animation: marqueeScroll 28s linear infinite;
+  }
+
+  .marquee-track:hover {
+    animation-play-state: paused;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .marquee-track {
+      animation: none;
+    }
+  }
+
   .scroll-shadow-top {
     box-shadow: inset 0 30px 60px -40px rgba(43, 29, 20, 0.25);
   }
@@ -182,6 +238,16 @@
   .loader-fade {
     animation: loaderFade calc(var(--loader-duration) * 0.6) ease
       calc(var(--loader-duration) * 0.75) forwards;
+  }
+}
+
+@keyframes marqueeScroll {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
   }
 }
 
@@ -225,5 +291,43 @@
   100% {
     opacity: 0;
     pointer-events: none;
+  }
+}
+.icono-spin {
+  animation: iconoSpin 28s linear infinite;
+}
+
+.icono-pulse {
+  animation: iconoPulse 6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .icono-spin {
+    animation: none;
+  }
+
+  .icono-pulse {
+    animation: iconoPulse 8s ease-in-out infinite;
+  }
+}
+
+@keyframes iconoSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes iconoPulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(0.97);
+    opacity: 0.88;
   }
 }

@@ -1,24 +1,22 @@
-import Image from 'next/image';
+﻿import Image from 'next/image';
 import Link from 'next/link';
 import {
   CalendarDays,
   Clapperboard,
   Compass,
-  Globe,
-  Leaf,
-  Lock,
+  Instagram,
+  Linkedin,
   MapPin,
-  Sparkles,
-  Users,
   Wand2,
 } from 'lucide-react';
+import { getSupabaseServerClient } from '@/lib/supabase/server-client';
 
 import { GlowTitle } from '@/components/primitives';
+import { WhatWeDoSection, type WhatWeDoSectionProps } from '@/app/_components/what-we-do-section';
 import SplitText from '@/components/SplitText';
 import { Button } from '@/components/ui/button';
 import { campaignShowcases, journeyShowcases } from '@/data/showcases';
 import type { CampaignShowcase, JourneyShowcase } from '@/data/showcases';
-import { getConceptNarrative } from '@/lib/cms/fetchers';
 
 type ShowcaseEntry =
   | { kind: 'journey'; id: string; journey: JourneyShowcase }
@@ -28,58 +26,57 @@ const heroVideoSrc = '/assets/home/main-background-hero-home.mp4';
 
 function JourneyCard({ journey }: { journey: JourneyShowcase }) {
   return (
-    <article className="bg-white/14 group relative overflow-hidden rounded-xl shadow-[0_40px_120px_-60px_rgba(26,35,58,0.55)] backdrop-blur-xl">
+    <article className="group relative isolate flex min-h-[806px] w-full items-center justify-center overflow-hidden">
       <Image
         src={journey.hero.src}
         alt={journey.hero.alt}
         fill
-        className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+        className="ease-[cubic-bezier(0.22,1,0.36,1)] absolute inset-0 size-full object-cover transition-[transform,opacity] duration-700"
         sizes="(max-width: 768px) 100vw, 80vw"
         priority={journey.id === 'philippines'}
       />
-      <div className="absolute inset-0 bg-gradient-to-br from-white/70 via-white/25 to-transparent" />
-      <div className="relative z-10 flex h-full flex-col justify-between gap-8 p-10 text-foreground">
-        <div className="space-y-5">
-          <div className="flex flex-wrap items-center gap-4 text-xs uppercase tracking-[0.4em] text-foreground/65">
-            <span className="flex items-center gap-2">
-              <MapPin className="size-3.5" aria-hidden />
-              {journey.locale}
-            </span>
-            <span className="h-px flex-1 bg-foreground/20" aria-hidden />
-            <span className="flex items-center gap-2">
-              <CalendarDays className="size-3.5" aria-hidden />
-              {journey.timeframe}
-            </span>
-          </div>
-          <div className="space-y-4">
-            <h3 className="font-display text-3xl uppercase tracking-[0.18em] text-foreground">
-              {journey.title}
-            </h3>
-            <p className="max-w-2xl text-sm leading-relaxed text-foreground/75">
-              {journey.summary}
-            </p>
-          </div>
+      <div className="ease-[cubic-bezier(0.22,1,0.36,1)] pointer-events-none absolute inset-0 bg-black/55 transition-colors duration-500 group-hover:bg-black/40" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-36 bg-[linear-gradient(to_bottom,rgba(6,8,12,0.92)_0%,rgba(6,8,12,0.55)_60%,rgba(6,8,12,0)_100%)]" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[52%] bg-[linear-gradient(to_top,rgba(6,8,12,0.9)_0%,rgba(6,8,12,0.48)_58%,rgba(6,8,12,0)_100%)]" />
+      <div className="ease-[cubic-bezier(0.22,1,0.36,1)] relative z-20 mx-auto flex w-full max-w-4xl flex-col items-center justify-center gap-10 px-6 py-20 text-center text-white transition-transform duration-500 sm:px-10">
+        <div className="flex flex-wrap items-center justify-center gap-4 text-[11px] uppercase tracking-[0.32em] text-white/75 drop-shadow-[0_8px_18px_rgba(0,0,0,0.55)]">
+          <span className="flex items-center gap-2">
+            <MapPin className="size-3.5" aria-hidden />
+            {journey.locale}
+          </span>
+          <span className="hidden h-px w-16 bg-white/35 sm:block" aria-hidden />
+          <span className="flex items-center gap-2">
+            <CalendarDays className="size-3.5" aria-hidden />
+            {journey.timeframe}
+          </span>
         </div>
-        <div className="flex flex-wrap items-center gap-3">
-          <ul className="flex flex-wrap gap-3">
-            {journey.highlights.slice(0, 3).map((highlight) => (
-              <li
-                key={highlight}
-                className="flex items-center gap-2 rounded-full border border-foreground/25 bg-white/70 px-4 py-2 text-[11px] uppercase tracking-[0.32em] text-foreground/70"
-              >
-                <Sparkles className="size-3.5" aria-hidden />
-                <span>{highlight}</span>
-              </li>
-            ))}
-          </ul>
-          <Button
-            asChild
-            variant="secondary"
-            className="ml-auto rounded-full border border-foreground/40 bg-foreground/90 px-8 py-3 text-[11px] uppercase tracking-[0.4em] text-white hover:bg-foreground"
+        <div className="max-w-3xl space-y-5 text-center">
+          <SplitText
+            text={journey.title}
+            tag="h3"
+            splitType="words"
+            className="font-title text-4xl uppercase tracking-[0.16em] text-white drop-shadow-[0_28px_60px_rgba(0,0,0,0.7)] sm:text-[2.9rem]"
+            textAlign="center"
+          />
+          <p className="text-sm leading-relaxed text-white/85 drop-shadow-[0_12px_32px_rgba(0,0,0,0.55)] sm:text-base">
+            {journey.summary}
+          </p>
+        </div>
+        <Button
+          asChild
+          className="group relative inline-flex items-center justify-center gap-4 overflow-hidden rounded-full border border-white/55 bg-white/10 px-16 py-5 font-display text-[11px] uppercase tracking-[0.5em] text-white transition-colors duration-300 [transition-timing-function:var(--bee-ease)] hover:border-white hover:bg-white/15 focus-visible:ring-[#f6c452]/35"
+        >
+          <Link
+            href={`/journeys/${journey.slug}`}
+            className="relative inline-flex items-center justify-center gap-4"
           >
-            <Link href={`/journeys/${journey.slug}`}>Open journey</Link>
-          </Button>
-        </div>
+            <span
+              aria-hidden
+              className="pointer-events-none absolute inset-0 z-0 -translate-x-full bg-gradient-to-r from-transparent via-[#f6c452bf] to-transparent opacity-0 transition-transform duration-500 group-hover:translate-x-full group-hover:opacity-100"
+            />
+            <span className="relative z-10">Open Journey</span>
+          </Link>
+        </Button>
       </div>
     </article>
   );
@@ -87,9 +84,9 @@ function JourneyCard({ journey }: { journey: JourneyShowcase }) {
 
 function CampaignCard({ campaign }: { campaign: CampaignShowcase }) {
   return (
-    <article className="bg-white/14 group relative overflow-hidden rounded-xl shadow-[0_40px_120px_-60px_rgba(26,35,58,0.55)] backdrop-blur-xl">
+    <article className="group relative isolate flex min-h-[806px] w-full items-center justify-center overflow-hidden">
       <video
-        className="absolute inset-0 size-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+        className="ease-[cubic-bezier(0.22,1,0.36,1)] absolute inset-0 size-full object-cover transition-[transform,opacity] duration-700"
         autoPlay
         muted
         loop
@@ -98,57 +95,60 @@ function CampaignCard({ campaign }: { campaign: CampaignShowcase }) {
       >
         <source src={campaign.hero.src} />
       </video>
-      <div className="absolute inset-0 bg-gradient-to-br from-white/65 via-white/20 to-transparent" />
-      <div className="relative z-10 flex h-full flex-col justify-between gap-8 p-10 text-foreground">
-        <div className="space-y-5">
-          <div className="flex flex-wrap items-center gap-4 text-xs uppercase tracking-[0.4em] text-foreground/65">
-            <span className="flex items-center gap-2">
-              <MapPin className="size-3.5" aria-hidden />
-              {campaign.destination}
-            </span>
-            <span className="h-px flex-1 bg-foreground/20" aria-hidden />
-            <span className="flex items-center gap-2">
-              <Clapperboard className="size-3.5" aria-hidden />
-              {campaign.hero.caption}
-            </span>
-          </div>
-          <div className="space-y-4">
-            <h3 className="font-display text-3xl uppercase tracking-[0.18em] text-foreground">
-              {campaign.title}
-            </h3>
-            <p className="max-w-2xl text-sm leading-relaxed text-foreground/75">
-              {campaign.summary}
-            </p>
-          </div>
+      <div className="ease-[cubic-bezier(0.22,1,0.36,1)] pointer-events-none absolute inset-0 bg-black/55 transition-colors duration-500 group-hover:bg-black/40" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-36 bg-[linear-gradient(to_bottom,rgba(6,8,12,0.92)_0%,rgba(6,8,12,0.55)_60%,rgba(6,8,12,0)_100%)]" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[52%] bg-[linear-gradient(to_top,rgba(6,8,12,0.9)_0%,rgba(6,8,12,0.48)_58%,rgba(6,8,12,0)_100%)]" />
+      <div className="ease-[cubic-bezier(0.22,1,0.36,1)] relative z-20 mx-auto flex w-full max-w-4xl flex-col items-center justify-center gap-10 px-6 py-20 text-center text-white transition-transform duration-500 sm:px-10">
+        <div className="flex flex-wrap items-center justify-center gap-4 text-[11px] uppercase tracking-[0.32em] text-white/75 drop-shadow-[0_8px_18px_rgba(0,0,0,0.55)]">
+          <span className="flex items-center gap-2">
+            <MapPin className="size-3.5" aria-hidden />
+            {campaign.destination}
+          </span>
+          <span className="hidden h-px w-16 bg-white/35 sm:block" aria-hidden />
+          <span className="flex items-center gap-2">
+            <Clapperboard className="size-3.5" aria-hidden />
+            {campaign.headline}
+          </span>
         </div>
-        <div className="flex flex-wrap items-center gap-3">
-          <ul className="flex flex-wrap gap-3">
-            {campaign.highlights.slice(0, 3).map((highlight) => (
-              <li
-                key={highlight}
-                className="flex items-center gap-2 rounded-full border border-foreground/25 bg-white/70 px-4 py-2 text-[11px] uppercase tracking-[0.32em] text-foreground/70"
-              >
-                <Sparkles className="size-3.5" aria-hidden />
-                <span>{highlight}</span>
-              </li>
-            ))}
-          </ul>
-          <Button
-            asChild
-            variant="secondary"
-            className="ml-auto rounded-full border border-foreground/40 bg-foreground/90 px-8 py-3 text-[11px] uppercase tracking-[0.4em] text-white hover:bg-foreground"
+        <div className="max-w-3xl space-y-5 text-center">
+          <SplitText
+            text={campaign.title}
+            tag="h3"
+            splitType="words"
+            className="font-title text-4xl uppercase tracking-[0.16em] text-white drop-shadow-[0_28px_60px_rgba(0,0,0,0.7)] sm:text-[2.9rem]"
+            textAlign="center"
+          />
+          <p className="text-sm leading-relaxed text-white/85 drop-shadow-[0_12px_32px_rgba(0,0,0,0.55)] sm:text-base">
+            {campaign.summary}
+          </p>
+        </div>
+        <Button
+          asChild
+          className="group relative inline-flex items-center justify-center gap-4 overflow-hidden rounded-full border border-white/55 bg-white/10 px-16 py-5 font-display text-[11px] uppercase tracking-[0.5em] text-white transition-colors duration-300 [transition-timing-function:var(--bee-ease)] hover:border-white hover:bg-white/15 focus-visible:ring-[#f6c452]/35"
+        >
+          <Link
+            href={`/campaigns/${campaign.slug}`}
+            className="relative inline-flex items-center justify-center gap-4"
           >
-            <Link href={`/campaigns/${campaign.slug}`}>Open campaign</Link>
-          </Button>
-        </div>
+            <span
+              aria-hidden
+              className="pointer-events-none absolute inset-0 z-0 -translate-x-full bg-gradient-to-r from-transparent via-[#f6c452bf] to-transparent opacity-0 transition-transform duration-500 group-hover:translate-x-full group-hover:opacity-100"
+            />
+            <span className="relative z-10">Open Campaign</span>
+          </Link>
+        </Button>
       </div>
     </article>
   );
 }
 
 export default async function Home() {
-  const conceptSections = await getConceptNarrative();
-  const highlightedConcepts = conceptSections.slice(0, 3);
+  const supabase = await getSupabaseServerClient();
+  const {
+    data: { session },
+    error: sessionError,
+  } = await supabase.auth.getSession();
+  const coCreateHref = !sessionError && session ? '/journeys' : '/login';
 
   const alternatingShowcases: ShowcaseEntry[] = [];
 
@@ -163,205 +163,175 @@ export default async function Home() {
       });
     }
   });
-
-  const heroStats = [
+  const whatWeDoEntries: WhatWeDoSectionProps['entries'] = [
     {
-      icon: Wand2,
-      label: 'Creative production agency + digital platform',
+      id: 'campaign-capsules',
+      label: 'Campaign tales',
+      icon: 'users',
+      title: 'Campaign tales tailored for each brand',
+      description:
+        'We choreograph dawn-to-midnight rituals so every brand drifts through its own dreamscape. Hero films, lookbooks, and ethereal loops return ready to bloom across every channel.',
+      highlights: [
+        'Up to three brands float within one crew without crossing storylines',
+        'Still and motion squads orbit between mood-soaked sets',
+        'Editorial, lookbook, and behind-the-scenes captured within a single journey',
+      ],
+      media: {
+        type: 'image',
+        src: '/assets/campaigns/craie-maroc/craie-maroc-gallery-04.jpg',
+        alt: 'Nomad tent portrait from the Craie Studio Atlas Mirage campaign',
+      },
     },
     {
-      icon: Users,
-      label: 'Co-travel journeys pooling 3-4 complementary maisons',
+      id: 'journey-direction',
+      label: 'Journey direction',
+      icon: 'clapperboard',
+      title: 'Journeys directed like cinematic worlds',
+      description:
+        'We choreograph roaming ateliers where scouting, styling, and story beats move as one tide. Crews share the logistics constellation while each brand guards its own creative cosmos.',
+      highlights: [
+        'Immersive itineraries mapped for film, editorial, and experiential content',
+        'Directors, DOPs, stylists, and sound designers devoted to each brand',
+        'Shared production village with lighting, grip, and styling inventories',
+      ],
+      media: {
+        type: 'video',
+        src: '/assets/campaigns/almaaz-kenya/almaaz-kenya-story.mp4',
+        alt: 'Night ritual for Almaaz Kenya captured in the savannah',
+        poster: '/assets/campaigns/almaaz-kenya/almaaz-kenya-cover.jpg',
+      },
     },
     {
-      icon: Leaf,
-      label: 'Shared logistics that lower cost and carbon impact',
+      id: 'impact-delivery',
+      label: 'Impact & delivery',
+      icon: 'leaf',
+      title: 'Impact lab and delivery suite built in',
+      description:
+        'Impact storytellers trace footprint reductions and community stardust alongside every frame. The harvest becomes shoppable, press-ready, and investor-sparking toolkits.',
+      highlights: [
+        'Carbon, community, and hospitality reporting templated for brands',
+        'Shared resource ledger keeps budgets transparent in real time',
+        'Launch decks, microsites, and asset libraries delivered within 10 days',
+      ],
+      media: {
+        type: 'image',
+        src: '/assets/journeys/philippines/philippines-gallery-07.png',
+        alt: 'Jungle cinema installation from the Philippines journey',
+      },
     },
   ];
 
-  const overviewHighlights = [
-    {
-      icon: Sparkles,
-      title: 'What Beeyondtheworld is',
-      description:
-        'Beeyondtheworld is a creative production agency and digital platform for fashion and lifestyle brands. We choreograph immersive trips and return with campaign-ready motion and stills.',
-      bullets: [
-        'Creative direction, production, and digital delivery united in one atelier',
-        'Destinations curated for storytelling, hospitality, and local resonance',
-      ],
-    },
-    {
-      icon: Users,
-      title: 'The co-travel difference',
-      description:
-        'We pool several non-competing maisons on the same journey. Each brand receives its own art direction while sharing logistics, crew, talents, and infrastructure.',
-      bullets: [
-        'Economies of scale across flights, accommodation, equipment, and teams',
-        'Distinct creative capsules for every maison�no narrative overlap',
-        'Think Uber Pool for fashion productions: smarter, leaner, more collaborative',
-      ],
-    },
-    {
-      icon: Leaf,
-      title: 'Why it matters',
-      description:
-        'Budgets are tightening while CSR commitments grow. Co-travel helps maisons deliver luxury storytelling with measurable sustainability impact.',
-      bullets: [
-        'Lower carbon footprint through shared logistics and regenerative partners',
-        'CSR documentation and impact reporting built into every journey',
-        'Premium output�films, photos, experiential lore�at reduced cost',
-      ],
-    },
+  const whatWeDoDeliverables = [
+    'Hero film edits',
+    'Lookbook & e-comm stills',
+    'BTS & soundscapes',
+    'Impact reporting suite',
+    'Talent casting & styling',
+    'Community reinvestment ledger',
+    'Launch microsites',
+    'CRM-ready asset library',
   ];
-
-  const platformColumns = [
-    {
-      icon: Globe,
-      title: 'Public showroom',
-      description:
-        'The front door of the platform attracts new maisons. It presents immersive hero films, alternating journey teasers, delivered campaigns, and the co-travel philosophy.',
-      bullets: [
-        'Homepage: cinematic hero loop with journeys and campaigns in rotation',
-        'Campaigns: produced work with motion-first galleries and credits',
-        'Concept: the co-travel model, CSR commitments, and impact pillars',
-        'Contact: glassmorphic form to open new collaborations',
-      ],
-    },
-    {
-      icon: Lock,
-      title: 'Private client portal',
-      description:
-        'Existing clients sign in to explore the journeys curated for them, review logistics, and export decks in branded PDF format.',
-      bullets: [
-        'Login: secure access with immersive background loops',
-        'Dashboard: horizontal carousel of upcoming journeys with filters',
-        'Journey sheets: interactive sections covering art direction, logistics, and budgets',
-        'PDF export: maison-ready deck for internal alignment',
-      ],
-    },
-  ];
-
-  const beeNarrative = {
-    title: 'Why the bee guides us',
-    description:
-      'Bees travel from flower to flower, gathering raw nectar and transforming it into honey. We move from destination to destination, collect cultural and natural inspiration, and shape it into high-value campaign content.',
-    bullets: [
-      'The journeys are our pollination flights�each stop adds new flavour and insight',
-      'The creative teams are the hive where narratives are blended and refined',
-      'The final deliverables�films, photos, experiential lore�are the honey we share with maisons',
-    ],
-  };
 
   return (
     <main className="flex flex-col">
-      <section className="relative flex min-h-screen flex-col justify-end overflow-hidden px-6 pb-24 pt-24 text-white sm:px-10 lg:px-20">
-        <video className="absolute inset-0 size-full object-cover" autoPlay muted loop playsInline>
+      <section className="relative isolate flex min-h-[92svh] flex-col justify-end overflow-hidden text-white">
+        <video
+          className="absolute inset-0 z-0 h-full w-full object-cover"
+          autoPlay
+          muted
+          loop
+          playsInline
+        >
           <source src={heroVideoSrc} />
         </video>
-        <div className="absolute inset-x-0 top-0 h-2/3 bg-gradient-to-b from-black/85 via-black/45 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-white/15" />
-        <div className="relative z-10 max-w-4xl space-y-12">
-          <p className="flex items-center gap-2 text-xs uppercase tracking-[0.45em] text-white/70">
-            <Wand2 className="size-4" aria-hidden /> Beeyondtheworld Atelier
-          </p>
-          <SplitText
-            text="Co-travel productions for fashion and lifestyle maisons"
-            tag="h1"
-            splitType="words, chars"
-            className="font-display text-5xl uppercase leading-tight tracking-[0.18em] text-white sm:text-6xl"
-            textAlign="left"
-          />
-          <p className="text-white/82 max-w-2xl text-sm leading-relaxed">
-            Beeyondtheworld is a creative production agency and digital platform. We script
-            immersive journeys, pool non-competing maisons on each co-travel, and deliver
-            campaign-ready films and photos with shared logistics, lower footprint, and richer
-            storytelling.
-          </p>
+        <div className="relative z-20 flex flex-col gap-8 px-6 pb-32 pt-24 sm:px-10 lg:px-20">
+          <div className="max-w-3xl space-y-6">
+            <p className="flex items-center gap-2 text-xs uppercase tracking-[0.45em] text-white/80 drop-shadow-[0_3px_12px_rgba(0,0,0,0.65)]">
+              <Wand2 className="size-4" aria-hidden /> Beeyondtheworld Atelier
+            </p>
+            <SplitText
+              text="Co-travel dreamcraft for fashion and lifestyle brands"
+              tag="h1"
+              splitType="words, chars"
+              className="font-title text-5xl uppercase leading-tight tracking-[0.18em] text-white drop-shadow-[0_12px_32px_rgba(0,0,0,0.55)] sm:text-6xl"
+              textAlign="left"
+            />
+            <p className="max-w-2xl text-sm leading-relaxed text-white/85 drop-shadow-[0_6px_20px_rgba(0,0,0,0.55)]">
+              Beeyondtheworld whispers dreamlike production tales. We weave non-competing brands
+              into shared journeys, letting them share the same wind, crews, and glow while their
+              stories stay singular and luminous.
+            </p>
+          </div>
           <div className="flex flex-wrap items-center gap-6">
             <Button
               asChild
-              className="rounded-full border border-white/65 bg-white/85 px-10 py-5 font-display text-[11px] uppercase tracking-[0.45em] text-foreground hover:bg-white"
+              className="group relative inline-flex items-center justify-center gap-4 overflow-hidden rounded-full border border-white/55 bg-white/10 px-16 py-5 font-display text-[11px] uppercase tracking-[0.5em] text-white transition-colors duration-300 [transition-timing-function:var(--bee-ease)] hover:border-white hover:bg-white/15 focus-visible:ring-[#f6c452]/35"
             >
-              <Link href="mailto:hello@beeyondtheworld.com?subject=Co-create%20a%20journey">
-                Co-create a journey
+              <Link
+                href={coCreateHref}
+                className="relative inline-flex items-center justify-center gap-4"
+              >
+                <span
+                  aria-hidden
+                  className="pointer-events-none absolute inset-0 z-0 -translate-x-full bg-gradient-to-r from-transparent via-[#f6c452bf] to-transparent opacity-0 transition-transform duration-500 group-hover:translate-x-full group-hover:opacity-100"
+                />
+                <span className="relative z-10">Co-create a journey</span>
               </Link>
             </Button>
-            <span className="flex items-center gap-2 text-[11px] uppercase tracking-[0.4em] text-white/70">
-              <Compass className="size-4" aria-hidden /> Scroll to discover
-            </span>
-          </div>
-          <div className="flex flex-wrap gap-4 text-sm text-white/80">
-            {heroStats.map((stat) => (
-              <span
-                key={stat.label}
-                className="bg-white/12 flex items-center gap-3 rounded-full border border-white/35 px-5 py-3"
+            <Button
+              asChild
+              className="group relative inline-flex items-center justify-center gap-4 overflow-hidden rounded-full border border-white/45 bg-white/10 px-16 py-5 font-display text-[11px] uppercase tracking-[0.5em] text-white transition-colors duration-300 [transition-timing-function:var(--bee-ease)] hover:border-white hover:bg-white/15 focus-visible:ring-[#f6c452]/35"
+            >
+              <Link
+                href="/concept"
+                className="relative inline-flex items-center justify-center gap-4"
               >
-                <stat.icon className="size-4" aria-hidden />
-                <span className="text-xs uppercase tracking-[0.35em]">{stat.label}</span>
-              </span>
-            ))}
+                <span
+                  aria-hidden
+                  className="pointer-events-none absolute inset-0 z-0 -translate-x-full bg-gradient-to-r from-transparent via-[#f6c452bf] to-transparent opacity-0 transition-transform duration-500 group-hover:translate-x-full group-hover:opacity-100"
+                />
+                <span className="relative z-10">Discover the concept</span>
+              </Link>
+            </Button>
           </div>
+        </div>
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-[18svh] bg-[linear-gradient(to_bottom,rgba(253,249,238,0)_0%,rgba(253,249,238,0)_40%,rgba(253,249,238,0.32)_68%,#fdf9ee_100%)] backdrop-blur-[2.5px] sm:h-[20svh] sm:backdrop-blur-[4px] lg:h-[22svh]"
+        />
+        <div className="absolute bottom-12 left-1/2 z-20 flex -translate-x-1/2 items-center gap-2 text-[11px] uppercase tracking-[0.4em] text-white/75">
+          <Compass className="size-4" aria-hidden />
+          <span>Scroll to discover</span>
         </div>
       </section>
 
-      <section className="bg-gradient-to-b from-white via-stone-50 to-white px-6 py-24 sm:px-10 lg:px-20">
-        <GlowTitle
-          eyebrow="What we do"
-          title={
-            <SplitText
-              text="Creative productions shared across co-travels"
-              tag="h2"
-              splitType="words"
-              className="font-display text-4xl uppercase leading-[1.1] text-foreground sm:text-5xl md:text-6xl"
-              textAlign="left"
-            />
-          }
-          description="Every journey is curated so multiple maisons can travel together, share logistics, and leave with campaign-ready films and photos tailored to their world."
-          align="left"
-          glowTone="dawn"
-        />
-        <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
-          {overviewHighlights.map((point) => {
-            const Icon = point.icon;
-            return (
-              <div
-                key={point.title}
-                className="flex h-full flex-col gap-4 rounded-2xl border border-foreground/15 bg-white/80 p-6 text-foreground shadow-[0_30px_120px_-70px_rgba(24,32,56,0.65)]"
-              >
-                <div className="flex items-center gap-3">
-                  <span className="flex size-11 items-center justify-center rounded-full border border-foreground/20 bg-white/80">
-                    <Icon className="size-5" aria-hidden />
-                  </span>
-                  <h3 className="font-display text-lg uppercase tracking-[0.28em]">
-                    {point.title}
-                  </h3>
-                </div>
-                <p className="text-sm leading-relaxed text-foreground/75">{point.description}</p>
-                {point.bullets ? (
-                  <ul className="space-y-2 text-sm text-foreground/65">
-                    {point.bullets.map((item) => (
-                      <li key={item} className="flex items-start gap-3">
-                        <span className="mt-1 size-1.5 rounded-full bg-foreground/25" aria-hidden />
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                ) : null}
-              </div>
-            );
-          })}
-        </div>
-      </section>
+      <WhatWeDoSection
+        eyebrow="What we do"
+        title={
+          <SplitText
+            text="Creative productions shared across co-travels"
+            tag="h2"
+            splitType="words"
+            className="font-title text-4xl uppercase leading-[1.1] text-foreground sm:text-5xl md:text-6xl"
+            textAlign="center"
+          />
+        }
+        description="Journeys breathe like roaming ateliers: brands co-create cinematic tales, share resources, and sail home with launch-ready magic."
+        entries={whatWeDoEntries}
+        deliverables={whatWeDoDeliverables}
+      />
 
-      <section className="flex flex-col gap-14 bg-gradient-to-b from-white via-white to-stone-100 px-6 py-24 sm:px-10 lg:px-20">
-        <GlowTitle
-          eyebrow="Journeys & campaigns"
-          title="Explore the residencies and films ready for maisons"
-          description="Alternating cards reveal the essence of each programme. Click through to open the full sheet with itineraries, credits and immersive galleries."
-          align="left"
-          glowTone="dawn"
-        />
-        <div className="flex flex-col gap-12">
+      <section className="flex flex-col gap-14 bg-gradient-to-b from-white via-white to-stone-100 pb-0 pt-24">
+        <div className="px-6 text-center sm:px-10 lg:px-20">
+          <GlowTitle
+            eyebrow="Journeys & campaigns"
+            title="Explore the journeys and films awaiting brands"
+            description="Alternating cards unveil the pulse of each tale. Drift inside to open dream-sheets with itineraries, credits, and immersive galleries."
+            align="center"
+            glowTone="dawn"
+          />
+        </div>
+        <div className="flex flex-col">
           {alternatingShowcases.map((entry) =>
             entry.kind === 'journey' ? (
               <JourneyCard key={entry.id} journey={entry.journey} />
@@ -372,130 +342,91 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="px-6 py-24 sm:px-10 lg:px-20">
-        <GlowTitle
-          eyebrow="Platform"
-          title={
-            <SplitText
-              text="One showroom, one private client portal"
-              tag="h2"
-              splitType="words"
-              className="font-display text-4xl uppercase leading-[1.1] text-foreground sm:text-5xl md:text-6xl"
-              textAlign="left"
-            />
-          }
-          description="The public face attracts new maisons while the private side lets clients explore, align, and export their journeys."
-          align="left"
-          glowTone="honey"
-        />
-        <div className="mt-10 grid gap-8 lg:grid-cols-2">
-          {platformColumns.map((column) => {
-            const Icon = column.icon;
-            return (
-              <div
-                key={column.title}
-                className="flex h-full flex-col gap-4 rounded-2xl border border-foreground/15 bg-white/80 p-6 text-foreground shadow-[0_32px_120px_-70px_rgba(24,32,56,0.45)]"
-              >
-                <div className="flex items-center gap-3">
-                  <span className="bg-white/82 flex size-11 items-center justify-center rounded-full border border-foreground/20">
-                    <Icon className="size-5" aria-hidden />
-                  </span>
-                  <h3 className="font-display text-lg uppercase tracking-[0.28em]">
-                    {column.title}
-                  </h3>
-                </div>
-                <p className="text-sm leading-relaxed text-foreground/75">{column.description}</p>
-                <ul className="space-y-2 text-sm text-foreground/65">
-                  {column.bullets.map((item) => (
-                    <li key={item} className="flex items-start gap-3">
-                      <span className="mt-1 size-1.5 rounded-full bg-foreground/25" aria-hidden />
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            );
-          })}
-        </div>
-      </section>
-
-      <section className="px-6 py-20 sm:px-10 lg:px-20">
-        <div className="overflow-hidden rounded-3xl border border-foreground/15 bg-gradient-to-r from-amber-100 via-white to-amber-50/80 p-10 text-foreground shadow-[0_40px_140px_-80px_rgba(142,98,30,0.45)]">
-          <GlowTitle
-            eyebrow="Bee-inspired"
-            title={
-              <SplitText
-                text={beeNarrative.title}
-                tag="h2"
-                splitType="words"
-                className="font-display text-4xl uppercase leading-[1.1] text-foreground sm:text-5xl md:text-6xl"
-                textAlign="left"
-              />
-            }
-            description={beeNarrative.description}
-            align="left"
-            glowTone="honey"
-          />
-          <ul className="mt-8 space-y-3 text-sm text-foreground/70">
-            {beeNarrative.bullets.map((item) => (
-              <li key={item} className="flex items-start gap-3">
-                <span className="mt-1 size-1.5 rounded-full bg-foreground/25" aria-hidden />
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
-
-      <section className="relative flex min-h-screen flex-col justify-center overflow-hidden px-6 py-24 text-white sm:px-10 lg:px-20">
+      <section className="relative flex min-h-[70vh] flex-col justify-center overflow-hidden px-6 pb-28 pt-10 text-white sm:px-10 lg:px-20">
         <video className="absolute inset-0 size-full object-cover" autoPlay muted loop playsInline>
           <source src="/assets/concept/sustainable.mp4" />
         </video>
-        <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
-        <div className="relative z-10 space-y-14">
-          <GlowTitle
-            eyebrow="Concept framework"
-            title="Sustainability laced into every production"
-            description="From low-impact travel design to regenerative give-back, the concept framework keeps each activation honest and future ready."
-            align="center"
-            glowTone="honey"
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-[#101b24]/85 via-[#101b24]/45 to-transparent sm:h-28 lg:h-36" />
+        <div className="absolute inset-0 bg-black/65 backdrop-blur-sm" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-b from-transparent via-[#fdf9ee]/25 to-[#fdf9ee] backdrop-blur-[3px] sm:h-32 lg:h-36" />
+        <div className="relative z-10 mx-auto flex max-w-3xl flex-col items-center gap-8 text-center">
+          <span className="font-display text-xs uppercase tracking-[0.4em] text-white/65">
+            Concept teaser
+          </span>
+          <SplitText
+            text="Dream-sustained by design, luminous in delivery"
+            tag="h2"
+            splitType="words"
+            className="font-title text-4xl uppercase leading-[1.1] text-white sm:text-5xl"
+            textAlign="center"
           />
-          <div className="grid gap-8 lg:grid-cols-3">
-            {highlightedConcepts.map((section) => (
-              <div
-                key={section.id}
-                className="flex h-full flex-col gap-6 rounded-[28px] border border-white/25 bg-white/10 p-9 text-white backdrop-blur-xl"
-              >
-                <div className="space-y-3">
-                  <p className="flex items-center gap-2 font-display text-xs uppercase tracking-[0.4em] text-white/70">
-                    <Sparkles className="size-4" aria-hidden /> {section.title}
-                  </p>
-                  <p className="font-display text-2xl uppercase tracking-[0.18em] text-white">
-                    {section.description}
-                  </p>
-                </div>
-                {section.bulletPoints ? (
-                  <ul className="space-y-3 text-sm text-white/75">
-                    {section.bulletPoints.map((point) => (
-                      <li key={point} className="flex items-start gap-3">
-                        <span className="mt-1 size-1.5 rounded-full bg-white/50" aria-hidden />
-                        <span>{point}</span>
-                      </li>
-                    ))}
-                  </ul>
-                ) : null}
-                <Button
-                  asChild
-                  variant="ghost"
-                  className="mt-auto inline-flex items-center gap-2 self-start px-0 font-display text-[11px] uppercase tracking-[0.4em] text-white hover:text-white"
-                >
-                  <Link href={`/concept#${section.id}`}>Deep dive</Link>
-                </Button>
-              </div>
-            ))}
-          </div>
+          <p className="text-center text-base leading-relaxed text-white/75">
+            Journeys follow a three-part spell that softens footprint, heals destinations, and
+            leaves every brand with transparent, heart-lit proof.
+          </p>
+          <Button
+            asChild
+            className="group relative inline-flex items-center justify-center gap-4 overflow-hidden rounded-full border border-white/55 bg-white/10 px-16 py-5 font-display text-[11px] uppercase tracking-[0.5em] text-white transition-colors duration-300 [transition-timing-function:var(--bee-ease)] hover:border-white hover:bg-white/15 focus-visible:ring-[#f6c452]/35"
+          >
+            <Link href="/concept">Explore the concept</Link>
+          </Button>
         </div>
       </section>
+      <footer className="bg-[#fdf9ee] px-6 py-16 sm:px-10 lg:px-20">
+        <div className="mx-auto flex max-w-6xl flex-col gap-8 border-t border-[#efc070]/30 pt-10">
+          <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+            <p className="font-display text-xs uppercase tracking-[0.4em] text-foreground/60">
+              Beeyondtheworld
+            </p>
+            <nav className="flex flex-wrap gap-6 text-xs uppercase tracking-[0.35em] text-foreground/70">
+              <Link href="/" className="transition hover:text-foreground">
+                Home
+              </Link>
+              <Link href="/concept" className="transition hover:text-foreground">
+                Concept
+              </Link>
+              <Link href="/journeys" className="transition hover:text-foreground">
+                Journeys
+              </Link>
+              <Link href="/campaigns" className="transition hover:text-foreground">
+                Campaigns
+              </Link>
+              <Link href="/contact" className="transition hover:text-foreground">
+                Contact
+              </Link>
+            </nav>
+          </div>
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <span className="text-xs uppercase tracking-[0.35em] text-foreground/45">
+              Follow the journey
+            </span>
+            <div className="flex items-center gap-4">
+              <Link
+                href="https://instagram.com/beeyondtheworld.co"
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex size-10 items-center justify-center rounded-full border border-[#efc070]/40 bg-white/70 text-foreground/70 transition hover:bg-white hover:text-foreground"
+              >
+                <Instagram className="size-5" aria-hidden />
+                <span className="sr-only">Instagram</span>
+              </Link>
+              <Link
+                href="https://www.linkedin.com/company/beeyondtheworld"
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex size-10 items-center justify-center rounded-full border border-[#efc070]/40 bg-white/70 text-foreground/70 transition hover:bg-white hover:text-foreground"
+              >
+                <Linkedin className="size-5" aria-hidden />
+                <span className="sr-only">LinkedIn</span>
+              </Link>
+            </div>
+          </div>
+          <div className="flex flex-col gap-2 text-xs uppercase tracking-[0.35em] text-foreground/35 md:flex-row md:items-center md:justify-between">
+            <span>Copyright {new Date().getFullYear()} Beeyondtheworld</span>
+            <span>Co-travel dreamcraft for brands</span>
+          </div>
+        </div>
+      </footer>
     </main>
   );
 }

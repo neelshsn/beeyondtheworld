@@ -4,7 +4,7 @@ export const clientJourneys: ClientJourney[] = [
   {
     id: 'journey-philippines-deep-blue',
     slug: 'philippines-deep-blue',
-    title: 'Philippines Deep Blue Residency',
+    title: 'Philippines Deep Blue Journey',
     country: 'Philippines',
     regionTags: ['Palawan', 'Siargao', 'Coron'],
     season: 'Fall Winter',
@@ -34,11 +34,11 @@ export const clientJourneys: ClientJourney[] = [
         id: 'catamaran-lab',
         title: 'CATAMARAN COLOR LAB',
         description:
-          'Daybreak palette workshops aboard the catamaran with textile artisans translating reef hues into maison swatches.',
+          'Daybreak palette workshops aboard the catamaran with textile artisans translating reef hues into brand swatches.',
         highlights: [
           'Floating atelier with regenerative textiles',
           'Analog projection tests on sails',
-          'Seaplane scouting for lagoon reveals',
+          'Carbon-tracked lagoon surveys for storyboard alignment',
         ],
         media: [
           {
@@ -100,7 +100,7 @@ export const clientJourneys: ClientJourney[] = [
     startDate: '2025-05-12',
     endDate: '2025-06-04',
     summary:
-      'Slow-living creative residency across Tramuntana fincas, cliffside sound baths, and sunset sail capsules for Mediterranean drops.',
+      'Slow-living dreamlike journey across Tramuntana fincas, cliffside sound baths, and sunset sail capsules for Mediterranean drops.',
     heroVideo: 'https://cdn.coverr.co/videos/coverr-sea-and-mountains-1080p.mp4',
     heroPoster: '/assets/journeys/mallorca/mallorca-gallery-06.png',
     moodboard: [
@@ -113,12 +113,12 @@ export const clientJourneys: ClientJourney[] = [
     deliverables: [
       'Hero film + 4 scenic loops',
       'Editorial still kit for press drop',
-      'Hospitality playbook for maison guests',
+      'Hospitality playbook for brand guests',
       'Sound bath audio stems',
     ],
     attachments: [
       {
-        label: 'Residency overview',
+        label: 'Journey overview',
         fileName: 'mallorca-journey-overview.pdf',
       },
     ],
@@ -193,7 +193,7 @@ export const clientJourneys: ClientJourney[] = [
     startDate: '2025-09-04',
     endDate: '2025-09-21',
     summary:
-      'An odyssey of sunrise caldera reveals, Klimata dinners, and dual-format filming delivering both campaign-grade assets and maison lore.',
+      'An odyssey of sunrise caldera reveals, Klimata dinners, and dual-format filming delivering both campaign-grade assets and brand lore.',
     heroVideo: 'https://cdn.coverr.co/videos/coverr-santorini-with-a-boat-1080p.mp4',
     heroPoster: '/assets/journeys/greece/greece-gallery-08.png',
     moodboard: [

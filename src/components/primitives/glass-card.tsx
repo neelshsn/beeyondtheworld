@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { Slot } from '@radix-ui/react-slot';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
@@ -10,6 +10,9 @@ const glowAccent = {
   honey: 'from-[#f0cc7b]/60 via-[#f6ede1]/30 to-transparent',
   umber: 'from-[#7b5433]/45 via-[#f6ede1]/25 to-transparent',
   dawn: 'from-[#f9e9d0]/55 via-[#f6ede1]/35 to-transparent',
+  rose: 'from-[#f6c4d0]/60 via-[#fdecef]/35 to-transparent',
+  peach: 'from-[#ffd8b2]/55 via-[#fff1e3]/35 to-transparent',
+  lilac: 'from-[#d7c8ff]/55 via-[#f0eaff]/35 to-transparent',
 };
 
 type GlowAccentKey = keyof typeof glowAccent;
@@ -35,8 +38,10 @@ export function GlassCard({
   const rotateY = useSpring(0, { stiffness: 200, damping: 15 });
   const x = useMotionValue(0);
   const y = useMotionValue(0);
-  const glowOpacity = useTransform([x, y], ([latestX, latestY]) => {
-    return Math.min(0.8, Math.max(0.35, (Math.abs(latestX) + Math.abs(latestY)) / 220));
+  const glowOpacity = useTransform<[number, number], number>([x, y], ([latestX, latestY]) => {
+    const xValue = typeof latestX === 'number' ? latestX : 0;
+    const yValue = typeof latestY === 'number' ? latestY : 0;
+    return Math.min(0.8, Math.max(0.35, (Math.abs(xValue) + Math.abs(yValue)) / 220));
   });
 
   return (
@@ -65,7 +70,7 @@ export function GlassCard({
       <motion.div
         style={{ rotateX, rotateY }}
         animate={floating ? { y: [0, -8, 0] } : undefined}
-        transition={floating ? { duration: 6, repeat: Infinity, ease: 'easeInOut' } : undefined}
+        transition={floating ? { duration: 6, repeat: Infinity } : undefined}
         className="relative"
       >
         <Comp

@@ -44,25 +44,25 @@ export const journeyShowcases: JourneyShowcase[] = [
   {
     id: 'philippines',
     slug: 'philippines',
-    title: 'Philippines Deep Blue Residency',
-    headline: 'A floating creative camp linking Palawan and Siargao.',
+    title: 'Philippines Turquoise Resort Journey',
+    headline: 'Resortwear dreamscapes across Palawan lagoons and Siargao palms.',
     locale: 'Palawan & Siargao',
     timeframe: 'October - November 2025',
     summary:
-      'A travelling atelier staged across turquoise lagoons, floating eco-lodges and indigenous workshops. The residency is built for maisons seeking sun-drenched storytelling with measurable reef impact.',
+      'A floating resortwear laboratory that sails through turquoise coves, coconut-lined sandbars, and reef sanctuaries. Maisons capture saturated sun stories while contributing to ocean regeneration.',
     story: [
-      'The residency embarks from a private catamaran base camp, drifting between crystal lagoons and remote sandbars. Morning scouting in seaplanes unlocks hidden coves while the crew prepares submerged lighting rigs for underwater cinema.',
-      'Afternoons blend textile collaborations with island makers and slow culinary rituals at sea. Evenings close with floating dinner scenography and live soundscapes recorded with guardians of the reef.',
+      'Mornings open on powder sandbars where models glide barefoot in resortwear while Steadicam crews wade knee-deep in crystal water. The catamaran doubles as a moving wardrobe with palm-dried fabrics swaying above deck.',
+      'Afternoons anchor beneath coconut trees for collaborative dye baths with island artisans, before twilight swims trace bioluminescent threads around the collection for the hero film.',
     ],
     highlights: [
-      'Seaplane scouting with banca tenders to hidden coves',
-      'Underwater cinema lab with reef-safe illumination',
-      'Floating dinner scenography with live island makers',
+      'Turquoise runway sequences with underwater tracking rigs',
+      'Coconut grove ateliers co-creating accessories with island makers',
+      'Night swim bioluminescence capture for the resortwear finale',
     ],
     logistics: [
-      'Catamaran base camp with 12 berths and modular styling space',
-      'Impact-certified reef teams handling citizen-science activations',
-      'On-board post suite for daily selects and mood drafts',
+      'Catamaran base camp with 12 berths, floating closet, and modular glam stations',
+      'Impact-certified reef teams guiding citizen-science activations for crews',
+      'On-board post suite delivering daily selects and palette decks',
     ],
     hero: {
       id: 'philippines-hero',
@@ -71,7 +71,7 @@ export const journeyShowcases: JourneyShowcase[] = [
       alt: 'Turquoise lagoon surrounded by limestone cliffs in Palawan',
       aspectRatio: 'landscape',
       caption: 'Secret lagoon recce, Palawan',
-      overlayLabel: 'Residency 01',
+      overlayLabel: 'Journey 01',
     },
     gallery: [
       {
@@ -131,20 +131,20 @@ export const journeyShowcases: JourneyShowcase[] = [
   {
     id: 'mallorca',
     slug: 'mallorca',
-    title: 'Mallorca Serra Studio',
-    headline: 'A hilltop creative residence breathing with Tramuntana light.',
+    title: 'Mallorca Iberian Light Studio',
+    headline: 'Iberian resortwear framed by Tramuntana cliffs and terracotta villages.',
     locale: 'Deia, Cala Figuera & Es Vedra',
     timeframe: 'May - June 2025',
     summary:
-      'Modernist fincas, restored sailboats and cliffside sound baths compose a slow-living residency built for Mediterranean capsule drops.',
+      'Modernist fincas, Balearic sailboats, and sun-baked plazas create an Iberian moodboard for brands chasing warm-light storytelling and artisanal detail.',
     story: [
-      'Each day starts with sunrise film runs through the olive terraces before the atelier opens inside a private finca. Craft sessions pair local ceramists with maison artisans to co-design tactile totems.',
-      'Afternoons sail around Es Vedra for 16mm coverage, while evenings settle into afterglow tastings guided by Michelin collaborators and live Balearic soundscapes.',
+      'Sunrise shoots weave through olive terraces with flamenco guitarists scoring slow pans before the atelier opens inside a private finca dressed in terracotta and linen.',
+      "Afternoons ride a vintage sailboat around Es Vedra for wind-brushed motion, then return to Deia's plazas for twilight tapas scenes that wrap each chapter in Iberian hospitality.",
     ],
     highlights: [
-      'Sunrise film runs through the olive terraces',
-      'Editorial sail around Es Vedra with 16mm coverage',
-      'Afterglow tasting pairing by Michelin guest chef',
+      'Golden-hour resortwear portraits in Tramuntana terraces',
+      'Es Vedra sailing sequences with steady 16mm capture',
+      'Iberian soundscapes and tapas rituals for intimate evening scenes',
     ],
     logistics: [
       'Three fincas with accommodation for 18 guests and crew',
@@ -158,7 +158,7 @@ export const journeyShowcases: JourneyShowcase[] = [
       alt: 'Es Vedra island shot from sailboat deck',
       aspectRatio: 'landscape',
       caption: 'Es Vedra sail recce',
-      overlayLabel: 'Residency 02',
+      overlayLabel: 'Journey 02',
     },
     gallery: [
       {
@@ -191,7 +191,7 @@ export const journeyShowcases: JourneyShowcase[] = [
         src: '/assets/journeys/mallorca/mallorca-gallery-09.png',
         alt: 'Lush Mallorcan villa courtyard with pool',
         aspectRatio: 'landscape',
-        caption: 'Creative residence courtyard',
+        caption: 'Creative sanctuary courtyard',
       },
       {
         id: 'mallorca-gallery-13',
@@ -218,20 +218,20 @@ export const journeyShowcases: JourneyShowcase[] = [
   {
     id: 'greece',
     slug: 'greece',
-    title: 'Cyclades Light Tale',
-    headline: 'An odyssey across Santorini terraces and Milos fishing villages.',
+    title: 'Cyclades Milos Odyssey',
+    headline: 'Cycladic resort tales floating between Santorini terraces and Milos boathouses.',
     locale: 'Santorini, Mykonos & Milos',
     timeframe: 'September 2025',
     summary:
-      'Sunrise openings in Oia, intimate dinners in Klima boathouses and dual-format filming deliver campaign assets and internal lore in one journey.',
+      "A blue-and-white narrative woven for brands craving Greek island escapism - from Oia's dawn light to Klima's fishermen docks and Milos' volcanic coves.",
     story: [
-      'We choreograph dawn reveals above the caldera before moving to private terraces transformed for fittings. Midday sessions focus on craft demonstrations in Milos boat houses while evenings shift to lantern-lit dinners.',
-      'A restored caique carries the crew between islands, doubling as a mobile production hub with live post and wardrobe support.',
+      "We open each day on Santorini rooftops where dresses catch the caldera breeze before sailing to Milos' Klima village for chromatic scenes inside the boat garages.",
+      'Sunset dinners unfold on the sand of Sarakiniko with lantern rigs reflecting off chalk cliffs, closing on Mykonos nights scored by bouzouki and electronic blends.',
     ],
     highlights: [
-      'Sunrise reveal above the caldera',
-      'Night portraits lit with bespoke lantern rig',
-      'Slow travel legs aboard restored caique',
+      'Caldera sunrise styling on private Santorini terraces',
+      'Milos syrmata boathouse sets bathed in pastel reflections',
+      'Sarakiniko night portraits lit with custom Cycladic lantern rig',
     ],
     logistics: [
       'Three island bases with 20 suites and backstage lounges',
@@ -245,7 +245,7 @@ export const journeyShowcases: JourneyShowcase[] = [
       alt: 'Santorini restaurant terrace at sunset',
       aspectRatio: 'landscape',
       caption: 'Tableau tasting setup',
-      overlayLabel: 'Residency 03',
+      overlayLabel: 'Journey 03',
     },
     gallery: [
       {
@@ -308,19 +308,19 @@ export const campaignShowcases: CampaignShowcase[] = [
   {
     id: 'maradji-ibiza',
     slug: 'maradji-ibiza',
-    title: 'Maradji - Sunset Routines in Ibiza',
+    title: 'Maradji - Salt Breeze Chapters',
     destination: 'Ibiza, Balearic Islands',
-    headline: 'Bohemian leather and silk captured in golden hour rituals across hidden calas.',
+    headline: 'Summer hat rituals carried by coastal nature and Balearic glow.',
     summary:
-      'Shot across four coves and a rooftop riad, the campaign fuses slow cinema with kinetic handheld sequences backed by a tactile live soundtrack.',
+      "Maradji's hand-crafted hats drift through Ibiza's shoulder season, pairing spring bloom palettes with sea-sprayed sunsets. The campaign feels like a coastal novella, stitching slow cinema with tactile field sound.",
     story: [
-      'We built a roaming production hub that shifted between coves, ensuring wardrobe, glam and post were always within reach. Each sequence captured the intimacy of sunset routines through hybrid drone and Super 8 coverage.',
-      'The finale unfolded on a rooftop riad where audio-reactive lights pulsed with a custom soundscape, delivering a visceral close to the film.',
+      'Dawn opens at Cala Salada where the crew choreographs hat silhouettes against turquoise tide lines; diffusion sails tame the breeze while Super 8 reels capture every gust lifting the brims.',
+      'Afternoons slide into pine groves and cliffside rooftops with live guitarists scoring the styling flow. Twilight closes around a beachfire where muses trade hats and whispered vows to keep summer energy alive.',
     ],
     highlights: [
-      'Hybrid drone plus Super 8 coverage',
-      'Sunset styling across four calas',
-      'Audio reactive light design for the finale',
+      'Sunrise hat choreography across hidden calas',
+      'Cliffside styling lab mixing straw, silk, and shell details',
+      'Live coastal soundtrack recorded for the hero edit',
     ],
     credits: [
       { role: 'Maison', value: 'Maradji' },
@@ -372,9 +372,9 @@ export const campaignShowcases: CampaignShowcase[] = [
       },
     ],
     impact: [
-      'Local creative crew of 18 talents',
-      'Soundtrack collaboration with Ibiza-based composer',
-      'Campaign delivered in 4 content suites (launch, social, BTS, retail)',
+      'Portion of production spend reinvested in Ibiza coastal preservation groups',
+      'Photo and film suites delivered in three summer-spring waves for retail, press, and socials',
+      'Field-recorded coastline soundtrack packaged for in-store ambience',
     ],
     cta: {
       label: 'Watch full film',
@@ -384,19 +384,19 @@ export const campaignShowcases: CampaignShowcase[] = [
   {
     id: 'almaaz-kenya',
     slug: 'almaaz-kenya',
-    title: 'Almaaz - Savannah Bloom in Kenya',
+    title: 'Almaaz - Wild Canopy Kenya',
     destination: 'Laikipia & Masai Mara',
-    headline: 'High jewellery staged between red earth plains and night-blooming acacia.',
+    headline: "High jewellery legends ignited inside Kenya's jungle and savannah night.",
     summary:
-      'A travelling studio mixing editorial film, documentary portraits and sonic textures recorded with local collectives.',
+      'Three muses - Lila from Paris, Ayanda from Johannesburg, and Veronica, the Kenyan talent we scouted on-site - carry Almaaz through a wild journey that honours local beauty and global craft.',
     story: [
-      'Days opened with helicopter scouting across the conservancy followed by tactile still-life tables shot on terracotta fabric. Dusk portraits leveraged mirrored light rigs to capture jewellery glow against the savannah.',
-      'Night sessions gathered storytellers around fireside circles to record soundscapes that anchor the immersive edit.',
+      'Daybreak opens beneath fever trees where Lila and Ayanda move through mist and birdsong while jewellery glows against deep green canopies. Tracking rigs hug the terrain so the camera feels animal and alive.',
+      "At dusk we hand the spotlight to Veronica, the Nairobi-born muse discovered during community casting. She leads a fireside rite that fuses Maasai percussion, Almaaz's new line, and her own words about opportunity.",
     ],
     highlights: [
-      'Dusk portraits with mirrored light rigs',
-      'Helicopter scouting across the conservancy',
-      'Night fireside sound recordings',
+      'Tri-continental casting bringing Paris, South Africa, and Kenya into one frame',
+      'Jungle sequences with organic lighting that breathes with the canopy',
+      'Fireside storytelling led by Veronica, the Kenyan muse we scouted in the conservancy',
     ],
     credits: [
       { role: 'Maison', value: 'Almaaz' },
@@ -456,9 +456,9 @@ export const campaignShowcases: CampaignShowcase[] = [
       },
     ],
     impact: [
-      '2 community cooperatives financed through campaign revenue share',
-      'Carbon-positive logistics across 7 shooting days',
-      'Deliverables packaged for retail, PR, and brand film',
+      'Campaign revenue funds mentorship stipends for Veronica and two Kenyan apprentices',
+      'Low-impact logistics audited with local conservation partners across seven shooting days',
+      'Deliverables split into wild story film, portrait gallery, and press-ready origin pieces',
     ],
     cta: {
       label: 'Request case study',
@@ -470,17 +470,17 @@ export const campaignShowcases: CampaignShowcase[] = [
     slug: 'craie-maroc',
     title: 'Craie Studio - Atlas Mirage',
     destination: 'Agafay Desert & Marrakech',
-    headline: 'Slow-crafted leather staged in mineral dunes and lantern-lit riads.',
+    headline: 'Leather reveries flowing between Agafay dunes and Marrakech villas.',
     summary:
-      'A five-day arc that moves from dawn dunes to night medina roofscapes, alternating Steadicam tracking with handheld poetry.',
+      'Berta from Spain and Malak from Morocco anchor a dynamic yet fashion-forward tale that flips between sun-baked desert tracks and lantern-lit riad salons for Craie Studio’s bags.',
     story: [
-      'We mapped dawn call times in the Agafay desert to capture long-lens mirage sequences with anamorphic glass. Midday, the action moved to a nomad tent for tactile still-life work and interviews.',
-      'Nights culminated on ochre medina rooftops where sound baths and lantern design shaped the atmospheric finale.',
+      'We begin at first light with Berta racing dune crests while Steadicam traces the bags in motion; a mobile villa base keeps wardrobe crisp before Malak takes over within a palm-filled patio for poised still-life chapters.',
+      'Twilight reunites both muses in a riad rooftop jam where Gnawa rhythms drive swinging camera moves, closing on an intimate bag ritual beside an artisan leather atelier.',
     ],
     highlights: [
-      'Mirage shoot with anamorphic lenses',
-      'Sound bath in a desert nomad tent',
-      'Nightfall lookbook in ochre medina',
+      'Twin-muse casting featuring Berta (Spain) and Malak (Morocco)',
+      'Villa-to-dune production flow keeping bags pristine in extreme conditions',
+      'Gnawa-infused rooftop finale merging fashion and movement',
     ],
     credits: [
       { role: 'Maison', value: 'Craie Studio' },
@@ -540,9 +540,9 @@ export const campaignShowcases: CampaignShowcase[] = [
       },
     ],
     impact: [
-      'Circular production plan with desert community partners',
-      'Hybrid film delivery (hero, BTS, sound bath audio drops)',
-      'Crew of 26 across Marrakech and Agafay',
+      'Joint atelier sessions with Marrakech leather collective documented for press kits',
+      'Hero film, lookbook stills, and motion loops delivered within ten days',
+      'Local crew pathway pairing Moroccan trainees with Spanish department heads',
     ],
     cta: {
       label: 'Discuss Atlas Mirage',

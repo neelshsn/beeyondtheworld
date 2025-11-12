@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import type { ClientJourney } from '@/types/client';
 
 interface DashboardProps {
@@ -29,6 +30,7 @@ export function ClientJourneyDashboard({ journeys }: DashboardProps) {
   const [budgetFilter, setBudgetFilter] = useState<string>('All');
   const [seasonFilter, setSeasonFilter] = useState<string>('All');
   const [activeJourneyId, setActiveJourneyId] = useState<string | null>(journeys[0]?.id ?? null);
+  const [hoveredJourneyId, setHoveredJourneyId] = useState<string | null>(null);
 
   const countryOptions = useMemo(
     () => ['All', ...new Set(journeys.map((journey) => journey.country))],
@@ -138,16 +140,30 @@ export function ClientJourneyDashboard({ journeys }: DashboardProps) {
         <div ref={scrollRef} className="relative flex gap-4 overflow-x-auto pb-4">
           {filteredJourneys.map((journey) => {
             const isActive = journey.id === activeJourneyId;
+            const isHovered = journey.id === hoveredJourneyId;
+            const isExpanded = isActive || isHovered;
             return (
               <button
                 key={journey.id}
                 type="button"
                 onClick={() => handleCardClick(journey)}
-                className={`bg-white/12 group relative flex min-w-[190px] flex-col overflow-hidden rounded-2xl border border-white/35 text-left shadow-[0_25px_90px_-70px_rgba(12,14,24,0.85)] transition-[transform,opacity] duration-300 hover:border-white/60 ${
-                  isActive ? 'min-w-[320px] lg:min-w-[360px] lg:scale-[1.02]' : 'opacity-85'
-                }`}
+                onMouseEnter={() => setHoveredJourneyId(journey.id)}
+                onMouseLeave={() => setHoveredJourneyId(null)}
+                onFocus={() => setHoveredJourneyId(journey.id)}
+                onBlur={() => setHoveredJourneyId(null)}
+                className={cn(
+                  'bg-white/12 group relative flex min-h-[260px] min-w-[190px] flex-col overflow-hidden rounded-2xl border border-white/35 text-left shadow-[0_25px_90px_-70px_rgba(12,14,24,0.85)] transition-all duration-300 hover:-translate-y-1 hover:border-white/60',
+                  isExpanded
+                    ? 'min-h-[460px] min-w-[300px] opacity-100 lg:min-h-[500px] lg:min-w-[360px] lg:scale-[1.02]'
+                    : 'opacity-85'
+                )}
               >
-                <div className="relative h-[160px] w-full overflow-hidden">
+                <div
+                  className={cn(
+                    'relative w-full overflow-hidden transition-all duration-500',
+                    isExpanded ? 'h-[260px]' : 'h-[160px]'
+                  )}
+                >
                   <Image
                     src={journey.heroPoster}
                     alt={journey.title}
@@ -168,7 +184,7 @@ export function ClientJourneyDashboard({ journeys }: DashboardProps) {
                   <h3 className="font-display text-lg uppercase tracking-[0.24em] text-white">
                     {journey.title}
                   </h3>
-                  {isActive ? (
+                  {isExpanded ? (
                     <>
                       <p className="text-sm text-white/80">{journey.summary}</p>
                       <div className="flex flex-wrap items-center gap-3 text-[11px] uppercase tracking-[0.32em] text-white/70">
@@ -190,7 +206,7 @@ export function ClientJourneyDashboard({ journeys }: DashboardProps) {
                       </div>
                     </>
                   ) : (
-                    <p className="text-xs text-white/70">Tap once to preview, twice to open.</p>
+                    <p className="text-xs text-white/70">Hover to preview, click to open.</p>
                   )}
                 </div>
               </button>

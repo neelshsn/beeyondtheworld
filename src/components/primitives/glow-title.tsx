@@ -11,7 +11,7 @@ const highlightVariants = {
     opacity: 1,
     y: 0,
     filter: 'blur(0px)',
-    transition: { duration: 0.7, ease: [0.19, 1, 0.22, 1] },
+    transition: { duration: 0.7 },
   },
 };
 
@@ -20,7 +20,7 @@ const descriptionVariants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { delay: 0.15, duration: 0.6, ease: 'easeOut' },
+    transition: { delay: 0.15, duration: 0.6 },
   },
 };
 
@@ -77,7 +77,7 @@ export function GlowTitle({
       <motion.h2
         variants={highlightVariants}
         className={cn(
-          'relative font-display text-4xl uppercase leading-[1.1] text-foreground sm:text-5xl md:text-6xl',
+          'relative font-title text-4xl uppercase leading-[1.1] text-foreground sm:text-5xl md:text-6xl',
           '[text-wrap:balance]'
         )}
       >

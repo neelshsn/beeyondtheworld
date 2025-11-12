@@ -1,18 +1,10 @@
-import Link from 'next/link';
 import type { Metadata } from 'next';
 
+import { Header } from '@/components/layout/Header';
 import { SupabaseProvider } from '@/components/providers/supabase-provider';
-import { adam, avenir, saintBartogenia } from '@/lib/fonts';
+import { love, adam, avenir, saintBartogenia } from '@/lib/fonts';
 import { getSupabaseServerClient } from '@/lib/supabase/server-client';
 import './globals.css';
-
-const NAV_LINKS = [
-  { href: '/', label: 'Home' },
-  { href: '/concept', label: 'Concept' },
-  { href: '/client', label: 'Client' },
-  { href: '/login', label: 'Login' },
-  { href: '/contact', label: 'Contact' },
-];
 
 export const metadata: Metadata = {
   title: 'Beeyondtheworld Platform',
@@ -41,7 +33,7 @@ export default async function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${adam.variable} ${avenir.variable} ${saintBartogenia.variable}`}
+      className={`${love.variable} ${adam.variable} ${avenir.variable} ${saintBartogenia.variable}`}
     >
       <body className="bg-background font-sans text-foreground">
         <SupabaseProvider initialSession={session}>
@@ -60,22 +52,7 @@ export default async function RootLayout({
               aria-hidden
             />
 
-            <header className="relative z-10 flex items-center justify-between px-6 py-6 sm:px-10 lg:px-16">
-              <Link href="/" className="font-display text-xs uppercase tracking-[0.45em]">
-                beeyondtheworld
-              </Link>
-              <nav className="flex flex-wrap justify-end gap-4 text-[11px] uppercase tracking-[0.4em] text-foreground/70">
-                {NAV_LINKS.map((link) => (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className="rounded-full border border-foreground/20 bg-white/50 px-4 py-2 hover:bg-white/80"
-                  >
-                    {link.label}
-                  </Link>
-                ))}
-              </nav>
-            </header>
+            <Header />
 
             <div className="relative z-10 flex-1">{children}</div>
           </div>

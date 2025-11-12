@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useMemo, useState } from 'react';
 import Image from 'next/image';
@@ -111,7 +111,7 @@ function ParallaxCard({ journey }: ParallaxCardProps) {
             month: 'short',
             day: 'numeric',
           })}
-          {' � '}
+          {' ï¿½ '}
           {new Date(journey.endDate).toLocaleDateString(undefined, {
             month: 'short',
             day: 'numeric',

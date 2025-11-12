@@ -2,8 +2,8 @@
 import type { ReadonlyRequestCookies } from 'next/dist/server/web/spec-extension/adapters/request-cookies';
 
 export const DEMO_AUTH_COOKIE = 'demo-auth';
-export const DEMO_EMAIL = process.env.NEXT_PUBLIC_DEMO_EMAIL ?? 'client@test.com';
-export const DEMO_PASSWORD = process.env.NEXT_PUBLIC_DEMO_PASSWORD ?? 'test';
+export const DEMO_EMAIL = process.env.NEXT_PUBLIC_DEMO_EMAIL ?? 'client@beeyondtheworld.com';
+export const DEMO_PASSWORD = process.env.NEXT_PUBLIC_DEMO_PASSWORD ?? 'client';
 
 function buildDemoSession(): Session {
   const now = Math.floor(Date.now() / 1000);

@@ -85,7 +85,7 @@ export function JourneyCarousel({ items, className, onNavigate }: JourneyCarouse
                   <span>{item.location}</span>
                   {item.launchDate ? <span>{item.launchDate}</span> : null}
                 </div>
-                <h3 className="font-display text-2xl uppercase tracking-[0.2em] text-foreground sm:text-3xl">
+                <h3 className="font-title text-2xl uppercase tracking-[0.2em] text-foreground sm:text-3xl">
                   {item.title}
                 </h3>
                 <p className="line-clamp-3 text-sm text-muted-foreground/90">{item.excerpt}</p>

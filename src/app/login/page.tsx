@@ -17,14 +17,28 @@ import {
 
 const DEMO_ENABLED = isDemoMode();
 
+const DEMO_ACCOUNTS: ReadonlyArray<{ email: string; password: string; note?: string }> = [
+  { email: DEMO_EMAIL, password: DEMO_PASSWORD, note: 'Client space' },
+  { email: 'neels@beeyondtheworld.com', password: 'admin', note: 'Developer, Super Admin' },
+  { email: 'eugenie@beeyondtheworld.com', password: 'admin' },
+  { email: 'talent@beeyondtheworld.com', password: 'talent' },
+  { email: 'producer@beeyondtheworld.com', password: 'producer' },
+];
+
 export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { supabase, session, loading } = useSupabase();
-  const [email, setEmail] = useState(DEMO_EMAIL);
-  const [password, setPassword] = useState(DEMO_PASSWORD);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const handleDemoPrefill = (demoEmail: string, demoPassword: string) => {
+    setEmail(demoEmail);
+    setPassword(demoPassword);
+    setError(null);
+  };
 
   useEffect(() => {
     if (!loading && session) {
@@ -127,9 +141,13 @@ export default function LoginPage() {
           <Button
             type="submit"
             disabled={submitting}
-            className="w-full rounded-full border border-white/50 bg-white/85 px-6 py-4 font-display text-xs uppercase tracking-[0.35em] text-foreground hover:bg-white"
+            className="group relative w-full overflow-hidden rounded-full border border-white/50 bg-white/85 px-6 py-4 font-display text-xs uppercase tracking-[0.35em] text-foreground transition [transition-timing-function:var(--bee-ease)] hover:bg-white focus-visible:ring-[#f6c452]/35 disabled:cursor-not-allowed disabled:opacity-80"
           >
-            {submitting ? 'Signing in...' : 'Enter the journey'}
+            <span
+              aria-hidden
+              className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-[#f6c452bf] to-transparent opacity-0 transition-transform duration-500 group-hover:translate-x-full group-hover:opacity-100 group-focus-visible:translate-x-full group-focus-visible:opacity-100"
+            />
+            <span className="relative">{submitting ? 'Signing in...' : 'Enter the journey'}</span>
           </Button>
         </form>
 
@@ -137,11 +155,31 @@ export default function LoginPage() {
           <p className="font-display text-[10px] uppercase tracking-[0.35em] text-white/60">
             Demo access
           </p>
-          <p className="mt-2">
-            Email: <span className="font-sans">{DEMO_EMAIL}</span> / Password:{' '}
-            <span className="font-sans">{DEMO_PASSWORD}</span>
-          </p>
-          <p className="mt-3">
+          <ul className="mt-2 space-y-2 text-[11px] sm:text-xs">
+            {DEMO_ACCOUNTS.map(({ email: demoEmail, password: demoPassword, note }) => (
+              <li key={demoEmail}>
+                <button
+                  type="button"
+                  onClick={() => handleDemoPrefill(demoEmail, demoPassword)}
+                  className="flex w-full flex-col rounded-xl border border-white/10 bg-white/5 p-3 text-left transition hover:border-white/30 hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/80"
+                  title={`Prefill with ${demoEmail}`}
+                >
+                  <p>
+                    Email: <span className="font-sans text-white">{demoEmail}</span>
+                  </p>
+                  <p className="mt-1 text-white/80">
+                    Password: <span className="font-sans text-white">{demoPassword}</span>
+                  </p>
+                  {note ? (
+                    <p className="mt-2 text-[10px] uppercase tracking-[0.3em] text-white/60">
+                      {note}
+                    </p>
+                  ) : null}
+                </button>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-4">
             Need access? Contact{' '}
             <Link href="mailto:hello@beeyondtheworld.com" className="underline">
               hello@beeyondtheworld.com
