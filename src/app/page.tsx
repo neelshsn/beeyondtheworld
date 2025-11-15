@@ -55,7 +55,7 @@ function JourneyCard({ journey }: { journey: JourneyShowcase }) {
             text={journey.title}
             tag="h3"
             splitType="words"
-            className="font-title text-4xl uppercase tracking-[0.16em] text-white drop-shadow-[0_28px_60px_rgba(0,0,0,0.7)] sm:text-[2.9rem]"
+            className="font-title text-4xl uppercase tracking-[0em] text-white drop-shadow-[0_28px_60px_rgba(0,0,0,0.7)] sm:text-[2.9rem]"
             textAlign="center"
           />
           <p className="text-sm leading-relaxed text-white/85 drop-shadow-[0_12px_32px_rgba(0,0,0,0.55)] sm:text-base">
@@ -115,7 +115,7 @@ function CampaignCard({ campaign }: { campaign: CampaignShowcase }) {
             text={campaign.title}
             tag="h3"
             splitType="words"
-            className="font-title text-4xl uppercase tracking-[0.16em] text-white drop-shadow-[0_28px_60px_rgba(0,0,0,0.7)] sm:text-[2.9rem]"
+            className="font-title text-4xl uppercase tracking-[0em] text-white drop-shadow-[0_28px_60px_rgba(0,0,0,0.7)] sm:text-[2.9rem]"
             textAlign="center"
           />
           <p className="text-sm leading-relaxed text-white/85 drop-shadow-[0_12px_32px_rgba(0,0,0,0.55)] sm:text-base">
@@ -253,7 +253,7 @@ export default async function Home() {
               text="Co-travel dreamcraft for fashion and lifestyle brands"
               tag="h1"
               splitType="words, chars"
-              className="font-title text-5xl uppercase leading-tight tracking-[0.18em] text-white drop-shadow-[0_12px_32px_rgba(0,0,0,0.55)] sm:text-6xl"
+              className="font-title text-5xl uppercase leading-tight tracking-[0em] text-white drop-shadow-[0_12px_32px_rgba(0,0,0,0.55)] sm:text-6xl"
               textAlign="left"
             />
             <p className="max-w-2xl text-sm leading-relaxed text-white/85 drop-shadow-[0_6px_20px_rgba(0,0,0,0.55)]">

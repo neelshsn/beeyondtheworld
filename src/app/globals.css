@@ -88,7 +88,7 @@
   h2,
   h3,
   h4 {
-    @apply font-title uppercase tracking-[0.18em];
+    @apply font-title uppercase tracking-[0em];
   }
 
   p,

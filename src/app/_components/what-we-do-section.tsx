@@ -144,7 +144,7 @@ function WhatWeDoCard({ entry, priority = false }: { entry: WhatWeDoEntry; prior
               {entry.label}
             </span>
           </div>
-          <h3 className="font-title text-3xl uppercase leading-[1.08] tracking-[0.14em] text-white drop-shadow-[0_12px_44px_rgba(0,0,0,0.6)] sm:text-[2.1rem]">
+          <h3 className="font-title text-3xl uppercase leading-[1.08] tracking-[0em] text-white drop-shadow-[0_12px_44px_rgba(0,0,0,0.6)] sm:text-[2.1rem]">
             {entry.title}
           </h3>
           <p className="text-white/78 text-sm leading-relaxed sm:text-base">{entry.description}</p>

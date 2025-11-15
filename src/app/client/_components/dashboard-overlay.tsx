@@ -86,7 +86,7 @@ export function DashboardOverlay({ card, onClose, onAction }: DashboardOverlayPr
                         {card.eyebrow}
                       </span>
                     ) : null}
-                    <h2 className="font-title text-4xl uppercase tracking-[0.2em] text-white md:text-5xl">
+                    <h2 className="font-title text-4xl uppercase tracking-[0em] text-white md:text-5xl">
                       {card.title}
                     </h2>
                     {card.subtitle ? (

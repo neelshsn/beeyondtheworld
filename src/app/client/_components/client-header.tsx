@@ -24,7 +24,7 @@ export function ClientHeader({ email }: ClientHeaderProps) {
         <p className="font-display text-xs uppercase tracking-[0.35em] text-muted-foreground/70">
           Client Space
         </p>
-        <h1 className="font-title text-2xl uppercase tracking-[0.2em] text-foreground">
+        <h1 className="font-title text-2xl uppercase tracking-[0em] text-foreground">
           Bespoke Journeys Dashboard
         </h1>
       </div>

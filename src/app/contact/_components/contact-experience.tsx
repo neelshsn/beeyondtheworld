@@ -578,7 +578,7 @@ export function ContactExperience({ journeys, campaigns }: ContactExperienceProp
             <p className="font-display text-xs uppercase tracking-[0.5em] text-foreground/55">
               Submission received
             </p>
-            <h3 className="font-title text-2xl uppercase tracking-[0.18em] text-foreground">
+            <h3 className="font-title text-2xl uppercase tracking-[0em] text-foreground">
               {submissionMessage || SUCCESS_MESSAGE}
             </h3>
             <p className="text-sm leading-relaxed text-foreground/70">

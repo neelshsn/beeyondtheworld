@@ -541,7 +541,7 @@ export function CampaignShowcaseGallery() {
               <span className="text-xs uppercase tracking-[0.32em] text-white/60">
                 Campaign Library
               </span>
-              <h1 className="font-title text-2xl uppercase tracking-[0.24em] sm:text-3xl">
+              <h1 className="font-title text-2xl uppercase tracking-[0em] sm:text-3xl">
                 Previous Work
               </h1>
             </div>

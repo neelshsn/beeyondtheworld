@@ -30,7 +30,7 @@ export function LogoutNotification({ account, visible }: LogoutNotificationProps
                 <span className="font-display text-[10px] uppercase tracking-[0.5em] text-white/55">
                   Session ended
                 </span>
-                <p className="font-title text-lg uppercase tracking-[0.28em] text-white">
+                <p className="font-title text-lg uppercase tracking-[0em] text-white">
                   You have been logged out
                 </p>
                 <p className="text-[11px] uppercase tracking-[0.4em] text-white/60">

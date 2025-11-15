@@ -507,7 +507,7 @@ export function ConceptFoundation() {
                   </div>
 
                   <div className="flex w-full flex-col items-center gap-5 text-center">
-                    <h2 className="font-title text-3xl uppercase tracking-[0.2em] text-white sm:text-4xl md:text-5xl">
+                    <h2 className="font-title text-3xl uppercase tracking-[0em] text-white sm:text-4xl md:text-5xl">
                       {node.title}
                     </h2>
 

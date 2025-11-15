@@ -101,7 +101,7 @@ export function MainMenu() {
                             <span className="font-display text-[11px] uppercase tracking-[0.32em] text-[rgba(255,222,190,0.72)]">
                               {item.badge}
                             </span>
-                            <h3 className="font-title text-2xl uppercase tracking-[0.2em] text-[rgba(255,246,232,0.98)] drop-shadow-[0_24px_60px_rgba(0,0,0,0.55)]">
+                            <h3 className="font-title text-2xl uppercase tracking-[0em] text-[rgba(255,246,232,0.98)] drop-shadow-[0_24px_60px_rgba(0,0,0,0.55)]">
                               {item.title}
                             </h3>
                             <p className="text-sm leading-relaxed text-[rgba(255,235,210,0.78)]">

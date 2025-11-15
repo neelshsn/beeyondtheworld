@@ -176,7 +176,7 @@ function DashboardCardComponent({ card, onSelect, isActive }: DashboardCardProps
             ) : null}
             <div className="space-y-3">
               <motion.h3
-                className={`font-title uppercase tracking-[0.26em] text-white ${headlineClass}`}
+                className={`font-title uppercase tracking-[0em] text-white ${headlineClass}`}
                 layout
                 style={{ textShadow: titleGlow }}
               >
@@ -201,7 +201,7 @@ function DashboardCardComponent({ card, onSelect, isActive }: DashboardCardProps
           <div className="flex flex-col gap-4 text-white">
             <div className="space-y-2">
               <motion.h3
-                className={`font-title uppercase tracking-[0.26em] transition-opacity duration-500 ${headlineClass} ${card.tone === 'light' ? 'text-black' : 'text-white'} opacity-95 group-hover:opacity-100`}
+                className={`font-title uppercase tracking-[0em] transition-opacity duration-500 ${headlineClass} ${card.tone === 'light' ? 'text-black' : 'text-white'} opacity-95 group-hover:opacity-100`}
                 layout
                 style={{ textShadow: titleGlow }}
               >

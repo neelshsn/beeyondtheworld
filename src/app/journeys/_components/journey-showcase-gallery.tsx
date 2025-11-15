@@ -427,7 +427,7 @@ export function JourneyShowcaseGallery() {
               <span className="text-xs uppercase tracking-[0.32em] text-white/60">
                 Journey Atlas
               </span>
-              <h1 className="font-title text-2xl uppercase tracking-[0.24em] sm:text-3xl">
+              <h1 className="font-title text-2xl uppercase tracking-[0em] sm:text-3xl">
                 Upcoming Journeys
               </h1>
             </div>
@@ -804,7 +804,7 @@ function JourneyCard({
           animate={isRevealed ? { y: 0, opacity: 1 } : { y: '-45%', opacity: 0 }}
           transition={prefersReducedMotion ? undefined : REVEAL_TRANSITION}
         >
-          <span className="max-w-[80%] font-title text-lg uppercase tracking-[0.32em] text-white">
+          <span className="max-w-[80%] font-title text-lg uppercase tracking-[0em] text-white">
             {journey.title}
           </span>
         </motion.div>

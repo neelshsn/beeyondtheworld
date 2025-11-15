@@ -264,7 +264,7 @@ export default function AdminDashboardPage() {
                   <CardTitle className="text-xs uppercase tracking-[0.42em] text-slate-500">
                     {kpi.label}
                   </CardTitle>
-                  <CardDescription className="font-title text-4xl uppercase tracking-[0.22em] text-slate-900">
+                  <CardDescription className="font-title text-4xl uppercase tracking-[0em] text-slate-900">
                     {kpi.value}
                   </CardDescription>
                 </CardHeader>
