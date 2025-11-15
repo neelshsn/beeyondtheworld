@@ -129,7 +129,7 @@ export function JourneyShowcaseGallery() {
     moods: [],
     search: '',
   }));
-  const [areFiltersOpen, setAreFiltersOpen] = useState(false);
+  const [areFiltersOpen, setAreFiltersOpen] = useState(true);
 
   useEffect(() => {
     const nextSeason = parseSeasonFilter(searchParams?.get('season') ?? null);
@@ -422,14 +422,29 @@ export function JourneyShowcaseGallery() {
 
       <div className="relative z-10 flex min-h-screen flex-col">
         <div className="sticky top-0 z-20 flex flex-col gap-5 px-6 pb-6 pt-10 backdrop-blur lg:px-12">
-          <div className="flex flex-wrap items-center gap-6">
+          <div className="flex flex-wrap items-start justify-between gap-6">
             <div className="flex flex-col gap-2">
               <span className="text-xs uppercase tracking-[0.32em] text-white/60">
                 Journey Atlas
               </span>
               <h1 className="font-title text-2xl uppercase tracking-[0.24em] sm:text-3xl">
-                All Journeys
+                Upcoming Journeys
               </h1>
+            </div>
+            <div className="flex flex-wrap items-center gap-3">
+              <span className="inline-flex items-center rounded-full border border-white/15 px-3 py-1 text-[0.68rem] uppercase tracking-[0.32em] text-white/70">
+                {progressLabel}
+              </span>
+              <button
+                type="button"
+                onClick={toggleFiltersVisibility}
+                aria-expanded={areFiltersOpen}
+                aria-controls="journey-filters-panel"
+                className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-black/40 px-3 py-1 text-xs uppercase tracking-[0.28em] text-white/70 transition hover:border-white/30 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+              >
+                <Filter className="size-4" aria-hidden />
+                <span>{areFiltersOpen ? 'Hide filters' : 'Show filters'}</span>
+              </button>
             </div>
           </div>
 
@@ -520,26 +535,6 @@ export function JourneyShowcaseGallery() {
               </div>
             )}
           </div>
-
-          {safeLength > 0 ? (
-            <div className="absolute inset-x-0 bottom-10 flex justify-center">
-              <div className="pointer-events-auto flex items-center gap-4 rounded-full border border-white/15 bg-black/50 px-6 py-3 backdrop-blur">
-                <span className="text-xs uppercase tracking-[0.32em] text-white/70">
-                  {progressLabel}
-                </span>
-                <button
-                  type="button"
-                  onClick={toggleFiltersVisibility}
-                  aria-expanded={areFiltersOpen}
-                  aria-controls="journey-filters-panel"
-                  className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-black/40 px-3 py-1 text-xs uppercase tracking-[0.28em] text-white/70 transition hover:border-white/30 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
-                >
-                  <Filter className="size-4" aria-hidden />
-                  <span>{areFiltersOpen ? 'Hide filters' : 'Filters'}</span>
-                </button>
-              </div>
-            </div>
-          ) : null}
         </div>
       </div>
     </section>
