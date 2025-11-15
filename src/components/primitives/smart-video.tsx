@@ -52,6 +52,7 @@ export const SmartVideo = forwardRef<HTMLVideoElement, SmartVideoProps>(function
   const resolvedAutoPlay = autoPlay && !prefersReducedMotion;
   const posterOrFallback = poster ?? fallbackImage;
   const preloadStrategy = prefersReducedData ? 'metadata' : resolvedAutoPlay ? 'auto' : 'metadata';
+  const inlineSource = !sources && typeof src === 'string' ? src : undefined;
 
   useEffect(() => {
     if (priority || isInView) {
@@ -101,7 +102,7 @@ export const SmartVideo = forwardRef<HTMLVideoElement, SmartVideoProps>(function
           {sources?.map((source) => (
             <source key={source.src} src={source.src} type={source.type} />
           ))}
-          {!sources && src ? <source src={src} /> : null}
+          {inlineSource ? <source src={inlineSource} /> : null}
         </video>
       ) : posterOrFallback ? (
         <Image

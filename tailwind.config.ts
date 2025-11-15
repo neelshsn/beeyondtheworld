@@ -83,6 +83,9 @@ const config: Config = {
         shimmer: 'shimmer 10s linear infinite',
         'soft-pulse': 'soft-pulse 5s ease-in-out infinite',
       },
+      transitionTimingFunction: {
+        bee: 'cubic-bezier(0.22, 1, 0.36, 1)',
+      },
       fontFamily: {
         title: ['var(--font-love)', 'sans-serif'],
         menu: ['var(--font-cannia)', 'serif'],

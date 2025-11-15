@@ -107,7 +107,7 @@ function WhatWeDoCard({ entry, priority = false }: { entry: WhatWeDoEntry; prior
         {entry.media.type === 'video' ? (
           <SmartVideo
             wrapperClassName="absolute inset-0 size-full"
-            className="ease-[cubic-bezier(0.22,1,0.36,1)] size-full object-cover transition-[transform,opacity] duration-700"
+            className="size-full object-cover transition-[transform,opacity] duration-700 ease-bee"
             src={entry.media.src}
             poster={entry.media.poster}
             fallbackImage={entry.media.poster}

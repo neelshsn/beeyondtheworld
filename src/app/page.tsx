@@ -31,14 +31,14 @@ function JourneyCard({ journey }: { journey: JourneyShowcase }) {
         src={journey.hero.src}
         alt={journey.hero.alt}
         fill
-        className="ease-[cubic-bezier(0.22,1,0.36,1)] absolute inset-0 size-full object-cover transition-[transform,opacity] duration-700"
+        className="absolute inset-0 size-full object-cover transition-[transform,opacity] duration-700 ease-bee"
         sizes="(max-width: 768px) 100vw, 80vw"
         priority={journey.id === 'philippines'}
       />
-      <div className="ease-[cubic-bezier(0.22,1,0.36,1)] pointer-events-none absolute inset-0 bg-black/55 transition-colors duration-500 group-hover:bg-black/40" />
+      <div className="pointer-events-none absolute inset-0 bg-black/55 transition-colors duration-500 ease-bee group-hover:bg-black/40" />
       <div className="pointer-events-none absolute inset-x-0 top-0 h-36 bg-[linear-gradient(to_bottom,rgba(6,8,12,0.92)_0%,rgba(6,8,12,0.55)_60%,rgba(6,8,12,0)_100%)]" />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[52%] bg-[linear-gradient(to_top,rgba(6,8,12,0.9)_0%,rgba(6,8,12,0.48)_58%,rgba(6,8,12,0)_100%)]" />
-      <div className="ease-[cubic-bezier(0.22,1,0.36,1)] relative z-20 mx-auto flex w-full max-w-4xl flex-col items-center justify-center gap-10 px-6 py-20 text-center text-white transition-transform duration-500 sm:px-10">
+      <div className="relative z-20 mx-auto flex w-full max-w-4xl flex-col items-center justify-center gap-10 px-6 py-20 text-center text-white transition-transform duration-500 ease-bee sm:px-10">
         <div className="flex flex-wrap items-center justify-center gap-4 text-[11px] uppercase tracking-[0.32em] text-white/75 drop-shadow-[0_8px_18px_rgba(0,0,0,0.55)]">
           <span className="flex items-center gap-2">
             <MapPin className="size-3.5" aria-hidden />
@@ -87,7 +87,7 @@ function CampaignCard({ campaign }: { campaign: CampaignShowcase }) {
     <article className="group relative isolate flex min-h-[806px] w-full items-center justify-center overflow-hidden">
       <SmartVideo
         wrapperClassName="absolute inset-0"
-        className="ease-[cubic-bezier(0.22,1,0.36,1)] size-full object-cover transition-[transform,opacity] duration-700"
+        className="size-full object-cover transition-[transform,opacity] duration-700 ease-bee"
         src={campaign.hero.src}
         poster={campaign.hero.poster}
         fallbackImage={campaign.hero.poster}
@@ -97,10 +97,10 @@ function CampaignCard({ campaign }: { campaign: CampaignShowcase }) {
         playsInline
         aria-hidden
       />
-      <div className="ease-[cubic-bezier(0.22,1,0.36,1)] pointer-events-none absolute inset-0 bg-black/55 transition-colors duration-500 group-hover:bg-black/40" />
+      <div className="pointer-events-none absolute inset-0 bg-black/55 transition-colors duration-500 ease-bee group-hover:bg-black/40" />
       <div className="pointer-events-none absolute inset-x-0 top-0 h-36 bg-[linear-gradient(to_bottom,rgba(6,8,12,0.92)_0%,rgba(6,8,12,0.55)_60%,rgba(6,8,12,0)_100%)]" />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[52%] bg-[linear-gradient(to_top,rgba(6,8,12,0.9)_0%,rgba(6,8,12,0.48)_58%,rgba(6,8,12,0)_100%)]" />
-      <div className="ease-[cubic-bezier(0.22,1,0.36,1)] relative z-20 mx-auto flex w-full max-w-4xl flex-col items-center justify-center gap-10 px-6 py-20 text-center text-white transition-transform duration-500 sm:px-10">
+      <div className="relative z-20 mx-auto flex w-full max-w-4xl flex-col items-center justify-center gap-10 px-6 py-20 text-center text-white transition-transform duration-500 ease-bee sm:px-10">
         <div className="flex flex-wrap items-center justify-center gap-4 text-[11px] uppercase tracking-[0.32em] text-white/75 drop-shadow-[0_8px_18px_rgba(0,0,0,0.55)]">
           <span className="flex items-center gap-2">
             <MapPin className="size-3.5" aria-hidden />
