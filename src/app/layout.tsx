@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Analytics } from '@vercel/analytics/next';
 
 import { Header } from '@/components/layout/Header';
 import { SupabaseProvider } from '@/components/providers/supabase-provider';
@@ -56,6 +57,7 @@ export default async function RootLayout({
 
             <div className="relative z-10 flex-1">{children}</div>
           </div>
+          <Analytics />
         </SupabaseProvider>
       </body>
     </html>
