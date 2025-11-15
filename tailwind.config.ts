@@ -85,6 +85,7 @@ const config: Config = {
       },
       fontFamily: {
         title: ['var(--font-love)', 'sans-serif'],
+        menu: ['var(--font-cannia)', 'serif'],
         display: ['var(--font-adam)', 'sans-serif'],
         sans: ['var(--font-avenir)', 'sans-serif'],
         script: ['var(--font-saint)', 'cursive'],

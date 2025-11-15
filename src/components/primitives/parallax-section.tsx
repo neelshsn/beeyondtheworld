@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useRef, type ReactNode } from 'react';
 
 import { cn } from '@/lib/utils';
+import { SmartVideo } from './smart-video';
 
 interface ParallaxSectionProps {
   id?: string;
@@ -44,13 +45,16 @@ export function ParallaxSection({
     >
       <motion.div className="absolute inset-0" style={{ y: translateY }} aria-hidden>
         {backgroundVideo ? (
-          <video
+          <SmartVideo
+            wrapperClassName="absolute inset-0"
             className="size-full object-cover"
             src={backgroundVideo}
             autoPlay
             muted
             loop
             playsInline
+            fallbackImage={backgroundImage}
+            aria-hidden
           />
         ) : backgroundImage ? (
           <Image src={backgroundImage} alt="Parallax background" fill className="object-cover" />

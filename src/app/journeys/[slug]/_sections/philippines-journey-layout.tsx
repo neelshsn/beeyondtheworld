@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowUpRight, CalendarDays, ChevronDown, Compass, MapPin, Waves } from 'lucide-react';
 
+import { SmartVideo } from '@/components/primitives/smart-video';
 import { Button } from '@/components/ui/button';
 import type { JourneyShowcase } from '@/data/showcases';
 
@@ -414,17 +415,21 @@ function GradientMosaicSection({ mosaic }: GradientMosaicSectionProps) {
 function VideoCTASection() {
   return (
     <section className="relative flex min-h-[70vh] items-center justify-center overflow-hidden">
-      <video
-        className="absolute inset-0 h-full w-full object-cover"
+      <SmartVideo
+        wrapperClassName="absolute inset-0"
+        className="h-full w-full object-cover"
+        sources={[
+          { src: '/assets/concept/sustainable.mp4', type: 'video/mp4' },
+          { src: '/assets/concept/sustainable.webm', type: 'video/webm' },
+        ]}
+        poster="/assets/concept/sustainable-poster.png"
+        fallbackImage="/assets/concept/sustainable-poster.png"
         autoPlay
         muted
         loop
         playsInline
-        poster="/assets/concept/sustainable-poster.png"
-      >
-        <source src="/assets/concept/sustainable.mp4" type="video/mp4" />
-        <source src="/assets/concept/sustainable.webm" type="video/webm" />
-      </video>
+        aria-hidden
+      />
       <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/40 to-black/80" />
 
       <div className="relative z-10 mx-auto flex max-w-3xl flex-col items-center gap-8 text-center">

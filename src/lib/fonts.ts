@@ -6,6 +6,12 @@ export const love = localFont({
   display: 'swap',
 });
 
+export const cannia = localFont({
+  src: [{ path: '../../fonts/Cannia.otf', weight: '400', style: 'normal' }],
+  variable: '--font-cannia',
+  display: 'swap',
+});
+
 export const adam = localFont({
   src: [
     { path: '../../fonts/Adam-Light.ttf', weight: '300', style: 'normal' },

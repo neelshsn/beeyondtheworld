@@ -6,7 +6,7 @@ import { motion, useMotionTemplate, useMotionValue } from 'framer-motion';
 import type { Variants } from 'framer-motion';
 import { useEffect, useMemo, useRef } from 'react';
 
-import { GlowTitle } from '@/components/primitives';
+import { GlowTitle, SmartVideo } from '@/components/primitives';
 import { cn } from '@/lib/utils';
 import { Clapperboard, Leaf, Users } from 'lucide-react';
 
@@ -105,16 +105,19 @@ function WhatWeDoCard({ entry, priority = false }: { entry: WhatWeDoEntry; prior
         transition={{ duration: 0.9, ease: CARD_EASE }}
       >
         {entry.media.type === 'video' ? (
-          <video
-            className="absolute inset-0 size-full object-cover"
+          <SmartVideo
+            wrapperClassName="absolute inset-0 size-full"
+            className="ease-[cubic-bezier(0.22,1,0.36,1)] size-full object-cover transition-[transform,opacity] duration-700"
+            src={entry.media.src}
+            poster={entry.media.poster}
+            fallbackImage={entry.media.poster}
             autoPlay
             muted
             loop
             playsInline
-            poster={entry.media.poster}
-          >
-            <source src={entry.media.src} />
-          </video>
+            priority={priority}
+            aria-hidden
+          />
         ) : (
           <Image
             src={entry.media.src}

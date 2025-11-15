@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { CalendarDays, Clapperboard, MapPin, Sparkles } from 'lucide-react';
 
-import { GlowTitle, ShowcaseMediaGallery } from '@/components/primitives';
+import { GlowTitle, ShowcaseMediaGallery, SmartVideo } from '@/components/primitives';
 import SplitText from '@/components/SplitText';
 import { Button } from '@/components/ui/button';
 import { campaignShowcases } from '@/data/showcases';
@@ -49,16 +49,18 @@ export default async function CampaignPage({ params }: CampaignPageProps) {
     <main className="flex flex-col gap-24 pb-24">
       <section className="relative flex min-h-[90vh] flex-col justify-end overflow-hidden">
         {isVideoHero ? (
-          <video
-            className="absolute inset-0 size-full object-cover"
+          <SmartVideo
+            wrapperClassName="absolute inset-0"
+            className="size-full object-cover"
+            src={heroMedia.src}
+            poster={heroMedia.poster}
+            fallbackImage={heroMedia.poster}
             autoPlay
             muted
             loop
             playsInline
-            poster={heroMedia.poster}
-          >
-            <source src={heroMedia.src} />
-          </video>
+            aria-hidden
+          />
         ) : (
           <Image
             src={heroMedia.src}

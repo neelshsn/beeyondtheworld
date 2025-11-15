@@ -7,3 +7,4 @@ export * from './parallax-section';
 export * from './pdf-download';
 export * from './asset-placeholder';
 export * from './media-lightbox';
+export * from './smart-video';

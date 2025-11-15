@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useCallback, useEffect } from 'react';
 import Image from 'next/image';
@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { AnimatePresence, motion } from 'framer-motion';
 import { X } from 'lucide-react';
 
+import { SmartVideo } from '@/components/primitives/smart-video';
 import { Button } from '@/components/ui/button';
 
 import type { DashboardAction, DashboardCardData } from './client-dashboard.types';
@@ -158,16 +159,17 @@ export function DashboardOverlay({ card, onClose, onAction }: DashboardOverlayPr
                 <div className="relative h-[320px] w-full overflow-hidden rounded-[36px] border border-white/15 bg-white/10 md:h-[420px]">
                   {card.media ? (
                     card.media.kind === 'video' ? (
-                      <video
+                      <SmartVideo
+                        wrapperClassName="h-full w-full"
                         className="size-full object-cover"
+                        src={card.media.src}
+                        poster={card.media.poster}
+                        fallbackImage={card.media.poster}
                         autoPlay
                         playsInline
                         loop
                         muted
-                        poster={card.media.poster}
-                      >
-                        <source src={card.media.src} />
-                      </video>
+                      />
                     ) : (
                       <Image
                         src={card.media.src}
@@ -197,16 +199,17 @@ export function DashboardOverlay({ card, onClose, onAction }: DashboardOverlayPr
                         className="border-white/12 bg-white/6 relative h-[180px] overflow-hidden rounded-[28px] border"
                       >
                         {media.kind === 'video' ? (
-                          <video
+                          <SmartVideo
+                            wrapperClassName="h-full w-full"
                             className="size-full object-cover"
+                            src={media.src}
+                            poster={media.poster}
+                            fallbackImage={media.poster}
                             playsInline
                             muted
                             loop
                             autoPlay
-                            poster={media.poster}
-                          >
-                            <source src={media.src} />
-                          </video>
+                          />
                         ) : (
                           <Image
                             src={media.src}

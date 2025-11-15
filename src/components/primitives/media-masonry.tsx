@@ -1,8 +1,9 @@
-﻿'use client';
+'use client';
 
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 
+import { SmartVideo } from '@/components/primitives/smart-video';
 import { cn } from '@/lib/utils';
 
 export type MediaType = 'image' | 'video';
@@ -68,16 +69,18 @@ export function MediaMasonry({ items, className, columns = 3 }: MediaMasonryProp
                 sizes="(max-width: 768px) 100vw, 40vw"
               />
             ) : (
-              <video
-                className="absolute inset-0 size-full object-cover"
+              <SmartVideo
+                wrapperClassName="absolute inset-0"
+                className="size-full object-cover"
+                src={item.src}
                 poster={item.poster}
+                fallbackImage={item.poster}
                 autoPlay
                 muted
                 loop
                 playsInline
-              >
-                <source src={item.src} />
-              </video>
+                aria-hidden
+              />
             )}
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent opacity-60" />
           </div>

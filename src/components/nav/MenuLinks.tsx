@@ -81,7 +81,7 @@ export function MenuLinks({ isOpen, onNavigate }: MenuLinksProps) {
                       </span>
                     </span>
                     <span className="relative flex w-full flex-col">
-                      <span className="font-sans text-[clamp(32px,5vw,72px)] font-semibold uppercase leading-[0.95] tracking-[0.35em]">
+                      <span className="font-menu text-[clamp(32px,5vw,72px)] font-semibold uppercase leading-[0.95] tracking-[0.35em]">
                         {item.label}
                       </span>
                       <span

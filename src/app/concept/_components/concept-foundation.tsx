@@ -1,5 +1,6 @@
 'use client';
 
+import { SmartVideo } from '@/components/primitives/smart-video';
 import { Button } from '@/components/ui/button';
 
 import { conceptNodes, type ConceptNode } from '@content/concept';
@@ -606,18 +607,22 @@ function BackgroundCanvas({ prefersReducedMotion }: { prefersReducedMotion: bool
         {prefersReducedMotion ? (
           <Image src={posterSrc} alt="" fill priority sizes="100vw" className="object-cover" />
         ) : (
-          <video
-            className="absolute inset-0 h-full w-full object-cover"
+          <SmartVideo
+            wrapperClassName="absolute inset-0"
+            className="h-full w-full object-cover"
+            sources={[
+              { src: '/assets/concept/sustainable.mp4', type: 'video/mp4' },
+              { src: '/assets/concept/sustainable.webm', type: 'video/webm' },
+            ]}
+            poster={posterSrc}
+            fallbackImage={posterSrc}
             autoPlay
             muted
             loop
             playsInline
-            poster={posterSrc}
-          >
-            <source src="/assets/concept/sustainable.mp4" type="video/mp4" />
-
-            <source src="/assets/concept/sustainable.webm" type="video/webm" />
-          </video>
+            priority
+            aria-hidden
+          />
         )}
 
         <div className="absolute inset-0 bg-gradient-to-br from-black/65 via-black/30 to-black/15" />

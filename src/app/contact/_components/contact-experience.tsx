@@ -13,7 +13,7 @@ import {
   Phone,
 } from 'lucide-react';
 
-import { GlowTitle } from '@/components/primitives';
+import { GlowTitle, SmartVideo } from '@/components/primitives';
 import { GlassCard } from '@/components/primitives/glass-card';
 import SplitText from '@/components/SplitText';
 import { Button } from '@/components/ui/button';
@@ -668,15 +668,21 @@ export function ContactExperience({ journeys, campaigns }: ContactExperienceProp
   return (
     <main className="relative min-h-[100svh] overflow-hidden">
       <div className="pointer-events-none absolute inset-0">
-        <video
-          className="absolute inset-0 h-full w-full object-cover opacity-20"
+        <SmartVideo
+          wrapperClassName="absolute inset-0"
+          className="h-full w-full object-cover opacity-20"
+          sources={[
+            { src: '/assets/concept/sustainable.webm', type: 'video/webm' },
+            { src: '/assets/concept/sustainable.mp4', type: 'video/mp4' },
+          ]}
+          poster="/assets/concept/sustainable-poster.png"
+          fallbackImage="/assets/concept/sustainable-poster.png"
           autoPlay
           loop
           muted
           playsInline
-        >
-          <source src="/assets/concept/sustainable.webm" type="video/webm" />
-        </video>
+          aria-hidden
+        />
         <div className="absolute inset-0 bg-gradient-to-br from-[#fbe8d7]/85 via-[#f4ddea]/35 to-[#f5f0e7]/20 backdrop-blur-[14px]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,205,170,0.25),transparent_55%),radial-gradient(circle_at_80%_10%,rgba(246,196,215,0.18),transparent_60%),radial-gradient(circle_at_45%_85%,rgba(248,236,210,0.4),transparent_68%)]" />
         <div className="grain-overlay absolute inset-0 opacity-35 mix-blend-soft-light" />

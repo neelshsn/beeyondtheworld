@@ -14,7 +14,7 @@ import { quickLinks } from '@/config/quick-links';
 import { socialLinks } from '@/config/socials';
 
 const triggerClasses =
-  'group relative flex h-11 items-center rounded-none border border-white/35 bg-white/10 px-4 text-sm font-sans font-semibold uppercase tracking-[0.32em] text-white transition hover:border-white/60 hover:bg-white/25 focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-0';
+  'group relative flex h-11 items-center rounded-none border border-white/35 bg-white/10 px-4 text-sm font-menu font-semibold uppercase tracking-[0.32em] text-white transition hover:border-white/60 hover:bg-white/25 focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-0';
 
 export function MainMenu() {
   const pathname = usePathname();
@@ -43,7 +43,7 @@ export function MainMenu() {
         <Button variant="ghost" aria-label="Open menu" className={triggerClasses}>
           <Menu className="h-5 w-5" aria-hidden />
           <span className="sr-only">Menu</span>
-          <span className="ml-0 max-w-0 overflow-hidden font-sans text-[11px] uppercase tracking-[0.32em] opacity-0 transition-all duration-200 ease-out group-hover:ml-2 group-hover:max-w-[140px] group-hover:opacity-100 group-focus-visible:ml-2 group-focus-visible:max-w-[140px] group-focus-visible:opacity-100">
+          <span className="ml-0 max-w-0 overflow-hidden font-menu text-[11px] uppercase tracking-[0.32em] opacity-0 transition-all duration-200 ease-out group-hover:ml-2 group-hover:max-w-[140px] group-hover:opacity-100 group-focus-visible:ml-2 group-focus-visible:max-w-[140px] group-focus-visible:opacity-100">
             Menu
           </span>
         </Button>
@@ -52,7 +52,7 @@ export function MainMenu() {
         <SheetContent
           side="right"
           aria-label="Primary navigation"
-          className="w-[88vw] max-w-[760px] border-l border-[rgba(255,210,170,0.28)] bg-[linear-gradient(137deg,rgba(20,12,8,0.82)_0%,rgba(45,28,18,0.78)_42%,rgba(86,47,24,0.8)_100%)] px-8 pb-12 pt-14 text-[rgba(255,240,225,0.92)] shadow-[0_45px_160px_-70px_rgba(16,10,6,0.9)] backdrop-blur-2xl sm:w-[70vw] md:px-14 lg:w-[55vw] xl:w-[50vw]"
+          className="w-[88vw] max-w-[760px] border-l border-[rgba(255,210,170,0.28)] bg-[linear-gradient(137deg,rgba(20,12,8,0.82)_0%,rgba(45,28,18,0.78)_42%,rgba(86,47,24,0.8)_100%)] px-8 pb-12 pt-14 font-menu text-[rgba(255,240,225,0.92)] shadow-[0_45px_160px_-70px_rgba(16,10,6,0.9)] backdrop-blur-2xl sm:w-[70vw] md:px-14 lg:w-[55vw] xl:w-[50vw]"
         >
           <div className="flex h-full flex-col">
             <div className="flex justify-end">

@@ -6,6 +6,7 @@ import SplitText from '@/components/SplitText';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { KeyRound, Lock, Mail } from 'lucide-react';
 
+import { SmartVideo } from '@/components/primitives/smart-video';
 import { Button } from '@/components/ui/button';
 import { useSupabase } from '@/components/providers/supabase-provider';
 import {
@@ -75,9 +76,18 @@ export default function LoginPage() {
 
   return (
     <main className="relative flex min-h-screen items-center justify-center overflow-hidden">
-      <video className="absolute inset-0 size-full object-cover" autoPlay muted loop playsInline>
-        <source src="/assets/concept/sustainable.mp4" />
-      </video>
+      <SmartVideo
+        wrapperClassName="absolute inset-0"
+        className="size-full object-cover"
+        sources={[{ src: '/assets/concept/sustainable.mp4', type: 'video/mp4' }]}
+        poster="/assets/concept/sustainable-poster.png"
+        fallbackImage="/assets/concept/sustainable-poster.png"
+        autoPlay
+        muted
+        loop
+        playsInline
+        aria-hidden
+      />
       <div className="absolute inset-0 bg-foreground/60" aria-hidden />
 
       <div className="relative z-10 mx-auto w-full max-w-lg rounded-[36px] border border-white/30 bg-white/20 p-10 shadow-[0_45px_120px_rgba(20,12,8,0.55)] backdrop-blur-xl">

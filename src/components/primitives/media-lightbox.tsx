@@ -6,6 +6,7 @@ import Image from 'next/image';
 
 import type { ShowcaseMedia } from '@/data/showcases';
 import { cn } from '@/lib/utils';
+import { SmartVideo } from '@/components/primitives/smart-video';
 
 interface ShowcaseMediaGalleryProps {
   items: ShowcaseMedia[];
@@ -78,16 +79,18 @@ export function ShowcaseMediaGallery({ items, columns = 3, className }: Showcase
                   sizes="(max-width: 768px) 100vw, 40vw"
                 />
               ) : (
-                <video
-                  className="absolute inset-0 size-full object-cover"
+                <SmartVideo
+                  wrapperClassName="absolute inset-0"
+                  className="size-full object-cover"
+                  src={item.src}
+                  poster={item.poster}
+                  fallbackImage={item.poster}
                   autoPlay
                   muted
                   loop
                   playsInline
-                  poster={item.poster}
-                >
-                  <source src={item.src} />
-                </video>
+                  aria-hidden
+                />
               )}
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
             </div>
@@ -138,16 +141,18 @@ export function ShowcaseMediaGallery({ items, columns = 3, className }: Showcase
                   {active.type === 'image' ? (
                     <Image src={active.src} alt={active.alt} fill className="object-cover" />
                   ) : (
-                    <video
-                      className="absolute inset-0 size-full object-cover"
+                    <SmartVideo
+                      wrapperClassName="absolute inset-0"
+                      className="size-full object-cover"
+                      src={active.src}
+                      poster={active.poster}
+                      fallbackImage={active.poster}
                       controls
                       autoPlay
                       loop
                       muted
-                      poster={active.poster}
-                    >
-                      <source src={active.src} />
-                    </video>
+                      playsInline
+                    />
                   )}
                   <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
                 </div>

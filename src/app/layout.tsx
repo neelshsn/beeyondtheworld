@@ -3,7 +3,7 @@ import { Analytics } from '@vercel/analytics/next';
 
 import { Header } from '@/components/layout/Header';
 import { SupabaseProvider } from '@/components/providers/supabase-provider';
-import { love, adam, avenir, saintBartogenia } from '@/lib/fonts';
+import { love, cannia, adam, avenir, saintBartogenia } from '@/lib/fonts';
 import { getSupabaseServerClient } from '@/lib/supabase/server-client';
 import './globals.css';
 
@@ -34,7 +34,7 @@ export default async function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${love.variable} ${adam.variable} ${avenir.variable} ${saintBartogenia.variable}`}
+      className={`${love.variable} ${cannia.variable} ${adam.variable} ${avenir.variable} ${saintBartogenia.variable}`}
     >
       <body className="bg-background font-sans text-foreground">
         <SupabaseProvider initialSession={session}>

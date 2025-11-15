@@ -24,6 +24,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { useBodyScrollLock } from '@/app/concept/_hooks/use-body-scroll-lock';
 import { usePrefersReducedMotion } from '@/app/concept/_hooks/use-prefers-reduced-motion';
+import { SmartVideo } from '@/components/primitives/smart-video';
 import { journeys } from '@/data/journeys-carousel';
 import type { Journey, JourneyMood, JourneyRegion, JourneySeason } from '@/types/journey';
 
@@ -833,18 +834,19 @@ function BackgroundVideo({ prefersReducedMotion }: BackgroundVideoProps) {
         {prefersReducedMotion ? (
           <Image src={VIDEO_POSTER} alt="" fill priority sizes="100vw" className="object-cover" />
         ) : (
-          <video
-            className="absolute inset-0 h-full w-full object-cover"
+          <SmartVideo
+            wrapperClassName="absolute inset-0"
+            className="h-full w-full object-cover"
+            sources={VIDEO_SOURCES}
+            poster={VIDEO_POSTER}
+            fallbackImage={VIDEO_POSTER}
             autoPlay
             muted
             loop
             playsInline
-            poster={VIDEO_POSTER}
-          >
-            {VIDEO_SOURCES.map((source) => (
-              <source key={source.type} src={source.src} type={source.type} />
-            ))}
-          </video>
+            priority
+            aria-hidden
+          />
         )}
         <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/60 to-black/30" />
       </div>

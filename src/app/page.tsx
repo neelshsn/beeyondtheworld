@@ -1,4 +1,4 @@
-﻿import Image from 'next/image';
+import Image from 'next/image';
 import Link from 'next/link';
 import {
   CalendarDays,
@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 import { getSupabaseServerClient } from '@/lib/supabase/server-client';
 
-import { GlowTitle } from '@/components/primitives';
+import { GlowTitle, SmartVideo } from '@/components/primitives';
 import { WhatWeDoSection, type WhatWeDoSectionProps } from '@/app/_components/what-we-do-section';
 import SplitText from '@/components/SplitText';
 import { Button } from '@/components/ui/button';
@@ -85,16 +85,18 @@ function JourneyCard({ journey }: { journey: JourneyShowcase }) {
 function CampaignCard({ campaign }: { campaign: CampaignShowcase }) {
   return (
     <article className="group relative isolate flex min-h-[806px] w-full items-center justify-center overflow-hidden">
-      <video
-        className="ease-[cubic-bezier(0.22,1,0.36,1)] absolute inset-0 size-full object-cover transition-[transform,opacity] duration-700"
+      <SmartVideo
+        wrapperClassName="absolute inset-0"
+        className="ease-[cubic-bezier(0.22,1,0.36,1)] size-full object-cover transition-[transform,opacity] duration-700"
+        src={campaign.hero.src}
+        poster={campaign.hero.poster}
+        fallbackImage={campaign.hero.poster}
         autoPlay
         muted
         loop
         playsInline
-        poster={campaign.hero.poster}
-      >
-        <source src={campaign.hero.src} />
-      </video>
+        aria-hidden
+      />
       <div className="ease-[cubic-bezier(0.22,1,0.36,1)] pointer-events-none absolute inset-0 bg-black/55 transition-colors duration-500 group-hover:bg-black/40" />
       <div className="pointer-events-none absolute inset-x-0 top-0 h-36 bg-[linear-gradient(to_bottom,rgba(6,8,12,0.92)_0%,rgba(6,8,12,0.55)_60%,rgba(6,8,12,0)_100%)]" />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[52%] bg-[linear-gradient(to_top,rgba(6,8,12,0.9)_0%,rgba(6,8,12,0.48)_58%,rgba(6,8,12,0)_100%)]" />
@@ -235,15 +237,16 @@ export default async function Home() {
   return (
     <main className="flex flex-col">
       <section className="relative isolate flex min-h-[92svh] flex-col justify-end overflow-hidden text-white">
-        <video
-          className="absolute inset-0 z-0 h-full w-full object-cover"
+        <SmartVideo
+          wrapperClassName="absolute inset-0 z-0"
+          className="h-full w-full object-cover"
+          src={heroVideoSrc}
           autoPlay
           muted
           loop
           playsInline
-        >
-          <source src={heroVideoSrc} />
-        </video>
+          aria-hidden
+        />
         <div className="relative z-20 flex flex-col gap-8 px-6 pb-32 pt-24 sm:px-10 lg:px-20">
           <div className="max-w-3xl space-y-6">
             <p className="flex items-center gap-2 text-xs uppercase tracking-[0.45em] text-white/80 drop-shadow-[0_3px_12px_rgba(0,0,0,0.65)]">
@@ -343,9 +346,18 @@ export default async function Home() {
       </section>
 
       <section className="relative flex min-h-[70vh] flex-col justify-center overflow-hidden px-6 pb-28 pt-10 text-white sm:px-10 lg:px-20">
-        <video className="absolute inset-0 size-full object-cover" autoPlay muted loop playsInline>
-          <source src="/assets/concept/sustainable.mp4" />
-        </video>
+        <SmartVideo
+          wrapperClassName="absolute inset-0"
+          className="size-full object-cover"
+          sources={[{ src: '/assets/concept/sustainable.mp4', type: 'video/mp4' }]}
+          poster="/assets/concept/sustainable-poster.png"
+          fallbackImage="/assets/concept/sustainable-poster.png"
+          autoPlay
+          muted
+          loop
+          playsInline
+          aria-hidden
+        />
         <div className="pointer-events-none absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-[#101b24]/85 via-[#101b24]/45 to-transparent sm:h-28 lg:h-36" />
         <div className="absolute inset-0 bg-black/65 backdrop-blur-sm" />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-b from-transparent via-[#fdf9ee]/25 to-[#fdf9ee] backdrop-blur-[3px] sm:h-32 lg:h-36" />

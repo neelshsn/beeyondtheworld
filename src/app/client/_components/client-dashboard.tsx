@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 
+import { SmartVideo } from '@/components/primitives/smart-video';
 import { useSupabase } from '@/components/providers/supabase-provider';
 import { BASE_TEMPLATE, type DashboardSlotId } from '@/app/client/_lib/dashboard-layout';
 
@@ -165,19 +166,21 @@ export function ClientDashboard({ slots }: ClientDashboardProps) {
   return (
     <div className="relative h-full w-full overflow-hidden">
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <video
-          className="absolute inset-0 h-full w-full object-cover opacity-45"
+        <SmartVideo
+          wrapperClassName="absolute inset-0"
+          className="h-full w-full object-cover opacity-45"
+          sources={[
+            { src: '/assets/concept/sustainable.webm', type: 'video/webm' },
+            { src: '/assets/concept/sustainable.mp4', type: 'video/mp4' },
+          ]}
+          poster="/assets/concept/sustainable-poster.png"
+          fallbackImage="/assets/concept/sustainable-poster.png"
           autoPlay
           loop
           muted
           playsInline
-          preload="metadata"
-          poster="/assets/concept/sustainable-poster.png"
           aria-hidden
-        >
-          <source src="/assets/concept/sustainable.webm" type="video/webm" />
-          <source src="/assets/concept/sustainable.mp4" type="video/mp4" />
-        </video>
+        />
         <div className="absolute inset-0 bg-gradient-to-br from-[#fbe8d7]/85 via-[#f4ddea]/35 to-[#f5f0e7]/20 backdrop-blur-[14px]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,205,170,0.25),transparent_55%),radial-gradient(circle_at_80%_10%,rgba(246,196,215,0.18),transparent_60%),radial-gradient(circle_at_45%_85%,rgba(248,236,210,0.4),transparent_68%)]" />
         <div className="grain-overlay absolute inset-0 opacity-35 mix-blend-soft-light" />

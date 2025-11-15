@@ -1,10 +1,10 @@
 'use client';
 
 import { motion, useScroll, useTransform } from 'framer-motion';
-import Image from 'next/image';
-import { useRef, useState, type ReactNode } from 'react';
+import { useRef, type ReactNode } from 'react';
 
 import { cn } from '@/lib/utils';
+import { SmartVideo } from './smart-video';
 
 interface ImmersiveVideoProps {
   src: string;
@@ -48,7 +48,6 @@ export function ImmersiveVideo({
   });
 
   const translateY = useTransform(scrollYProgress, [0, 1], ['-6%', '6%']);
-  const [isError, setIsError] = useState(false);
 
   return (
     <motion.figure
@@ -59,29 +58,20 @@ export function ImmersiveVideo({
         className
       )}
     >
-      <div className={cn('relative w-full', aspectClassMap[aspectRatio])}>
-        {!isError ? (
-          <video
-            className="absolute inset-0 size-full object-cover"
-            poster={poster}
-            autoPlay={autoPlay}
-            muted={muted}
-            loop={loop}
-            playsInline
-            controls={controls}
-            onError={() => setIsError(true)}
-          >
-            <source src={src} />
-          </video>
-        ) : fallbackImage ? (
-          <Image
-            src={fallbackImage}
-            alt={caption ?? 'Video fallback'}
-            fill
-            priority={priority}
-            className="object-cover"
-          />
-        ) : null}
+      <div className={cn('relative w-full overflow-hidden', aspectClassMap[aspectRatio])}>
+        <SmartVideo
+          wrapperClassName="absolute inset-0 size-full"
+          className="size-full object-cover"
+          src={src}
+          poster={poster}
+          fallbackImage={fallbackImage}
+          autoPlay={autoPlay}
+          muted={muted}
+          loop={loop}
+          playsInline
+          controls={controls}
+          priority={priority}
+        />
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-white/10" />
         {overlayContent ? (
           <div className="absolute inset-0 flex items-end justify-between p-8 text-white">
