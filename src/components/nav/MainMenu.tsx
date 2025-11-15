@@ -14,7 +14,7 @@ import { quickLinks } from '@/config/quick-links';
 import { socialLinks } from '@/config/socials';
 
 const triggerClasses =
-  'group relative flex h-11 items-center rounded-none border border-white/35 bg-white/10 px-4 text-sm font-menu font-semibold uppercase tracking-[0.32em] text-white transition hover:border-white/60 hover:bg-white/25 focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-0';
+  'group relative flex h-11 items-center rounded-none border border-white/35 bg-white/10 px-4 text-sm font-menu font-semibold uppercase tracking-[0em] text-white transition hover:border-white/60 hover:bg-white/25 focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-0';
 
 export function MainMenu() {
   const pathname = usePathname();
@@ -43,7 +43,7 @@ export function MainMenu() {
         <Button variant="ghost" aria-label="Open menu" className={triggerClasses}>
           <Menu className="h-5 w-5" aria-hidden />
           <span className="sr-only">Menu</span>
-          <span className="ml-0 max-w-0 overflow-hidden font-menu text-[11px] uppercase tracking-[0.32em] opacity-0 transition-all duration-200 ease-out group-hover:ml-2 group-hover:max-w-[140px] group-hover:opacity-100 group-focus-visible:ml-2 group-focus-visible:max-w-[140px] group-focus-visible:opacity-100">
+          <span className="ml-0 max-w-0 overflow-hidden font-menu text-[11px] uppercase tracking-[0em] opacity-0 transition-all duration-200 ease-out group-hover:ml-2 group-hover:max-w-[140px] group-hover:opacity-100 group-focus-visible:ml-2 group-focus-visible:max-w-[140px] group-focus-visible:opacity-100">
             Menu
           </span>
         </Button>
@@ -72,7 +72,7 @@ export function MainMenu() {
                 <Separator className="my-12 border-[rgba(255,214,166,0.25)]" />
                 <section className="flex flex-col gap-8">
                   <div className="space-y-2">
-                    <p className="font-display text-xs uppercase tracking-[0.35em] text-[rgba(255,214,166,0.62)]">
+                    <p className="font-display text-xs uppercase tracking-[0em] text-[rgba(255,214,166,0.62)]">
                       Quick links
                     </p>
                     <p className="text-sm text-[rgba(255,236,216,0.7)]">
@@ -98,7 +98,7 @@ export function MainMenu() {
                         </div>
                         <div className="relative z-10 flex w-full flex-col justify-between px-6 py-7">
                           <div className="space-y-4">
-                            <span className="font-display text-[11px] uppercase tracking-[0.32em] text-[rgba(255,222,190,0.72)]">
+                            <span className="font-display text-[11px] uppercase tracking-[0em] text-[rgba(255,222,190,0.72)]">
                               {item.badge}
                             </span>
                             <h3 className="font-title text-2xl uppercase tracking-[0em] text-[rgba(255,246,232,0.98)] drop-shadow-[0_24px_60px_rgba(0,0,0,0.55)]">
@@ -108,7 +108,7 @@ export function MainMenu() {
                               {item.description}
                             </p>
                           </div>
-                          <span className="inline-flex items-center gap-3 text-[11px] uppercase tracking-[0.38em] text-[rgba(255,226,194,0.7)] transition group-hover:text-[rgba(255,246,232,0.95)]">
+                          <span className="inline-flex items-center gap-3 text-[11px] uppercase tracking-[0em] text-[rgba(255,226,194,0.7)] transition group-hover:text-[rgba(255,246,232,0.95)]">
                             Explore
                             <ArrowUpRight
                               className="h-4 w-4 transition-transform duration-300 group-hover:-translate-y-[1px] group-hover:translate-x-[4px]"

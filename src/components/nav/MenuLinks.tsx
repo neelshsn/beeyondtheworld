@@ -76,12 +76,12 @@ export function MenuLinks({ isOpen, onNavigate }: MenuLinksProps) {
                     )}
                   >
                     <span className="mt-[0.35em] text-xs text-[rgba(244,199,122,0.78)] md:text-sm">
-                      <span className="align-super font-display tracking-[0.35em] text-[rgba(244,199,122,0.9)]">
+                      <span className="align-super font-display tracking-[0em] text-[rgba(244,199,122,0.9)]">
                         {item.index}
                       </span>
                     </span>
                     <span className="relative flex w-full flex-col">
-                      <span className="font-menu text-[clamp(32px,5vw,72px)] font-semibold uppercase leading-[0.95] tracking-[0.35em]">
+                      <span className="font-menu text-[clamp(32px,5vw,72px)] font-semibold uppercase leading-[0.95] tracking-[0em]">
                         {item.label}
                       </span>
                       <span
