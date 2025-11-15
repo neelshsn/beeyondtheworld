@@ -91,6 +91,14 @@
     @apply font-title uppercase tracking-[0.18em];
   }
 
+  p,
+  li,
+  blockquote,
+  figcaption {
+    letter-spacing: 0.02em;
+    line-height: 30px;
+  }
+
   ::selection {
     background: hsl(var(--primary) / 0.35);
     color: hsl(var(--foreground));
