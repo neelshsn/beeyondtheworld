@@ -1,6 +1,7 @@
 'use client';
 
 import { AnimatePresence, motion } from 'framer-motion';
+import type { Transition } from 'framer-motion';
 import { CalendarDays, ChevronLeft, ChevronRight, MapPin } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -19,7 +20,10 @@ type CarouselSlide =
   | { type: 'journey'; id: string; journey: JourneyShowcase }
   | { type: 'cta'; id: string; image?: string };
 
-const SLIDE_TRANSITION = { duration: 0.6, ease: [0.33, 1, 0.68, 1] };
+const SLIDE_TRANSITION: Transition = {
+  duration: 0.6,
+  ease: [0.33, 1, 0.68, 1] as [number, number, number, number],
+};
 
 export function JourneyShowcaseCarousel({ journeys, ctaImage }: JourneyShowcaseCarouselProps) {
   const slides = useMemo<CarouselSlide[]>(() => {
@@ -87,9 +91,9 @@ export function JourneyShowcaseCarousel({ journeys, ctaImage }: JourneyShowcaseC
             type="button"
             aria-label={`Go to slide ${index + 1}`}
             onClick={() => setActiveIndex(index)}
-            className={`size-3 rounded-full border border-foreground/25 transition-all duration-300 ${
+            className={`size-3 rounded-full border border-white/50 transition-all duration-300 ${
               activeIndex === index
-                ? 'border-transparent bg-foreground shadow-[0_0_20px_rgba(15,20,30,0.35)]'
+                ? 'border-transparent bg-white shadow-[0_0_20px_rgba(255,255,255,0.45)]'
                 : 'bg-transparent'
             }`}
           />
@@ -113,13 +117,13 @@ function CarouselArrow({ direction, disabled, onClick }: CarouselArrowProps) {
       onClick={onClick}
       disabled={disabled}
       aria-label={direction === 'prev' ? 'Previous slide' : 'Next slide'}
-      className={`group relative flex h-16 w-16 items-center justify-center text-foreground transition-all duration-300 ${
+      className={`group relative flex h-16 w-16 items-center justify-center text-white transition-all duration-300 ${
         disabled
           ? 'pointer-events-none opacity-0'
-          : 'opacity-100 hover:scale-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground/40'
+          : 'opacity-100 hover:scale-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/50'
       }`}
     >
-      <span className="absolute inset-0 rounded-full bg-white/40 opacity-0 blur-[22px] transition-opacity duration-300 group-hover:opacity-100" />
+      <span className="absolute inset-0 rounded-full bg-white/30 opacity-0 blur-[22px] transition-opacity duration-300 group-hover:opacity-100" />
       <Icon className="relative z-10 size-8 transition-transform duration-300 group-hover:translate-x-1" />
     </button>
   );
