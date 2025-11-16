@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { motion, useMotionTemplate, useMotionValue } from 'framer-motion';
 import type { Variants } from 'framer-motion';
@@ -41,7 +42,13 @@ export type WhatWeDoSectionProps = {
   title: ReactNode;
   description?: ReactNode;
   entries: [WhatWeDoEntry, ...WhatWeDoEntry[]];
-  deliverables: string[];
+  trustedBrands?: TrustedBrand[];
+};
+
+type TrustedBrand = {
+  name: string;
+  logo: string;
+  href?: string;
 };
 
 const CARD_EASE = [0.22, 1, 0.36, 1] as const;
@@ -170,14 +177,12 @@ export function WhatWeDoSection({
   title,
   description,
   entries,
-  deliverables,
+  trustedBrands = [],
 }: WhatWeDoSectionProps) {
-  const marqueeItems = useMemo(() => {
-    if (!deliverables.length) {
-      return [];
-    }
-    return [...deliverables, ...deliverables];
-  }, [deliverables]);
+  const marqueeLogos = useMemo(() => {
+    if (!trustedBrands.length) return [];
+    return [...trustedBrands, ...trustedBrands];
+  }, [trustedBrands]);
 
   return (
     <section className="relative bg-gradient-to-b from-[#fdf9ee] via-[#fdf2e2] to-white px-6 py-20 sm:px-10 lg:px-20">
@@ -197,25 +202,46 @@ export function WhatWeDoSection({
             <WhatWeDoCard key={entry.id} entry={entry} priority={entry.media.type === 'video'} />
           ))}
         </div>
-        {marqueeItems.length ? (
-          <div className="relative overflow-hidden border border-[#f2d2a8]/40 bg-white/35 py-4 backdrop-blur">
-            <motion.div
-              className="flex min-w-max items-center gap-6 px-8 text-[11px] uppercase tracking-[0.5em] text-foreground/55"
-              animate={{ x: ['0%', '-50%'] }}
-              transition={{ repeat: Infinity, repeatType: 'loop', duration: 24, ease: 'linear' }}
-            >
-              {marqueeItems.map((item, index) => (
-                <span
-                  key={`${item}-${index}`}
-                  className="flex items-center gap-6 whitespace-nowrap"
-                >
-                  <span>{item}</span>
-                  <span className="h-1 w-1 bg-foreground/35" aria-hidden />
-                </span>
-              ))}
+        {marqueeLogos.length ? (
+          <div className="flex flex-col gap-6">
+            <p className="text-center text-xs uppercase tracking-[0.55em] text-foreground/45">
+              They trust us
+            </p>
+            <motion.div className="relative overflow-hidden" animate={{}}>
+              <motion.div
+                className="flex min-w-max items-center gap-10 px-2"
+                animate={{ x: ['0%', '-50%'] }}
+                transition={{ repeat: Infinity, repeatType: 'loop', duration: 32, ease: 'linear' }}
+              >
+                {marqueeLogos.map((brand, index) => {
+                  const logo = (
+                    <div className="flex h-10 min-w-[120px] items-center justify-center opacity-70 transition-opacity hover:opacity-100">
+                      <Image
+                        src={brand.logo}
+                        alt={brand.name}
+                        width={120}
+                        height={36}
+                        className="h-8 w-auto object-contain"
+                        sizes="120px"
+                      />
+                    </div>
+                  );
+
+                  return brand.href ? (
+                    <Link
+                      key={`${brand.name}-${index}`}
+                      href={brand.href}
+                      aria-label={brand.name}
+                      className="inline-flex"
+                    >
+                      {logo}
+                    </Link>
+                  ) : (
+                    <div key={`${brand.name}-${index}`}>{logo}</div>
+                  );
+                })}
+              </motion.div>
             </motion.div>
-            <div className="pointer-events-none absolute inset-y-0 left-0 w-12 bg-gradient-to-r from-white via-white/80 to-transparent" />
-            <div className="pointer-events-none absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-white via-white/80 to-transparent" />
           </div>
         ) : null}
       </div>

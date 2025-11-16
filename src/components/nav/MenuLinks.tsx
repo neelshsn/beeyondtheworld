@@ -87,7 +87,7 @@ export function MenuLinks({ isOpen, onNavigate }: MenuLinksProps) {
                       <span
                         aria-hidden
                         className={cn(
-                          'mt-3 h-[3px] w-full origin-left scale-x-0 rounded-full bg-gradient-to-r from-[rgba(249,215,162,0.18)] via-[rgba(244,199,122,0.75)] to-[rgba(255,240,225,0.95)] transition-transform duration-300 ease-out group-hover:scale-x-100',
+                          'mt-3 h-px w-full origin-left scale-x-0 rounded-full bg-gradient-to-r from-[rgba(249,215,162,0.18)] via-[rgba(244,199,122,0.75)] to-[rgba(255,240,225,0.95)] transition-transform duration-300 ease-out group-hover:scale-x-100',
                           isActive && 'scale-x-100'
                         )}
                       />

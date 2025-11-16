@@ -1,14 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import {
-  CalendarDays,
-  Clapperboard,
-  Compass,
-  Instagram,
-  Linkedin,
-  MapPin,
-  Wand2,
-} from 'lucide-react';
+import { CalendarDays, Clapperboard, Instagram, Linkedin, MapPin, Wand2 } from 'lucide-react';
 import { getSupabaseServerClient } from '@/lib/supabase/server-client';
 
 import { GlowTitle, SmartVideo } from '@/components/primitives';
@@ -223,15 +215,12 @@ export default async function Home() {
     },
   ];
 
-  const whatWeDoDeliverables = [
-    'Hero film edits',
-    'Lookbook & e-comm stills',
-    'BTS & soundscapes',
-    'Impact reporting suite',
-    'Talent casting & styling',
-    'Community reinvestment ledger',
-    'Launch microsites',
-    'CRM-ready asset library',
+  const trustedBrandLogos = [
+    { name: 'Maradji', logo: '/assets/brands/maradji.svg' },
+    { name: 'Craie Studio', logo: '/assets/brands/craiestudio.png' },
+    { name: 'Almaaz', logo: '/assets/brands/almaaz.png' },
+    { name: 'Grace & Mila', logo: '/assets/brands/grace&mila.png' },
+    { name: 'Smallable', logo: '/assets/brands/smallable.svg' },
   ];
 
   return (
@@ -268,7 +257,7 @@ export default async function Home() {
           <div className="flex flex-wrap items-center gap-6">
             <Button
               asChild
-              className="group relative inline-flex items-center justify-center gap-4 overflow-hidden rounded-full border border-white/55 bg-white/10 px-16 py-5 font-display text-[11px] uppercase tracking-[0.5em] text-white transition-colors duration-300 [transition-timing-function:var(--bee-ease)] hover:border-white hover:bg-white/15 focus-visible:ring-[#f6c452]/35"
+              className="group relative inline-flex items-center justify-center gap-4 overflow-hidden rounded-full border border-white/20 bg-white/10 px-16 py-5 font-display text-[11px] uppercase tracking-[0.5em] text-white transition-colors duration-300 [transition-timing-function:var(--bee-ease)] hover:border-white/60 hover:bg-white/15 focus-visible:ring-[#f6c452]/35"
             >
               <Link
                 href={coCreateHref}
@@ -283,7 +272,7 @@ export default async function Home() {
             </Button>
             <Button
               asChild
-              className="group relative inline-flex items-center justify-center gap-4 overflow-hidden rounded-full border border-white/45 bg-white/10 px-16 py-5 font-display text-[11px] uppercase tracking-[0.5em] text-white transition-colors duration-300 [transition-timing-function:var(--bee-ease)] hover:border-white hover:bg-white/15 focus-visible:ring-[#f6c452]/35"
+              className="group relative inline-flex items-center justify-center gap-4 overflow-hidden rounded-full border border-white/20 bg-white/10 px-16 py-5 font-display text-[11px] uppercase tracking-[0.5em] text-white transition-colors duration-300 [transition-timing-function:var(--bee-ease)] hover:border-white/60 hover:bg-white/15 focus-visible:ring-[#f6c452]/35"
             >
               <Link
                 href="/concept"
@@ -302,8 +291,7 @@ export default async function Home() {
           aria-hidden
           className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-[18svh] bg-[linear-gradient(to_bottom,rgba(253,249,238,0)_0%,rgba(253,249,238,0)_40%,rgba(253,249,238,0.32)_68%,#fdf9ee_100%)] backdrop-blur-[2.5px] sm:h-[20svh] sm:backdrop-blur-[4px] lg:h-[22svh]"
         />
-        <div className="absolute bottom-12 left-1/2 z-20 flex -translate-x-1/2 items-center gap-2 text-[11px] uppercase tracking-[0.4em] text-white/75">
-          <Compass className="size-4" aria-hidden />
+        <div className="absolute bottom-12 left-1/2 z-20 flex -translate-x-1/2 items-center text-[11px] uppercase tracking-[0.4em] text-white/75">
           <span>Scroll to discover</span>
         </div>
       </section>
@@ -321,7 +309,7 @@ export default async function Home() {
         }
         description="Journeys breathe like roaming ateliers: brands co-create cinematic tales, share resources, and sail home with launch-ready magic."
         entries={whatWeDoEntries}
-        deliverables={whatWeDoDeliverables}
+        trustedBrands={trustedBrandLogos}
       />
 
       <section className="flex flex-col gap-14 bg-gradient-to-b from-white via-white to-stone-100 pb-0 pt-24">

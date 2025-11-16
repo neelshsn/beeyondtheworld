@@ -14,9 +14,9 @@ type HeaderAuthButtonProps = {
 };
 
 const baseClasses =
-  'group relative flex h-11 items-center rounded-full border border-white/35 bg-white/10 px-4 text-sm font-sans font-semibold uppercase tracking-[0.32em] text-white transition duration-200 hover:border-white/60 hover:bg-white/25 focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-0';
+  'group relative flex h-11 items-center gap-2 rounded-full bg-white/10 px-4 text-sm font-sans font-semibold uppercase tracking-[0.32em] text-white/90 transition duration-200 backdrop-blur-lg hover:bg-[rgba(244,199,122,0.3)] focus-visible:ring-2 focus-visible:ring-[#f6c452]/45 focus-visible:ring-offset-0';
 const labelRevealClasses =
-  'ml-0 max-w-0 overflow-hidden font-sans text-[11px] uppercase tracking-[0.32em] opacity-0 transition-all duration-200 ease-out group-hover:ml-2 group-hover:max-w-[160px] group-hover:opacity-100 group-focus-visible:ml-2 group-focus-visible:max-w-[160px] group-focus-visible:opacity-100';
+  'ml-0 max-w-0 overflow-hidden font-sans text-[11px] uppercase tracking-[0.32em] text-white/90 opacity-0 transition-all duration-200 ease-out group-hover:ml-2 group-hover:max-w-[160px] group-hover:opacity-100 group-focus-visible:ml-2 group-focus-visible:max-w-[160px] group-focus-visible:opacity-100';
 
 export function HeaderAuthButton({ className }: HeaderAuthButtonProps) {
   const router = useRouter();
@@ -70,8 +70,8 @@ export function HeaderAuthButton({ className }: HeaderAuthButtonProps) {
     <Button size="sm" variant="ghost" asChild className={cn(baseClasses, className)}>
       <Link href="/login" prefetch={!isLoginRoute}>
         <LogIn className="h-5 w-5" aria-hidden />
-        <span className="sr-only">Log in</span>
-        <span className={labelRevealClasses}>Log in</span>
+        <span className="sr-only">Sign in</span>
+        <span className={labelRevealClasses}>Sign in</span>
       </Link>
     </Button>
   );
