@@ -1,0 +1,27 @@
+﻿<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1600 2000'>
+  <defs>
+    <linearGradient id='japan-sky' x1='0%' y1='0%' x2='0%' y2='100%'>
+      <stop offset='0%' stop-color='#fbe4ec'/>
+      <stop offset='55%' stop-color='#f6b0c3'/>
+      <stop offset='100%' stop-color='#0f1b3d'/>
+    </linearGradient>
+    <radialGradient id='japan-sun' cx='50%' cy='28%' r='28%'>
+      <stop offset='0%' stop-color='#fff1f7' stop-opacity='0.95'/>
+      <stop offset='70%' stop-color='#f472b6' stop-opacity='0.85'/>
+      <stop offset='100%' stop-color='#e11d48' stop-opacity='0.9'/>
+    </radialGradient>
+    <linearGradient id='japan-mountain' x1='0%' y1='0%' x2='100%' y2='100%'>
+      <stop offset='0%' stop-color='#111827'/>
+      <stop offset='50%' stop-color='#1f2937'/>
+      <stop offset='100%' stop-color='#334155'/>
+    </linearGradient>
+  </defs>
+  <rect width='1600' height='2000' fill='url(#japan-sky)'/>
+  <circle cx='800' cy='520' r='330' fill='url(#japan-sun)'/>
+  <path d='M0 1500 Q400 1100 800 1450 T1600 1500 L1600 2000 L0 2000 Z' fill='#0b1230' opacity='0.65'/>
+  <path d='M0 1650 Q300 1200 800 1500 T1600 1650 L1600 2000 L0 2000 Z' fill='#101a3f' opacity='0.9'/>
+  <path d='M200 1700 L800 900 L1400 1700 L1400 2000 L200 2000 Z' fill='url(#japan-mountain)'/>
+  <circle cx='350' cy='600' r='90' fill='#fff' opacity='0.25'/>
+  <circle cx='1230' cy='430' r='70' fill='#fff' opacity='0.15'/>
+  <circle cx='1100' cy='620' r='110' fill='#fff' opacity='0.12'/>
+</svg>

@@ -12,14 +12,14 @@ const JOURNEY_SIZE_CYCLE: DashboardCardSize[] = ['lg', 'md', 'md', 'md', 'lg', '
 const CAMPAIGN_SIZE_CYCLE: DashboardCardSize[] = ['md', 'md', 'md', 'md'];
 
 const JOURNEY_PLACEHOLDER_IMAGES = [
-  '/assets/journeys/philippines/philippines-gallery-01.png',
-  '/assets/journeys/philippines/philippines-gallery-07.png',
-  '/assets/journeys/mallorca/mallorca-gallery-06.png',
-  '/assets/journeys/mallorca/mallorca-gallery-12.png',
-  '/assets/journeys/mallorca/mallorca-gallery-18.png',
-  '/assets/journeys/greece/greece-gallery-08.png',
-  '/assets/journeys/greece/greece-gallery-15.png',
-  '/assets/journeys/greece/greece-gallery-19.png',
+  '/assets/journeys/dolomites-april-2026/dolomites-april-2026-gallery-05.png',
+  '/assets/journeys/azores-summer-editions/azores-summer-editions-gallery-02.png',
+  '/assets/journeys/morocco-april-2026/morocco-april-2026-gallery-08.png',
+  '/assets/journeys/namibia-feb-2025/namibia-feb-2025-gallery-15.png',
+  '/assets/journeys/philippines-lagoon-2025/philippines-lagoon-2025-gallery-07.png',
+  '/assets/journeys/mallorca-balearic-reverie/mallorca-balearic-reverie-gallery-12.png',
+  '/assets/journeys/greece-mineral-dreams/greece-mineral-dreams-gallery-05.png',
+  '/assets/journeys/thailand-bangkok-2026/thailand-bangkok-2026-gallery-10.png',
 ];
 
 const CAMPAIGN_PLACEHOLDER_IMAGES = [
@@ -52,9 +52,12 @@ const VIDEO_PLACEHOLDERS = [
 
 const CONCEPT_PLACEHOLDER_IMAGE = '/assets/concept/sustainable-poster.png';
 const CONCIERGE_PLACEHOLDER_IMAGE = '/assets/campaigns/craie-maroc/craie-maroc-carousel-05.jpg';
-const HOME_PLACEHOLDER_IMAGE = '/assets/journeys/greece/greece-gallery-05.png';
-const CONTACT_PLACEHOLDER_IMAGE = '/assets/journeys/philippines/philippines-gallery-05.png';
-const LOGOUT_PLACEHOLDER_IMAGE = '/assets/journeys/mallorca/mallorca-gallery-09.png';
+const HOME_PLACEHOLDER_IMAGE =
+  '/assets/journeys/dolomites-april-2026/dolomites-april-2026-gallery-03.png';
+const CONTACT_PLACEHOLDER_IMAGE =
+  '/assets/journeys/philippines-lagoon-2025/philippines-lagoon-2025-gallery-05.png';
+const LOGOUT_PLACEHOLDER_IMAGE =
+  '/assets/journeys/lanzarote-seasons/lanzarote-seasons-gallery-02.svg';
 
 function mapAccent(accent?: JourneySummary['accent']): DashboardCardData['accent'] {
   switch (accent) {

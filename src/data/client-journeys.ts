@@ -4,7 +4,7 @@ export const clientJourneys: ClientJourney[] = [
   {
     id: 'journey-philippines-deep-blue',
     slug: 'philippines-deep-blue',
-    title: 'Philippines Deep Blue Journey',
+    title: 'Philippines Lagoon Editions',
     country: 'Philippines',
     regionTags: ['Palawan', 'Siargao', 'Coron'],
     season: 'Fall Winter',
@@ -14,11 +14,11 @@ export const clientJourneys: ClientJourney[] = [
     summary:
       'Floating ateliers drift between hidden lagoons and jungle canopy cinemas to script sun-drenched storytelling with regenerative impact for reef communities.',
     heroVideo: 'https://cdn.coverr.co/videos/coverr-floating-on-the-blue-ocean-1080p.mp4',
-    heroPoster: '/assets/journeys/philippines/philippines-gallery-01.png',
+    heroPoster: '/assets/journeys/philippines-lagoon-2025/philippines-lagoon-2025-gallery-01.png',
     moodboard: [
-      '/assets/journeys/philippines/philippines-gallery-03.png',
-      '/assets/journeys/philippines/philippines-gallery-07.png',
-      '/assets/journeys/philippines/philippines-gallery-12.png',
+      '/assets/journeys/philippines-lagoon-2025/philippines-lagoon-2025-gallery-03.png',
+      '/assets/journeys/philippines-lagoon-2025/philippines-lagoon-2025-gallery-07.png',
+      '/assets/journeys/philippines-lagoon-2025/philippines-lagoon-2025-gallery-12.png',
     ],
     creativeDirector: 'DA - Isla Navarro',
     logisticsLead: 'Logistics - Mateo Dela Cruz',
@@ -44,7 +44,7 @@ export const clientJourneys: ClientJourney[] = [
           {
             id: 'catamaran-image-1',
             type: 'image',
-            url: '/assets/journeys/philippines/philippines-gallery-04.png',
+            url: '/assets/journeys/philippines-lagoon-2025/philippines-lagoon-2025-gallery-04.png',
             alt: 'Wooden sailboat cruising emerald waters at golden hour',
           },
         ],
@@ -63,7 +63,7 @@ export const clientJourneys: ClientJourney[] = [
           {
             id: 'jungle-image-1',
             type: 'image',
-            url: '/assets/journeys/philippines/philippines-gallery-07.png',
+            url: '/assets/journeys/philippines-lagoon-2025/philippines-lagoon-2025-gallery-07.png',
             alt: 'Jungle canopy amphitheatre overlooking the sea',
           },
         ],
@@ -82,7 +82,7 @@ export const clientJourneys: ClientJourney[] = [
           {
             id: 'banquet-image-1',
             type: 'image',
-            url: '/assets/journeys/philippines/philippines-gallery-10.png',
+            url: '/assets/journeys/philippines-lagoon-2025/philippines-lagoon-2025-gallery-10.png',
             alt: 'Chef plating Filipino tasting menu on floating deck',
           },
         ],
@@ -92,7 +92,7 @@ export const clientJourneys: ClientJourney[] = [
   {
     id: 'journey-mallorca-serra-studio',
     slug: 'mallorca-serra-studio',
-    title: 'Mallorca Serra Studio',
+    title: 'Mallorca Balearic Reverie',
     country: 'Spain',
     regionTags: ['Deia', 'Tramuntana', 'Es Vedra'],
     season: 'Spring Summer',
@@ -102,11 +102,12 @@ export const clientJourneys: ClientJourney[] = [
     summary:
       'Slow-living dreamlike journey across Tramuntana fincas, cliffside sound baths, and sunset sail capsules for Mediterranean drops.',
     heroVideo: 'https://cdn.coverr.co/videos/coverr-sea-and-mountains-1080p.mp4',
-    heroPoster: '/assets/journeys/mallorca/mallorca-gallery-06.png',
+    heroPoster:
+      '/assets/journeys/mallorca-balearic-reverie/mallorca-balearic-reverie-gallery-06.png',
     moodboard: [
-      '/assets/journeys/mallorca/mallorca-gallery-02.png',
-      '/assets/journeys/mallorca/mallorca-gallery-09.png',
-      '/assets/journeys/mallorca/mallorca-gallery-18.png',
+      '/assets/journeys/mallorca-balearic-reverie/mallorca-balearic-reverie-gallery-02.png',
+      '/assets/journeys/mallorca-balearic-reverie/mallorca-balearic-reverie-gallery-09.png',
+      '/assets/journeys/mallorca-balearic-reverie/mallorca-balearic-reverie-gallery-18.png',
     ],
     creativeDirector: 'DA - Louna Serrat',
     logisticsLead: 'Logistics - Pau Mirallet',
@@ -137,7 +138,7 @@ export const clientJourneys: ClientJourney[] = [
           {
             id: 'terrace-image-1',
             type: 'image',
-            url: '/assets/journeys/mallorca/mallorca-gallery-04.png',
+            url: '/assets/journeys/mallorca-balearic-reverie/mallorca-balearic-reverie-gallery-04.png',
             alt: 'Stone village street in Deia under warm light',
           },
         ],
@@ -156,7 +157,7 @@ export const clientJourneys: ClientJourney[] = [
           {
             id: 'vedra-image-1',
             type: 'image',
-            url: '/assets/journeys/mallorca/mallorca-gallery-06.png',
+            url: '/assets/journeys/mallorca-balearic-reverie/mallorca-balearic-reverie-gallery-06.png',
             alt: 'Es Vedra island shot from sailboat deck',
           },
         ],
@@ -175,7 +176,7 @@ export const clientJourneys: ClientJourney[] = [
           {
             id: 'cliff-image-1',
             type: 'image',
-            url: '/assets/journeys/mallorca/mallorca-gallery-13.png',
+            url: '/assets/journeys/mallorca-balearic-reverie/mallorca-balearic-reverie-gallery-13.png',
             alt: 'Mountain road descending into narrow gorge',
           },
         ],
@@ -185,7 +186,7 @@ export const clientJourneys: ClientJourney[] = [
   {
     id: 'journey-cyclades-light-tale',
     slug: 'cyclades-light-tale',
-    title: 'Cyclades Light Tale',
+    title: 'Greece Mineral Dreams',
     country: 'Greece',
     regionTags: ['Santorini', 'Mykonos', 'Milos'],
     season: 'Fall Winter',
@@ -195,11 +196,11 @@ export const clientJourneys: ClientJourney[] = [
     summary:
       'An odyssey of sunrise caldera reveals, Klimata dinners, and dual-format filming delivering both campaign-grade assets and brand lore.',
     heroVideo: 'https://cdn.coverr.co/videos/coverr-santorini-with-a-boat-1080p.mp4',
-    heroPoster: '/assets/journeys/greece/greece-gallery-08.png',
+    heroPoster: '/assets/journeys/greece-mineral-dreams/greece-mineral-dreams-gallery-08.png',
     moodboard: [
-      '/assets/journeys/greece/greece-gallery-01.png',
-      '/assets/journeys/greece/greece-gallery-11.png',
-      '/assets/journeys/greece/greece-gallery-19.png',
+      '/assets/journeys/greece-mineral-dreams/greece-mineral-dreams-gallery-01.png',
+      '/assets/journeys/greece-mineral-dreams/greece-mineral-dreams-gallery-11.png',
+      '/assets/journeys/greece-mineral-dreams/greece-mineral-dreams-gallery-19.png',
     ],
     creativeDirector: 'DA - Thalia Vrettos',
     logisticsLead: 'Logistics - Niko Spartalis',
@@ -225,7 +226,7 @@ export const clientJourneys: ClientJourney[] = [
           {
             id: 'oia-image-1',
             type: 'image',
-            url: '/assets/journeys/greece/greece-gallery-01.png',
+            url: '/assets/journeys/greece-mineral-dreams/greece-mineral-dreams-gallery-01.png',
             alt: 'View over Santorini caldera at first light',
           },
         ],
@@ -244,7 +245,7 @@ export const clientJourneys: ClientJourney[] = [
           {
             id: 'klima-image-1',
             type: 'image',
-            url: '/assets/journeys/greece/greece-gallery-08.png',
+            url: '/assets/journeys/greece-mineral-dreams/greece-mineral-dreams-gallery-08.png',
             alt: 'Santorini restaurant terrace at sunset',
           },
         ],
@@ -263,7 +264,7 @@ export const clientJourneys: ClientJourney[] = [
           {
             id: 'caique-image-1',
             type: 'image',
-            url: '/assets/journeys/greece/greece-gallery-15.png',
+            url: '/assets/journeys/greece-mineral-dreams/greece-mineral-dreams-gallery-15.png',
             alt: 'Sea horizon with traditional wooden boat',
           },
         ],

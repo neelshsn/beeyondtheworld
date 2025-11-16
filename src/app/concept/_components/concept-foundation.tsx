@@ -27,11 +27,11 @@ const ENTER_INTERACTIVE_SELECTOR =
   'button, a, input, textarea, select, [role="button"], [data-interactive]';
 
 const CARD_BACKDROPS = [
-  '/assets/journeys/philippines/philippines-gallery-01.png',
+  '/assets/journeys/philippines-lagoon-2025/philippines-lagoon-2025-gallery-01.png',
 
-  '/assets/journeys/philippines/philippines-gallery-02.png',
+  '/assets/journeys/philippines-lagoon-2025/philippines-lagoon-2025-gallery-02.png',
 
-  '/assets/journeys/philippines/philippines-gallery-03.png',
+  '/assets/journeys/philippines-lagoon-2025/philippines-lagoon-2025-gallery-03.png',
 ];
 
 export function ConceptFoundation() {

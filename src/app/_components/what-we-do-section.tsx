@@ -215,14 +215,14 @@ export function WhatWeDoSection({
               >
                 {marqueeLogos.map((brand, index) => {
                   const logo = (
-                    <div className="flex h-10 min-w-[120px] items-center justify-center opacity-70 transition-opacity hover:opacity-100">
+                    <div className="flex h-8 min-w-[90px] items-center justify-center opacity-70 transition-opacity hover:opacity-100">
                       <Image
                         src={brand.logo}
                         alt={brand.name}
-                        width={120}
-                        height={36}
-                        className="h-8 w-auto object-contain"
-                        sizes="120px"
+                        width={90}
+                        height={30}
+                        className="h-6 w-auto object-contain"
+                        sizes="90px"
                       />
                     </div>
                   );

@@ -209,7 +209,7 @@ export default async function Home() {
       ],
       media: {
         type: 'image',
-        src: '/assets/journeys/philippines/philippines-gallery-07.png',
+        src: '/assets/journeys/philippines-lagoon-2025/philippines-lagoon-2025-gallery-07.png',
         alt: 'Jungle cinema installation from the Philippines journey',
       },
     },

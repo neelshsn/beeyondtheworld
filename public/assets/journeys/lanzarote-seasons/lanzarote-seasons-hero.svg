@@ -1,0 +1,24 @@
+﻿<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1600 2000'>
+  <defs>
+    <linearGradient id='lava-sky' x1='0%' y1='0%' x2='0%' y2='100%'>
+      <stop offset='0%' stop-color='#fef3c7'/>
+      <stop offset='40%' stop-color='#f97316'/>
+      <stop offset='100%' stop-color='#111827'/>
+    </linearGradient>
+    <linearGradient id='lava-ground' x1='0%' y1='0%' x2='100%' y2='100%'>
+      <stop offset='0%' stop-color='#451a03'/>
+      <stop offset='100%' stop-color='#7c2d12'/>
+    </linearGradient>
+    <radialGradient id='lava-core' cx='50%' cy='35%' r='35%'>
+      <stop offset='0%' stop-color='#fff7ed'/>
+      <stop offset='60%' stop-color='#f97316'/>
+      <stop offset='100%' stop-color='#c2410c'/>
+    </radialGradient>
+  </defs>
+  <rect width='1600' height='2000' fill='url(#lava-sky)'/>
+  <ellipse cx='800' cy='1550' rx='750' ry='320' fill='#020617' opacity='0.75'/>
+  <path d='M0 1500 C300 1100 900 1200 1600 1500 L1600 2000 L0 2000 Z' fill='url(#lava-ground)'/>
+  <path d='M200 1600 L800 900 L1400 1600 L1400 2000 L200 2000 Z' fill='#0f172a'/>
+  <circle cx='800' cy='620' r='380' fill='url(#lava-core)'/>
+  <path d='M600 1100 Q800 900 1000 1100 T1200 1500 L400 1500 Z' fill='#ef4444' opacity='0.5'/>
+</svg>

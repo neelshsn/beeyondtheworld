@@ -29,7 +29,7 @@ const LOCATION_MOMENTS: LocationMoment[] = [
   {
     id: 'palawan',
     name: 'Palawan blue rooms',
-    background: '/assets/journeys/philippines/philippines-gallery-01.png',
+    background: '/assets/journeys/philippines-lagoon-2025/philippines-lagoon-2025-gallery-01.png',
     kicker: 'Base camp catamaran',
     description:
       'Les premiers jours s&apos;ancrent dans la baie turquoise de Palawan. Nous installons le studio flottant et cartographions les lagons en hydravion pour verrouiller les scenes bleues du recit.',
@@ -41,17 +41,17 @@ const LOCATION_MOMENTS: LocationMoment[] = [
     gallery: [
       {
         id: 'palawan-01',
-        src: '/assets/journeys/philippines/philippines-gallery-03.png',
+        src: '/assets/journeys/philippines-lagoon-2025/philippines-lagoon-2025-gallery-03.png',
         alt: 'Catamaran installe dans un lagon secret',
       },
       {
         id: 'palawan-02',
-        src: '/assets/journeys/philippines/philippines-gallery-04.png',
+        src: '/assets/journeys/philippines-lagoon-2025/philippines-lagoon-2025-gallery-04.png',
         alt: 'Equipe en reperage lumiere sur les falaises',
       },
       {
         id: 'palawan-03',
-        src: '/assets/journeys/philippines/philippines-gallery-06.png',
+        src: '/assets/journeys/philippines-lagoon-2025/philippines-lagoon-2025-gallery-06.png',
         alt: 'Immersion sous-marine avec eclairage cinematographique',
       },
     ],
@@ -59,7 +59,7 @@ const LOCATION_MOMENTS: LocationMoment[] = [
   {
     id: 'siargao',
     name: 'Siargao culture lab',
-    background: '/assets/journeys/philippines/philippines-gallery-07.png',
+    background: '/assets/journeys/philippines-lagoon-2025/philippines-lagoon-2025-gallery-07.png',
     kicker: 'Residences creatives',
     description:
       'Siargao concentre l&apos;experience communautaire. On y tisse les accessoires, on compose les soundscapes et on capture les couchers de soleil qui signent la campagne.',
@@ -71,17 +71,17 @@ const LOCATION_MOMENTS: LocationMoment[] = [
     gallery: [
       {
         id: 'siargao-01',
-        src: '/assets/journeys/philippines/philippines-gallery-08.png',
+        src: '/assets/journeys/philippines-lagoon-2025/philippines-lagoon-2025-gallery-08.png',
         alt: 'Collecte de textures sonores au bord de l&apos;ocean',
       },
       {
         id: 'siargao-02',
-        src: '/assets/journeys/philippines/philippines-gallery-05.png',
+        src: '/assets/journeys/philippines-lagoon-2025/philippines-lagoon-2025-gallery-05.png',
         alt: 'Artisan tissant des accessoires sur pilotis',
       },
       {
         id: 'siargao-03',
-        src: '/assets/journeys/philippines/philippines-gallery-09.png',
+        src: '/assets/journeys/philippines-lagoon-2025/philippines-lagoon-2025-gallery-09.png',
         alt: 'Banca traditionnelle au coucher du soleil',
       },
     ],
@@ -94,17 +94,17 @@ const GRADIENT_MOSAICS: GradientMosaic[] = [
     images: [
       {
         id: 'mosaic-lagoon-01',
-        src: '/assets/journeys/philippines/philippines-gallery-02.png',
+        src: '/assets/journeys/philippines-lagoon-2025/philippines-lagoon-2025-gallery-02.png',
         alt: 'Survol d&apos;un banc de sable turquoise',
       },
       {
         id: 'mosaic-lagoon-02',
-        src: '/assets/journeys/philippines/philippines-gallery-12.png',
+        src: '/assets/journeys/philippines-lagoon-2025/philippines-lagoon-2025-gallery-12.png',
         alt: 'Tournage sous-marin avec plongeur et camera',
       },
       {
         id: 'mosaic-lagoon-03',
-        src: '/assets/journeys/philippines/philippines-gallery-10.png',
+        src: '/assets/journeys/philippines-lagoon-2025/philippines-lagoon-2025-gallery-10.png',
         alt: 'Diner flottant au coucher du soleil',
       },
     ],
@@ -114,17 +114,17 @@ const GRADIENT_MOSAICS: GradientMosaic[] = [
     images: [
       {
         id: 'mosaic-culture-01',
-        src: '/assets/journeys/philippines/philippines-gallery-11.png',
+        src: '/assets/journeys/philippines-lagoon-2025/philippines-lagoon-2025-gallery-11.png',
         alt: 'Portrait d&apos;artisane et textiles teints',
       },
       {
         id: 'mosaic-culture-02',
-        src: '/assets/journeys/philippines/philippines-gallery-04.png',
+        src: '/assets/journeys/philippines-lagoon-2025/philippines-lagoon-2025-gallery-04.png',
         alt: 'Equipe technique sur un banc de sable',
       },
       {
         id: 'mosaic-culture-03',
-        src: '/assets/journeys/philippines/philippines-gallery-06.png',
+        src: '/assets/journeys/philippines-lagoon-2025/philippines-lagoon-2025-gallery-06.png',
         alt: 'Sequence macro corail et lumiere cinema',
       },
     ],
@@ -461,7 +461,7 @@ function FinalCTASection() {
   return (
     <section className="relative flex min-h-[80vh] items-center overflow-hidden">
       <Image
-        src="/assets/journeys/philippines/philippines-gallery-02.png"
+        src="/assets/journeys/philippines-lagoon-2025/philippines-lagoon-2025-gallery-02.png"
         alt="Lagoon aerien"
         fill
         sizes="100vw"
