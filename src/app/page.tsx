@@ -1,140 +1,16 @@
-import Image from 'next/image';
 import Link from 'next/link';
-import { CalendarDays, Clapperboard, Instagram, Linkedin, MapPin, Wand2 } from 'lucide-react';
+import { Instagram, Linkedin, Wand2 } from 'lucide-react';
 import { getSupabaseServerClient } from '@/lib/supabase/server-client';
 
 import { GlowTitle, SmartVideo } from '@/components/primitives';
+import { JourneyShowcaseCarousel } from '@/app/_components/journey-showcase-carousel';
 import { WhatWeDoSection, type WhatWeDoSectionProps } from '@/app/_components/what-we-do-section';
 import SplitText from '@/components/SplitText';
 import { Button } from '@/components/ui/button';
 import { campaignShowcases, journeyShowcases } from '@/data/showcases';
-import type { CampaignShowcase, JourneyShowcase } from '@/data/showcases';
-
-type ShowcaseEntry =
-  | { kind: 'journey'; id: string; journey: JourneyShowcase }
-  | { kind: 'campaign'; id: string; campaign: CampaignShowcase };
+import type { JourneyShowcase } from '@/data/showcases';
 
 const heroVideoSrc = '/assets/home/main-background-hero-home.mp4';
-
-function JourneyCard({ journey }: { journey: JourneyShowcase }) {
-  return (
-    <article className="group relative isolate flex min-h-[806px] w-full items-center justify-center overflow-hidden">
-      <Image
-        src={journey.hero.src}
-        alt={journey.hero.alt}
-        fill
-        className="absolute inset-0 size-full object-cover transition-[transform,opacity] duration-700 ease-bee"
-        sizes="(max-width: 768px) 100vw, 80vw"
-        priority={journey.id === 'philippines'}
-      />
-      <div className="pointer-events-none absolute inset-0 bg-black/55 transition-colors duration-500 ease-bee group-hover:bg-black/40" />
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-36 bg-[linear-gradient(to_bottom,rgba(6,8,12,0.92)_0%,rgba(6,8,12,0.55)_60%,rgba(6,8,12,0)_100%)]" />
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[52%] bg-[linear-gradient(to_top,rgba(6,8,12,0.9)_0%,rgba(6,8,12,0.48)_58%,rgba(6,8,12,0)_100%)]" />
-      <div className="relative z-20 mx-auto flex w-full max-w-4xl flex-col items-center justify-center gap-10 px-6 py-20 text-center text-white transition-transform duration-500 ease-bee sm:px-10">
-        <div className="flex flex-wrap items-center justify-center gap-4 text-[11px] uppercase tracking-[0.32em] text-white/75 drop-shadow-[0_8px_18px_rgba(0,0,0,0.55)]">
-          <span className="flex items-center gap-2">
-            <MapPin className="size-3.5" aria-hidden />
-            {journey.locale}
-          </span>
-          <span className="hidden h-px w-16 bg-white/35 sm:block" aria-hidden />
-          <span className="flex items-center gap-2">
-            <CalendarDays className="size-3.5" aria-hidden />
-            {journey.timeframe}
-          </span>
-        </div>
-        <div className="max-w-3xl space-y-5 text-center">
-          <SplitText
-            text={journey.title}
-            tag="h3"
-            splitType="words"
-            className="font-title text-4xl uppercase tracking-[0em] text-white drop-shadow-[0_28px_60px_rgba(0,0,0,0.7)] sm:text-[2.9rem]"
-            textAlign="center"
-          />
-          <p className="text-sm leading-relaxed text-white/85 drop-shadow-[0_12px_32px_rgba(0,0,0,0.55)] sm:text-base">
-            {journey.summary}
-          </p>
-        </div>
-        <Button
-          asChild
-          className="group relative inline-flex items-center justify-center gap-4 overflow-hidden rounded-full border border-white/55 bg-white/10 px-16 py-5 font-display text-[11px] uppercase tracking-[0.5em] text-white transition-colors duration-300 [transition-timing-function:var(--bee-ease)] hover:border-white hover:bg-white/15 focus-visible:ring-[#f6c452]/35"
-        >
-          <Link
-            href={`/journeys/${journey.slug}`}
-            className="relative inline-flex items-center justify-center gap-4"
-          >
-            <span
-              aria-hidden
-              className="pointer-events-none absolute inset-0 z-0 -translate-x-full bg-gradient-to-r from-transparent via-[#f6c452bf] to-transparent opacity-0 transition-transform duration-500 group-hover:translate-x-full group-hover:opacity-100"
-            />
-            <span className="relative z-10">Open Journey</span>
-          </Link>
-        </Button>
-      </div>
-    </article>
-  );
-}
-
-function CampaignCard({ campaign }: { campaign: CampaignShowcase }) {
-  return (
-    <article className="group relative isolate flex min-h-[806px] w-full items-center justify-center overflow-hidden">
-      <SmartVideo
-        wrapperClassName="absolute inset-0"
-        className="size-full object-cover transition-[transform,opacity] duration-700 ease-bee"
-        src={campaign.hero.src}
-        poster={campaign.hero.poster}
-        fallbackImage={campaign.hero.poster}
-        autoPlay
-        muted
-        loop
-        playsInline
-        aria-hidden
-      />
-      <div className="pointer-events-none absolute inset-0 bg-black/55 transition-colors duration-500 ease-bee group-hover:bg-black/40" />
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-36 bg-[linear-gradient(to_bottom,rgba(6,8,12,0.92)_0%,rgba(6,8,12,0.55)_60%,rgba(6,8,12,0)_100%)]" />
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[52%] bg-[linear-gradient(to_top,rgba(6,8,12,0.9)_0%,rgba(6,8,12,0.48)_58%,rgba(6,8,12,0)_100%)]" />
-      <div className="relative z-20 mx-auto flex w-full max-w-4xl flex-col items-center justify-center gap-10 px-6 py-20 text-center text-white transition-transform duration-500 ease-bee sm:px-10">
-        <div className="flex flex-wrap items-center justify-center gap-4 text-[11px] uppercase tracking-[0.32em] text-white/75 drop-shadow-[0_8px_18px_rgba(0,0,0,0.55)]">
-          <span className="flex items-center gap-2">
-            <MapPin className="size-3.5" aria-hidden />
-            {campaign.destination}
-          </span>
-          <span className="hidden h-px w-16 bg-white/35 sm:block" aria-hidden />
-          <span className="flex items-center gap-2">
-            <Clapperboard className="size-3.5" aria-hidden />
-            {campaign.headline}
-          </span>
-        </div>
-        <div className="max-w-3xl space-y-5 text-center">
-          <SplitText
-            text={campaign.title}
-            tag="h3"
-            splitType="words"
-            className="font-title text-4xl uppercase tracking-[0em] text-white drop-shadow-[0_28px_60px_rgba(0,0,0,0.7)] sm:text-[2.9rem]"
-            textAlign="center"
-          />
-          <p className="text-sm leading-relaxed text-white/85 drop-shadow-[0_12px_32px_rgba(0,0,0,0.55)] sm:text-base">
-            {campaign.summary}
-          </p>
-        </div>
-        <Button
-          asChild
-          className="group relative inline-flex items-center justify-center gap-4 overflow-hidden rounded-full border border-white/55 bg-white/10 px-16 py-5 font-display text-[11px] uppercase tracking-[0.5em] text-white transition-colors duration-300 [transition-timing-function:var(--bee-ease)] hover:border-white hover:bg-white/15 focus-visible:ring-[#f6c452]/35"
-        >
-          <Link
-            href={`/campaigns/${campaign.slug}`}
-            className="relative inline-flex items-center justify-center gap-4"
-          >
-            <span
-              aria-hidden
-              className="pointer-events-none absolute inset-0 z-0 -translate-x-full bg-gradient-to-r from-transparent via-[#f6c452bf] to-transparent opacity-0 transition-transform duration-500 group-hover:translate-x-full group-hover:opacity-100"
-            />
-            <span className="relative z-10">Open Campaign</span>
-          </Link>
-        </Button>
-      </div>
-    </article>
-  );
-}
 
 export default async function Home() {
   const supabase = await getSupabaseServerClient();
@@ -144,19 +20,12 @@ export default async function Home() {
   } = await supabase.auth.getSession();
   const coCreateHref = !sessionError && session ? '/journeys' : '/login';
 
-  const alternatingShowcases: ShowcaseEntry[] = [];
-
-  journeyShowcases.forEach((journey, index) => {
-    alternatingShowcases.push({ kind: 'journey', id: `journey-${journey.id}`, journey });
-    const linkedCampaign = campaignShowcases[index];
-    if (linkedCampaign) {
-      alternatingShowcases.push({
-        kind: 'campaign',
-        id: `campaign-${linkedCampaign.id}`,
-        campaign: linkedCampaign,
-      });
-    }
-  });
+  const preferredIds = ['india-january-2026', 'morocco-april-2026', 'dolomites-april-2026'];
+  const upcomingJourneys = preferredIds
+    .map((id) => journeyShowcases.find((journey) => journey.id === id))
+    .filter((journey): journey is JourneyShowcase => Boolean(journey));
+  const campaignCtaImage =
+    campaignShowcases[0]?.hero.poster ?? campaignShowcases[0]?.hero.src ?? undefined;
   const whatWeDoEntries: WhatWeDoSectionProps['entries'] = [
     {
       id: 'campaign-capsules',
@@ -312,28 +181,22 @@ export default async function Home() {
         trustedBrands={trustedBrandLogos}
       />
 
-      <section className="flex flex-col gap-14 bg-gradient-to-b from-white via-white to-stone-100 pb-0 pt-24">
+      <section className="relative flex flex-col gap-14 overflow-hidden bg-gradient-to-b from-white via-white to-stone-100 pb-6 pt-24">
         <div className="px-6 text-center sm:px-10 lg:px-20">
           <GlowTitle
             eyebrow="Journeys & campaigns"
             title="Explore the journeys and films awaiting brands"
-            description="Alternating cards unveil the pulse of each tale. Drift inside to open dream-sheets with itineraries, credits, and immersive galleries."
+            description="Glissez entre les trois prochaines journeys puis ouvrez l'atlas complet — chaque slide révèle une scène prête à produire."
             align="center"
             glowTone="dawn"
           />
         </div>
-        <div className="flex flex-col">
-          {alternatingShowcases.map((entry) =>
-            entry.kind === 'journey' ? (
-              <JourneyCard key={entry.id} journey={entry.journey} />
-            ) : entry.kind === 'campaign' ? (
-              <CampaignCard key={entry.id} campaign={entry.campaign} />
-            ) : null
-          )}
+        <div className="w-full">
+          <JourneyShowcaseCarousel journeys={upcomingJourneys} ctaImage={campaignCtaImage} />
         </div>
       </section>
 
-      <section className="relative flex min-h-[70vh] flex-col justify-center overflow-hidden px-6 pb-28 pt-10 text-white sm:px-10 lg:px-20">
+      <section className="relative -mt-10 flex min-h-[70vh] flex-col justify-center overflow-hidden px-6 pb-28 pt-4 text-white sm:px-10 lg:px-20">
         <SmartVideo
           wrapperClassName="absolute inset-0"
           className="size-full object-cover"
