@@ -17,6 +17,10 @@ export const metadata: Metadata = {
       'Discover immersive campaign journeys and sustainable fashion narratives crafted by Beeyondtheworld.',
     type: 'website',
   },
+  icons: {
+    icon: [{ url: '/assets/icones/Ico%20Gold%20BEE-13.svg', type: 'image/svg+xml' }],
+    shortcut: [{ url: '/assets/icones/Ico%20Gold%20BEE-13.svg', type: 'image/svg+xml' }],
+  },
   metadataBase: new URL('https://beeyondtheworld.com'),
 };
 
