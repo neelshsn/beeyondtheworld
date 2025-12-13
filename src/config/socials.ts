@@ -1,21 +1,36 @@
-import type { LucideIcon } from 'lucide-react';
-import { Instagram, Linkedin } from 'lucide-react';
+import React, { type ComponentType } from 'react';
 
 export type SocialLink = {
   label: string;
   href: string;
-  icon: LucideIcon;
+  icon: ComponentType<{ className?: string }>;
 };
+
+const InstagramGoldIcon: ComponentType<{ className?: string }> = ({ className }) =>
+  React.createElement('img', {
+    src: '/assets/icones/Ico Gold BEE-11.svg',
+    alt: '',
+    className,
+    loading: 'lazy',
+  });
+
+const LinkedinGoldIcon: ComponentType<{ className?: string }> = ({ className }) =>
+  React.createElement('img', {
+    src: '/assets/icones/Ico Gold BEE-09.svg',
+    alt: '',
+    className,
+    loading: 'lazy',
+  });
 
 export const socialLinks = [
   {
     label: 'Instagram',
     href: 'https://instagram.com/beeyondtheworld.co',
-    icon: Instagram,
+    icon: InstagramGoldIcon,
   },
   {
     label: 'LinkedIn',
     href: 'https://www.linkedin.com/company/beeyondtheworld',
-    icon: Linkedin,
+    icon: LinkedinGoldIcon,
   },
 ] as const satisfies readonly SocialLink[];

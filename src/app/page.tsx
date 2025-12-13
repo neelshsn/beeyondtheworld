@@ -1,5 +1,6 @@
+import Image from 'next/image';
 import Link from 'next/link';
-import { Instagram, Linkedin, Wand2 } from 'lucide-react';
+import { Instagram, Linkedin } from 'lucide-react';
 import { getSupabaseServerClient } from '@/lib/supabase/server-client';
 
 import { GlowTitle, SmartVideo } from '@/components/primitives';
@@ -107,20 +108,36 @@ export default async function Home() {
         />
         <div className="relative z-20 flex flex-col gap-8 px-6 pb-32 pt-24 sm:px-10 lg:px-20">
           <div className="max-w-3xl space-y-6">
-            <p className="flex items-center gap-2 text-xs uppercase tracking-[0.45em] text-white/80 drop-shadow-[0_3px_12px_rgba(0,0,0,0.65)]">
-              <Wand2 className="size-4" aria-hidden /> Beeyondtheworld Atelier
-            </p>
+            <div className="flex items-center drop-shadow-[0_3px_12px_rgba(0,0,0,0.65)]">
+              <Image
+                src="/assets/icones/Ico Gold BEE-13.svg"
+                alt="Beeyondtheworld Atelier"
+                width={180}
+                height={180}
+                className="h-16 w-auto"
+                style={{
+                  filter:
+                    'drop-shadow(0 0 26px rgba(246,196,82,0.75)) drop-shadow(0 12px 32px rgba(0,0,0,0.45))',
+                }}
+                priority
+              />
+            </div>
             <SplitText
-              text="Co-travel dreamcraft for fashion and lifestyle brands"
+              text="Co-journeys pioneering approach for a sustainable transition in fashion advertising"
               tag="h1"
               splitType="words, chars"
               className="font-title text-5xl uppercase leading-tight tracking-[0em] text-white drop-shadow-[0_12px_32px_rgba(0,0,0,0.55)] sm:text-6xl"
+              style={{
+                textShadow:
+                  '0 0 22px rgba(255,255,255,0.95), 0 0 48px rgba(255,255,255,0.65), 0 12px 32px rgba(0,0,0,0.55)',
+              }}
               textAlign="left"
             />
             <p className="max-w-2xl text-sm leading-relaxed text-white/85 drop-shadow-[0_6px_20px_rgba(0,0,0,0.55)]">
-              Beeyondtheworld whispers dreamlike production tales. We weave non-competing brands
-              into shared journeys, letting them share the same wind, crews, and glow while their
-              stories stay singular and luminous.
+              Beeyondtheworld's mission is to curb the excessive individualization of visual
+              productions by optimizing every resource with intelligence and intention. We introduce
+              a refined, sustainable model that elevates creative excellence while minimizing
+              impact, proving that luxury and responsibility can move forward as one.
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-6">

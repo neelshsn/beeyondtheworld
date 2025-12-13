@@ -11,7 +11,6 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { Sheet, SheetClose, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { socialLinks } from '@/config/socials';
-import { journeyShowcases } from '@/data/showcases';
 import { cn } from '@/lib/utils';
 
 const triggerClasses =
@@ -22,10 +21,6 @@ export function MainMenu() {
   const [open, setOpen] = React.useState(false);
   const [hasMounted, setHasMounted] = React.useState(false);
   const lastPathnameRef = React.useRef(pathname);
-  const heroJourney =
-    journeyShowcases.find((journey) => journey.id === 'philippines') ?? journeyShowcases[0];
-  const springSummerJourney =
-    journeyShowcases.find((journey) => journey.id === 'mallorca') ?? journeyShowcases[1];
 
   React.useEffect(() => {
     setHasMounted(true);
@@ -89,24 +84,22 @@ export function MainMenu() {
                     <div className="grid gap-0 md:grid-cols-2">
                       {[
                         {
-                          id: 'next-journey',
-                          href: `/journeys/${heroJourney.slug}`,
-                          label: heroJourney.locale,
-                          meta: heroJourney.timeframe,
-                          title: heroJourney.title,
-                          description: heroJourney.summary,
-                          image: heroJourney.hero.src,
+                          id: 'india-focus',
+                          href: '/journeys/india-january-2026',
+                          label: 'India',
+                          meta: 'January 2026',
+                          title: 'India January 2026',
+                          image:
+                            '/assets/journeys/india-january-2026/india-january-2026-gallery-03.png',
                           layout: 'portrait' as const,
                         },
                         {
                           id: 'spring-summer',
                           href: '/journeys?season=summer',
-                          label: 'Spring Summer catalogue',
-                          meta: 'Spring Summer 26',
-                          title: springSummerJourney.title,
-                          description:
-                            'Partez pour les ateliers ensoleillés sélectionnés pour la saison Spring Summer. Le catalogue se charge déjà filtré.',
-                          image: springSummerJourney.hero.src,
+                          label: 'Spring Summer',
+                          meta: '2026',
+                          title: 'Spring Summer 2026',
+                          image: '/assets/journeys/morocco-april-2026/morocco-april-2026-gallery-07.png',
                           layout: 'portrait' as const,
                         },
                       ].map((tile, index) => (
@@ -126,12 +119,10 @@ export function MainMenu() {
                       tile={{
                         id: 'csr-label',
                         href: '/concept',
-                        label: 'CSR Label',
-                        meta: 'Impact guardianship',
-                        title: 'La signature Beeyondtheworld',
-                        description:
-                          'Découvrez comment notre label CSR certifie les engagements climat et sociétaux de chaque voyage, du plateau aux communautés locales.',
-                        image: '/assets/concept/sustainable-poster.png',
+                        label: 'Craie Studio',
+                        meta: 'Fall Winter 23',
+                        title: 'CSR Label',
+                        image: '/assets/campaigns/craie-suisse/Swiss3.png',
                         layout: 'landscape',
                       }}
                       onNavigate={handleNavigate}
@@ -148,9 +139,9 @@ export function MainMenu() {
                       target="_blank"
                       rel="noopener"
                       aria-label={label}
-                      className="flex h-14 w-14 items-center justify-center rounded-full text-[rgba(255,240,225,0.8)] transition hover:text-[#f6c452] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f6c452]/60 focus-visible:ring-offset-0"
+                      className="flex h-16 w-16 items-center justify-center rounded-full text-[rgba(255,240,225,0.9)] shadow-[0_12px_30px_rgba(0,0,0,0.45)] transition hover:text-[#f6c452] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f6c452]/60 focus-visible:ring-offset-0"
                     >
-                      <Icon className="h-6 w-6" aria-hidden />
+                      <Icon className="h-8 w-8 drop-shadow-[0_4px_14px_rgba(0,0,0,0.45)]" aria-hidden />
                     </a>
                   ))}
                 </div>
@@ -169,7 +160,6 @@ type MenuQuickLinkTile = {
   label: string;
   meta: string;
   title: string;
-  description: string;
   image: string;
   layout: 'portrait' | 'landscape';
 };
@@ -184,7 +174,9 @@ function MenuQuickLink({
   className?: string;
 }) {
   const aspectClass =
-    tile.layout === 'landscape' ? 'md:aspect-[6/3]' : 'md:aspect-[2/3] md:min-h-[440px]';
+    tile.layout === 'landscape'
+      ? 'md:aspect-[5/3] md:min-h-[420px]'
+      : 'md:aspect-[2/3] md:min-h-[440px]';
 
   return (
     <Link
@@ -203,23 +195,20 @@ function MenuQuickLink({
           className="absolute inset-0 scale-105 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
           style={{ backgroundImage: `url(${tile.image})` }}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-transparent transition duration-500 group-hover:from-[rgba(32,22,18,0.92)] group-hover:via-black/45" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[rgba(9,6,4,0.92)] via-black/35 to-transparent transition duration-500 group-hover:from-[rgba(26,18,13,0.95)] group-hover:via-black/45" />
         <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent opacity-0 transition duration-500 group-hover:opacity-40" />
       </div>
-      <div className="relative z-10 flex h-full w-full flex-col justify-between p-6 sm:p-8">
-        <div className="space-y-1 text-[10px] uppercase tracking-[0.45em] text-white/70">
-          <p>{tile.label}</p>
-          <p className="text-[0.62rem] tracking-[0.38em] text-white/60">{tile.meta}</p>
+      <div className="relative z-10 flex h-full w-full flex-col gap-6 p-6 sm:p-8">
+        <div className="flex items-center justify-between text-[10px] uppercase tracking-[0.32em] text-white/70">
+          <span className="pr-4">{tile.label}</span>
+          <span className="text-[0.64rem] tracking-[0.3em] text-white/60">{tile.meta}</span>
         </div>
-        <div className="space-y-4 text-left">
-          <h3 className="font-title text-3xl uppercase tracking-[0.1em] text-white sm:text-4xl">
+        <div className="flex flex-1 items-center">
+          <h3 className="font-title text-2xl uppercase tracking-[0.12em] text-white opacity-0 transition duration-300 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100 sm:text-3xl lg:text-[32px] w-full text-center">
             {tile.title}
           </h3>
-          <p className="text-sm leading-relaxed text-white/85 opacity-0 transition duration-300 group-hover:opacity-100">
-            {tile.description}
-          </p>
         </div>
-        <div className="flex items-center gap-3 text-[11px] uppercase tracking-[0.45em] text-white/80">
+        <div className="flex items-center gap-3 text-[10px] uppercase tracking-[0.34em] text-white/85">
           <span>Discover</span>
           <ArrowUpRight
             className="h-4 w-4 transition duration-300 group-hover:-translate-y-[1px] group-hover:translate-x-[4px]"
