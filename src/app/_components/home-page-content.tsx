@@ -72,15 +72,15 @@ export default function HomePageContent({
     const targetTop = whatWeDoAnchorRef.current?.offsetTop ?? 0;
     const startY = window.scrollY;
     const distance = targetTop - startY;
-    const duration = 1000;
-    const easeInOutCubic = (t: number) =>
-      t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    const duration = 1200;
+    const easeInOutQuint = (t: number) =>
+      t < 0.5 ? 16 * t * t * t * t * t : 1 - Math.pow(-2 * t + 2, 5) / 2;
     const startTime = performance.now();
 
     const animate = (now: number) => {
       const elapsed = now - startTime;
       const progress = Math.min(elapsed / duration, 1);
-      const eased = easeInOutCubic(progress);
+      const eased = easeInOutQuint(progress);
 
       window.scrollTo({ top: startY + distance * eased, behavior: 'auto' });
       setHeroProgress(eased);
@@ -106,7 +106,7 @@ export default function HomePageContent({
     <main
       className={cn(
         'flex flex-col bg-[#fdf9ee]',
-        heroStage === 'visible' && 'max-h-screen overflow-hidden'
+        heroStage !== 'hidden' && 'max-h-screen overflow-hidden'
       )}
     >
       {heroIsMounted ? (
@@ -116,8 +116,8 @@ export default function HomePageContent({
             heroStage !== 'visible' && 'pointer-events-none'
           )}
           style={{
-            transform: `translateY(${-heroProgress * 100}%) scale(${1 - heroProgress * 0.04})`,
-            opacity: 1 - heroProgress * 0.15,
+            transform: `translateY(${-heroProgress * 12}%) scale(${1 - heroProgress * 0.03})`,
+            opacity: 1 - heroProgress * 0.12,
           }}
         >
           <SmartVideo
