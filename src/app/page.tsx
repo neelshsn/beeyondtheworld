@@ -134,7 +134,7 @@ export default async function Home() {
               textAlign="left"
             />
             <p className="max-w-2xl text-sm leading-relaxed text-white/85 drop-shadow-[0_6px_20px_rgba(0,0,0,0.55)]">
-              Beeyondtheworld's mission is to curb the excessive individualization of visual
+              Beeyondtheworld&rsquo;s mission is to curb the excessive individualization of visual
               productions by optimizing every resource with intelligence and intention. We introduce
               a refined, sustainable model that elevates creative excellence while minimizing
               impact, proving that luxury and responsibility can move forward as one.
@@ -203,7 +203,7 @@ export default async function Home() {
           <GlowTitle
             eyebrow="Journeys & campaigns"
             title="Explore the journeys and films awaiting brands"
-            description="Glissez entre les trois prochaines journeys puis ouvrez l'atlas complet — chaque slide révèle une scène prête à produire."
+            description="Glissez entre les trois prochaines journeys puis ouvrez l&rsquo;atlas complet &mdash; chaque slide r&eacute;v&egrave;le une sc&egrave;ne pr&ecirc;te &agrave; produire."
             align="center"
             glowTone="dawn"
           />
