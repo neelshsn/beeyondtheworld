@@ -35,12 +35,7 @@ export default function HomePageContent({
   const [linePinned, setLinePinned] = useState(false);
   const [lineOverlapFraction, setLineOverlapFraction] = useState(0);
   const [activeTile, setActiveTile] = useState<TriptychTileId | null>(null);
-  const overlayPlacement =
-    activeTile === 'bees'
-      ? 'items-end justify-start px-4 pb-8 sm:px-8 sm:pb-12'
-      : activeTile === 'flowers'
-        ? 'items-center justify-end px-6 pb-6 sm:px-10 sm:pb-10'
-        : 'items-start justify-start px-4 pt-10 sm:px-8 sm:pt-12';
+  const overlayPlacement = '';
 
   const scrollToWhatWeDo = useCallback(() => {
     const targetTop = whatWeDoAnchorRef.current?.offsetTop ?? 0;
@@ -64,9 +59,9 @@ export default function HomePageContent({
       const rowHeight = rowEl?.getBoundingClientRect().height ?? 0;
 
       const rawShift = window.scrollY - startY + rect.height * 0.1;
-      const maxShift = Math.max(tripTop + rowHeight * 0.5 - rect.height * 0.5 - startY, 0);
+      const maxShift = Math.max(tripTop - startY + rect.height * 0.5, 0);
       const clamped = Math.min(Math.max(rawShift, 0), maxShift);
-      const overlapStart = Math.max(tripTop - startY - rect.height * 0.1, 0);
+      const overlapStart = Math.max(tripTop - startY - rect.height * 0.2, 0);
       const overlapProgress =
         clamped <= overlapStart || maxShift <= overlapStart
           ? 0
