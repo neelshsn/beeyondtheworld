@@ -3,12 +3,43 @@ export type MainNavItem = {
   labelKey?: string;
   href: string;
   index: `${number}${number}`;
+  iconSrc: string;
 };
 
 export const mainNav = [
-  { label: 'Home', labelKey: 'navigation.home', href: '/', index: '01' },
-  { label: 'Concept', labelKey: 'navigation.concept', href: '/concept', index: '02' },
-  { label: 'Campaigns', labelKey: 'navigation.campaigns', href: '/campaigns', index: '03' },
-  { label: 'Journeys', labelKey: 'navigation.journeys', href: '/journeys', index: '04' },
-  { label: 'Contact', labelKey: 'navigation.contact', href: '/contact', index: '05' },
+  {
+    label: 'Home',
+    labelKey: 'navigation.home',
+    href: '/',
+    index: '05',
+    iconSrc: '/assets/icones/Ico Gold BEE-05.svg',
+  },
+  {
+    label: 'Concept',
+    labelKey: 'navigation.concept',
+    href: '/concept',
+    index: '02',
+    iconSrc: '/assets/icones/Ico Gold BEE-13.svg',
+  },
+  {
+    label: 'Journeys',
+    labelKey: 'navigation.journeys',
+    href: '/journeys',
+    index: '14',
+    iconSrc: '/assets/icones/Ico Gold BEE-14.svg',
+  },
+  {
+    label: 'Campaigns',
+    labelKey: 'navigation.campaigns',
+    href: '/campaigns',
+    index: '06',
+    iconSrc: '/assets/icones/Ico Gold BEE-06.svg',
+  },
+  {
+    label: 'Contact',
+    labelKey: 'navigation.contact',
+    href: '/contact',
+    index: '12',
+    iconSrc: '/assets/icones/Ico Gold BEE-12.svg',
+  },
 ] as const satisfies readonly MainNavItem[];

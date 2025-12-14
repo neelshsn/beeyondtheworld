@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { AnimatePresence, MotionConfig, motion, useReducedMotion } from 'framer-motion';
+import Image from 'next/image';
 import * as React from 'react';
 
 import { mainNav } from '@/config/navigation';
@@ -76,8 +77,16 @@ export function MenuLinks({ isOpen, onNavigate }: MenuLinksProps) {
                     )}
                   >
                     <span className="mt-[0.35em] text-xs text-[rgba(244,199,122,0.78)] md:text-sm">
-                      <span className="align-super font-display tracking-[0em] text-[rgba(244,199,122,0.9)]">
-                        {item.index}
+                      <span className="inline-flex h-10 w-10 items-center justify-center p-[3px] md:h-11 md:w-11">
+                        <Image
+                          src={item.iconSrc}
+                          alt=""
+                          width={36}
+                          height={36}
+                          className="h-8 w-8 drop-shadow-[0_6px_18px_rgba(0,0,0,0.45)] md:h-9 md:w-9"
+                          aria-hidden
+                        />
+                        <span className="sr-only">{item.index}</span>
                       </span>
                     </span>
                     <span className="relative flex w-full flex-col">

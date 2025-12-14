@@ -14,6 +14,18 @@ import { SmartVideo } from '@/components/primitives/smart-video';
 import { journeys } from '@/data/journeys-carousel';
 import type { Journey, JourneySeason } from '@/types/journey';
 
+type VideoSource = {
+  src: string;
+  type?: string;
+};
+
+type SeasonKey = 'all' | 'summer' | 'winter';
+
+type SeasonBackground = {
+  sources: VideoSource[];
+  poster?: string;
+};
+
 const SEASON_OPTIONS = [
   { label: 'Show All', value: 'all' as const, icon: '/assets/icones/Ico White BEE-02.svg' },
   {
@@ -30,32 +42,28 @@ const SEASON_OPTIONS = [
   },
 ];
 
-const REVEAL_TRANSITION = { duration: 0.6, ease: [0.33, 1, 0.68, 1] } as const;
+const BACKGROUND_VIDEO_SOURCES = {
+  all: [
+    { src: '/assets/concept/sustainable.mp4', type: 'video/mp4' },
+    { src: '/assets/concept/sustainable.webm', type: 'video/webm' },
+  ],
+  summer: [{ src: '/assets/journeys/unknown/Spring Summer cover filter.mp4', type: 'video/mp4' }],
+  winter: [{ src: '/assets/journeys/unknown/Fall winter cover.mp4', type: 'video/mp4' }],
+} satisfies Record<SeasonKey, VideoSource[]>;
 
-const VIDEO_SOURCES = [
-  { src: '/assets/concept/sustainable.mp4', type: 'video/mp4' },
-  { src: '/assets/concept/sustainable.webm', type: 'video/webm' },
-];
-
-const VIDEO_POSTER = '/assets/concept/sustainable-poster.png';
-
-const SEASON_BACKGROUNDS = {
+const SEASON_BACKGROUNDS: Record<SeasonKey, SeasonBackground> = {
   all: {
-    type: 'video' as const,
+    sources: BACKGROUND_VIDEO_SOURCES.all,
   },
   summer: {
-    type: 'image' as const,
-    src: '/assets/journeys/namibia-feb-2025/namibia-feb-2025-gallery-32.png',
-    alt: 'Golden Namibia dunes at sunset',
+    sources: BACKGROUND_VIDEO_SOURCES.summer,
   },
   winter: {
-    type: 'image' as const,
-    src: '/assets/journeys/unknown/beeugenie_07389_Salt_desert_cristals_very_realistic_of_4k_pic_0b736e25-3251-479a-8c43-882c25a1904e_1.png',
-    alt: 'Salt desert crystals shimmering in cold light',
+    sources: BACKGROUND_VIDEO_SOURCES.winter,
   },
-} as const;
+};
 
-type SeasonFilterValue = ReturnType<typeof parseSeasonFilter>;
+type SeasonFilterValue = SeasonKey;
 
 type FiltersState = {
   season: SeasonFilterValue;
@@ -78,6 +86,12 @@ function filterJourneys(data: Journey[], filters: FiltersState) {
 
     return true;
   });
+}
+
+function extractCountry(location: string) {
+  const parts = location.split(',');
+  const country = parts[parts.length - 1]?.trim();
+  return country || location;
 }
 
 export function JourneyShowcaseGallery() {
@@ -258,21 +272,21 @@ export function JourneyShowcaseGallery() {
       aria-label="Journey carousel section"
     >
       <div
-        className="pointer-events-none absolute inset-x-0 top-0 z-30 h-1 overflow-hidden rounded-full bg-white/10"
+        className="pointer-events-none absolute inset-x-0 top-0 z-30 h-0.5 overflow-hidden rounded-full bg-white/10"
         role="progressbar"
         aria-valuemin={0}
         aria-valuemax={Math.max(1, safeLength)}
         aria-valuenow={safeLength ? displayIndex + 1 : 0}
         aria-valuetext={safeLength ? `${displayIndex + 1} of ${safeLength}` : '0 of 0'}
-      >
-        <div
-          aria-hidden
-          className="h-full w-full origin-left bg-gradient-to-r from-[#f6c452] via-[#f0a87a] to-[#f7d799]"
-          style={{
-            transform: `scaleX(${Math.max(0, Math.min(100, progressValue)) / 100})`,
-            transformOrigin: 'left center',
-            transition: 'transform 600ms var(--bee-ease)',
-          }}
+    >
+      <div
+        aria-hidden
+        className="h-full w-full origin-left bg-gradient-to-r from-[#f6c452] via-[#f0a87a] to-[#f7d799]"
+        style={{
+          transform: `scaleX(${Math.max(0, Math.min(100, progressValue)) / 100})`,
+          transformOrigin: 'left center',
+          transition: 'transform 600ms var(--bee-ease)',
+        }}
         />
       </div>
       <BackgroundVideo prefersReducedMotion={prefersReducedMotion} season={filters.season} />
@@ -365,7 +379,7 @@ type SeasonTabsProps = {
 
 function SeasonTabs({ value, onChange }: SeasonTabsProps) {
   return (
-    <div className="relative inline-flex items-center gap-3 rounded-full border border-white/15 bg-black/55 px-4 py-3 backdrop-blur-lg">
+    <div className="relative inline-flex items-center gap-3 bg-transparent px-4 py-3">
       {SEASON_OPTIONS.map((option) => {
         const isActive = option.value === value;
         return (
@@ -392,7 +406,7 @@ function SeasonTabs({ value, onChange }: SeasonTabsProps) {
             {isActive ? (
               <motion.span
                 layoutId="season-underline"
-                className="absolute inset-0 rounded-full bg-white/14"
+                className="pointer-events-none absolute left-0 right-0 bottom-[2px] mx-auto h-[2px] w-[92%] bg-gradient-to-r from-[#f6c452] via-[#f0a87a] to-[#f7d799]"
                 transition={{ type: 'spring', bounce: 0.35, duration: 0.5 }}
               />
             ) : null}
@@ -418,68 +432,67 @@ function JourneyCard({
   onSelect,
   index,
 }: JourneyCardProps) {
-  const [isRevealed, setIsRevealed] = useState(false);
-
-  const handleReveal = (state: boolean) => {
-    setIsRevealed(state);
-  };
-
   return (
     <motion.button
       type="button"
       className={clsx(
-        'group relative w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70',
+        'group relative w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-[#f6c452]/60 focus-visible:ring-offset-0',
         prefersReducedMotion
           ? 'transition-none'
           : 'transition-transform [transition-duration:680ms] [transition-timing-function:cubic-bezier(0.33,1,0.68,1)]'
       )}
-      onMouseEnter={() => handleReveal(true)}
-      onMouseLeave={() => handleReveal(false)}
-      onFocus={() => handleReveal(true)}
-      onBlur={() => handleReveal(false)}
       onClick={() => onSelect(journey)}
       aria-label={`Journey: ${journey.title}, ${journey.date}`}
       animate={
         prefersReducedMotion
           ? undefined
-          : { scale: isActive ? 1 : 0.92, opacity: isActive ? 1 : 0.7 }
+          : { scale: isActive ? 1 : 0.92, opacity: 1 }
       }
       whileHover={prefersReducedMotion ? undefined : { scale: 1.05, y: -12 }}
       transition={prefersReducedMotion ? undefined : { duration: 0.55, ease: [0.33, 1, 0.68, 1] }}
     >
-      <div className="relative aspect-[2/3] w-full overflow-hidden border border-white/15 bg-white/5 shadow-[0_32px_90px_rgba(0,0,0,0.55)]">
-        <Image
-          src={journey.image}
-          alt={journey.title}
-          fill
-          sizes="(min-width: 1280px) 28vw, (min-width: 768px) 45vw, 80vw"
-          className="object-cover"
-          priority={index < 2}
-        />
-        <motion.div
-          className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-black/70"
-          animate={isRevealed ? { opacity: 1 } : { opacity: 0 }}
-          transition={prefersReducedMotion ? undefined : REVEAL_TRANSITION}
-        />
-        <motion.div
-          className="pointer-events-none absolute left-0 right-0 top-0 flex justify-center px-6 pt-6 text-center"
-          initial={false}
-          animate={isRevealed ? { y: 0, opacity: 1 } : { y: '-45%', opacity: 0 }}
-          transition={prefersReducedMotion ? undefined : REVEAL_TRANSITION}
-        >
-          <span className="max-w-[80%] font-title text-lg uppercase tracking-[0em] text-white">
-            {journey.title}
-          </span>
-        </motion.div>
-        <motion.div
-          className="pointer-events-none absolute inset-x-0 bottom-0 flex flex-col items-center gap-2 px-6 pb-8 text-[0.65rem] uppercase tracking-[0.38em] text-white"
-          initial={false}
-          animate={isRevealed ? { y: 0, opacity: 1 } : { y: '45%', opacity: 0 }}
-          transition={prefersReducedMotion ? undefined : REVEAL_TRANSITION}
-        >
-          <span>{journey.date}</span>
-          <span className="text-white/75">{journey.location}</span>
-        </motion.div>
+      <div
+        className="relative isolate flex min-h-[320px] w-full overflow-hidden rounded-none bg-white/5 shadow-[0_32px_90px_rgba(0,0,0,0.55)]"
+        style={{ aspectRatio: '2 / 3' }}
+      >
+        <div className="absolute inset-0">
+          <div
+            className="absolute inset-0 scale-105 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
+            style={{ backgroundImage: `url(${journey.image})` }}
+          />
+          <div
+            className={clsx(
+              'absolute inset-0 bg-gradient-to-t from-[rgba(9,6,4,0.9)] via-black/35 to-transparent',
+              prefersReducedMotion
+                ? 'opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100'
+                : 'opacity-0 transition duration-500 group-hover:opacity-100 group-focus-visible:opacity-100'
+            )}
+          />
+          <div
+            className={clsx(
+              'absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent',
+              prefersReducedMotion
+                ? 'opacity-0 group-hover:opacity-40 group-focus-visible:opacity-40'
+                : 'opacity-0 transition duration-500 group-hover:opacity-40 group-focus-visible:opacity-40'
+            )}
+          />
+        </div>
+
+        <div className="pointer-events-none absolute inset-0 flex items-end justify-center">
+          <div
+            className={clsx(
+              'mb-7 flex flex-col items-center gap-2 text-center text-white',
+              prefersReducedMotion
+                ? 'opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100'
+                : 'translate-y-3 opacity-0 transition duration-500 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100'
+            )}
+          >
+            <h3 className="w-full font-title text-xl uppercase tracking-[0em] sm:text-2xl lg:text-[26px]">
+              {extractCountry(journey.location)}
+            </h3>
+            <div className="text-[0.68rem] uppercase tracking-[0.38em] text-white/85">{journey.date}</div>
+          </div>
+        </div>
       </div>
     </motion.button>
   );
@@ -492,36 +505,22 @@ type BackgroundVideoProps = {
 
 function BackgroundVideo({ prefersReducedMotion, season }: BackgroundVideoProps) {
   const background = SEASON_BACKGROUNDS[season] ?? SEASON_BACKGROUNDS.all;
-  const showVideo = background.type === 'video' && !prefersReducedMotion;
 
   return (
     <div className="pointer-events-none absolute inset-0" aria-hidden>
       <div className="relative h-full w-full bg-black">
-        {showVideo ? (
-          <SmartVideo
-            wrapperClassName="absolute inset-0"
-            className="h-full w-full object-cover"
-            sources={VIDEO_SOURCES}
-            poster={VIDEO_POSTER}
-            fallbackImage={VIDEO_POSTER}
-            autoPlay
-            muted
-            loop
-            playsInline
-            priority
-            aria-hidden
-          />
-        ) : (
-          <Image
-            src={background.type === 'image' ? background.src : VIDEO_POSTER}
-            alt={background.type === 'image' ? background.alt : ''}
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover"
-          />
-        )}
-        <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/60 to-black/30" />
+        <SmartVideo
+          key={`${season}-background`}
+          wrapperClassName="absolute inset-0"
+          className="h-full w-full object-cover"
+          sources={background.sources}
+          autoPlay
+          muted
+          loop
+          playsInline
+          priority
+          aria-hidden
+        />
       </div>
     </div>
   );
