@@ -170,7 +170,7 @@ export default function HomePageContent({
                   fontSize: 'clamp(3.8rem, 8vw, 10rem)',
                   lineHeight: 0.9,
                   left: 'clamp(-14%, -8vw, -6%)',
-                  bottom: 'clamp(-18%, -12vw, -9%)',
+                  bottom: 'clamp(-26%, -18vw, -14%)',
                 }}
               >
                 <div>CREATIVE</div>
