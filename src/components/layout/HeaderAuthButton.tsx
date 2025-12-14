@@ -1,8 +1,9 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Loader2, LogIn, LogOut } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import * as React from 'react';
 
 import { useSupabase } from '@/components/providers/supabase-provider';
@@ -14,9 +15,9 @@ type HeaderAuthButtonProps = {
 };
 
 const baseClasses =
-  'group relative flex h-11 items-center gap-2 rounded-full bg-white/10 px-4 text-sm font-sans font-semibold uppercase tracking-[0.32em] text-white/90 transition duration-200 backdrop-blur-lg hover:bg-[rgba(244,199,122,0.3)] focus-visible:ring-2 focus-visible:ring-[#f6c452]/45 focus-visible:ring-offset-0';
+  'group relative flex h-14 w-14 items-center justify-center rounded-full bg-transparent text-white transition duration-200 focus-visible:ring-2 focus-visible:ring-[#f6c452]/60 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent';
 const labelRevealClasses =
-  'ml-0 max-w-0 overflow-hidden font-sans text-[11px] uppercase tracking-[0.32em] text-white/90 opacity-0 transition-all duration-200 ease-out group-hover:ml-2 group-hover:max-w-[160px] group-hover:opacity-100 group-focus-visible:ml-2 group-focus-visible:max-w-[160px] group-focus-visible:opacity-100';
+  'ml-2 max-w-0 overflow-hidden font-sans text-[11px] uppercase tracking-[0.32em] text-white/90 opacity-0 transition-all duration-200 ease-out group-hover:max-w-[160px] group-hover:opacity-100 group-focus-visible:max-w-[160px] group-focus-visible:opacity-100';
 
 export function HeaderAuthButton({ className }: HeaderAuthButtonProps) {
   const router = useRouter();
@@ -59,7 +60,14 @@ export function HeaderAuthButton({ className }: HeaderAuthButtonProps) {
         disabled={isSigningOut}
         className={cn(baseClasses, className)}
       >
-        <LogOut className="h-5 w-5" aria-hidden />
+        <Image
+          src="/assets/icones/Ico Gold BEE-12.svg"
+          alt=""
+          width={44}
+          height={44}
+          className="h-11 w-11 drop-shadow-[0_0_22px_rgba(246,196,82,0.65)] transition duration-200"
+          aria-hidden
+        />
         <span className="sr-only">Log out</span>
         <span className={labelRevealClasses}>{isSigningOut ? 'Logging out...' : 'Log out'}</span>
       </Button>
@@ -69,7 +77,14 @@ export function HeaderAuthButton({ className }: HeaderAuthButtonProps) {
   return (
     <Button size="sm" variant="ghost" asChild className={cn(baseClasses, className)}>
       <Link href="/login" prefetch={!isLoginRoute}>
-        <LogIn className="h-5 w-5" aria-hidden />
+        <Image
+          src="/assets/icones/Ico Gold BEE-12.svg"
+          alt=""
+          width={44}
+          height={44}
+          className="h-11 w-11 drop-shadow-[0_0_22px_rgba(246,196,82,0.65)] transition duration-200"
+          aria-hidden
+        />
         <span className="sr-only">Sign in</span>
         <span className={labelRevealClasses}>Sign in</span>
       </Link>

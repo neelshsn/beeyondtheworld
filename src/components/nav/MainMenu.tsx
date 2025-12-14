@@ -1,20 +1,20 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ArrowUpRight, Menu, X } from 'lucide-react';
+import { X } from 'lucide-react';
 import * as React from 'react';
 
 import { MenuLinks } from '@/components/nav/MenuLinks';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Separator } from '@/components/ui/separator';
 import { Sheet, SheetClose, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { socialLinks } from '@/config/socials';
 import { cn } from '@/lib/utils';
 
 const triggerClasses =
-  'group relative flex h-11 min-w-[44px] items-center justify-center rounded-full bg-white/10 px-5 text-sm font-sans font-semibold uppercase tracking-[0.32em] text-white/90 transition hover:bg-[rgba(244,199,122,0.3)] focus-visible:ring-2 focus-visible:ring-[#f6c452]/45 focus-visible:ring-offset-0 backdrop-blur-lg';
+  'group relative flex h-14 w-14 items-center justify-center rounded-full bg-transparent text-white transition duration-200 focus-visible:ring-2 focus-visible:ring-[#f6c452]/60 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent';
 
 export function MainMenu() {
   const pathname = usePathname();
@@ -41,9 +41,16 @@ export function MainMenu() {
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         <Button variant="ghost" aria-label="Open menu" className={triggerClasses}>
-          <Menu className="h-5 w-5" aria-hidden />
+          <Image
+            src="/assets/icones/Ico Gold BEE-05.svg"
+            alt=""
+            width={40}
+            height={40}
+            className="h-11 w-11 drop-shadow-[0_0_22px_rgba(246,196,82,0.65)] transition duration-200"
+            aria-hidden
+          />
           <span className="sr-only">Menu</span>
-          <span className="ml-0 max-w-0 overflow-hidden font-sans text-[11px] uppercase tracking-[0.32em] text-white/90 opacity-0 transition-all duration-200 ease-out group-hover:ml-2 group-hover:max-w-[140px] group-hover:opacity-100 group-focus-visible:ml-2 group-focus-visible:max-w-[140px] group-focus-visible:opacity-100">
+          <span className="ml-2 max-w-0 overflow-hidden font-sans text-[11px] uppercase tracking-[0.32em] text-white/90 opacity-0 transition-all duration-200 ease-out group-hover:max-w-[140px] group-hover:opacity-100 group-focus-visible:max-w-[140px] group-focus-visible:opacity-100">
             Menu
           </span>
         </Button>
@@ -52,7 +59,7 @@ export function MainMenu() {
         <SheetContent
           side="right"
           aria-label="Primary navigation"
-          className="w-[88vw] max-w-[760px] border-l border-[rgba(255,210,170,0.28)] bg-[linear-gradient(137deg,rgba(20,12,8,0.82)_0%,rgba(45,28,18,0.78)_42%,rgba(86,47,24,0.8)_100%)] px-8 pb-12 pt-14 font-menu text-[rgba(255,240,225,0.92)] shadow-[0_45px_160px_-70px_rgba(16,10,6,0.9)] backdrop-blur-2xl sm:w-[70vw] md:px-14 lg:w-[55vw] xl:w-[50vw]"
+          className="w-[96vw] max-w-[836px] border-l border-[rgba(255,210,170,0.28)] bg-[linear-gradient(137deg,rgba(20,12,8,0.82)_0%,rgba(45,28,18,0.78)_42%,rgba(86,47,24,0.8)_100%)] px-8 pb-12 pt-14 font-menu text-[rgba(255,240,225,0.92)] shadow-[0_45px_160px_-70px_rgba(16,10,6,0.9)] backdrop-blur-2xl sm:w-[77vw] md:px-14 lg:w-[60vw] xl:w-[55vw]"
         >
           <SheetTitle className="sr-only">Primary navigation</SheetTitle>
           <div className="flex h-full flex-col">
@@ -70,37 +77,31 @@ export function MainMenu() {
             <ScrollArea className="mt-10 flex-1">
               <div className="flex min-h-full flex-col pb-12">
                 <MenuLinks isOpen={open} onNavigate={handleNavigate} />
-                <Separator className="my-12 border-[rgba(255,214,166,0.25)]" />
-                <section className="flex flex-col gap-8">
-                  <div className="space-y-2">
-                    <p className="font-display text-xs uppercase tracking-[0em] text-[rgba(255,214,166,0.62)]">
-                      Quick links
-                    </p>
-                    <p className="text-sm text-[rgba(255,236,216,0.7)]">
-                      Experiences we recommend starting with this season.
-                    </p>
-                  </div>
+                <section className="mt-6 flex flex-col gap-6">
                   <div className="flex flex-col gap-0 overflow-hidden">
                     <div className="grid gap-0 md:grid-cols-2">
                       {[
                         {
                           id: 'india-focus',
                           href: '/journeys/india-january-2026',
-                          label: 'India',
-                          meta: 'January 2026',
-                          title: 'India January 2026',
+                          label: '',
+                          meta: '',
+                          title: '',
                           image:
                             '/assets/journeys/india-january-2026/india-january-2026-gallery-03.png',
                           layout: 'portrait' as const,
+                          cta: 'INDIA JANUARY 26',
                         },
                         {
                           id: 'spring-summer',
                           href: '/journeys?season=summer',
-                          label: 'Spring Summer',
-                          meta: '2026',
-                          title: 'Spring Summer 2026',
-                          image: '/assets/journeys/morocco-april-2026/morocco-april-2026-gallery-07.png',
+                          label: '',
+                          meta: '',
+                          title: '',
+                          image:
+                            '/assets/journeys/morocco-april-2026/morocco-april-2026-gallery-07.png',
                           layout: 'portrait' as const,
+                          cta: 'SPRING SUMMER',
                         },
                       ].map((tile, index) => (
                         <MenuQuickLink
@@ -119,18 +120,18 @@ export function MainMenu() {
                       tile={{
                         id: 'csr-label',
                         href: '/concept',
-                        label: 'Craie Studio',
-                        meta: 'Fall Winter 23',
-                        title: 'CSR Label',
+                        label: '',
+                        meta: '',
+                        title: '',
                         image: '/assets/campaigns/craie-suisse/Swiss3.png',
                         layout: 'landscape',
+                        cta: 'CSR LABEL',
                       }}
                       onNavigate={handleNavigate}
                       className="border border-t-0 border-white/10"
                     />
                   </div>
                 </section>
-                <Separator className="my-12 border-[rgba(255,214,166,0.25)]" />
                 <div className="mt-auto flex items-center gap-5">
                   {socialLinks.map(({ href, label, icon: Icon }) => (
                     <a
@@ -139,9 +140,12 @@ export function MainMenu() {
                       target="_blank"
                       rel="noopener"
                       aria-label={label}
-                      className="flex h-16 w-16 items-center justify-center rounded-full text-[rgba(255,240,225,0.9)] shadow-[0_12px_30px_rgba(0,0,0,0.45)] transition hover:text-[#f6c452] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f6c452]/60 focus-visible:ring-offset-0"
+                      className="flex h-16 w-16 items-center justify-center text-[rgba(255,240,225,0.9)] transition hover:text-[#f6c452] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f6c452]/60 focus-visible:ring-offset-0"
                     >
-                      <Icon className="h-8 w-8 drop-shadow-[0_4px_14px_rgba(0,0,0,0.45)]" aria-hidden />
+                      <Icon
+                        className="h-8 w-8 drop-shadow-[0_4px_14px_rgba(0,0,0,0.45)]"
+                        aria-hidden
+                      />
                     </a>
                   ))}
                 </div>
@@ -162,6 +166,7 @@ type MenuQuickLinkTile = {
   title: string;
   image: string;
   layout: 'portrait' | 'landscape';
+  cta?: string;
 };
 
 function MenuQuickLink({
@@ -173,6 +178,10 @@ function MenuQuickLink({
   onNavigate: () => void;
   className?: string;
 }) {
+  const ariaLabel = [tile.label, tile.meta].filter(Boolean).join(' - ') || 'Quick link';
+  const displayTitle = tile.title?.trim() ? tile.title : '\u00A0';
+  const hasHeader = Boolean(tile.label || tile.meta);
+  const ctaLabel = tile.cta?.trim() || 'Discover';
   const aspectClass =
     tile.layout === 'landscape'
       ? 'md:aspect-[5/3] md:min-h-[420px]'
@@ -188,7 +197,7 @@ function MenuQuickLink({
         aspectClass,
         className
       )}
-      aria-label={tile.title}
+      aria-label={ariaLabel}
     >
       <div className="absolute inset-0">
         <div
@@ -199,21 +208,19 @@ function MenuQuickLink({
         <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent opacity-0 transition duration-500 group-hover:opacity-40" />
       </div>
       <div className="relative z-10 flex h-full w-full flex-col gap-6 p-6 sm:p-8">
-        <div className="flex items-center justify-between text-[10px] uppercase tracking-[0.32em] text-white/70">
-          <span className="pr-4">{tile.label}</span>
-          <span className="text-[0.64rem] tracking-[0.3em] text-white/60">{tile.meta}</span>
-        </div>
+        {hasHeader ? (
+          <div className="flex items-center justify-between text-[10px] uppercase tracking-[0.32em] text-white/70">
+            <span className="pr-4">{tile.label}</span>
+            <span className="text-[0.64rem] tracking-[0.3em] text-white/60">{tile.meta}</span>
+          </div>
+        ) : null}
         <div className="flex flex-1 items-center">
-          <h3 className="font-title text-2xl uppercase tracking-[0.12em] text-white opacity-0 transition duration-300 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100 sm:text-3xl lg:text-[32px] w-full text-center">
-            {tile.title}
+          <h3 className="w-full text-center font-title text-2xl uppercase tracking-[0em] text-white opacity-0 transition duration-300 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100 sm:text-3xl lg:text-[32px]">
+            {displayTitle}
           </h3>
         </div>
-        <div className="flex items-center gap-3 text-[10px] uppercase tracking-[0.34em] text-white/85">
-          <span>Discover</span>
-          <ArrowUpRight
-            className="h-4 w-4 transition duration-300 group-hover:-translate-y-[1px] group-hover:translate-x-[4px]"
-            aria-hidden
-          />
+        <div className="flex items-center justify-center gap-2 font-display text-[11px] uppercase tracking-[0.5em] text-white">
+          <span className="leading-none">{ctaLabel}</span>
         </div>
       </div>
     </Link>
