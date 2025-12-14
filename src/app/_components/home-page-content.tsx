@@ -32,6 +32,7 @@ export default function HomePageContent({
   const movingLineRef = useRef<HTMLDivElement | null>(null);
   const lineStartRef = useRef<number>(0);
   const originalOverflowRef = useRef<{ html: string; body: string } | null>(null);
+  const latestScrollLocked = useRef(scrollLocked);
   const scrollAnimationRef = useRef<number | null>(null);
   const [movingLineShift, setMovingLineShift] = useState(0);
   const [lineOverlapFraction, setLineOverlapFraction] = useState(0);
@@ -126,6 +127,10 @@ export default function HomePageContent({
   }, []);
 
   useEffect(() => {
+    latestScrollLocked.current = scrollLocked;
+  }, [scrollLocked]);
+
+  useEffect(() => {
     if (activeTile) {
       setDisplayTile(activeTile);
       return;
@@ -186,15 +191,18 @@ export default function HomePageContent({
       if (scrollAnimationRef.current) {
         cancelAnimationFrame(scrollAnimationRef.current);
       }
-      if (scrollLocked) {
-        const html = document.documentElement;
-        const body = document.body;
-        const original = originalOverflowRef.current;
-        html.style.overflow = original?.html ?? '';
-        body.style.overflow = original?.body ?? '';
+      const html = document.documentElement;
+      const body = document.body;
+      const original = originalOverflowRef.current;
+      if (original) {
+        html.style.overflow = original.html;
+        body.style.overflow = original.body;
+      } else if (latestScrollLocked.current) {
+        html.style.overflow = '';
+        body.style.overflow = '';
       }
     };
-  }, [scrollLocked]);
+  }, []);
 
   const triptychCards = useMemo(
     () => [
