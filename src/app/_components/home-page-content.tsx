@@ -132,7 +132,7 @@ export default function HomePageContent({
       </section>
 
       <div ref={whatWeDoAnchorRef}>
-        <section className="bg-[#fdf9ee] px-6 pb-40 pt-24 sm:px-10 lg:px-24">
+        <section className="bg-[#fdf9ee] px-6 pb-52 pt-24 sm:px-10 lg:px-24">
           <div
             className="mx-auto max-w-4xl text-[22px] leading-[1.4] text-foreground/90 sm:text-3xl md:text-4xl"
             style={{ fontFamily: 'var(--font-love)' }}
