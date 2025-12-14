@@ -164,7 +164,7 @@ export default function HomePageContent({
               </div>
 
               <div
-                className="absolute -bottom-[18%] -left-[8%] text-4xl uppercase leading-[0.95] text-black sm:-bottom-[22%] sm:-left-[10%] sm:text-5xl md:text-6xl"
+                className="absolute -bottom-[18%] -left-[10%] text-6xl uppercase leading-[0.92] text-black sm:-bottom-[22%] sm:-left-[12%] sm:text-7xl md:text-8xl lg:text-9xl"
                 style={{ fontFamily: 'var(--font-love)' }}
               >
                 <div>CREATIVE</div>
