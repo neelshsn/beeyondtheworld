@@ -32,10 +32,9 @@ export default function HomePageContent({
   const movingLineRef = useRef<HTMLDivElement | null>(null);
   const lineStartRef = useRef<number>(0);
   const [movingLineShift, setMovingLineShift] = useState(0);
-  const [linePinned, setLinePinned] = useState(false);
   const [lineOverlapFraction, setLineOverlapFraction] = useState(0);
   const [activeTile, setActiveTile] = useState<TriptychTileId | null>(null);
-  const overlayPlacement = '';
+  const [displayTile, setDisplayTile] = useState<TriptychTileId | null>(null);
 
   const scrollToWhatWeDo = useCallback(() => {
     const targetTop = whatWeDoAnchorRef.current?.offsetTop ?? 0;
@@ -46,7 +45,6 @@ export default function HomePageContent({
     const handlePosition = () => {
       const lineEl = movingLineRef.current;
       const tripEl = triptychRef.current;
-      const rowEl = triptychRowRef.current;
       if (!lineEl || !tripEl) return;
 
       const rect = lineEl.getBoundingClientRect();
@@ -56,7 +54,6 @@ export default function HomePageContent({
       }
       const startY = lineStartRef.current;
       const tripTop = tripEl.offsetTop;
-      const rowHeight = rowEl?.getBoundingClientRect().height ?? 0;
 
       const rawShift = window.scrollY - startY + rect.height * 0.1;
       const maxShift = Math.max(tripTop - startY + rect.height * 0.5, 0);
@@ -68,7 +65,6 @@ export default function HomePageContent({
           : Math.min((clamped - overlapStart) / (maxShift - overlapStart), 1);
 
       setMovingLineShift(clamped);
-      setLinePinned(rawShift >= maxShift - 2);
       setLineOverlapFraction(overlapProgress);
     };
 
@@ -85,6 +81,16 @@ export default function HomePageContent({
       window.removeEventListener('resize', handleResize);
     };
   }, []);
+
+  useEffect(() => {
+    if (activeTile) {
+      setDisplayTile(activeTile);
+      return;
+    }
+
+    const timeout = window.setTimeout(() => setDisplayTile(null), 900);
+    return () => window.clearTimeout(timeout);
+  }, [activeTile]);
 
   const triptychCards = useMemo(
     () => [
@@ -315,236 +321,273 @@ export default function HomePageContent({
           })}
         </div>
 
-        {activeTile ? (
-          <>
-            <button
-              type="button"
-              onClick={() => setActiveTile(null)}
-              className="absolute right-4 top-4 z-20 inline-flex h-10 w-10 items-center justify-center border border-white/70 bg-black/35 text-white transition hover:bg-black/55"
-              aria-label="Close"
-            >
-              ×
-            </button>
-            <div
-              className={`pointer-events-none absolute inset-0 flex ${overlayPlacement} opacity-100 transition-opacity duration-500 ease-bee`}
-              style={{ textShadow: '0 10px 28px rgba(0,0,0,0.32)' }}
-            >
-              {activeTile === 'bees' ? (
-                <div className="flex w-full flex-col gap-6 px-4 pb-10 text-white sm:px-8 lg:px-16">
-                  <h3
-                    className="text-4xl uppercase sm:text-5xl md:text-6xl"
-                    style={{ fontFamily: 'var(--font-love)' }}
+        <div
+          className={`duration-[900ms] pointer-events-none absolute inset-0 z-10 flex items-stretch transition-opacity [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] ${
+            activeTile ? 'opacity-100' : 'opacity-0'
+          }`}
+          style={{
+            textShadow: '0 14px 32px rgba(0,0,0,0.55), 0 0 18px rgba(0,0,0,0.25)',
+          }}
+          aria-hidden
+        >
+          {displayTile === 'bees' ? (
+            <div className="flex h-full w-full items-end justify-between gap-6 px-4 pb-12 text-white sm:px-8 lg:px-16">
+              <div className="flex max-w-[44vw] flex-col gap-9 text-left sm:max-w-md md:max-w-xl">
+                <div className="flex items-start gap-4 md:-translate-y-3">
+                  <span
+                    className="text-xs tracking-[0.4em]"
+                    style={{
+                      writingMode: 'vertical-rl',
+                      textOrientation: 'mixed',
+                      letterSpacing: '0.35em',
+                      fontFamily: 'var(--font-adam)',
+                      transform: 'rotate(180deg)',
+                    }}
                   >
-                    WE ARE BEE&apos;S
-                  </h3>
-                  <div className="flex flex-col gap-8 md:flex-row md:items-end md:gap-12">
-                    <div className="flex items-start gap-4">
-                      <span
-                        className="text-xs tracking-[0.4em]"
-                        style={{
-                          writingMode: 'vertical-rl',
-                          textOrientation: 'mixed',
-                          letterSpacing: '0.35em',
-                          fontFamily: 'var(--font-adam)',
-                          transform: 'rotate(180deg)',
-                        }}
-                      >
-                        PHYLOSOPHIE
-                      </span>
-                      <p
-                        className="max-w-md text-sm leading-relaxed sm:text-base"
-                        style={{ fontFamily: 'var(--font-avenir)', fontStyle: 'italic' }}
-                      >
-                        Beeyondtheworld&apos;s community reveals new horizons where our eyes once
-                        perceived only boundaries. community reveals new horizons where our eyes
-                        once perceived only boundaries.
-                      </p>
-                    </div>
-                    <div className="flex items-start gap-4">
-                      <span
-                        className="text-xs tracking-[0.4em]"
-                        style={{
-                          writingMode: 'vertical-rl',
-                          textOrientation: 'mixed',
-                          letterSpacing: '0.35em',
-                          fontFamily: 'var(--font-adam)',
-                          transform: 'rotate(180deg)',
-                        }}
-                      >
-                        PIONEER APPROACH
-                      </span>
-                      <p
-                        className="max-w-md text-sm leading-relaxed sm:text-base"
-                        style={{ fontFamily: 'var(--font-avenir)', fontStyle: 'italic' }}
-                      >
-                        We whispers dreamlike production tales. while pooling non-competing brands
-                        into shared journeys, letting them share the logistic while their stories
-                        stay singular and unique.
-                      </p>
-                    </div>
-                    <div className="flex items-start gap-4">
-                      <span
-                        className="text-xs tracking-[0.4em]"
-                        style={{
-                          writingMode: 'vertical-rl',
-                          textOrientation: 'mixed',
-                          letterSpacing: '0.35em',
-                          fontFamily: 'var(--font-adam)',
-                          transform: 'rotate(180deg)',
-                        }}
-                      >
-                        VISION
-                      </span>
-                      <p
-                        className="max-w-md text-sm leading-relaxed sm:text-base"
-                        style={{ fontFamily: 'var(--font-avenir)', fontStyle: 'italic' }}
-                      >
-                        Time becomes profitability: we deliver a fully integrated outsourcing model,
-                        co-creating each step of the visual production journey. Casting, direction,
-                        scouting, styling, and narrative design merge seamlessly ensuring an
-                        elevated, impeccably orchestrated outcome.
-                      </p>
-                    </div>
-                  </div>
+                    PHYLOSOPHIE
+                  </span>
+                  <p
+                    className="text-sm leading-relaxed sm:text-base lg:text-lg"
+                    style={{
+                      fontFamily: 'var(--font-avenir)',
+                      fontStyle: 'italic',
+                      textShadow: '0 12px 28px rgba(0,0,0,0.48)',
+                    }}
+                  >
+                    Beeyondtheworld&apos;s community reveals new horizons where our eyes once
+                    perceived only boundaries. community reveals new horizons where our eyes once
+                    perceived only boundaries.
+                  </p>
                 </div>
-              ) : null}
-
-              {activeTile === 'flowers' ? (
-                <div className="flex w-full flex-col gap-6 px-4 pb-10 text-white sm:px-8 lg:px-16">
-                  <h3 className="flex flex-wrap items-baseline gap-2 text-4xl sm:text-5xl md:text-6xl">
-                    <span style={{ fontFamily: 'var(--font-saint)', textTransform: 'none' }}>
-                      the
-                    </span>
-                    <span className="uppercase" style={{ fontFamily: 'var(--font-love)' }}>
-                      WORLD
-                    </span>
-                    <span style={{ fontFamily: 'var(--font-saint)', textTransform: 'none' }}>
-                      as
-                    </span>
-                    <span className="uppercase" style={{ fontFamily: 'var(--font-love)' }}>
-                      FLOWERS
-                    </span>
-                  </h3>
-                  <div className="flex flex-col gap-8 md:flex-row md:items-start md:gap-12">
-                    <div className="flex items-start gap-4">
-                      <span
-                        className="text-xs tracking-[0.4em]"
-                        style={{
-                          writingMode: 'vertical-rl',
-                          textOrientation: 'mixed',
-                          letterSpacing: '0.35em',
-                          fontFamily: 'var(--font-adam)',
-                          transform: 'rotate(180deg)',
-                        }}
-                      >
-                        IMMERSION
-                      </span>
-                      <p
-                        className="max-w-md text-sm leading-relaxed sm:text-base"
-                        style={{ fontFamily: 'var(--font-avenir)', fontStyle: 'italic' }}
-                      >
-                        The world is a living work of art, painted by nature’s lights and offered to
-                        us like a precious, untouchable flower. Luminous and intricately woven, it
-                        opens in soft, silent layers as we move through the unfolding tapestry of
-                        our lives.
-                      </p>
-                    </div>
-                    <div className="flex items-start gap-4">
-                      <span
-                        className="text-xs tracking-[0.4em]"
-                        style={{
-                          writingMode: 'vertical-rl',
-                          textOrientation: 'mixed',
-                          letterSpacing: '0.35em',
-                          fontFamily: 'var(--font-adam)',
-                          transform: 'rotate(180deg)',
-                        }}
-                      >
-                        RESPONSIBILITY
-                      </span>
-                      <p
-                        className="max-w-md text-sm leading-relaxed sm:text-base"
-                        style={{ fontFamily: 'var(--font-avenir)', fontStyle: 'italic' }}
-                      >
-                        We design immersive itineraries to produce cinematic and editorial content
-                        while honoring and optimizing every resource—human, cultural, environmental.
-                        Each destination is curated to generate multiple unique campaigns within a
-                        single journey, ensuring elevated creativity, refined efficiency, and a
-                        responsible approach to production.
-                      </p>
-                    </div>
-                  </div>
+                <div className="flex items-start gap-4 md:translate-y-2">
+                  <span
+                    className="text-xs tracking-[0.4em]"
+                    style={{
+                      writingMode: 'vertical-rl',
+                      textOrientation: 'mixed',
+                      letterSpacing: '0.35em',
+                      fontFamily: 'var(--font-adam)',
+                      transform: 'rotate(180deg)',
+                    }}
+                  >
+                    PIONEER APPROACH
+                  </span>
+                  <p
+                    className="text-sm leading-relaxed sm:text-base lg:text-lg"
+                    style={{
+                      fontFamily: 'var(--font-avenir)',
+                      fontStyle: 'italic',
+                      textShadow: '0 12px 28px rgba(0,0,0,0.48)',
+                    }}
+                  >
+                    We whispers dreamlike production tales. while pooling non-competing brands into
+                    shared journeys, letting them share the logistic while their stories stay
+                    singular and unique.
+                  </p>
                 </div>
-              ) : null}
-
-              {activeTile === 'honey' ? (
-                <div className="flex w-full flex-col gap-6 px-4 pb-10 text-white sm:px-8 lg:px-16">
-                  <h3 className="flex flex-wrap items-baseline gap-2 text-4xl sm:text-5xl md:text-6xl">
-                    <span style={{ fontFamily: 'var(--font-saint)', textTransform: 'none' }}>
-                      the
-                    </span>
-                    <span className="uppercase" style={{ fontFamily: 'var(--font-love)' }}>
-                      HONEY
-                    </span>
-                    <span style={{ fontFamily: 'var(--font-saint)', textTransform: 'none' }}>
-                      of
-                    </span>
-                    <span className="uppercase" style={{ fontFamily: 'var(--font-love)' }}>
-                      ADVERTISING
-                    </span>
-                  </h3>
-                  <div className="flex flex-col gap-8 md:flex-row md:items-start md:gap-12">
-                    <div className="flex items-start gap-4">
-                      <span
-                        className="text-xs tracking-[0.4em]"
-                        style={{
-                          writingMode: 'vertical-rl',
-                          textOrientation: 'mixed',
-                          letterSpacing: '0.35em',
-                          fontFamily: 'var(--font-adam)',
-                          transform: 'rotate(180deg)',
-                        }}
-                      >
-                        PROOF
-                      </span>
-                      <p
-                        className="max-w-md text-sm leading-relaxed sm:text-base"
-                        style={{ fontFamily: 'var(--font-avenir)', fontStyle: 'italic' }}
-                      >
-                        Our campaigns are the tangible proof that another model is possible: one
-                        where beauty aligns with the world instead of taking from it, and where
-                        intention leaves a softness that uplifts, sustains, and endures.
-                      </p>
-                    </div>
-                    <div className="flex items-start gap-4">
-                      <span
-                        className="text-xs tracking-[0.4em]"
-                        style={{
-                          writingMode: 'vertical-rl',
-                          textOrientation: 'mixed',
-                          letterSpacing: '0.35em',
-                          fontFamily: 'var(--font-adam)',
-                          transform: 'rotate(180deg)',
-                        }}
-                      >
-                        ESSENCE
-                      </span>
-                      <p
-                        className="max-w-md text-sm leading-relaxed sm:text-base"
-                        style={{ fontFamily: 'var(--font-avenir)', fontStyle: 'italic' }}
-                      >
-                        Honey is the luminous trace of an ecosystem in harmony, where every action,
-                        choice, and collaboration generates positive impact. It embodies the value
-                        created when brands embrace a conscious path: producing less, but better;
-                        reducing excess, honoring places, creating through connection rather than
-                        isolation.
-                      </p>
-                    </div>
-                  </div>
+                <div className="flex items-start gap-4 md:-translate-y-1">
+                  <span
+                    className="text-xs tracking-[0.4em]"
+                    style={{
+                      writingMode: 'vertical-rl',
+                      textOrientation: 'mixed',
+                      letterSpacing: '0.35em',
+                      fontFamily: 'var(--font-adam)',
+                      transform: 'rotate(180deg)',
+                    }}
+                  >
+                    VISION
+                  </span>
+                  <p
+                    className="text-sm leading-relaxed sm:text-base lg:text-lg"
+                    style={{
+                      fontFamily: 'var(--font-avenir)',
+                      fontStyle: 'italic',
+                      textShadow: '0 12px 28px rgba(0,0,0,0.48)',
+                    }}
+                  >
+                    Time becomes profitability: we deliver a fully integrated outsourcing model,
+                    co-creating each step of the visual production journey. Casting, direction,
+                    scouting, styling, and narrative design merge seamlessly ensuring an elevated,
+                    impeccably orchestrated outcome.
+                  </p>
                 </div>
-              ) : null}
+              </div>
+              <h3
+                className="text-right text-5xl uppercase leading-[0.95] sm:text-6xl md:text-7xl"
+                style={{
+                  fontFamily: 'var(--font-love)',
+                  textShadow:
+                    '0 14px 32px rgba(0,0,0,0.6), 0 0 42px rgba(255,255,255,0.18), 0 0 68px rgba(0,0,0,0.55)',
+                }}
+              >
+                WE ARE BEE&apos;S
+              </h3>
             </div>
-          </>
+          ) : null}
+
+          {displayTile === 'flowers' ? (
+            <div className="flex h-full w-full flex-col items-center justify-end gap-10 px-4 pb-12 text-white sm:px-8 lg:px-16">
+              <div className="flex w-full max-w-4xl flex-col items-center gap-7">
+                <div className="flex items-start gap-4 md:-translate-y-3">
+                  <span
+                    className="text-xs tracking-[0.4em]"
+                    style={{
+                      writingMode: 'vertical-rl',
+                      textOrientation: 'mixed',
+                      letterSpacing: '0.35em',
+                      fontFamily: 'var(--font-adam)',
+                      transform: 'rotate(180deg)',
+                    }}
+                  >
+                    IMMERSION
+                  </span>
+                  <p
+                    className="max-w-2xl text-center text-sm leading-relaxed sm:text-base lg:text-lg"
+                    style={{
+                      fontFamily: 'var(--font-avenir)',
+                      fontStyle: 'italic',
+                      textShadow: '0 12px 28px rgba(0,0,0,0.48)',
+                    }}
+                  >
+                    The world is a living work of art, painted by nature&apos;s lights and offered
+                    to us like a precious, untouchable flower. Luminous and intricately woven, it
+                    opens in soft, silent layers as we move through the unfolding tapestry of our
+                    lives.
+                  </p>
+                </div>
+                <div className="flex items-start gap-4 md:translate-y-2">
+                  <span
+                    className="text-xs tracking-[0.4em]"
+                    style={{
+                      writingMode: 'vertical-rl',
+                      textOrientation: 'mixed',
+                      letterSpacing: '0.35em',
+                      fontFamily: 'var(--font-adam)',
+                      transform: 'rotate(180deg)',
+                    }}
+                  >
+                    RESPONSIBILITY
+                  </span>
+                  <p
+                    className="max-w-2xl text-center text-sm leading-relaxed sm:text-base lg:text-lg"
+                    style={{
+                      fontFamily: 'var(--font-avenir)',
+                      fontStyle: 'italic',
+                      textShadow: '0 12px 28px rgba(0,0,0,0.48)',
+                    }}
+                  >
+                    We design immersive itineraries across the world to produce cinematic and
+                    editorial content while honoring and optimizing every resource. Each destination
+                    is curated to generate multiple unique campaigns within a single journey,
+                    ensuring elevated creativity, refined efficiency, and a responsible approach to
+                    production.
+                  </p>
+                </div>
+              </div>
+              <h3
+                className="flex flex-wrap items-baseline justify-center gap-2 text-4xl leading-[0.95] sm:text-5xl md:text-6xl"
+                style={{
+                  textShadow:
+                    '0 14px 32px rgba(0,0,0,0.6), 0 0 42px rgba(255,255,255,0.18), 0 0 68px rgba(0,0,0,0.55)',
+                }}
+              >
+                <span style={{ fontFamily: 'var(--font-saint)', textTransform: 'none' }}>the</span>
+                <span className="uppercase" style={{ fontFamily: 'var(--font-love)' }}>
+                  WORLD
+                </span>
+                <span style={{ fontFamily: 'var(--font-saint)', textTransform: 'none' }}>as</span>
+                <span className="uppercase" style={{ fontFamily: 'var(--font-love)' }}>
+                  FLOWERS
+                </span>
+              </h3>
+            </div>
+          ) : null}
+
+          {displayTile === 'honey' ? (
+            <div className="flex h-full w-full items-end justify-between gap-6 px-4 pb-12 text-white sm:px-8 lg:px-16">
+              <h3
+                className="text-left text-4xl leading-[0.95] sm:text-5xl md:text-6xl lg:text-7xl"
+                style={{
+                  fontFamily: 'var(--font-love)',
+                  textShadow:
+                    '0 14px 32px rgba(0,0,0,0.6), 0 0 42px rgba(255,255,255,0.18), 0 0 68px rgba(0,0,0,0.55)',
+                }}
+              >
+                <span style={{ fontFamily: 'var(--font-saint)', textTransform: 'none' }}>the </span>
+                <span className="uppercase">HONEY</span>
+                <span style={{ fontFamily: 'var(--font-saint)', textTransform: 'none' }}> of </span>
+                <span className="uppercase">ADVERTISING</span>
+              </h3>
+              <div className="flex max-w-[44vw] flex-col gap-9 text-right sm:max-w-md md:max-w-xl">
+                <div className="flex items-start gap-4 md:-translate-y-4">
+                  <span
+                    className="text-xs tracking-[0.4em]"
+                    style={{
+                      writingMode: 'vertical-rl',
+                      textOrientation: 'mixed',
+                      letterSpacing: '0.35em',
+                      fontFamily: 'var(--font-adam)',
+                      transform: 'rotate(180deg)',
+                    }}
+                  >
+                    PROOF
+                  </span>
+                  <p
+                    className="text-sm leading-relaxed sm:text-base lg:text-lg"
+                    style={{
+                      fontFamily: 'var(--font-avenir)',
+                      fontStyle: 'italic',
+                      textShadow: '0 12px 28px rgba(0,0,0,0.48)',
+                    }}
+                  >
+                    Our campaigns are the tangible proof that another model is possible: one where
+                    beauty aligns with the world instead of taking from it, and where intention
+                    leaves a softness that uplifts, sustains, and endures.
+                  </p>
+                </div>
+                <div className="flex items-start gap-4 md:translate-y-3">
+                  <span
+                    className="text-xs tracking-[0.4em]"
+                    style={{
+                      writingMode: 'vertical-rl',
+                      textOrientation: 'mixed',
+                      letterSpacing: '0.35em',
+                      fontFamily: 'var(--font-adam)',
+                      transform: 'rotate(180deg)',
+                    }}
+                  >
+                    ESSENCE
+                  </span>
+                  <p
+                    className="text-sm leading-relaxed sm:text-base lg:text-lg"
+                    style={{
+                      fontFamily: 'var(--font-avenir)',
+                      fontStyle: 'italic',
+                      textShadow: '0 12px 28px rgba(0,0,0,0.48)',
+                    }}
+                  >
+                    Honey is the luminous trace of an ecosystem in harmony, where every action,
+                    choice, and collaboration generates positive impact. It embodies the value
+                    created when brands embrace a conscious path: producing less, but better;
+                    reducing excess, honoring places, creating through connection rather than
+                    isolation.
+                  </p>
+                </div>
+              </div>
+            </div>
+          ) : null}
+        </div>
+
+        {activeTile ? (
+          <button
+            type="button"
+            onClick={() => setActiveTile(null)}
+            className="absolute right-4 top-4 z-20 inline-flex h-10 w-10 items-center justify-center border border-white/70 bg-black/35 text-2xl text-white transition hover:bg-black/55"
+            aria-label="Close"
+          >
+            ×
+          </button>
         ) : null}
       </section>
 
