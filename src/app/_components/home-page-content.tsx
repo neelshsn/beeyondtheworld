@@ -31,15 +31,45 @@ export default function HomePageContent({
   const triptychRowRef = useRef<HTMLDivElement | null>(null);
   const movingLineRef = useRef<HTMLDivElement | null>(null);
   const lineStartRef = useRef<number>(0);
+  const scrollAnimationRef = useRef<number | null>(null);
   const [movingLineShift, setMovingLineShift] = useState(0);
   const [lineOverlapFraction, setLineOverlapFraction] = useState(0);
   const [activeTile, setActiveTile] = useState<TriptychTileId | null>(null);
   const [displayTile, setDisplayTile] = useState<TriptychTileId | null>(null);
+  const [isAutoScrolling, setIsAutoScrolling] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
 
   const scrollToWhatWeDo = useCallback(() => {
+    if (isAutoScrolling) return;
     const targetTop = whatWeDoAnchorRef.current?.offsetTop ?? 0;
-    window.scrollTo({ top: targetTop, behavior: 'auto' });
-  }, []);
+    const start = window.scrollY;
+    const distance = targetTop - start;
+    if (Math.abs(distance) < 2) return;
+
+    const duration = 1050;
+    const easeInOutCubic = (t: number) =>
+      t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+    setIsAutoScrolling(true);
+    const startTime = performance.now();
+
+    const step = (now: number) => {
+      const elapsed = now - startTime;
+      const t = Math.min(elapsed / duration, 1);
+      const eased = easeInOutCubic(t);
+      window.scrollTo({ top: start + distance * eased, behavior: 'auto' });
+      setScrollProgress(eased);
+
+      if (t < 1) {
+        scrollAnimationRef.current = requestAnimationFrame(step);
+      } else {
+        setIsAutoScrolling(false);
+        setScrollProgress(0);
+      }
+    };
+
+    scrollAnimationRef.current = requestAnimationFrame(step);
+  }, [isAutoScrolling]);
 
   useEffect(() => {
     const handlePosition = () => {
@@ -92,6 +122,15 @@ export default function HomePageContent({
     return () => window.clearTimeout(timeout);
   }, [activeTile]);
 
+  useEffect(
+    () => () => {
+      if (scrollAnimationRef.current) {
+        cancelAnimationFrame(scrollAnimationRef.current);
+      }
+    },
+    []
+  );
+
   const triptychCards = useMemo(
     () => [
       {
@@ -131,7 +170,14 @@ export default function HomePageContent({
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-black/30 to-[#0d0b08]/70" />
 
-        <div className="relative z-20 flex h-full flex-col justify-end gap-12 px-6 pb-20 pt-32 sm:px-10 sm:pb-24 sm:pt-36 lg:px-20">
+        <div
+          className="relative z-20 flex h-full flex-col justify-end gap-12 px-6 pb-20 pt-32 sm:px-10 sm:pb-24 sm:pt-36 lg:px-20"
+          style={{
+            transform: `translateY(${scrollProgress * -14}px) scale(${1 - scrollProgress * 0.04})`,
+            opacity: 1 - scrollProgress * 0.12,
+            transition: 'transform 90ms linear, opacity 90ms linear',
+          }}
+        >
           <div className="max-w-4xl space-y-6 drop-shadow-[0_12px_32px_rgba(0,0,0,0.55)]">
             <div className="flex items-center">
               <Image
@@ -187,7 +233,8 @@ export default function HomePageContent({
               <Button
                 type="button"
                 onClick={scrollToWhatWeDo}
-                className="group relative inline-flex items-center justify-center gap-4 overflow-hidden rounded-full border border-white/25 bg-white/10 px-12 py-4 font-display text-[11px] uppercase tracking-[0.5em] text-white transition-colors duration-300 [transition-timing-function:var(--bee-ease)] hover:border-white/60 hover:bg-white/15 focus-visible:ring-[#f6c452]/35"
+                disabled={isAutoScrolling}
+                className="group relative inline-flex items-center justify-center gap-4 overflow-hidden rounded-full border border-white/25 bg-white/10 px-12 py-4 font-display text-[11px] uppercase tracking-[0.5em] text-white transition-colors duration-300 [transition-timing-function:var(--bee-ease)] hover:border-white/60 hover:bg-white/15 focus-visible:ring-[#f6c452]/35 disabled:cursor-not-allowed disabled:border-white/15 disabled:bg-white/5 disabled:text-white/60"
               >
                 <span
                   aria-hidden
