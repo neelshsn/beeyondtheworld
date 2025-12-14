@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Instagram, Linkedin } from 'lucide-react';
-import { useCallback, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { JourneyShowcaseCarousel } from '@/app/_components/journey-showcase-carousel';
 import SplitText from '@/components/SplitText';
@@ -18,6 +18,8 @@ type HomePageContentProps = {
   campaignCtaImage?: string;
 };
 
+type TriptychTileId = 'bees' | 'flowers' | 'honey';
+
 export default function HomePageContent({
   coCreateHref,
   heroVideoSrc,
@@ -25,11 +27,77 @@ export default function HomePageContent({
   campaignCtaImage,
 }: HomePageContentProps) {
   const whatWeDoAnchorRef = useRef<HTMLDivElement | null>(null);
+  const triptychRef = useRef<HTMLDivElement | null>(null);
+  const movingLineRef = useRef<HTMLDivElement | null>(null);
+  const lineStartRef = useRef<number>(0);
+  const [movingLineShift, setMovingLineShift] = useState(0);
+  const [linePinned, setLinePinned] = useState(false);
+  const [activeTile, setActiveTile] = useState<TriptychTileId | null>(null);
 
   const scrollToWhatWeDo = useCallback(() => {
     const targetTop = whatWeDoAnchorRef.current?.offsetTop ?? 0;
     window.scrollTo({ top: targetTop, behavior: 'auto' });
   }, []);
+
+  useEffect(() => {
+    const handlePosition = () => {
+      const lineEl = movingLineRef.current;
+      const tripEl = triptychRef.current;
+      if (!lineEl || !tripEl) return;
+
+      const rect = lineEl.getBoundingClientRect();
+      const absoluteTop = rect.top + window.scrollY;
+      if (!lineStartRef.current) {
+        lineStartRef.current = absoluteTop;
+      }
+      const startY = lineStartRef.current;
+      const tripTop = tripEl.offsetTop;
+
+      const rawShift = window.scrollY - startY + rect.height * 0.1;
+      const maxShift = Math.max(tripTop - startY - rect.height * 0.1, 0);
+      const clamped = Math.min(Math.max(rawShift, 0), maxShift);
+
+      setMovingLineShift(clamped);
+      setLinePinned(rawShift >= maxShift - 2);
+    };
+
+    const handleResize = () => {
+      lineStartRef.current = 0;
+      handlePosition();
+    };
+
+    handlePosition();
+    window.addEventListener('scroll', handlePosition, { passive: true });
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('scroll', handlePosition);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
+  const triptychCards = useMemo(
+    () => [
+      {
+        id: 'bees' as TriptychTileId,
+        image: '/assets/campaigns/almaaz-kenya/almaaz-kenya-carousel-01.jpg',
+        icon: '/assets/icones/Ico White BEE-13.svg',
+        label: "BEE'S",
+      },
+      {
+        id: 'flowers' as TriptychTileId,
+        image: '/assets/journeys/bolivia-september-2026/bolivia-september-2026-gallery-10.png',
+        icon: '/assets/icones/Ico White BEE-14.svg',
+        label: 'FLOWERS',
+      },
+      {
+        id: 'honey' as TriptychTileId,
+        image: '/assets/campaigns/almaaz-kenya/almaaz-kenya-gallery-01.jpg',
+        icon: '/assets/icones/Ico White BEE-06.svg',
+        label: 'HONEY',
+      },
+    ],
+    []
+  );
 
   return (
     <main className="flex flex-col bg-[#fdf9ee]">
@@ -171,17 +239,211 @@ export default function HomePageContent({
                   lineHeight: 0.9,
                   left: 'clamp(-14%, -8vw, -6%)',
                   bottom: 'clamp(-32%, -22vw, -18%)',
+                  transform: `translateY(${movingLineShift}px)`,
+                  color: linePinned ? '#ffffff' : '#000000',
+                  transition: 'color 180ms ease',
                 }}
               >
                 <div>CREATIVE</div>
                 <div>VISUALS</div>
                 <div>PRODUCTION</div>
-                <div>BEYOND THE WORLD</div>
+                <div ref={movingLineRef}>BEYOND THE WORLD</div>
               </div>
             </div>
           </div>
         </section>
       </div>
+
+      <section
+        ref={triptychRef}
+        className="relative bg-[#fdf9ee] px-4 pb-28 pt-20 sm:px-8 lg:px-20"
+      >
+        <div className="flex flex-col gap-3 md:flex-row">
+          {triptychCards.map((card) => {
+            const isActive = activeTile === card.id;
+            const basisClass =
+              activeTile === null ? 'md:flex-1' : isActive ? 'md:flex-[2.15]' : 'md:flex-[0.85]';
+            return (
+              <button
+                key={card.id}
+                type="button"
+                onClick={() => setActiveTile(isActive ? null : card.id)}
+                className={`group relative h-[280px] overflow-hidden bg-black md:h-[420px] ${basisClass} transition-[flex-grow,flex-basis] duration-500 ease-bee`}
+              >
+                <Image
+                  src={card.image}
+                  alt={card.label}
+                  fill
+                  className={`object-cover transition duration-500 ease-bee ${
+                    isActive ? 'scale-[1.03]' : 'scale-100'
+                  }`}
+                  sizes="(min-width:1280px) 33vw, 100vw"
+                  priority={card.id === 'bees'}
+                />
+                <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black/55 via-black/20 to-transparent" />
+                <div className="absolute inset-0 flex items-end justify-center pb-6 opacity-0 transition duration-300 group-hover:opacity-100">
+                  <div className="flex items-center gap-3 text-white">
+                    <Image
+                      src={card.icon}
+                      alt={card.label}
+                      width={38}
+                      height={38}
+                      className="h-9 w-9"
+                    />
+                    <span
+                      className="text-sm uppercase tracking-[0.32em]"
+                      style={{ fontFamily: 'var(--font-adam)' }}
+                    >
+                      {card.label}
+                    </span>
+                  </div>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+
+        {activeTile ? (
+          <>
+            <button
+              type="button"
+              onClick={() => setActiveTile(null)}
+              className="absolute right-4 top-4 z-20 inline-flex h-10 w-10 items-center justify-center border border-white/70 bg-black/35 text-white transition hover:bg-black/55"
+              aria-label="Close"
+            >
+              ×
+            </button>
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/55 via-black/25 to-transparent" />
+            <div className="pointer-events-none absolute inset-0 flex items-end">
+              {activeTile === 'bees' ? (
+                <div className="flex w-full flex-col gap-6 px-4 pb-10 text-white sm:px-8 lg:px-16">
+                  <h3
+                    className="text-4xl uppercase sm:text-5xl md:text-6xl"
+                    style={{ fontFamily: 'var(--font-love)' }}
+                  >
+                    WE ARE BEE&apos;S
+                  </h3>
+                  <div className="flex flex-col gap-8 md:flex-row md:items-end md:gap-12">
+                    <div className="flex items-start gap-4">
+                      <span
+                        className="text-xs tracking-[0.4em]"
+                        style={{
+                          writingMode: 'vertical-rl',
+                          textOrientation: 'mixed',
+                          letterSpacing: '0.35em',
+                          fontFamily: 'var(--font-adam)',
+                        }}
+                      >
+                        PHYLOSOPHIE
+                      </span>
+                      <p
+                        className="max-w-md text-sm leading-relaxed sm:text-base"
+                        style={{ fontFamily: 'var(--font-avenir)', fontStyle: 'italic' }}
+                      >
+                        Beeyondtheworld&apos;s community reveals new horizons where our eyes once
+                        perceived only boundaries. community reveals new horizons where our eyes
+                        once perceived only boundaries.
+                      </p>
+                    </div>
+                    <div className="flex items-start gap-4">
+                      <span
+                        className="text-xs tracking-[0.4em]"
+                        style={{
+                          writingMode: 'vertical-rl',
+                          textOrientation: 'mixed',
+                          letterSpacing: '0.35em',
+                          fontFamily: 'var(--font-adam)',
+                        }}
+                      >
+                        PIONEER APPROACH
+                      </span>
+                      <p
+                        className="max-w-md text-sm leading-relaxed sm:text-base"
+                        style={{ fontFamily: 'var(--font-avenir)', fontStyle: 'italic' }}
+                      >
+                        We whispers dreamlike production tales. while pooling non-competing brands
+                        into shared journeys, letting them share the logistic while their stories
+                        stay singular and unique.
+                      </p>
+                    </div>
+                    <div className="flex items-start gap-4">
+                      <span
+                        className="text-xs tracking-[0.4em]"
+                        style={{
+                          writingMode: 'vertical-rl',
+                          textOrientation: 'mixed',
+                          letterSpacing: '0.35em',
+                          fontFamily: 'var(--font-adam)',
+                        }}
+                      >
+                        VISION
+                      </span>
+                      <p
+                        className="max-w-md text-sm leading-relaxed sm:text-base"
+                        style={{ fontFamily: 'var(--font-avenir)', fontStyle: 'italic' }}
+                      >
+                        Time becomes profitability: we deliver a fully integrated outsourcing model,
+                        co-creating each step of the visual production journey. Casting, direction,
+                        scouting, styling, and narrative design merge seamlessly ensuring an
+                        elevated, impeccably orchestrated outcome.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ) : null}
+
+              {activeTile === 'flowers' ? (
+                <div className="flex w-full flex-col gap-6 px-4 pb-10 text-white sm:px-8 lg:px-16">
+                  <h3 className="flex flex-wrap items-baseline gap-2 text-4xl sm:text-5xl md:text-6xl">
+                    <span style={{ fontFamily: 'var(--font-saint)' }}>the</span>
+                    <span className="uppercase" style={{ fontFamily: 'var(--font-love)' }}>
+                      WORLD
+                    </span>
+                    <span style={{ fontFamily: 'var(--font-saint)' }}>as</span>
+                    <span className="uppercase" style={{ fontFamily: 'var(--font-love)' }}>
+                      FLOWERS
+                    </span>
+                  </h3>
+                  <p className="max-w-4xl text-sm leading-relaxed sm:text-base">
+                    The world is a living work of art, painted by nature’s lights and offered to us
+                    like a precious, untouchable flower. Luminous and intricately woven, it opens in
+                    soft, silent layers as we move through the unfolding tapestry of our lives. We
+                    design immersive itineraries across the world to produce cinematic and editorial
+                    content while honoring and optimizing every resource, human, cultural, and
+                    environmental. Each destination is strategically curated to generate multiple
+                    unique visual campaigns within a single journey, ensuring elevated creativity,
+                    refined efficiency, and a profoundly responsible approach to production.
+                  </p>
+                </div>
+              ) : null}
+
+              {activeTile === 'honey' ? (
+                <div className="flex w-full flex-col gap-6 px-4 pb-10 text-white sm:px-8 lg:px-16">
+                  <h3 className="flex flex-wrap items-baseline gap-2 text-4xl sm:text-5xl md:text-6xl">
+                    <span style={{ fontFamily: 'var(--font-saint)' }}>the</span>
+                    <span className="uppercase" style={{ fontFamily: 'var(--font-love)' }}>
+                      HONEY
+                    </span>
+                    <span style={{ fontFamily: 'var(--font-saint)' }}>of</span>
+                    <span className="uppercase" style={{ fontFamily: 'var(--font-love)' }}>
+                      ADVERTISING
+                    </span>
+                  </h3>
+                  <p className="max-w-4xl text-sm leading-relaxed sm:text-base">
+                    Our campaigns are the tangible proof that another model is possible: one where
+                    beauty aligns with the world instead of taking from it, and where intention
+                    leaves a softness that uplifts, sustains, and endures. Honey is the luminous
+                    trace of an ecosystem in harmony, where every action, choice, and collaboration
+                    generates positive impact. It embodies the value created when brands embrace a
+                    more conscious path: producing less, but better; reducing excess, honoring
+                    places, and creating through connection rather than isolation.
+                  </p>
+                </div>
+              ) : null}
+            </div>
+          </>
+        ) : null}
+      </section>
 
       <section className="relative flex flex-col gap-14 overflow-hidden bg-gradient-to-b from-white via-white to-stone-100 pb-6 pt-24">
         <div className="px-6 text-center sm:px-10 lg:px-20">
