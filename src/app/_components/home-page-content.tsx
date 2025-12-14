@@ -33,6 +33,7 @@ export default function HomePageContent({
   const lineStartRef = useRef<number>(0);
   const [movingLineShift, setMovingLineShift] = useState(0);
   const [linePinned, setLinePinned] = useState(false);
+  const [lineOverlapFraction, setLineOverlapFraction] = useState(0);
   const [activeTile, setActiveTile] = useState<TriptychTileId | null>(null);
   const overlayPlacement =
     activeTile === 'bees'
@@ -63,11 +64,17 @@ export default function HomePageContent({
       const rowHeight = rowEl?.getBoundingClientRect().height ?? 0;
 
       const rawShift = window.scrollY - startY + rect.height * 0.1;
-      const maxShift = Math.max(tripTop - startY + Math.max(rowHeight - rect.height, 0), 0);
+      const maxShift = Math.max(tripTop + rowHeight * 0.5 - rect.height * 0.5 - startY, 0);
       const clamped = Math.min(Math.max(rawShift, 0), maxShift);
+      const overlapStart = Math.max(tripTop - startY - rect.height * 0.1, 0);
+      const overlapProgress =
+        clamped <= overlapStart || maxShift <= overlapStart
+          ? 0
+          : Math.min((clamped - overlapStart) / (maxShift - overlapStart), 1);
 
       setMovingLineShift(clamped);
       setLinePinned(rawShift >= maxShift - 2);
+      setLineOverlapFraction(overlapProgress);
     };
 
     const handleResize = () => {
@@ -249,7 +256,7 @@ export default function HomePageContent({
                   left: 'clamp(-14%, -8vw, -6%)',
                   bottom: 'clamp(-32%, -22vw, -18%)',
                   transform: `translateY(${movingLineShift}px)`,
-                  color: linePinned ? '#ffffff' : '#000000',
+                  color: lineOverlapFraction > 0 ? '#ffffff' : '#000000',
                   transition: 'color 180ms ease',
                   zIndex: 40,
                   pointerEvents: 'none',
@@ -324,7 +331,7 @@ export default function HomePageContent({
               ×
             </button>
             <div
-              className={`pointer-events-none absolute inset-0 flex ${overlayPlacement}`}
+              className={`pointer-events-none absolute inset-0 flex ${overlayPlacement} opacity-100 transition-opacity duration-500 ease-bee`}
               style={{ textShadow: '0 10px 28px rgba(0,0,0,0.32)' }}
             >
               {activeTile === 'bees' ? (
