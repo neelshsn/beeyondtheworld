@@ -146,7 +146,7 @@ export default function HomePageContent({
 
           <div className="relative mx-auto mt-16 flex w-full justify-center px-1 sm:px-6">
             <div className="relative w-full max-w-6xl">
-              <div className="relative aspect-[16/9] overflow-hidden rounded-2xl shadow-[0_32px_100px_-60px_rgba(10,6,2,0.45)]">
+              <div className="relative aspect-[16/9] overflow-visible shadow-[0_32px_100px_-60px_rgba(10,6,2,0.45)]">
                 <Image
                   src="/assets/campaigns/maradji-ibiza/maradji-ibiza-cover.jpg"
                   alt="Maradji Ibiza cove at dusk"
@@ -156,7 +156,7 @@ export default function HomePageContent({
                   priority
                 />
                 <span
-                  className="absolute left-5 top-5 text-[11px] uppercase tracking-[0.3em] text-white/85 sm:left-7 sm:top-6 sm:text-xs"
+                  className="absolute left-1/2 top-4 -translate-x-1/2 text-[11px] uppercase tracking-[0.32em] text-white/85 sm:top-6 sm:text-xs"
                   style={{ fontFamily: 'var(--font-adam)', fontStyle: 'italic' }}
                 >
                   WE DREAM WE CREATE
@@ -164,7 +164,7 @@ export default function HomePageContent({
               </div>
 
               <div
-                className="absolute -bottom-16 right-2 text-4xl uppercase leading-[0.95] text-black sm:-bottom-20 sm:right-6 sm:text-5xl md:text-6xl"
+                className="absolute -bottom-[18%] -left-[8%] text-4xl uppercase leading-[0.95] text-black sm:-bottom-[22%] sm:-left-[10%] sm:text-5xl md:text-6xl"
                 style={{ fontFamily: 'var(--font-love)' }}
               >
                 <div>CREATIVE</div>
