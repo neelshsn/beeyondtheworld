@@ -72,20 +72,20 @@ export default function HomePageContent({
     const targetTop = whatWeDoAnchorRef.current?.offsetTop ?? 0;
     const startY = window.scrollY;
     const distance = targetTop - startY;
-    const duration = 1200;
-    const easeInOutQuint = (t: number) =>
-      t < 0.5 ? 16 * t * t * t * t * t : 1 - Math.pow(-2 * t + 2, 5) / 2;
+    const duration = 1350;
+    const easeInOutCubic = (t: number) =>
+      t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
     const startTime = performance.now();
 
     const animate = (now: number) => {
       const elapsed = now - startTime;
       const progress = Math.min(elapsed / duration, 1);
-      const eased = easeInOutQuint(progress);
+      const eased = easeInOutCubic(progress);
 
       window.scrollTo({ top: startY + distance * eased, behavior: 'auto' });
       setHeroProgress(eased);
 
-      if (!whatWeDoPrimed && eased >= 0.12) {
+      if (!whatWeDoPrimed && eased >= 0.3) {
         setWhatWeDoPrimed(true);
       }
 
@@ -106,7 +106,7 @@ export default function HomePageContent({
     <main
       className={cn(
         'flex flex-col bg-[#fdf9ee]',
-        heroStage !== 'hidden' && 'max-h-screen overflow-hidden'
+        (heroStage === 'visible' || isCinematicScrolling) && 'max-h-screen overflow-hidden'
       )}
     >
       {heroIsMounted ? (
@@ -116,13 +116,18 @@ export default function HomePageContent({
             heroStage !== 'visible' && 'pointer-events-none'
           )}
           style={{
-            transform: `translateY(${-heroProgress * 12}%) scale(${1 - heroProgress * 0.03})`,
-            opacity: 1 - heroProgress * 0.12,
+            transform: `translateY(${-heroProgress * 5}%) scale(${1 - heroProgress * 0.015})`,
+            opacity: Math.max(0, 1 - heroProgress * 1.05),
+            filter: `blur(${heroProgress * 0.6}px)`,
           }}
         >
           <SmartVideo
             wrapperClassName="absolute inset-0 z-0"
-            className="h-full w-full object-cover"
+            className="h-full w-full object-cover will-change-transform"
+            style={{
+              transform: `translateY(${heroProgress * 8}%) scale(${1 + heroProgress * 0.08})`,
+              transition: 'transform 60ms linear',
+            }}
             src={heroVideoSrc}
             autoPlay
             muted
@@ -130,9 +135,19 @@ export default function HomePageContent({
             playsInline
             aria-hidden
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-black/30 to-[#0d0b08]/70" />
+          <div
+            className="absolute inset-0 bg-gradient-to-b from-black/35 via-black/30 to-[#0d0b08]/70"
+            style={{ opacity: Math.max(0, 0.78 - heroProgress * 0.5) }}
+          />
 
-          <div className="relative z-20 flex h-full flex-col justify-end gap-12 px-6 pb-20 pt-32 sm:px-10 sm:pb-24 sm:pt-36 lg:px-20">
+          <div
+            className="relative z-20 flex h-full flex-col justify-end gap-12 px-6 pb-20 pt-32 sm:px-10 sm:pb-24 sm:pt-36 lg:px-20"
+            style={{
+              transform: `translateY(${-heroProgress * 3}%)`,
+              opacity: Math.max(0, 1 - heroProgress * 0.25),
+              transition: 'transform 80ms linear, opacity 120ms linear',
+            }}
+          >
             <div className="max-w-4xl space-y-6 drop-shadow-[0_12px_32px_rgba(0,0,0,0.55)]">
               <div className="flex items-center">
                 <Image
