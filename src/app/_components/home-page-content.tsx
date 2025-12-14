@@ -103,11 +103,16 @@ export default function HomePageContent({
   }, [heroStage, isCinematicScrolling, whatWeDoPrimed]);
 
   return (
-    <main className={cn('flex flex-col bg-[#fdf9ee]', heroStage === 'visible' && 'max-h-screen overflow-hidden')}>
+    <main
+      className={cn(
+        'flex flex-col bg-[#fdf9ee]',
+        heroStage === 'visible' && 'max-h-screen overflow-hidden'
+      )}
+    >
       {heroIsMounted ? (
         <section
           className={cn(
-            'fixed inset-0 z-30 isolate flex min-h-screen flex-col justify-end overflow-hidden text-white will-change-transform',
+            'fixed inset-0 isolate z-30 flex min-h-screen flex-col justify-end overflow-hidden text-white will-change-transform',
             heroStage !== 'visible' && 'pointer-events-none'
           )}
           style={{
@@ -217,7 +222,7 @@ export default function HomePageContent({
       <div
         ref={whatWeDoAnchorRef}
         className={cn(
-          'transition-[opacity,transform] duration-900 ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform',
+          'duration-900 ease-[cubic-bezier(0.22,1,0.36,1)] transition-[opacity,transform] will-change-transform',
           heroStage === 'hidden' || whatWeDoPrimed
             ? 'translate-y-0 opacity-100'
             : 'pointer-events-none translate-y-8 opacity-0'
@@ -283,8 +288,8 @@ export default function HomePageContent({
             textAlign="center"
           />
           <p className="text-center text-base leading-relaxed text-white/75">
-            Journeys follow a three-part spell that softens footprint, heals destinations, and leaves
-            every brand with transparent, heart-lit proof.
+            Journeys follow a three-part spell that softens footprint, heals destinations, and
+            leaves every brand with transparent, heart-lit proof.
           </p>
           <Button
             asChild
