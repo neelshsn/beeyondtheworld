@@ -6,7 +6,6 @@ import { Instagram, Linkedin } from 'lucide-react';
 import { useCallback, useRef } from 'react';
 
 import { JourneyShowcaseCarousel } from '@/app/_components/journey-showcase-carousel';
-import { WhatWeDoSection, type WhatWeDoSectionProps } from '@/app/_components/what-we-do-section';
 import SplitText from '@/components/SplitText';
 import { GlowTitle, SmartVideo } from '@/components/primitives';
 import { Button } from '@/components/ui/button';
@@ -15,8 +14,6 @@ import type { JourneyShowcase } from '@/data/showcases';
 type HomePageContentProps = {
   coCreateHref: string;
   heroVideoSrc: string;
-  whatWeDoEntries: WhatWeDoSectionProps['entries'];
-  trustedBrandLogos: { name: string; logo: string }[];
   upcomingJourneys: JourneyShowcase[];
   campaignCtaImage?: string;
 };
@@ -24,8 +21,6 @@ type HomePageContentProps = {
 export default function HomePageContent({
   coCreateHref,
   heroVideoSrc,
-  whatWeDoEntries,
-  trustedBrandLogos,
   upcomingJourneys,
   campaignCtaImage,
 }: HomePageContentProps) {
@@ -137,21 +132,49 @@ export default function HomePageContent({
       </section>
 
       <div ref={whatWeDoAnchorRef}>
-        <WhatWeDoSection
-          eyebrow="What we do"
-          title={
-            <SplitText
-              text="Creative productions shared across co-travels"
-              tag="h2"
-              splitType="words"
-              className="font-title text-4xl uppercase leading-[1.1] text-foreground sm:text-5xl md:text-6xl"
-              textAlign="center"
-            />
-          }
-          description="Journeys breathe like roaming ateliers: brands co-create cinematic tales, share resources, and sail home with launch-ready magic."
-          entries={whatWeDoEntries}
-          trustedBrands={trustedBrandLogos}
-        />
+        <section className="bg-[#fdf9ee] px-6 pb-40 pt-24 sm:px-10 lg:px-24">
+          <div
+            className="mx-auto max-w-4xl text-[22px] leading-[1.4] text-foreground/90 sm:text-3xl md:text-4xl"
+            style={{ fontFamily: 'var(--font-love)' }}
+          >
+            we believe in innovation that reveals new horizons where our eyes once perceived only
+            boundaries. we believe that less you talk, more you are. it’s all about dreams,
+            perceptions and worldwide communities. we shape a collaborative ecosystem where each
+            brand maintains its uniqueness while collectively contributing to a better world. we
+            dream, we create, we are beeyond the world.
+          </div>
+
+          <div className="relative mx-auto mt-16 flex w-full justify-center px-1 sm:px-6">
+            <div className="relative w-full max-w-6xl">
+              <div className="relative aspect-[16/9] overflow-hidden rounded-2xl shadow-[0_32px_100px_-60px_rgba(10,6,2,0.45)]">
+                <Image
+                  src="/assets/campaigns/maradji-ibiza/maradji-ibiza-cover.jpg"
+                  alt="Maradji Ibiza cove at dusk"
+                  fill
+                  className="object-cover"
+                  sizes="(min-width: 1280px) 70vw, 92vw"
+                  priority
+                />
+                <span
+                  className="absolute left-5 top-5 text-[11px] uppercase tracking-[0.3em] text-white/85 sm:left-7 sm:top-6 sm:text-xs"
+                  style={{ fontFamily: 'var(--font-adam)', fontStyle: 'italic' }}
+                >
+                  WE DREAM WE CREATE
+                </span>
+              </div>
+
+              <div
+                className="absolute -bottom-16 right-2 text-4xl uppercase leading-[0.95] text-black sm:-bottom-20 sm:right-6 sm:text-5xl md:text-6xl"
+                style={{ fontFamily: 'var(--font-love)' }}
+              >
+                <div>CREATIVE</div>
+                <div>VISUALS</div>
+                <div>PRODUCTION</div>
+                <div>BEYOND THE WORLD</div>
+              </div>
+            </div>
+          </div>
+        </section>
       </div>
 
       <section className="relative flex flex-col gap-14 overflow-hidden bg-gradient-to-b from-white via-white to-stone-100 pb-6 pt-24">
