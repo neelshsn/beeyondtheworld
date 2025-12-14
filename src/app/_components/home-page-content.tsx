@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Instagram, Linkedin } from 'lucide-react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useRef } from 'react';
 
 import { JourneyShowcaseCarousel } from '@/app/_components/journey-showcase-carousel';
 import { WhatWeDoSection, type WhatWeDoSectionProps } from '@/app/_components/what-we-do-section';
@@ -11,7 +11,6 @@ import SplitText from '@/components/SplitText';
 import { GlowTitle, SmartVideo } from '@/components/primitives';
 import { Button } from '@/components/ui/button';
 import type { JourneyShowcase } from '@/data/showcases';
-import { cn } from '@/lib/utils';
 
 type HomePageContentProps = {
   coCreateHref: string;
@@ -30,215 +29,114 @@ export default function HomePageContent({
   upcomingJourneys,
   campaignCtaImage,
 }: HomePageContentProps) {
-  const [heroStage, setHeroStage] = useState<'visible' | 'exiting' | 'hidden'>('visible');
-  const [isCinematicScrolling, setIsCinematicScrolling] = useState(false);
-  const [heroProgress, setHeroProgress] = useState(0);
-  const [whatWeDoPrimed, setWhatWeDoPrimed] = useState(false);
-  const scrollAnimationRef = useRef<number | null>(null);
-  const heroHideTimeoutRef = useRef<number | null>(null);
   const whatWeDoAnchorRef = useRef<HTMLDivElement | null>(null);
-  const heroIsMounted = heroStage !== 'hidden';
 
-  useEffect(() => {
-    if (heroStage === 'visible') {
-      document.body.classList.add('overflow-hidden');
-    } else {
-      document.body.classList.remove('overflow-hidden');
-    }
-
-    return () => {
-      document.body.classList.remove('overflow-hidden');
-    };
-  }, [heroStage]);
-
-  useEffect(
-    () => () => {
-      if (scrollAnimationRef.current) {
-        window.cancelAnimationFrame(scrollAnimationRef.current);
-      }
-      if (heroHideTimeoutRef.current) {
-        window.clearTimeout(heroHideTimeoutRef.current);
-      }
-    },
-    []
-  );
-
-  const startCinematicScroll = useCallback(() => {
-    if (heroStage !== 'visible' || isCinematicScrolling) return;
-    setHeroStage('exiting');
-    setIsCinematicScrolling(true);
-    setHeroProgress(0);
-
+  const scrollToWhatWeDo = useCallback(() => {
     const targetTop = whatWeDoAnchorRef.current?.offsetTop ?? 0;
-    const startY = window.scrollY;
-    const distance = targetTop - startY;
-    const duration = 1200;
-    const easeInOutCubic = (t: number) =>
-      t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-    const startTime = performance.now();
-
-    const animate = (now: number) => {
-      const elapsed = now - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      const eased = easeInOutCubic(progress);
-
-      window.scrollTo({ top: startY + distance * eased, behavior: 'auto' });
-      setHeroProgress(eased);
-
-      if (!whatWeDoPrimed && eased >= 0.3) {
-        setWhatWeDoPrimed(true);
-      }
-
-      if (progress < 1) {
-        scrollAnimationRef.current = window.requestAnimationFrame(animate);
-      } else {
-        heroHideTimeoutRef.current = window.setTimeout(() => {
-          setHeroStage('hidden');
-        }, 120);
-        setIsCinematicScrolling(false);
-      }
-    };
-
-    scrollAnimationRef.current = window.requestAnimationFrame(animate);
-  }, [heroStage, isCinematicScrolling, whatWeDoPrimed]);
+    window.scrollTo({ top: targetTop, behavior: 'auto' });
+  }, []);
 
   return (
-    <main
-      className={cn(
-        'flex flex-col bg-[#fdf9ee]',
-        (heroStage === 'visible' || isCinematicScrolling) && 'max-h-screen overflow-hidden'
-      )}
-    >
-      {heroIsMounted ? (
-        <section
-          className={cn(
-            'fixed inset-0 isolate z-30 flex min-h-screen flex-col justify-end overflow-hidden text-white will-change-transform',
-            heroStage !== 'visible' && 'pointer-events-none'
-          )}
-          style={{
-            transform: `translateY(${-heroProgress * 14}%) scale(${1 - heroProgress * 0.02})`,
-            opacity: 1 - heroProgress * 0.08,
-          }}
-        >
-          <SmartVideo
-            wrapperClassName="absolute inset-0 z-0"
-            className="h-full w-full object-cover will-change-transform"
-            style={{
-              transform: `translateY(${heroProgress * 9}%) scale(${1 + heroProgress * 0.04})`,
-              transition: 'transform 60ms linear',
-            }}
-            src={heroVideoSrc}
-            autoPlay
-            muted
-            loop
-            playsInline
-            aria-hidden
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-black/30 to-[#0d0b08]/70" />
+    <main className="flex flex-col bg-[#fdf9ee]">
+      <section className="relative isolate flex min-h-screen flex-col justify-end overflow-hidden text-white">
+        <SmartVideo
+          wrapperClassName="absolute inset-0 z-0"
+          className="h-full w-full object-cover"
+          src={heroVideoSrc}
+          autoPlay
+          muted
+          loop
+          playsInline
+          aria-hidden
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-black/30 to-[#0d0b08]/70" />
 
-          <div
-            className="relative z-20 flex h-full flex-col justify-end gap-12 px-6 pb-20 pt-32 sm:px-10 sm:pb-24 sm:pt-36 lg:px-20"
-            style={{
-              transform: `translateY(${-heroProgress * 10}%)`,
-              opacity: 1 - heroProgress * 0.2,
-              transition: 'transform 80ms linear, opacity 120ms linear',
-            }}
-          >
-            <div className="max-w-4xl space-y-6 drop-shadow-[0_12px_32px_rgba(0,0,0,0.55)]">
-              <div className="flex items-center">
-                <Image
-                  src="/assets/icones/Ico Gold BEE-13.svg"
-                  alt="Beeyondtheworld Atelier"
-                  width={180}
-                  height={180}
-                  className="h-16 w-auto"
-                  style={{
-                    filter:
-                      'drop-shadow(0 0 26px rgba(246,196,82,0.75)) drop-shadow(0 12px 32px rgba(0,0,0,0.45))',
-                  }}
-                  priority
-                />
-              </div>
-              <SplitText
-                text="Co-journeys pioneering approach for a sustainable transition in fashion advertising"
-                tag="h1"
-                splitType="words, chars"
-                className="font-title text-5xl uppercase leading-tight tracking-[0em] text-white sm:text-6xl"
+        <div className="relative z-20 flex h-full flex-col justify-end gap-12 px-6 pb-20 pt-32 sm:px-10 sm:pb-24 sm:pt-36 lg:px-20">
+          <div className="max-w-4xl space-y-6 drop-shadow-[0_12px_32px_rgba(0,0,0,0.55)]">
+            <div className="flex items-center">
+              <Image
+                src="/assets/icones/Ico Gold BEE-13.svg"
+                alt="Beeyondtheworld Atelier"
+                width={180}
+                height={180}
+                className="h-16 w-auto"
                 style={{
-                  textShadow:
-                    '0 0 22px rgba(255,255,255,0.95), 0 0 48px rgba(255,255,255,0.65), 0 12px 32px rgba(0,0,0,0.55)',
+                  filter:
+                    'drop-shadow(0 0 26px rgba(246,196,82,0.75)) drop-shadow(0 12px 32px rgba(0,0,0,0.45))',
                 }}
-                textAlign="left"
+                priority
               />
-              <p className="max-w-2xl text-sm leading-relaxed text-white/85">
-                Beeyondtheworld&rsquo;s mission is to curb the excessive individualization of visual
-                productions by optimizing every resource with intelligence and intention. We
-                introduce a refined, sustainable model that elevates creative excellence while
-                minimizing impact, proving that luxury and responsibility can move forward as one.
-              </p>
             </div>
+            <SplitText
+              text="Co-journeys pioneering approach for a sustainable transition in fashion advertising"
+              tag="h1"
+              splitType="words, chars"
+              className="font-title text-5xl uppercase leading-tight tracking-[0em] text-white sm:text-6xl"
+              style={{
+                textShadow:
+                  '0 0 22px rgba(255,255,255,0.95), 0 0 48px rgba(255,255,255,0.65), 0 12px 32px rgba(0,0,0,0.55)',
+              }}
+              textAlign="left"
+            />
+            <p className="max-w-2xl text-sm leading-relaxed text-white/85">
+              Beeyondtheworld&rsquo;s mission is to curb the excessive individualization of visual
+              productions by optimizing every resource with intelligence and intention. We introduce
+              a refined, sustainable model that elevates creative excellence while minimizing
+              impact, proving that luxury and responsibility can move forward as one.
+            </p>
+          </div>
 
-            <div className="pointer-events-auto flex w-full justify-center pb-10 sm:pb-12">
-              <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-5">
-                <Button
-                  asChild
-                  className="group relative inline-flex items-center justify-center gap-4 overflow-hidden rounded-full border border-white/25 bg-white/10 px-12 py-4 font-display text-[11px] uppercase tracking-[0.5em] text-white transition-colors duration-300 [transition-timing-function:var(--bee-ease)] hover:border-white/60 hover:bg-white/15 focus-visible:ring-[#f6c452]/35"
-                >
-                  <Link
-                    href={coCreateHref}
-                    className="relative inline-flex items-center justify-center gap-4"
-                  >
-                    <span
-                      aria-hidden
-                      className="pointer-events-none absolute inset-0 z-0 -translate-x-full bg-gradient-to-r from-transparent via-[#f6c452bf] to-transparent opacity-0 transition-transform duration-500 group-hover:translate-x-full group-hover:opacity-100"
-                    />
-                    <span className="relative z-10">Co-Create a journey</span>
-                  </Link>
-                </Button>
-
-                <Button
-                  type="button"
-                  onClick={startCinematicScroll}
-                  disabled={isCinematicScrolling}
-                  className="group relative inline-flex items-center justify-center gap-4 overflow-hidden rounded-full border border-white/25 bg-white/10 px-12 py-4 font-display text-[11px] uppercase tracking-[0.5em] text-white transition-colors duration-300 [transition-timing-function:var(--bee-ease)] hover:border-white/60 hover:bg-white/15 focus-visible:ring-[#f6c452]/35"
+          <div className="pointer-events-auto flex w-full justify-center pb-10 sm:pb-12">
+            <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-5">
+              <Button
+                asChild
+                className="group relative inline-flex items-center justify-center gap-4 overflow-hidden rounded-full border border-white/25 bg-white/10 px-12 py-4 font-display text-[11px] uppercase tracking-[0.5em] text-white transition-colors duration-300 [transition-timing-function:var(--bee-ease)] hover:border-white/60 hover:bg-white/15 focus-visible:ring-[#f6c452]/35"
+              >
+                <Link
+                  href={coCreateHref}
+                  className="relative inline-flex items-center justify-center gap-4"
                 >
                   <span
                     aria-hidden
                     className="pointer-events-none absolute inset-0 z-0 -translate-x-full bg-gradient-to-r from-transparent via-[#f6c452bf] to-transparent opacity-0 transition-transform duration-500 group-hover:translate-x-full group-hover:opacity-100"
                   />
-                  <span className="relative z-10">Click to scroll</span>
-                </Button>
+                  <span className="relative z-10">Co-Create a journey</span>
+                </Link>
+              </Button>
 
-                <Button
-                  asChild
-                  className="group relative inline-flex items-center justify-center gap-4 overflow-hidden rounded-full border border-white/25 bg-white/10 px-12 py-4 font-display text-[11px] uppercase tracking-[0.5em] text-white transition-colors duration-300 [transition-timing-function:var(--bee-ease)] hover:border-white/60 hover:bg-white/15 focus-visible:ring-[#f6c452]/35"
+              <Button
+                type="button"
+                onClick={scrollToWhatWeDo}
+                className="group relative inline-flex items-center justify-center gap-4 overflow-hidden rounded-full border border-white/25 bg-white/10 px-12 py-4 font-display text-[11px] uppercase tracking-[0.5em] text-white transition-colors duration-300 [transition-timing-function:var(--bee-ease)] hover:border-white/60 hover:bg-white/15 focus-visible:ring-[#f6c452]/35"
+              >
+                <span
+                  aria-hidden
+                  className="pointer-events-none absolute inset-0 z-0 -translate-x-full bg-gradient-to-r from-transparent via-[#f6c452bf] to-transparent opacity-0 transition-transform duration-500 group-hover:translate-x-full group-hover:opacity-100"
+                />
+                <span className="relative z-10">Click to scroll</span>
+              </Button>
+
+              <Button
+                asChild
+                className="group relative inline-flex items-center justify-center gap-4 overflow-hidden rounded-full border border-white/25 bg-white/10 px-12 py-4 font-display text-[11px] uppercase tracking-[0.5em] text-white transition-colors duration-300 [transition-timing-function:var(--bee-ease)] hover:border-white/60 hover:bg-white/15 focus-visible:ring-[#f6c452]/35"
+              >
+                <Link
+                  href="/concept"
+                  className="relative inline-flex items-center justify-center gap-4"
                 >
-                  <Link
-                    href="/concept"
-                    className="relative inline-flex items-center justify-center gap-4"
-                  >
-                    <span
-                      aria-hidden
-                      className="pointer-events-none absolute inset-0 z-0 -translate-x-full bg-gradient-to-r from-transparent via-[#f6c452bf] to-transparent opacity-0 transition-transform duration-500 group-hover:translate-x-full group-hover:opacity-100"
-                    />
-                    <span className="relative z-10">Discover the concept</span>
-                  </Link>
-                </Button>
-              </div>
+                  <span
+                    aria-hidden
+                    className="pointer-events-none absolute inset-0 z-0 -translate-x-full bg-gradient-to-r from-transparent via-[#f6c452bf] to-transparent opacity-0 transition-transform duration-500 group-hover:translate-x-full group-hover:opacity-100"
+                  />
+                  <span className="relative z-10">Discover the concept</span>
+                </Link>
+              </Button>
             </div>
           </div>
-        </section>
-      ) : null}
+        </div>
+      </section>
 
-      <div
-        ref={whatWeDoAnchorRef}
-        className={cn(
-          'duration-900 ease-[cubic-bezier(0.22,1,0.36,1)] transition-[opacity,transform] will-change-transform',
-          heroStage === 'hidden' || whatWeDoPrimed
-            ? 'translate-y-0 opacity-100'
-            : 'pointer-events-none translate-y-8 opacity-0'
-        )}
-      >
+      <div ref={whatWeDoAnchorRef}>
         <WhatWeDoSection
           eyebrow="What we do"
           title={
