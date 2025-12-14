@@ -72,7 +72,7 @@ export default function HomePageContent({
     const targetTop = whatWeDoAnchorRef.current?.offsetTop ?? 0;
     const startY = window.scrollY;
     const distance = targetTop - startY;
-    const duration = 1350;
+    const duration = 1200;
     const easeInOutCubic = (t: number) =>
       t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
     const startTime = performance.now();
@@ -116,16 +116,15 @@ export default function HomePageContent({
             heroStage !== 'visible' && 'pointer-events-none'
           )}
           style={{
-            transform: `translateY(${-heroProgress * 5}%) scale(${1 - heroProgress * 0.015})`,
-            opacity: Math.max(0, 1 - heroProgress * 1.05),
-            filter: `blur(${heroProgress * 0.6}px)`,
+            transform: `translateY(${-heroProgress * 14}%) scale(${1 - heroProgress * 0.02})`,
+            opacity: 1 - heroProgress * 0.08,
           }}
         >
           <SmartVideo
             wrapperClassName="absolute inset-0 z-0"
             className="h-full w-full object-cover will-change-transform"
             style={{
-              transform: `translateY(${heroProgress * 8}%) scale(${1 + heroProgress * 0.08})`,
+              transform: `translateY(${heroProgress * 9}%) scale(${1 + heroProgress * 0.04})`,
               transition: 'transform 60ms linear',
             }}
             src={heroVideoSrc}
@@ -135,16 +134,13 @@ export default function HomePageContent({
             playsInline
             aria-hidden
           />
-          <div
-            className="absolute inset-0 bg-gradient-to-b from-black/35 via-black/30 to-[#0d0b08]/70"
-            style={{ opacity: Math.max(0, 0.78 - heroProgress * 0.5) }}
-          />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-black/30 to-[#0d0b08]/70" />
 
           <div
             className="relative z-20 flex h-full flex-col justify-end gap-12 px-6 pb-20 pt-32 sm:px-10 sm:pb-24 sm:pt-36 lg:px-20"
             style={{
-              transform: `translateY(${-heroProgress * 3}%)`,
-              opacity: Math.max(0, 1 - heroProgress * 0.25),
+              transform: `translateY(${-heroProgress * 10}%)`,
+              opacity: 1 - heroProgress * 0.2,
               transition: 'transform 80ms linear, opacity 120ms linear',
             }}
           >
