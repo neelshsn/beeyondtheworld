@@ -32,7 +32,6 @@ export default function HomePageContent({
   const movingLineRef = useRef<HTMLDivElement | null>(null);
   const lineStartRef = useRef<number>(0);
   const originalOverflowRef = useRef<{ html: string; body: string } | null>(null);
-  const latestScrollLocked = useRef(scrollLocked);
   const scrollAnimationRef = useRef<number | null>(null);
   const [movingLineShift, setMovingLineShift] = useState(0);
   const [lineOverlapFraction, setLineOverlapFraction] = useState(0);
@@ -41,6 +40,7 @@ export default function HomePageContent({
   const [scrollLocked, setScrollLocked] = useState(true);
   const [isAutoScrolling, setIsAutoScrolling] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
+  const latestScrollLocked = useRef(true);
 
   const scrollToWhatWeDo = useCallback(() => {
     if (isAutoScrolling) return;
