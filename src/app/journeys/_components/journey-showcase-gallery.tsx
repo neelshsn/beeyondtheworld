@@ -278,15 +278,15 @@ export function JourneyShowcaseGallery() {
         aria-valuemax={Math.max(1, safeLength)}
         aria-valuenow={safeLength ? displayIndex + 1 : 0}
         aria-valuetext={safeLength ? `${displayIndex + 1} of ${safeLength}` : '0 of 0'}
-    >
-      <div
-        aria-hidden
-        className="h-full w-full origin-left bg-gradient-to-r from-[#f6c452] via-[#f0a87a] to-[#f7d799]"
-        style={{
-          transform: `scaleX(${Math.max(0, Math.min(100, progressValue)) / 100})`,
-          transformOrigin: 'left center',
-          transition: 'transform 600ms var(--bee-ease)',
-        }}
+      >
+        <div
+          aria-hidden
+          className="h-full w-full origin-left bg-gradient-to-r from-[#f6c452] via-[#f0a87a] to-[#f7d799]"
+          style={{
+            transform: `scaleX(${Math.max(0, Math.min(100, progressValue)) / 100})`,
+            transformOrigin: 'left center',
+            transition: 'transform 600ms var(--bee-ease)',
+          }}
         />
       </div>
       <BackgroundVideo prefersReducedMotion={prefersReducedMotion} season={filters.season} />
@@ -406,7 +406,7 @@ function SeasonTabs({ value, onChange }: SeasonTabsProps) {
             {isActive ? (
               <motion.span
                 layoutId="season-underline"
-                className="pointer-events-none absolute left-0 right-0 bottom-[2px] mx-auto h-[2px] w-[92%] bg-gradient-to-r from-[#f6c452] via-[#f0a87a] to-[#f7d799]"
+                className="pointer-events-none absolute bottom-[2px] left-0 right-0 mx-auto h-[2px] w-[92%] bg-gradient-to-r from-[#f6c452] via-[#f0a87a] to-[#f7d799]"
                 transition={{ type: 'spring', bounce: 0.35, duration: 0.5 }}
               />
             ) : null}
@@ -443,11 +443,7 @@ function JourneyCard({
       )}
       onClick={() => onSelect(journey)}
       aria-label={`Journey: ${journey.title}, ${journey.date}`}
-      animate={
-        prefersReducedMotion
-          ? undefined
-          : { scale: isActive ? 1 : 0.92, opacity: 1 }
-      }
+      animate={prefersReducedMotion ? undefined : { scale: isActive ? 1 : 0.92, opacity: 1 }}
       whileHover={prefersReducedMotion ? undefined : { scale: 1.05, y: -12 }}
       transition={prefersReducedMotion ? undefined : { duration: 0.55, ease: [0.33, 1, 0.68, 1] }}
     >
@@ -490,7 +486,9 @@ function JourneyCard({
             <h3 className="w-full font-title text-xl uppercase tracking-[0em] sm:text-2xl lg:text-[26px]">
               {extractCountry(journey.location)}
             </h3>
-            <div className="text-[0.68rem] uppercase tracking-[0.38em] text-white/85">{journey.date}</div>
+            <div className="text-[0.68rem] uppercase tracking-[0.38em] text-white/85">
+              {journey.date}
+            </div>
           </div>
         </div>
       </div>
