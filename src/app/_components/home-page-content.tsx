@@ -31,16 +31,29 @@ export default function HomePageContent({
   const triptychRowRef = useRef<HTMLDivElement | null>(null);
   const movingLineRef = useRef<HTMLDivElement | null>(null);
   const lineStartRef = useRef<number>(0);
+  const originalOverflowRef = useRef<{ html: string; body: string } | null>(null);
   const scrollAnimationRef = useRef<number | null>(null);
   const [movingLineShift, setMovingLineShift] = useState(0);
   const [lineOverlapFraction, setLineOverlapFraction] = useState(0);
   const [activeTile, setActiveTile] = useState<TriptychTileId | null>(null);
   const [displayTile, setDisplayTile] = useState<TriptychTileId | null>(null);
+  const [scrollLocked, setScrollLocked] = useState(true);
   const [isAutoScrolling, setIsAutoScrolling] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
 
   const scrollToWhatWeDo = useCallback(() => {
     if (isAutoScrolling) return;
+
+    // unlock scroll if still locked, restoring original overflow immediately
+    if (scrollLocked) {
+      setScrollLocked(false);
+      const html = document.documentElement;
+      const body = document.body;
+      const original = originalOverflowRef.current;
+      html.style.overflow = original?.html ?? '';
+      body.style.overflow = original?.body ?? '';
+    }
+
     const targetTop = whatWeDoAnchorRef.current?.offsetTop ?? 0;
     const start = window.scrollY;
     const distance = targetTop - start;
@@ -69,7 +82,7 @@ export default function HomePageContent({
     };
 
     scrollAnimationRef.current = requestAnimationFrame(step);
-  }, [isAutoScrolling]);
+  }, [isAutoScrolling, scrollLocked]);
 
   useEffect(() => {
     const handlePosition = () => {
@@ -122,14 +135,66 @@ export default function HomePageContent({
     return () => window.clearTimeout(timeout);
   }, [activeTile]);
 
-  useEffect(
-    () => () => {
+  useEffect(() => {
+    const html = document.documentElement;
+    const body = document.body;
+
+    if (scrollLocked) {
+      if (!originalOverflowRef.current) {
+        originalOverflowRef.current = {
+          html: html.style.overflow,
+          body: body.style.overflow,
+        };
+      }
+      html.style.overflow = 'hidden';
+      body.style.overflow = 'hidden';
+      window.scrollTo({ top: 0, behavior: 'auto' });
+    } else {
+      const original = originalOverflowRef.current;
+      html.style.overflow = original?.html ?? '';
+      body.style.overflow = original?.body ?? '';
+    }
+  }, [scrollLocked]);
+
+  useEffect(() => {
+    if (!scrollLocked && !isAutoScrolling) return;
+
+    const preventScroll = (event: Event) => {
+      event.preventDefault();
+    };
+
+    const preventKeys = (event: KeyboardEvent) => {
+      const keys = ['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', ' ', 'Spacebar', 'Home', 'End'];
+      if (keys.includes(event.key)) {
+        event.preventDefault();
+      }
+    };
+
+    window.addEventListener('wheel', preventScroll, { passive: false });
+    window.addEventListener('touchmove', preventScroll, { passive: false });
+    window.addEventListener('keydown', preventKeys, { passive: false });
+
+    return () => {
+      window.removeEventListener('wheel', preventScroll);
+      window.removeEventListener('touchmove', preventScroll);
+      window.removeEventListener('keydown', preventKeys);
+    };
+  }, [scrollLocked, isAutoScrolling]);
+
+  useEffect(() => {
+    return () => {
       if (scrollAnimationRef.current) {
         cancelAnimationFrame(scrollAnimationRef.current);
       }
-    },
-    []
-  );
+      if (scrollLocked) {
+        const html = document.documentElement;
+        const body = document.body;
+        const original = originalOverflowRef.current;
+        html.style.overflow = original?.html ?? '';
+        body.style.overflow = original?.body ?? '';
+      }
+    };
+  }, [scrollLocked]);
 
   const triptychCards = useMemo(
     () => [
