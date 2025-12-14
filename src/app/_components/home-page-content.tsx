@@ -164,8 +164,14 @@ export default function HomePageContent({
               </div>
 
               <div
-                className="absolute -bottom-[10%] -left-[10%] text-6xl uppercase leading-[0.92] text-black sm:-bottom-[14%] sm:-left-[12%] sm:text-7xl md:text-8xl lg:text-9xl"
-                style={{ fontFamily: 'var(--font-love)' }}
+                className="absolute uppercase text-black"
+                style={{
+                  fontFamily: 'var(--font-love)',
+                  fontSize: 'clamp(3.8rem, 8vw, 10rem)',
+                  lineHeight: 0.9,
+                  left: 'clamp(-14%, -8vw, -6%)',
+                  bottom: 'clamp(-18%, -12vw, -9%)',
+                }}
               >
                 <div>CREATIVE</div>
                 <div>VISUALS</div>
