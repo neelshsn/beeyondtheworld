@@ -28,11 +28,18 @@ export default function HomePageContent({
 }: HomePageContentProps) {
   const whatWeDoAnchorRef = useRef<HTMLDivElement | null>(null);
   const triptychRef = useRef<HTMLDivElement | null>(null);
+  const triptychRowRef = useRef<HTMLDivElement | null>(null);
   const movingLineRef = useRef<HTMLDivElement | null>(null);
   const lineStartRef = useRef<number>(0);
   const [movingLineShift, setMovingLineShift] = useState(0);
   const [linePinned, setLinePinned] = useState(false);
   const [activeTile, setActiveTile] = useState<TriptychTileId | null>(null);
+  const overlayPlacement =
+    activeTile === 'bees'
+      ? 'items-end justify-start px-4 pb-8 sm:px-8 sm:pb-12'
+      : activeTile === 'flowers'
+        ? 'items-center justify-end px-6 pb-6 sm:px-10 sm:pb-10'
+        : 'items-start justify-start px-4 pt-10 sm:px-8 sm:pt-12';
 
   const scrollToWhatWeDo = useCallback(() => {
     const targetTop = whatWeDoAnchorRef.current?.offsetTop ?? 0;
@@ -43,6 +50,7 @@ export default function HomePageContent({
     const handlePosition = () => {
       const lineEl = movingLineRef.current;
       const tripEl = triptychRef.current;
+      const rowEl = triptychRowRef.current;
       if (!lineEl || !tripEl) return;
 
       const rect = lineEl.getBoundingClientRect();
@@ -52,9 +60,10 @@ export default function HomePageContent({
       }
       const startY = lineStartRef.current;
       const tripTop = tripEl.offsetTop;
+      const rowHeight = rowEl?.getBoundingClientRect().height ?? 0;
 
       const rawShift = window.scrollY - startY + rect.height * 0.1;
-      const maxShift = Math.max(tripTop - startY - rect.height * 0.1, 0);
+      const maxShift = Math.max(tripTop - startY + Math.max(rowHeight - rect.height, 0), 0);
       const clamped = Math.min(Math.max(rawShift, 0), maxShift);
 
       setMovingLineShift(clamped);
@@ -256,19 +265,19 @@ export default function HomePageContent({
 
       <section
         ref={triptychRef}
-        className="relative bg-[#fdf9ee] px-4 pb-28 pt-20 sm:px-8 lg:px-20"
+        className="relative bg-[#fdf9ee] px-4 pb-32 pt-20 sm:px-6 lg:px-12"
       >
-        <div className="flex flex-col gap-3 md:flex-row">
+        <div ref={triptychRowRef} className="flex flex-col md:flex-row md:gap-0">
           {triptychCards.map((card) => {
             const isActive = activeTile === card.id;
             const basisClass =
-              activeTile === null ? 'md:flex-1' : isActive ? 'md:flex-[2.15]' : 'md:flex-[0.85]';
+              activeTile === null ? 'md:flex-1' : isActive ? 'md:flex-[2.35]' : 'md:flex-[0.65]';
             return (
               <button
                 key={card.id}
                 type="button"
                 onClick={() => setActiveTile(isActive ? null : card.id)}
-                className={`group relative h-[280px] overflow-hidden bg-black md:h-[420px] ${basisClass} transition-[flex-grow,flex-basis] duration-500 ease-bee`}
+                className={`group relative min-h-[420px] overflow-hidden bg-black md:min-h-[620px] ${basisClass} transition-[flex-grow,flex-basis] duration-500 ease-bee`}
               >
                 <Image
                   src={card.image}
@@ -277,10 +286,9 @@ export default function HomePageContent({
                   className={`object-cover transition duration-500 ease-bee ${
                     isActive ? 'scale-[1.03]' : 'scale-100'
                   }`}
-                  sizes="(min-width:1280px) 33vw, 100vw"
+                  sizes="(min-width:1280px) 34vw, (min-width:768px) 33vw, 100vw"
                   priority={card.id === 'bees'}
                 />
-                <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black/55 via-black/20 to-transparent" />
                 <div className="absolute inset-0 flex items-end justify-center pb-6 opacity-0 transition duration-300 group-hover:opacity-100">
                   <div className="flex items-center gap-3 text-white">
                     <Image
@@ -313,8 +321,10 @@ export default function HomePageContent({
             >
               ×
             </button>
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/55 via-black/25 to-transparent" />
-            <div className="pointer-events-none absolute inset-0 flex items-end">
+            <div
+              className={`pointer-events-none absolute inset-0 flex ${overlayPlacement}`}
+              style={{ textShadow: '0 10px 28px rgba(0,0,0,0.32)' }}
+            >
               {activeTile === 'bees' ? (
                 <div className="flex w-full flex-col gap-6 px-4 pb-10 text-white sm:px-8 lg:px-16">
                   <h3
@@ -332,6 +342,7 @@ export default function HomePageContent({
                           textOrientation: 'mixed',
                           letterSpacing: '0.35em',
                           fontFamily: 'var(--font-adam)',
+                          transform: 'rotate(180deg)',
                         }}
                       >
                         PHYLOSOPHIE
@@ -353,6 +364,7 @@ export default function HomePageContent({
                           textOrientation: 'mixed',
                           letterSpacing: '0.35em',
                           fontFamily: 'var(--font-adam)',
+                          transform: 'rotate(180deg)',
                         }}
                       >
                         PIONEER APPROACH
@@ -374,6 +386,7 @@ export default function HomePageContent({
                           textOrientation: 'mixed',
                           letterSpacing: '0.35em',
                           fontFamily: 'var(--font-adam)',
+                          transform: 'rotate(180deg)',
                         }}
                       >
                         VISION
@@ -395,49 +408,135 @@ export default function HomePageContent({
               {activeTile === 'flowers' ? (
                 <div className="flex w-full flex-col gap-6 px-4 pb-10 text-white sm:px-8 lg:px-16">
                   <h3 className="flex flex-wrap items-baseline gap-2 text-4xl sm:text-5xl md:text-6xl">
-                    <span style={{ fontFamily: 'var(--font-saint)' }}>the</span>
+                    <span style={{ fontFamily: 'var(--font-saint)', textTransform: 'none' }}>
+                      the
+                    </span>
                     <span className="uppercase" style={{ fontFamily: 'var(--font-love)' }}>
                       WORLD
                     </span>
-                    <span style={{ fontFamily: 'var(--font-saint)' }}>as</span>
+                    <span style={{ fontFamily: 'var(--font-saint)', textTransform: 'none' }}>
+                      as
+                    </span>
                     <span className="uppercase" style={{ fontFamily: 'var(--font-love)' }}>
                       FLOWERS
                     </span>
                   </h3>
-                  <p className="max-w-4xl text-sm leading-relaxed sm:text-base">
-                    The world is a living work of art, painted by nature’s lights and offered to us
-                    like a precious, untouchable flower. Luminous and intricately woven, it opens in
-                    soft, silent layers as we move through the unfolding tapestry of our lives. We
-                    design immersive itineraries across the world to produce cinematic and editorial
-                    content while honoring and optimizing every resource, human, cultural, and
-                    environmental. Each destination is strategically curated to generate multiple
-                    unique visual campaigns within a single journey, ensuring elevated creativity,
-                    refined efficiency, and a profoundly responsible approach to production.
-                  </p>
+                  <div className="flex flex-col gap-8 md:flex-row md:items-start md:gap-12">
+                    <div className="flex items-start gap-4">
+                      <span
+                        className="text-xs tracking-[0.4em]"
+                        style={{
+                          writingMode: 'vertical-rl',
+                          textOrientation: 'mixed',
+                          letterSpacing: '0.35em',
+                          fontFamily: 'var(--font-adam)',
+                          transform: 'rotate(180deg)',
+                        }}
+                      >
+                        IMMERSION
+                      </span>
+                      <p
+                        className="max-w-md text-sm leading-relaxed sm:text-base"
+                        style={{ fontFamily: 'var(--font-avenir)', fontStyle: 'italic' }}
+                      >
+                        The world is a living work of art, painted by nature’s lights and offered to
+                        us like a precious, untouchable flower. Luminous and intricately woven, it
+                        opens in soft, silent layers as we move through the unfolding tapestry of
+                        our lives.
+                      </p>
+                    </div>
+                    <div className="flex items-start gap-4">
+                      <span
+                        className="text-xs tracking-[0.4em]"
+                        style={{
+                          writingMode: 'vertical-rl',
+                          textOrientation: 'mixed',
+                          letterSpacing: '0.35em',
+                          fontFamily: 'var(--font-adam)',
+                          transform: 'rotate(180deg)',
+                        }}
+                      >
+                        RESPONSIBILITY
+                      </span>
+                      <p
+                        className="max-w-md text-sm leading-relaxed sm:text-base"
+                        style={{ fontFamily: 'var(--font-avenir)', fontStyle: 'italic' }}
+                      >
+                        We design immersive itineraries to produce cinematic and editorial content
+                        while honoring and optimizing every resource—human, cultural, environmental.
+                        Each destination is curated to generate multiple unique campaigns within a
+                        single journey, ensuring elevated creativity, refined efficiency, and a
+                        responsible approach to production.
+                      </p>
+                    </div>
+                  </div>
                 </div>
               ) : null}
 
               {activeTile === 'honey' ? (
                 <div className="flex w-full flex-col gap-6 px-4 pb-10 text-white sm:px-8 lg:px-16">
                   <h3 className="flex flex-wrap items-baseline gap-2 text-4xl sm:text-5xl md:text-6xl">
-                    <span style={{ fontFamily: 'var(--font-saint)' }}>the</span>
+                    <span style={{ fontFamily: 'var(--font-saint)', textTransform: 'none' }}>
+                      the
+                    </span>
                     <span className="uppercase" style={{ fontFamily: 'var(--font-love)' }}>
                       HONEY
                     </span>
-                    <span style={{ fontFamily: 'var(--font-saint)' }}>of</span>
+                    <span style={{ fontFamily: 'var(--font-saint)', textTransform: 'none' }}>
+                      of
+                    </span>
                     <span className="uppercase" style={{ fontFamily: 'var(--font-love)' }}>
                       ADVERTISING
                     </span>
                   </h3>
-                  <p className="max-w-4xl text-sm leading-relaxed sm:text-base">
-                    Our campaigns are the tangible proof that another model is possible: one where
-                    beauty aligns with the world instead of taking from it, and where intention
-                    leaves a softness that uplifts, sustains, and endures. Honey is the luminous
-                    trace of an ecosystem in harmony, where every action, choice, and collaboration
-                    generates positive impact. It embodies the value created when brands embrace a
-                    more conscious path: producing less, but better; reducing excess, honoring
-                    places, and creating through connection rather than isolation.
-                  </p>
+                  <div className="flex flex-col gap-8 md:flex-row md:items-start md:gap-12">
+                    <div className="flex items-start gap-4">
+                      <span
+                        className="text-xs tracking-[0.4em]"
+                        style={{
+                          writingMode: 'vertical-rl',
+                          textOrientation: 'mixed',
+                          letterSpacing: '0.35em',
+                          fontFamily: 'var(--font-adam)',
+                          transform: 'rotate(180deg)',
+                        }}
+                      >
+                        PROOF
+                      </span>
+                      <p
+                        className="max-w-md text-sm leading-relaxed sm:text-base"
+                        style={{ fontFamily: 'var(--font-avenir)', fontStyle: 'italic' }}
+                      >
+                        Our campaigns are the tangible proof that another model is possible: one
+                        where beauty aligns with the world instead of taking from it, and where
+                        intention leaves a softness that uplifts, sustains, and endures.
+                      </p>
+                    </div>
+                    <div className="flex items-start gap-4">
+                      <span
+                        className="text-xs tracking-[0.4em]"
+                        style={{
+                          writingMode: 'vertical-rl',
+                          textOrientation: 'mixed',
+                          letterSpacing: '0.35em',
+                          fontFamily: 'var(--font-adam)',
+                          transform: 'rotate(180deg)',
+                        }}
+                      >
+                        ESSENCE
+                      </span>
+                      <p
+                        className="max-w-md text-sm leading-relaxed sm:text-base"
+                        style={{ fontFamily: 'var(--font-avenir)', fontStyle: 'italic' }}
+                      >
+                        Honey is the luminous trace of an ecosystem in harmony, where every action,
+                        choice, and collaboration generates positive impact. It embodies the value
+                        created when brands embrace a conscious path: producing less, but better;
+                        reducing excess, honoring places, creating through connection rather than
+                        isolation.
+                      </p>
+                    </div>
+                  </div>
                 </div>
               ) : null}
             </div>
