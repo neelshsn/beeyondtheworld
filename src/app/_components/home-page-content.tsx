@@ -251,6 +251,8 @@ export default function HomePageContent({
                   transform: `translateY(${movingLineShift}px)`,
                   color: linePinned ? '#ffffff' : '#000000',
                   transition: 'color 180ms ease',
+                  zIndex: 40,
+                  pointerEvents: 'none',
                 }}
               >
                 <div>CREATIVE</div>
