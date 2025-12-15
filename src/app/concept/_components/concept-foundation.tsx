@@ -11,7 +11,7 @@ import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { ConceptGoToIndexOptions, ConceptTrackProvider } from '../_context/concept-track-context';
 
-import { Icono, ICON_MAP } from '../_components/icono';
+import { Icono } from '../_components/icono';
 
 import { useBodyScrollLock } from '../_hooks/use-body-scroll-lock';
 
@@ -25,14 +25,6 @@ const SNAP_TIMEOUT = 140;
 
 const ENTER_INTERACTIVE_SELECTOR =
   'button, a, input, textarea, select, [role="button"], [data-interactive]';
-
-const CARD_BACKDROPS = [
-  '/assets/journeys/philippines-lagoon-2025/philippines-lagoon-2025-gallery-01.png',
-
-  '/assets/journeys/philippines-lagoon-2025/philippines-lagoon-2025-gallery-02.png',
-
-  '/assets/journeys/philippines-lagoon-2025/philippines-lagoon-2025-gallery-03.png',
-];
 
 export function ConceptFoundation() {
   useBodyScrollLock();
@@ -66,6 +58,10 @@ export function ConceptFoundation() {
   const totalNodes = conceptNodes.length;
 
   const progressValue = totalNodes > 0 ? ((currentIndex + 1) / totalNodes) * 100 : 0;
+
+  const activeBackground =
+    conceptNodes[Math.max(0, Math.min(conceptNodes.length - 1, currentIndex))]?.background ??
+    conceptNodes[0]?.background;
 
   const goToIndex = useCallback(
     (index: number, { smooth = true, preserveOpen = false }: ConceptGoToIndexOptions = {}) => {
@@ -298,7 +294,7 @@ export function ConceptFoundation() {
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'ArrowRight') {
+      if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
         event.preventDefault();
 
         goToIndex(currentIndex + 1);
@@ -306,7 +302,7 @@ export function ConceptFoundation() {
         return;
       }
 
-      if (event.key === 'ArrowLeft') {
+      if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
         event.preventDefault();
 
         goToIndex(currentIndex - 1);
@@ -436,14 +432,6 @@ export function ConceptFoundation() {
     hasAppliedOpenParamRef.current = true;
   }, [currentIndex, goToIndex, selectIndex]);
 
-  const handleIconSelect = useCallback(
-    (index: number) => {
-      handleOpenRequest(index);
-    },
-
-    [handleOpenRequest]
-  );
-
   const contextValue = useMemo(
     () => ({
       currentIndex,
@@ -457,7 +445,12 @@ export function ConceptFoundation() {
   return (
     <ConceptTrackProvider value={contextValue}>
       <div className="relative h-screen w-screen overflow-hidden bg-black text-white">
-        <BackgroundCanvas prefersReducedMotion={prefersReducedMotion} />
+        {activeBackground ? (
+          <BackgroundCanvas
+            background={activeBackground}
+            prefersReducedMotion={prefersReducedMotion}
+          />
+        ) : null}
 
         <main className="relative z-10 h-full w-full">
           <div
@@ -481,6 +474,19 @@ export function ConceptFoundation() {
             />
           </div>
 
+          <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-between px-3 sm:px-6">
+            <NavArrow
+              direction="left"
+              onClick={() => goToIndex(currentIndex - 1)}
+              disabled={currentIndex <= 0}
+            />
+            <NavArrow
+              direction="right"
+              onClick={() => goToIndex(currentIndex + 1)}
+              disabled={currentIndex >= totalNodes - 1}
+            />
+          </div>
+
           <div
             ref={trackRef}
             className="concept-track flex h-full min-h-0 snap-x snap-mandatory overflow-x-auto scroll-smooth"
@@ -489,52 +495,20 @@ export function ConceptFoundation() {
             {conceptNodes.map((node, index) => (
               <section
                 key={node.id}
-                className="flex h-full w-screen flex-shrink-0 snap-center items-center justify-center px-6 text-center sm:px-12"
+                className="relative flex h-full w-screen flex-shrink-0 snap-center items-center justify-center px-6 py-10 sm:px-12 md:px-16"
                 aria-hidden={index !== currentIndex}
               >
-                <div className="flex w-full max-w-3xl flex-col items-center gap-10 sm:gap-12">
-                  <div className="relative flex flex-col items-center gap-5">
-                    <Icono
-                      node={node}
-                      isActive={index === currentIndex}
-                      isExpanded={openIndex === index}
-                      onSelect={() => handleIconSelect(index)}
-                      onFocus={() => goToIndex(index, { smooth: false, preserveOpen: true })}
-                    />
-
-                    <span className="bg-white/12 inline-flex items-center rounded-full border border-white/20 px-5 py-2 text-[11px] uppercase tracking-[0.42em] text-white/70">
-                      {node.id}
-                    </span>
-                  </div>
-
-                  <div className="flex w-full flex-col items-center gap-5 text-center">
-                    <h2 className="font-title text-3xl uppercase tracking-[0em] text-white sm:text-4xl md:text-5xl">
-                      {node.title}
-                    </h2>
-
-                    <p className="max-w-2xl text-sm uppercase tracking-[0.24em] text-white/70 sm:text-base">
-                      {node.lead}
-                    </p>
-
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      aria-expanded={openIndex === index}
-                      aria-controls={`concept-detail-${node.id}`}
-                      className="bg-white/12 group relative overflow-hidden border border-white/20 px-8 py-3 text-xs uppercase tracking-[0.32em] text-white transition [transition-timing-function:var(--bee-ease)] hover:bg-white/10 hover:shadow-[0_0_35px_rgba(246,196,82,0.35)] focus-visible:ring-[#f6c452]/35"
-                      onClick={() => handleOpenRequest(index)}
-                    >
-                      <span
-                        aria-hidden
-                        className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-[#f6c452bf] to-transparent opacity-0 transition-transform duration-500 group-hover:translate-x-full group-hover:opacity-100"
-                      />
-
-                      <span className="relative">Open</span>
-                    </Button>
-
-                    <ConceptDetailCards node={node} isVisible={openIndex === index} />
-                  </div>
-                </div>
+                <div
+                  className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/65"
+                  aria-hidden
+                />
+                <ConceptSlide
+                  node={node}
+                  isCurrent={index === currentIndex}
+                  isOpen={openIndex === index}
+                  onToggle={() => handleOpenRequest(index)}
+                  onFocus={() => goToIndex(index, { smooth: false, preserveOpen: true })}
+                />
               </section>
             ))}
           </div>
@@ -544,76 +518,194 @@ export function ConceptFoundation() {
   );
 }
 
-function ConceptDetailCards({ node, isVisible }: { node: ConceptNode; isVisible: boolean }) {
-  if (!node.cards?.length) {
+function ConceptSlide({
+  node,
+  isCurrent,
+  isOpen,
+  onToggle,
+  onFocus,
+}: {
+  node: ConceptNode;
+  isCurrent: boolean;
+  isOpen: boolean;
+  onToggle: () => void;
+  onFocus: () => void;
+}) {
+  return (
+    <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-col items-center gap-9 text-center sm:gap-12">
+      <div className="relative flex flex-col items-center">
+        <Icono
+          node={node}
+          isActive={isCurrent}
+          isExpanded={isOpen}
+          onSelect={onToggle}
+          onFocus={onFocus}
+        />
+      </div>
+
+      {!isOpen ? (
+        <div className="flex max-w-4xl flex-col items-center gap-6 text-center sm:gap-8">
+          <h2
+            className="font-title text-4xl uppercase leading-[1.05] tracking-[0em] text-white sm:text-5xl md:text-6xl"
+            style={{
+              textShadow:
+                '0 0 22px rgba(255,255,255,0.95), 0 0 48px rgba(255,255,255,0.55), 0 14px 38px rgba(0,0,0,0.6)',
+            }}
+          >
+            {node.title}
+          </h2>
+
+          <p
+            className="max-w-3xl whitespace-pre-line text-sm uppercase tracking-[0.24em] text-white/80 sm:text-base"
+            style={{ textShadow: '0 12px 32px rgba(0,0,0,0.55)' }}
+          >
+            {node.description}
+          </p>
+
+          <Button
+            type="button"
+            aria-expanded={isOpen}
+            aria-controls={`concept-detail-${node.id}`}
+            className="group relative inline-flex items-center justify-center gap-4 overflow-hidden rounded-full border border-white/25 bg-white/10 px-12 py-4 font-display text-[11px] uppercase tracking-[0.5em] text-white transition-colors duration-300 [transition-timing-function:var(--bee-ease)] hover:border-white/60 hover:bg-white/15 focus-visible:ring-[#f6c452]/35"
+            onClick={onToggle}
+          >
+            <span
+              aria-hidden
+              className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-[#f6c452bf] to-transparent opacity-0 transition-transform duration-500 group-hover:translate-x-full group-hover:opacity-100"
+            />
+            <span className="relative">Discover</span>
+          </Button>
+        </div>
+      ) : (
+        <div className="flex w-full flex-col items-center gap-8 text-center sm:gap-10">
+          <h3
+            className="font-title text-4xl normal-case leading-[1.05] text-white sm:text-5xl md:text-6xl"
+            style={{
+              textShadow:
+                '0 0 22px rgba(255,255,255,0.95), 0 0 48px rgba(255,255,255,0.55), 0 14px 38px rgba(0,0,0,0.6)',
+            }}
+          >
+            {node.openTitle}
+          </h3>
+
+          <ConceptDetailsPanel node={node} />
+
+          <Button
+            type="button"
+            aria-expanded={isOpen}
+            aria-controls={`concept-detail-${node.id}`}
+            className="group relative inline-flex items-center justify-center gap-4 overflow-hidden rounded-full border border-white/25 bg-white/10 px-12 py-4 font-display text-[11px] uppercase tracking-[0.5em] text-white transition-colors duration-300 [transition-timing-function:var(--bee-ease)] hover:border-white/60 hover:bg-white/15 focus-visible:ring-[#f6c452]/35"
+            onClick={onToggle}
+          >
+            <span
+              aria-hidden
+              className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-[#f6c452bf] to-transparent opacity-0 transition-transform duration-500 group-hover:translate-x-full group-hover:opacity-100"
+            />
+            <span className="relative">Close</span>
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ConceptDetailsPanel({ node }: { node: ConceptNode }) {
+  if (!node.details?.length) {
     return null;
   }
 
+  const detailCount = node.details.length;
+
+  const columnClass =
+    detailCount === 1
+      ? 'sm:grid-cols-1 lg:grid-cols-1'
+      : detailCount === 2
+        ? 'sm:grid-cols-2 lg:grid-cols-2'
+        : 'sm:grid-cols-2 lg:grid-cols-3';
+
   return (
-    <div id={`concept-detail-${node.id}`} className="w-full max-w-3xl" aria-hidden={!isVisible}>
-      <div className="mt-8 grid gap-6 sm:grid-cols-3">
-        {node.cards.slice(0, 3).map((card, cardIndex) => {
-          const IconComponent = ICON_MAP[card.icon] ?? ICON_MAP.Bee;
-
-          const backdrop = CARD_BACKDROPS[cardIndex % CARD_BACKDROPS.length];
-
-          const delay = `${cardIndex * 90}ms`;
-
-          const visibilityClass = isVisible
-            ? 'opacity-100 translate-y-0'
-            : 'pointer-events-none opacity-0 translate-y-8';
-
-          return (
-            <article
-              key={`${node.id}-card-${cardIndex}`}
-              className={`border-white/18 bg-white/14 supports-backdrop:bg-white/8 group relative flex min-h-[240px] flex-col items-center justify-center gap-8 overflow-hidden rounded-3xl border p-8 text-center shadow-[0_24px_60px_rgba(0,0,0,0.24)] backdrop-blur-2xl transition-all duration-500 ${visibilityClass}`}
-              style={{ transitionDelay: delay }}
-            >
+    <div id={`concept-detail-${node.id}`} className="w-full max-w-6xl p-2 sm:p-4">
+      <div className={`grid justify-items-center gap-8 ${columnClass}`}>
+        {node.details.map((detail, detailIndex) => (
+          <div
+            key={`${node.id}-detail-${detailIndex}`}
+            className="flex flex-col items-center gap-5 text-center"
+            style={{ transitionDelay: `${detailIndex * 90}ms` }}
+          >
+            <span className="bg-white/12 inline-flex h-20 w-20 items-center justify-center rounded-full shadow-[0_0_52px_rgba(246,196,82,0.45)]">
               <Image
-                src={backdrop}
+                src={detail.icon}
                 alt=""
-                fill
-                sizes="(min-width: 1280px) 18rem, (min-width: 768px) 33vw, 100vw"
-                className="absolute inset-0 h-full w-full scale-100 object-cover opacity-60 transition duration-500 group-hover:scale-105 group-hover:opacity-75"
+                width={68}
+                height={68}
+                className="h-14 w-14 object-contain drop-shadow-[0_0_24px_rgba(246,196,82,0.85)] sm:h-16 sm:w-16"
+                aria-hidden
               />
+            </span>
 
-              <div className="absolute inset-0 bg-gradient-to-br from-black/55 via-black/20 to-transparent" />
-
-              <div className="pointer-events-none absolute inset-0 opacity-0 transition duration-500 group-hover:opacity-100">
-                <div className="absolute inset-10 rounded-[inherit] bg-[radial-gradient(circle,_rgba(246,196,82,0.4),_transparent_70%)] blur-3xl" />
-              </div>
-
-              <span className="bg-white/18 supports-backdrop:bg-white/12 relative inline-flex size-20 items-center justify-center rounded-full border border-white/30 text-white shadow-[0_0_42px_rgba(246,196,82,0.38)] backdrop-blur-md transition duration-500 group-hover:border-[#f6c452]/70 group-hover:shadow-[0_0_80px_rgba(246,196,82,0.55)]">
-                <IconComponent className="size-12 text-[#f6c452]" aria-hidden />
-              </span>
-
-              <p className="relative max-w-[18rem] text-sm leading-relaxed text-white/90">
-                {card.description}
-              </p>
-            </article>
-          );
-        })}
+            <p className="text-sm leading-relaxed text-white/90 sm:text-base">{detail.text}</p>
+          </div>
+        ))}
       </div>
     </div>
   );
 }
 
-function BackgroundCanvas({ prefersReducedMotion }: { prefersReducedMotion: boolean }) {
-  const posterSrc = '/assets/concept/sustainable-poster.png';
+function NavArrow({
+  direction,
+  disabled,
+  onClick,
+}: {
+  direction: 'left' | 'right';
+  disabled?: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      aria-label={direction === 'left' ? 'Previous concept' : 'Next concept'}
+      onClick={onClick}
+      disabled={disabled}
+      className="pointer-events-auto flex h-12 w-12 items-center justify-center rounded-full bg-black/35 text-white shadow-[0_20px_40px_rgba(0,0,0,0.35)] transition hover:bg-black/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 disabled:cursor-not-allowed disabled:opacity-35 sm:h-14 sm:w-14"
+      style={{ transitionTimingFunction: 'var(--bee-ease)' }}
+    >
+      <svg
+        aria-hidden
+        viewBox="0 0 24 24"
+        className="h-6 w-6"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        {direction === 'left' ? <path d="M15 18l-6-6 6-6" /> : <path d="M9 6l6 6-6 6" />}
+      </svg>
+    </button>
+  );
+}
+
+function BackgroundCanvas({
+  background,
+  prefersReducedMotion,
+}: {
+  background: ConceptNode['background'];
+  prefersReducedMotion: boolean;
+}) {
+  const posterSrc =
+    background.type === 'video' ? (background.poster ?? background.src) : background.src;
+  const shouldUseImage = prefersReducedMotion || background.type === 'image';
 
   return (
     <div className="absolute inset-0" aria-hidden>
       <div className="relative h-full w-full bg-black">
-        {prefersReducedMotion ? (
+        {shouldUseImage ? (
           <Image src={posterSrc} alt="" fill priority sizes="100vw" className="object-cover" />
         ) : (
           <SmartVideo
             wrapperClassName="absolute inset-0"
             className="h-full w-full object-cover"
-            sources={[
-              { src: '/assets/concept/sustainable.mp4', type: 'video/mp4' },
-              { src: '/assets/concept/sustainable.webm', type: 'video/webm' },
-            ]}
+            sources={[{ src: background.src, type: 'video/mp4' }]}
             poster={posterSrc}
             fallbackImage={posterSrc}
             autoPlay
@@ -625,7 +717,7 @@ function BackgroundCanvas({ prefersReducedMotion }: { prefersReducedMotion: bool
           />
         )}
 
-        <div className="absolute inset-0 bg-gradient-to-br from-black/65 via-black/30 to-black/15" />
+        <div className="from-black/72 via-black/38 to-black/32 absolute inset-0 bg-gradient-to-b" />
       </div>
     </div>
   );

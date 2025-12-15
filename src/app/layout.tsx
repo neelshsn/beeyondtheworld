@@ -11,6 +11,11 @@ export const metadata: Metadata = {
   title: 'Beeyondtheworld Platform',
   description:
     'Luxury immersive experiences for high-fashion and lifestyle brands crafting meaningful journeys.',
+  icons: {
+    icon: '/assets/icones/Ico Gold BEE-13.svg',
+    shortcut: '/assets/icones/Ico Gold BEE-13.svg',
+    apple: '/assets/icones/Ico Gold BEE-13.svg',
+  },
   openGraph: {
     title: 'Beeyondtheworld Platform',
     description:

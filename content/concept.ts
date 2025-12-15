@@ -1,234 +1,124 @@
-export type ConceptNodeId =
-  | 'coTravel'
-  | 'sustainability'
-  | 'rseLabel'
-  | 'talentNetwork'
-  | 'deliverContent';
+export type ConceptNodeId = 'coJourney' | 'csrLabel' | 'communities' | 'impacts';
 
-type ConceptMedia = {
-  src: string;
-  alt: string;
+export type ConceptDetail = {
+  icon: string;
+  text: string;
 };
 
-export type ConceptNodeCTA = {
-  label: string;
-  href: string;
-};
+export type ConceptBackground =
+  | {
+      type: 'video';
+      src: string;
+      poster?: string;
+    }
+  | {
+      type: 'image';
+      src: string;
+    };
 
-export type ConceptContent = {
+export type ConceptNode = {
   id: ConceptNodeId;
   title: string;
-  lead: string;
-  bullets?: string[];
-  media?: ConceptMedia[];
-  ctas?: ConceptNodeCTA[];
-};
-
-export type BeeMetaphorToken =
-  | 'flightPath'
-  | 'leafDrop'
-  | 'shield'
-  | 'heartGlobe'
-  | 'network'
-  | 'honey';
-
-export type ConceptIconToken = 'Bee' | 'Leaf' | 'Shield' | 'HeartGlobe' | 'Network' | 'Honey';
-
-export type ConceptDetailCard = {
-  icon: ConceptIconToken;
   description: string;
+  openTitle: string;
+  icon: string;
+  details: ConceptDetail[];
+  background: ConceptBackground;
 };
 
-export type ConceptNode = ConceptContent & {
-  beeMetaphor: BeeMetaphorToken;
-  icon: ConceptIconToken;
-  accent?: string;
-  cards: ConceptDetailCard[];
+const defaultBackground: ConceptBackground = {
+  type: 'video',
+  src: '/assets/campaigns/almaaz-kenya/almaaz-kenya-story.mp4',
+  poster: '/assets/campaigns/almaaz-kenya/almaaz-kenya-cover.jpg',
 };
 
 export const conceptNodes: ConceptNode[] = [
   {
-    id: 'coTravel',
-    title: 'Journey alliances',
-    lead: 'We weave non-competing brands into shared journeys so every path lightens fixed costs and footprint while guarding each tale as something intimate and rare.',
-    bullets: [
-      'Journey composers choreograph multi-country routes that maximise sets and minimise transfers',
-      'Shared logistics, tech, and hospitality slash resource waste without blurring brand constellations',
-      'Each brand receives exclusive casting and art direction to protect signature aesthetics',
-    ],
-    cards: [
+    id: 'coJourney',
+    title: 'CO-JOURNEY',
+    description:
+      'ONE DESTINATION, SEVERAL VISUAL PRODUCTIONS. WE WEAVE\nNON-COMPETING BRANDS INTO SHARED JOURNEYS SO EVERY\nPATH LIGHTENS FIXED COSTS AND FOOTPRINT WHILE GUARDING\nEACH TALE AS SOMETHING INTIMATE AND RARE.',
+    openTitle: 'Intelligent Resource Optimization',
+    icon: '/assets/icones/Ico Gold BEE-02.svg',
+    details: [
       {
-        icon: 'Bee',
-        description:
-          'Playbooks stitch multiple brands onto one regenerative route without compromises.',
+        icon: '/assets/icones/Ico Gold BEE-10.svg',
+        text: "Our World's environment curated itineraries per brand for creative pathways, allowing each identity to unfold in its own narrative, aesthetic and rhythm within one shared ecosystem.",
       },
       {
-        icon: 'Network',
-        description:
-          'Cross-brand sprints align producers while keeping briefs confidential and non-competitive.',
+        icon: '/assets/icones/Ico Gold BEE-04.svg',
+        text: 'A carefully curated talent pool operating within the Bee Label Quality Framework where confidentiality is safeguarded; cross-brand producers stay aligned while keeping briefs confidential and non-competitive.',
       },
       {
-        icon: 'Honey',
-        description:
-          'Dedicated creative pods secure exclusive models, styling, and narrative arcs per brand.',
+        icon: '/assets/icones/Ico Gold BEE-08.svg',
+        text: 'Within our dedicated creative pods, each brand receives its own protected universe with exclusive casting, customised styling, and singular narrative arcs, carefully crafted to guarantee complete differentiation and non-competition across every campaign.',
       },
     ],
-    beeMetaphor: 'flightPath',
-    icon: 'Bee',
-    accent: 'honey-500',
-    ctas: [
-      { label: 'Book orchestration workshop', href: '/contact' },
-      { label: 'Browse signature journeys', href: '/journeys' },
-    ],
+    background: defaultBackground,
   },
   {
-    id: 'sustainability',
-    title: 'Sustainable world ateliers',
-    lead: 'Every co-travel journey becomes proof of environmental and societal care - circular operations, local alliances, and regenerative outputs you can feel and measure.',
-    bullets: [
-      'Circular economy protocols repurpose sets, wardrobe, energy sources, and transport legs',
-      'We foreground local associations and initiatives on camera so their stories travel with the campaign',
-      'Shooting with us means funding climate and community programs attached to each itinerary',
-    ],
-    cards: [
+    id: 'csrLabel',
+    title: 'CSR LABEL',
+    description:
+      'BEE DEFINES A CLEAR FRAMEWORK OF STANDARDS AND PROTOCOLS FOR EVERY STAGE OF PRODUCTION. FROM PRE-PRODUCTION TO FINAL DELIVERY, ENSURING THAT ALL TEAMS OPERATE WITH AWARENESS, RESPECT, AND OPTIMISATION OF HUMAN, ENVIRONMENTAL, AND MATERIAL RESOURCES.',
+    openTitle: 'Sustainable transition on the Advertising Sector',
+    icon: '/assets/icones/Ico Gold BEE-13.svg',
+    details: [
       {
-        icon: 'Leaf',
-        description: 'Lifecycle audits chart sourcing, fabrication, reuse, and donation flows.',
+        icon: '/assets/icones/Ico Gold BEE-13.svg',
+        text: 'The Bee Label commitments define a conscious and responsible environment, respecting human well-being, and ensuring fair collaboration across all stages. They prioritise integrity over perfection, guaranteeing that creation never compromises people or places.',
       },
       {
-        icon: 'Bee',
-        description: 'Local guilds curate artisans, NGOs, and regenerative projects at every stop.',
+        icon: '/assets/icones/Ico Gold BEE-17.svg',
+        text: 'Sustainable guidelines that frame attitude, behavior, ethics, and creative execution across all departments. They ensure consistency, respect, and excellence - from pre-production to post-production. Every talent and partner operates under shared values and clear expectations.',
       },
       {
-        icon: 'HeartGlobe',
-        description:
-          'Impact dashboards translate carbon, biodiversity, and social gains into shareable proof.',
+        icon: '/assets/icones/Ico Gold BEE-07.svg',
+        text: 'Traceability is key through the development of a precise in-house method to track decisions, budgets, resources, suppliers, carbon impact, and human involvement. It brings transparency to each step of the process and allows brands to quantify their commitment and measure progress over time.',
       },
     ],
-    media: [
-      {
-        src: '/assets/concept/sustainable-poster.png',
-        alt: 'Abstract golden gradient representing regenerative energy',
-      },
-    ],
-    beeMetaphor: 'leafDrop',
-    icon: 'Leaf',
-    accent: 'leaf-500',
-    ctas: [
-      { label: 'Meet the sustainability lab', href: '/contact' },
-      { label: 'See regenerative campaigns', href: '/campaigns' },
-    ],
+    background: defaultBackground,
   },
   {
-    id: 'rseLabel',
-    title: 'CSR label guardianship',
-    lead: 'The Beeyondtheworld CSR label certifies that every frame witnesses circular practices and local reinvestment - shoot with us and you visibly contribute to the evolution of the world.',
-    bullets: [
-      'Tiered scoring covers climate footprint, social inclusion, and cultural legacy',
-      'Compliance rooms share live evidence with brand constellations and partners',
-      'Revenue-sharing matrices feed grassroots associations in each territory',
-      'Impact dashboards and editorial capsules broadcast the commitments made on set',
-    ],
-    cards: [
+    id: 'communities',
+    title: 'WORLDWIDE COMMUNITIES',
+    description:
+      'WE UNITE WORLD-CLASS CREATIVES WITH STANDOUT LOCAL TALENTS, GUIDING EACH CONTRIBUTOR THROUGH RIGOROUS CARE SO THEIR CRAFT FLOURISHES WITHOUT COMPROMISE.',
+    openTitle: 'Worldwide Creative Communities',
+    icon: '/assets/icones/Ico Gold BEE-04.svg',
+    details: [
       {
-        icon: 'Shield',
-        description:
-          'Tiered scoring frames every brand promise across footprint, people, and legacy.',
+        icon: '/assets/icones/Ico Gold BEE-10.svg',
+        text: 'A dynamic network of worldwide talents, versatile in style, refined in execution, and united by a shared standard of excellence and consciousness. From production directors to photographers and stylists, each collaborator is carefully sourced for their ability to adapt, elevate, and contribute to the creative vision with precision, artistry, and professionalism.',
       },
       {
-        icon: 'HeartGlobe',
-        description: 'Compliance rooms and open dashboards let stakeholders track progress live.',
-      },
-      {
-        icon: 'Bee',
-        description:
-          'Partner onboarding kits align brands with EU due diligence and circular mandates.',
-      },
-      {
-        icon: 'Network',
-        description:
-          'Stakeholder salons co-write charters that bind brands and local initiatives together.',
-      },
-      {
-        icon: 'Honey',
-        description:
-          'Editorial capsules turn raw metrics into inspiring stories for press and patrons.',
+        icon: '/assets/icones/Ico Gold BEE-16.svg',
+        text: 'Every destination carries its own cultural intelligence, rhythm, and craftsmanship. Local inclusion turns production into a respectful collaboration with the people and knowledge already present. The Bee Label prioritises local talent and materials - not as a constraint, but as enrichment by highlighting cultures of the world while ensuring fair redistribution, authentic storytelling, and deeper creative resonance.',
       },
     ],
-    beeMetaphor: 'shield',
-    icon: 'Shield',
-    accent: 'clay-500',
-    ctas: [
-      { label: 'Request CSR hive audit', href: '/contact' },
-      { label: 'Review compliance playbooks', href: '/client' },
-      { label: 'Plan partnership charter', href: '/contact' },
-      { label: 'Explore diplomacy case studies', href: '/campaigns' },
-    ],
+    background: defaultBackground,
   },
   {
-    id: 'talentNetwork',
-    title: 'Global talent collective',
-    lead: 'We unite world-class creatives with standout local talents, guiding each contributor through rigorous care so their craft flourishes without compromise.',
-    bullets: [
-      'International scout cells secure the highest calibre directors, image makers, and storytellers',
-      'Local casting windows elevate emerging voices and give on-the-ground talents a global stage',
-      'Talent care programs cover coaching, legal, and wellbeing while protecting creative freedom',
-    ],
-    cards: [
+    id: 'impacts',
+    title: 'IMPACTS',
+    description:
+      'THE HONEY IS THE TANGIBLE ESSENCE OF OUR JOURNEYS DISTILLED THROUGH COLLABORATION, AWARENESS AND CREATIVE INTENTION. IT STANDS AS LIVING PROOF OF WHAT OUR ECOSYSTEM CAN GENERATE VISUALLY, SOCIALLY AND SOCIETALLY. MORE THAN CONTENT, IT IS THE RESULT OF ACTION, ENCOUNTER AND SHARED RESPONSIBILITY. EACH HONEY UNIQUELY REFLECTING A HIVE, A JOURNEY AND A WAY OF SEEING THE WORLD.',
+    openTitle: 'Honey of Humans Pollination',
+    icon: '/assets/icones/Ico Gold BEE-06.svg',
+    details: [
       {
-        icon: 'Network',
-        description:
-          'Dynamic rosters match brands with seasoned experts and fresh local discoveries.',
+        icon: '/assets/icones/Ico Gold BEE-15.svg',
+        text: 'Visual content with purpose: activism, awareness, and storytelling that highlight causes, initiatives or realities discovered during our journeys. These projects are produced with local teams and aim to generate resonance and visibility - not only aesthetics, but meaning.',
       },
       {
-        icon: 'Bee',
-        description:
-          'Mentorship frameworks guide each talent through fittings, rehearsals, and delivery.',
+        icon: '/assets/icones/Ico Gold BEE-04.svg',
+        text: 'Support and inclusion of local communities, access to opportunities, fair collaboration and transmission of resources. Through the Bee Label methodology, part of each production cycle is committed to strengthening human value, both within our talent ecosystem and within the territories we encounter.',
       },
       {
-        icon: 'HeartGlobe',
-        description:
-          'Cultural stewards ensure community insight feeds the creative process from start to finish.',
+        icon: '/assets/icones/Ico Gold BEE-12.svg',
+        text: 'Societal impact contributes to public awareness, cultural protection and collective responsibility. It encourages conversations about how fashion, advertising and media can evolve, and demonstrates that production can be both refined and conscious.',
       },
     ],
-    beeMetaphor: 'network',
-    icon: 'Network',
-    accent: 'pollen-500',
-    ctas: [
-      { label: 'Engage the talent network', href: '/contact' },
-      { label: 'Review collective roster', href: '/client' },
-    ],
-  },
-  {
-    id: 'deliverContent',
-    title: 'The honey',
-    lead: 'Our visuals arrive rich, plentiful, and fast - hero films and photography suites ready to deploy across campaign, retail, and press windows.',
-    bullets: [
-      'Hero films, lookbooks, motion loops, and BTS drops bundled for launch',
-      'Express finishing schedules deliver colour, sound, and retouching within days',
-      'Asset libraries tailored to e-commerce, PR kits, and experiential previews',
-    ],
-    cards: [
-      {
-        icon: 'Honey',
-        description: 'Modular asset libraries keep omni-channel stories perfectly aligned.',
-      },
-      {
-        icon: 'Bee',
-        description:
-          'Preview studios refine edits, copy, and sound so deliveries drop while buzz is high.',
-      },
-      {
-        icon: 'Shield',
-        description: 'Roll-out playbooks equip brand teams to extend the voice across touchpoints.',
-      },
-    ],
-    beeMetaphor: 'honey',
-    icon: 'Honey',
-    accent: 'honey-600',
-    ctas: [
-      { label: 'Launch omni-channel roadmap', href: '/contact' },
-      { label: 'View content toolkits', href: '/campaigns' },
-    ],
+    background: defaultBackground,
   },
 ];
