@@ -15,9 +15,7 @@ type HeaderAuthButtonProps = {
 };
 
 const baseClasses =
-  'group relative flex h-14 w-14 items-center justify-center rounded-full bg-transparent text-white transition duration-200 focus-visible:ring-2 focus-visible:ring-[#f6c452]/60 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent';
-const labelRevealClasses =
-  'ml-2 max-w-0 overflow-hidden font-sans text-[11px] uppercase tracking-[0.32em] text-white/90 opacity-0 transition-all duration-200 ease-out group-hover:max-w-[160px] group-hover:opacity-100 group-focus-visible:max-w-[160px] group-focus-visible:opacity-100';
+  'relative flex h-14 w-14 items-center justify-center rounded-full border border-transparent bg-transparent text-white transition duration-200 focus-visible:ring-2 focus-visible:ring-[#f6c452]/60 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent hover:!border-[#f6c452]/55 hover:!bg-[#f6c4521a] hover:!text-white hover:shadow-[0_0_26px_rgba(246,196,82,0.72)]';
 
 export function HeaderAuthButton({ className }: HeaderAuthButtonProps) {
   const router = useRouter();
@@ -45,7 +43,6 @@ export function HeaderAuthButton({ className }: HeaderAuthButtonProps) {
       >
         <Loader2 className="h-5 w-5 animate-spin" aria-hidden />
         <span className="sr-only">Loading</span>
-        <span className={labelRevealClasses}>Loading</span>
       </Button>
     );
   }
@@ -69,7 +66,6 @@ export function HeaderAuthButton({ className }: HeaderAuthButtonProps) {
           aria-hidden
         />
         <span className="sr-only">Log out</span>
-        <span className={labelRevealClasses}>{isSigningOut ? 'Logging out...' : 'Log out'}</span>
       </Button>
     );
   }
@@ -86,7 +82,6 @@ export function HeaderAuthButton({ className }: HeaderAuthButtonProps) {
           aria-hidden
         />
         <span className="sr-only">Sign in</span>
-        <span className={labelRevealClasses}>Sign in</span>
       </Link>
     </Button>
   );

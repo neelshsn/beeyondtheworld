@@ -38,7 +38,7 @@ export function ClientHeader({ email }: ClientHeaderProps) {
         <Button
           variant="ghost"
           onClick={handleSignOut}
-          className="rounded-full border border-foreground/30 bg-white/70 px-5 py-3 font-display text-xs uppercase tracking-[0.35em] text-foreground hover:bg-white"
+          className="rounded-full border border-foreground/30 bg-white/70 px-5 py-3 font-display text-xs uppercase tracking-[0.35em] text-foreground transition-shadow hover:!border-[#f6c452] hover:!bg-white hover:!text-foreground hover:shadow-[0_0_20px_rgba(246,196,82,0.55)]"
         >
           Sign out
         </Button>
