@@ -9,7 +9,7 @@ import Image from 'next/image';
 
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion, type Transition } from 'framer-motion';
 
 import { ConceptGoToIndexOptions, ConceptTrackProvider } from '../_context/concept-track-context';
 
@@ -538,10 +538,10 @@ function ConceptSlide({
 }) {
   const fadeDistance = prefersReducedMotion ? 0 : 18;
 
-  const sharedTransition = useMemo(
+  const sharedTransition = useMemo<Transition>(
     () => ({
       duration: prefersReducedMotion ? 0 : 0.65,
-      ease: prefersReducedMotion ? 'linear' : [0.16, 1, 0.3, 1],
+      ease: prefersReducedMotion ? ([0, 0, 1, 1] as const) : ([0.16, 1, 0.3, 1] as const),
     }),
     [prefersReducedMotion]
   );
