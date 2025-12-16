@@ -42,27 +42,17 @@ export const Icono = forwardRef<HTMLButtonElement, IconoProps>(function Icono(
       onKeyDown={handleKeyDown}
       onFocus={onFocus}
       className={cn(
-        'relative grid size-[168px] place-items-center rounded-full transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-white/75 sm:size-[190px]',
+        'relative grid size-[168px] place-items-center rounded-full transition duration-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-white/75 sm:size-[190px]',
         isOpen
-          ? 'supports-backdrop:bg-white/6 bg-white/10 opacity-100 backdrop-blur-xl'
-          : 'bg-transparent opacity-100 shadow-none'
+          ? 'bg-transparent opacity-100 shadow-[0_26px_60px_rgba(0,0,0,0.35)]'
+          : 'bg-transparent opacity-100 shadow-[0_16px_36px_rgba(0,0,0,0.25)]'
       )}
       style={{ transitionTimingFunction: 'var(--bee-ease)' }}
     >
-      {isOpen && (
-        <span
-          aria-hidden
-          className="from-white/8 pointer-events-none absolute inset-[8%] scale-105 rounded-full bg-gradient-to-br via-transparent to-transparent opacity-85 transition-all duration-700"
-          style={{ transitionTimingFunction: 'var(--bee-ease)' }}
-        />
-      )}
-
       <span
         className={cn(
-          'relative flex size-[124px] items-center justify-center rounded-full text-white/90 transition-transform duration-700 sm:size-[138px]',
-          isOpen
-            ? 'bg-white/12 scale-[1.06] backdrop-blur-lg supports-backdrop:bg-white/10'
-            : 'bg-transparent shadow-none'
+          'relative flex size-[124px] items-center justify-center rounded-full text-white/90 transition-all duration-700 sm:size-[138px]',
+          isOpen ? 'scale-[1.04]' : 'scale-[0.98]'
         )}
         style={{ transitionTimingFunction: 'var(--bee-ease)' }}
       >
@@ -72,9 +62,10 @@ export const Icono = forwardRef<HTMLButtonElement, IconoProps>(function Icono(
           width={132}
           height={132}
           className={cn(
-            'h-24 w-24 object-contain sm:h-[110px] sm:w-[110px]',
-            isOpen && 'drop-shadow-none'
+            'h-24 w-24 object-contain drop-shadow-[0_14px_28px_rgba(0,0,0,0.48)] transition-transform duration-700 sm:h-[110px] sm:w-[110px]',
+            isOpen ? 'scale-105' : 'scale-100'
           )}
+          style={{ transitionTimingFunction: 'var(--bee-ease)' }}
         />
       </span>
     </button>

@@ -36,6 +36,7 @@ export default function HomePageContent({
   const overlapStackRef = useRef<HTMLDivElement | null>(null);
   const triptychRef = useRef<HTMLDivElement | null>(null);
   const movingLineRef = useRef<HTMLDivElement | null>(null);
+  const manifestoRef = useRef<HTMLDivElement | null>(null);
   const lineStartRef = useRef<number>(0);
   const [movingLineShift, setMovingLineShift] = useState(0);
   const [lineOverlapFraction, setLineOverlapFraction] = useState(0);
@@ -83,6 +84,42 @@ export default function HomePageContent({
       };
     },
     { dependencies: [] }
+  );
+
+  useGSAP(
+    () => {
+      const section = manifestoRef.current;
+      if (!section) return;
+
+      const lines = Array.from(
+        section.querySelectorAll<HTMLElement>('[data-manifesto-line]')
+      );
+      if (!lines.length) return;
+
+      gsap.set(lines, { opacity: 0.08, y: 26 });
+
+      const timeline = gsap.timeline({
+        defaults: { ease: 'power2.out' },
+        scrollTrigger: {
+          trigger: section,
+          start: 'top 80%',
+          end: 'bottom 45%',
+          scrub: 1.1,
+        },
+      });
+
+      timeline.to(lines, {
+        opacity: 1,
+        y: -6,
+        stagger: 0.16,
+      });
+
+      return () => {
+        timeline.scrollTrigger?.kill();
+        timeline.kill();
+      };
+    },
+    { dependencies: [], scope: manifestoRef }
   );
 
   useEffect(() => {
@@ -135,6 +172,17 @@ export default function HomePageContent({
     const timeout = window.setTimeout(() => setDisplayTile(null), 900);
     return () => window.clearTimeout(timeout);
   }, [activeTile]);
+
+  const manifestoLines = useMemo(
+    () => [
+      'we believe in innovation that reveals new horizons where our eyes once perceived only boundaries.',
+      'we believe that less you talk, more you are.',
+      "it's all about dreams, perceptions and worldwide communities.",
+      'we shape a collaborative ecosystem where each brand maintains its uniqueness while collectively contributing to a better world.',
+      'we dream, we create, we are beeyond the world.',
+    ],
+    []
+  );
 
   const triptychCards = useMemo(
     () => [
@@ -225,7 +273,7 @@ export default function HomePageContent({
             <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-5">
               <Button
                 asChild
-                className="group relative inline-flex items-center justify-center gap-4 overflow-hidden rounded-full border border-white/25 bg-white/10 px-12 py-4 font-display text-[11px] uppercase tracking-[0.5em] text-white transition-colors duration-300 [transition-timing-function:var(--bee-ease)] hover:border-white/60 hover:bg-white/15 focus-visible:ring-[#f6c452]/35"
+                className="group relative inline-flex items-center justify-center gap-4 overflow-hidden rounded-none border border-white/25 bg-white/10 px-12 py-4 font-display text-[11px] uppercase tracking-[0.5em] text-white transition-colors duration-300 [transition-timing-function:var(--bee-ease)] hover:border-white/60 hover:bg-white/15 focus-visible:ring-[#f6c452]/35"
               >
                 <Link
                   href={coCreateHref}
@@ -241,7 +289,7 @@ export default function HomePageContent({
 
               <Button
                 asChild
-                className="group relative inline-flex items-center justify-center gap-4 overflow-hidden rounded-full border border-white/25 bg-white/10 px-12 py-4 font-display text-[11px] uppercase tracking-[0.5em] text-white transition-colors duration-300 [transition-timing-function:var(--bee-ease)] hover:border-white/60 hover:bg-white/15 focus-visible:ring-[#f6c452]/35"
+                className="group relative inline-flex items-center justify-center gap-4 overflow-hidden rounded-none border border-white/25 bg-white/10 px-12 py-4 font-display text-[11px] uppercase tracking-[0.5em] text-white transition-colors duration-300 [transition-timing-function:var(--bee-ease)] hover:border-white/60 hover:bg-white/15 focus-visible:ring-[#f6c452]/35"
               >
                 <Link
                   href="/concept"
@@ -262,14 +310,15 @@ export default function HomePageContent({
       <div ref={overlapStackRef} className="relative z-10 flex flex-col">
         <section className="bg-[#fdf9ee] px-6 pb-52 pt-24 sm:px-10 lg:px-24">
           <div
+            ref={manifestoRef}
             className="mx-auto max-w-4xl text-center text-[22px] leading-[1.4] text-foreground/90 sm:text-3xl md:text-4xl"
             style={{ fontFamily: 'var(--font-love)' }}
           >
-            we believe in innovation that reveals new horizons where our eyes once perceived only
-            boundaries. we believe that less you talk, more you are. it’s all about dreams,
-            perceptions and worldwide communities. we shape a collaborative ecosystem where each
-            brand maintains its uniqueness while collectively contributing to a better world. we
-            dream, we create, we are beeyond the world.
+            {manifestoLines.map((line) => (
+              <span key={line} data-manifesto-line className="block will-change-transform">
+                {line}
+              </span>
+            ))}
           </div>
 
           <div className="relative mx-auto mt-16 flex w-full justify-center px-1 sm:px-6">

@@ -9,6 +9,8 @@ import Image from 'next/image';
 
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 
+import { AnimatePresence, motion } from 'framer-motion';
+
 import { ConceptGoToIndexOptions, ConceptTrackProvider } from '../_context/concept-track-context';
 
 import { Icono } from '../_components/icono';
@@ -506,6 +508,7 @@ export function ConceptFoundation() {
                   node={node}
                   isCurrent={index === currentIndex}
                   isOpen={openIndex === index}
+                  prefersReducedMotion={prefersReducedMotion}
                   onToggle={() => handleOpenRequest(index)}
                   onFocus={() => goToIndex(index, { smooth: false, preserveOpen: true })}
                 />
@@ -522,18 +525,44 @@ function ConceptSlide({
   node,
   isCurrent,
   isOpen,
+  prefersReducedMotion,
   onToggle,
   onFocus,
 }: {
   node: ConceptNode;
   isCurrent: boolean;
   isOpen: boolean;
+  prefersReducedMotion: boolean;
   onToggle: () => void;
   onFocus: () => void;
 }) {
+  const fadeDistance = prefersReducedMotion ? 0 : 18;
+
+  const sharedTransition = useMemo(
+    () => ({
+      duration: prefersReducedMotion ? 0 : 0.65,
+      ease: prefersReducedMotion ? 'linear' : [0.16, 1, 0.3, 1],
+    }),
+    [prefersReducedMotion]
+  );
+
   return (
     <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-col items-center gap-9 text-center sm:gap-12">
-      <div className="relative flex flex-col items-center">
+      <motion.div
+        className="relative flex flex-col items-center"
+        animate={
+          prefersReducedMotion
+            ? { y: 0, scale: 1, filter: 'drop-shadow(0 16px 42px rgba(0,0,0,0.32))' }
+            : {
+                y: isOpen ? -18 : 0,
+                scale: isOpen ? 0.95 : 1,
+                filter: isOpen
+                  ? 'drop-shadow(0 26px 60px rgba(0,0,0,0.55))'
+                  : 'drop-shadow(0 18px 42px rgba(0,0,0,0.35))',
+              }
+        }
+        transition={sharedTransition}
+      >
         <Icono
           node={node}
           isActive={isCurrent}
@@ -541,70 +570,86 @@ function ConceptSlide({
           onSelect={onToggle}
           onFocus={onFocus}
         />
-      </div>
+      </motion.div>
 
-      {!isOpen ? (
-        <div className="flex max-w-4xl flex-col items-center gap-6 text-center sm:gap-8">
-          <h2
-            className="font-title text-4xl uppercase leading-[1.05] tracking-[0em] text-white sm:text-5xl md:text-6xl"
-            style={{
-              textShadow:
-                '0 0 22px rgba(255,255,255,0.95), 0 0 48px rgba(255,255,255,0.55), 0 14px 38px rgba(0,0,0,0.6)',
-            }}
+      <AnimatePresence mode="wait" initial={false}>
+        {!isOpen ? (
+          <motion.div
+            key="concept-collapsed"
+            initial={{ opacity: 0, y: fadeDistance }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -fadeDistance }}
+            transition={sharedTransition}
+            className="flex max-w-4xl flex-col items-center gap-6 text-center sm:gap-8"
           >
-            {node.title}
-          </h2>
+            <h2
+              className="font-title text-4xl uppercase leading-[1.05] tracking-[0em] text-white sm:text-5xl md:text-6xl"
+              style={{
+                textShadow:
+                  '0 0 22px rgba(255,255,255,0.95), 0 0 48px rgba(255,255,255,0.55), 0 14px 38px rgba(0,0,0,0.6)',
+              }}
+            >
+              {node.title}
+            </h2>
 
-          <p
-            className="max-w-3xl whitespace-pre-line text-sm uppercase tracking-[0.24em] text-white/80 sm:text-base"
-            style={{ textShadow: '0 12px 32px rgba(0,0,0,0.55)' }}
-          >
-            {node.description}
-          </p>
+            <p
+              className="max-w-3xl whitespace-pre-line text-sm uppercase tracking-[0.24em] text-white/80 sm:text-base"
+              style={{ textShadow: '0 12px 32px rgba(0,0,0,0.55)' }}
+            >
+              {node.description}
+            </p>
 
-          <Button
-            type="button"
-            aria-expanded={isOpen}
-            aria-controls={`concept-detail-${node.id}`}
-            className="group relative inline-flex items-center justify-center gap-4 overflow-hidden rounded-full border border-white/25 bg-white/10 px-12 py-4 font-display text-[11px] uppercase tracking-[0.5em] text-white transition-colors duration-300 [transition-timing-function:var(--bee-ease)] hover:border-white/60 hover:bg-white/15 focus-visible:ring-[#f6c452]/35"
-            onClick={onToggle}
+            <Button
+              type="button"
+              aria-expanded={isOpen}
+              aria-controls={`concept-detail-${node.id}`}
+              className="group relative inline-flex items-center justify-center gap-4 overflow-hidden rounded-full border border-white/25 bg-white/10 px-12 py-4 font-display text-[11px] uppercase tracking-[0.5em] text-white transition-colors duration-300 [transition-timing-function:var(--bee-ease)] hover:border-white/60 hover:bg-white/15 focus-visible:ring-[#f6c452]/35"
+              onClick={onToggle}
+            >
+              <span
+                aria-hidden
+                className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-[#f6c452bf] to-transparent opacity-0 transition-transform duration-500 group-hover:translate-x-full group-hover:opacity-100"
+              />
+              <span className="relative">Discover</span>
+            </Button>
+          </motion.div>
+        ) : (
+          <motion.div
+            key="concept-expanded"
+            initial={{ opacity: 0, y: fadeDistance }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -fadeDistance }}
+            transition={sharedTransition}
+            className="flex w-full flex-col items-center gap-8 text-center sm:gap-10"
           >
-            <span
-              aria-hidden
-              className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-[#f6c452bf] to-transparent opacity-0 transition-transform duration-500 group-hover:translate-x-full group-hover:opacity-100"
-            />
-            <span className="relative">Discover</span>
-          </Button>
-        </div>
-      ) : (
-        <div className="flex w-full flex-col items-center gap-8 text-center sm:gap-10">
-          <h3
-            className="font-title text-4xl normal-case leading-[1.05] text-white sm:text-5xl md:text-6xl"
-            style={{
-              textShadow:
-                '0 0 22px rgba(255,255,255,0.95), 0 0 48px rgba(255,255,255,0.55), 0 14px 38px rgba(0,0,0,0.6)',
-            }}
-          >
-            {node.openTitle}
-          </h3>
+            <h3
+              className="font-title text-4xl normal-case leading-[1.05] text-white sm:text-5xl md:text-6xl"
+              style={{
+                textShadow:
+                  '0 0 22px rgba(255,255,255,0.95), 0 0 48px rgba(255,255,255,0.55), 0 14px 38px rgba(0,0,0,0.6)',
+              }}
+            >
+              {node.openTitle}
+            </h3>
 
-          <ConceptDetailsPanel node={node} />
+            <ConceptDetailsPanel node={node} />
 
-          <Button
-            type="button"
-            aria-expanded={isOpen}
-            aria-controls={`concept-detail-${node.id}`}
-            className="group relative inline-flex items-center justify-center gap-4 overflow-hidden rounded-full border border-white/25 bg-white/10 px-12 py-4 font-display text-[11px] uppercase tracking-[0.5em] text-white transition-colors duration-300 [transition-timing-function:var(--bee-ease)] hover:border-white/60 hover:bg-white/15 focus-visible:ring-[#f6c452]/35"
-            onClick={onToggle}
-          >
-            <span
-              aria-hidden
-              className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-[#f6c452bf] to-transparent opacity-0 transition-transform duration-500 group-hover:translate-x-full group-hover:opacity-100"
-            />
-            <span className="relative">Close</span>
-          </Button>
-        </div>
-      )}
+            <Button
+              type="button"
+              aria-expanded={isOpen}
+              aria-controls={`concept-detail-${node.id}`}
+              className="group relative inline-flex items-center justify-center gap-4 overflow-hidden rounded-full border border-white/25 bg-white/10 px-12 py-4 font-display text-[11px] uppercase tracking-[0.5em] text-white transition-colors duration-300 [transition-timing-function:var(--bee-ease)] hover:border-white/60 hover:bg-white/15 focus-visible:ring-[#f6c452]/35"
+              onClick={onToggle}
+            >
+              <span
+                aria-hidden
+                className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-[#f6c452bf] to-transparent opacity-0 transition-transform duration-500 group-hover:translate-x-full group-hover:opacity-100"
+              />
+              <span className="relative">Close</span>
+            </Button>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
