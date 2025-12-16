@@ -91,9 +91,7 @@ export default function HomePageContent({
       const section = manifestoRef.current;
       if (!section) return;
 
-      const lines = Array.from(
-        section.querySelectorAll<HTMLElement>('[data-manifesto-line]')
-      );
+      const lines = Array.from(section.querySelectorAll<HTMLElement>('[data-manifesto-line]'));
       if (!lines.length) return;
 
       gsap.set(lines, { opacity: 0.08, y: 26 });
