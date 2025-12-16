@@ -52,7 +52,7 @@ export const Icono = forwardRef<HTMLButtonElement, IconoProps>(function Icono(
       {isOpen && (
         <span
           aria-hidden
-          className="pointer-events-none absolute -inset-12 scale-105 rounded-full blur-3xl opacity-95 transition-all [transition-duration:1400ms] animate-[pulse_7s_ease-in-out_infinite]"
+          className="pointer-events-none absolute -inset-12 scale-105 animate-[pulse_7s_ease-in-out_infinite] rounded-full opacity-95 blur-3xl transition-all [transition-duration:1400ms]"
           style={{
             background:
               'radial-gradient(circle at 50% 50%, rgba(246, 196, 82, 0.58), rgba(246, 196, 82, 0) 72%)',
