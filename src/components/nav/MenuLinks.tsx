@@ -83,7 +83,7 @@ export function MenuLinks({ isOpen, onNavigate }: MenuLinksProps) {
                           alt=""
                           width={36}
                           height={36}
-                          className="h-8 w-8 drop-shadow-[0_6px_18px_rgba(0,0,0,0.45)] md:h-9 md:w-9"
+                          className="h-8 w-8 drop-shadow-[0_4px_14px_rgba(0,0,0,0.32)] md:h-9 md:w-9"
                           aria-hidden
                         />
                         <span className="sr-only">{item.index}</span>

@@ -14,7 +14,7 @@ import { socialLinks } from '@/config/socials';
 import { cn } from '@/lib/utils';
 
 const triggerClasses =
-  'relative flex h-14 w-14 items-center justify-center rounded-full border border-transparent bg-transparent text-white transition duration-200 focus-visible:ring-2 focus-visible:ring-[#f6c452]/60 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent hover:!border-[#f6c452]/55 hover:!bg-[#f6c4521a] hover:!text-white hover:shadow-[0_0_26px_rgba(246,196,82,0.72)]';
+  'relative flex h-14 w-14 items-center justify-center rounded-full border border-transparent bg-transparent text-white transition duration-200 focus-visible:ring-2 focus-visible:ring-[#f6c452]/60 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent hover:!border-[#f6c452]/55 hover:!bg-[#f6c4521a] hover:!text-white hover:shadow-[0_0_22px_rgba(246,196,82,0.6)]';
 
 export function MainMenu() {
   const pathname = usePathname();
@@ -46,7 +46,7 @@ export function MainMenu() {
             alt=""
             width={40}
             height={40}
-            className="h-11 w-11 drop-shadow-[0_0_22px_rgba(246,196,82,0.65)] transition duration-200"
+            className="h-11 w-11 drop-shadow-[0_0_18px_rgba(246,196,82,0.54)] transition duration-200"
             aria-hidden
           />
           <span className="sr-only">Menu</span>

@@ -44,23 +44,11 @@ export const Icono = forwardRef<HTMLButtonElement, IconoProps>(function Icono(
       className={cn(
         'relative grid size-[168px] place-items-center rounded-full transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-white/75 sm:size-[190px]',
         isOpen
-          ? 'supports-backdrop:bg-white/6 bg-white/10 opacity-100 shadow-[0_0_90px_rgba(246,196,82,0.45)] backdrop-blur-xl'
+          ? 'supports-backdrop:bg-white/6 bg-white/10 opacity-100 backdrop-blur-xl'
           : 'bg-transparent opacity-100 shadow-none'
       )}
       style={{ transitionTimingFunction: 'var(--bee-ease)' }}
     >
-      {isOpen && (
-        <span
-          aria-hidden
-          className="pointer-events-none absolute -inset-12 scale-105 animate-[pulse_7s_ease-in-out_infinite] rounded-full opacity-95 blur-3xl transition-all [transition-duration:1400ms]"
-          style={{
-            background:
-              'radial-gradient(circle at 50% 50%, rgba(246, 196, 82, 0.58), rgba(246, 196, 82, 0) 72%)',
-            transitionTimingFunction: 'var(--bee-ease)',
-          }}
-        />
-      )}
-
       {isOpen && (
         <span
           aria-hidden
@@ -73,7 +61,7 @@ export const Icono = forwardRef<HTMLButtonElement, IconoProps>(function Icono(
         className={cn(
           'relative flex size-[124px] items-center justify-center rounded-full text-white/90 transition-transform duration-700 sm:size-[138px]',
           isOpen
-            ? 'bg-white/12 scale-[1.06] shadow-[0_0_120px_rgba(246,196,82,0.58)] backdrop-blur-lg supports-backdrop:bg-white/10'
+            ? 'bg-white/12 scale-[1.06] backdrop-blur-lg supports-backdrop:bg-white/10'
             : 'bg-transparent shadow-none'
         )}
         style={{ transitionTimingFunction: 'var(--bee-ease)' }}
@@ -85,7 +73,7 @@ export const Icono = forwardRef<HTMLButtonElement, IconoProps>(function Icono(
           height={132}
           className={cn(
             'h-24 w-24 object-contain sm:h-[110px] sm:w-[110px]',
-            isOpen && 'drop-shadow-[0_0_26px_rgba(246,196,82,0.72)]'
+            isOpen && 'drop-shadow-none'
           )}
         />
       </span>

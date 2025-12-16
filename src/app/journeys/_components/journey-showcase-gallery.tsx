@@ -388,7 +388,7 @@ function SeasonTabs({ value, onChange }: SeasonTabsProps) {
             type="button"
             onClick={() => onChange(option.value)}
             className={clsx(
-              'relative overflow-hidden rounded-full px-3 py-1.5 text-xs uppercase tracking-[0.26em] transition-colors sm:px-4 sm:py-2',
+              'group relative overflow-hidden rounded-full px-3 py-1.5 text-xs uppercase tracking-[0.26em] transition-colors sm:px-4 sm:py-2',
               isActive ? 'text-white' : 'text-white/65 hover:text-white'
             )}
           >
@@ -403,6 +403,12 @@ function SeasonTabs({ value, onChange }: SeasonTabsProps) {
               />
               <span className="whitespace-nowrap">{option.label}</span>
             </div>
+            {!isActive ? (
+              <span
+                aria-hidden
+                className="ease-[cubic-bezier(0.4,0,0.2,1)] pointer-events-none absolute bottom-[2px] left-0 right-0 mx-auto h-[2px] w-[92%] origin-center scale-x-0 bg-gradient-to-r from-[#f6c452] via-[#f0a87a] to-[#f7d799] opacity-0 transition duration-300 group-hover:scale-x-100 group-hover:opacity-100 group-focus-visible:scale-x-100 group-focus-visible:opacity-100"
+              />
+            ) : null}
             {isActive ? (
               <motion.span
                 layoutId="season-underline"
