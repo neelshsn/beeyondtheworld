@@ -244,11 +244,54 @@ export function JourneyShowcaseGallery() {
   const [canScrollPrev, setCanScrollPrev] = useState(false);
   const [canScrollNext, setCanScrollNext] = useState(false);
   const [backgroundDirection, setBackgroundDirection] = useState<1 | -1>(1);
+  const [isJourneyTransitioning, setIsJourneyTransitioning] = useState(false);
   const previousSelectedIndexRef = useRef(0);
+  const journeyTransitionTimeoutRef = useRef<number | null>(null);
 
   const safeLength = filteredJourneys.length;
   const displayIndex = safeLength ? Math.min(selectedIndex, safeLength - 1) : 0;
   const currentJourney = safeLength ? filteredJourneys[displayIndex] : null;
+
+  useEffect(() => {
+    return () => {
+      if (journeyTransitionTimeoutRef.current !== null) {
+        window.clearTimeout(journeyTransitionTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const navigateToJourney = useCallback(
+    (journey: Journey) => {
+      if (isJourneyTransitioning) {
+        return;
+      }
+
+      const destination = `/journeys/${journey.slug}`;
+      setIsJourneyTransitioning(true);
+
+      if (typeof window !== 'undefined') {
+        try {
+          window.sessionStorage.setItem('journey-transition-target', journey.slug);
+        } catch {
+          // Ignore storage failures and continue with navigation.
+        }
+      }
+
+      if (prefersReducedMotion) {
+        router.push(destination);
+        return;
+      }
+
+      if (journeyTransitionTimeoutRef.current !== null) {
+        window.clearTimeout(journeyTransitionTimeoutRef.current);
+      }
+
+      journeyTransitionTimeoutRef.current = window.setTimeout(() => {
+        router.push(destination);
+      }, 320);
+    },
+    [isJourneyTransitioning, prefersReducedMotion, router]
+  );
 
   useEffect(() => {
     if (!emblaApi) {
@@ -317,7 +360,7 @@ export function JourneyShowcaseGallery() {
       event.preventDefault();
       const current = filteredJourneys[emblaApi.selectedScrollSnap()];
       if (current) {
-        router.push(`/journeys/${current.slug}`);
+        navigateToJourney(current);
       }
     };
 
@@ -325,7 +368,7 @@ export function JourneyShowcaseGallery() {
     return () => {
       node.removeEventListener('keydown', handleKeyDown);
     };
-  }, [emblaApi, filteredJourneys, router]);
+  }, [emblaApi, filteredJourneys, navigateToJourney]);
 
   useEffect(() => {
     if (!emblaApi) {
@@ -371,7 +414,7 @@ export function JourneyShowcaseGallery() {
   const handleCardAction = useCallback(
     (journey: Journey, index: number) => {
       if (!emblaApi) {
-        router.push(`/journeys/${journey.slug}`);
+        navigateToJourney(journey);
         return;
       }
 
@@ -381,9 +424,9 @@ export function JourneyShowcaseGallery() {
         return;
       }
 
-      router.push(`/journeys/${journey.slug}`);
+      navigateToJourney(journey);
     },
-    [emblaApi, router]
+    [emblaApi, navigateToJourney]
   );
 
   const scrollPrev = useCallback(() => {
@@ -461,7 +504,12 @@ export function JourneyShowcaseGallery() {
       />
       <CornerFogGlows prefersReducedMotion={prefersReducedMotion} useLiteEffects={useLiteEffects} />
 
-      <div className="relative z-20 flex min-h-[100svh] flex-col">
+      <div
+        className={clsx(
+          'ease-[cubic-bezier(0.22,1,0.36,1)] relative z-20 flex min-h-[100svh] flex-col transition-opacity duration-300',
+          isJourneyTransitioning ? 'pointer-events-none opacity-0' : 'opacity-100'
+        )}
+      >
         <div className="pointer-events-none absolute left-4 top-5 z-30 sm:left-6 sm:top-7 lg:left-10 lg:top-8">
           <div className="pointer-events-auto">
             <SeasonElevator

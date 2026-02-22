@@ -5,7 +5,7 @@ import useEmblaCarousel from 'embla-carousel-react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import Image from 'next/image';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 
 import { useBodyScrollLock } from '@/app/concept/_hooks/use-body-scroll-lock';
 import type { JourneyShowcase } from '@/data/showcases';
@@ -22,6 +22,14 @@ type IndiaCard = {
   id: string;
   title: string;
   image: string;
+};
+
+type IndiaLocationStory = {
+  id: string;
+  image: string;
+  leftTitle: string[];
+  narrative: string;
+  nextLocation: string;
 };
 
 type GlowParticle = {
@@ -123,6 +131,33 @@ const SECTION_CONTENT: Record<ContentSectionId, IndiaCard[]> = {
   ],
 };
 
+const LOCATION_STORIES: IndiaLocationStory[] = [
+  {
+    id: 'india-location-1',
+    image: '/assets/locations/India1.jpg',
+    leftTitle: ['Where', 'Sun teach', 'the', 'world', 'to dream.'],
+    narrative:
+      'In the golden vastness of Rajasthan, the sun melts into the desert like a secret whispered to the earth, setting the dunes ablaze in hues that exist nowhere else. Ancient cities rise like mirages carved from time itself, their temples breathing centuries of devotion and their palaces catching the last light as if holding it gently in their hands. In this land of kings and legends, evenings unfold like sacred rituals: shadows stretch, bells echo, and the horizon becomes a canvas of fire and tenderness. Rajasthan is not a place you visit - it is a dream you step into, a universe suspended between memory and light, where every sunset feels like the beginning of a story you were always meant to hear.',
+    nextLocation: 'Kerala',
+  },
+  {
+    id: 'india-location-2',
+    image: '/assets/locations/India2.jpg',
+    leftTitle: ['Nature', 'Breathes', 'and the', 'Soul', 'Follows'],
+    narrative:
+      'Kerala drifts into the heart like a soft exhale, a world where water, forest, and sky speak in a language older than time. Along the tranquil backwaters, life floats at the pace of drifting coconut fronds, and the air is heavy with rain, earth, and the scent of distant spice hills. Mountains rise like whispered promises, tea gardens unfold like emerald waves, and the quiet wisdom of Ayurveda seems to linger in every breath. In Kerala, the boundaries between traveler and nature dissolve; you become part of the slow rhythm, the velvet green, the gentle pulse of life itself. It is a sanctuary where the world pauses, and the soul remembers how to listen.',
+    nextLocation: 'Goa',
+  },
+  {
+    id: 'india-location-3',
+    image: '/assets/locations/India3.jpg',
+    leftTitle: ['Horizons', 'Made of', 'Ocean', 'lights'],
+    narrative:
+      'In Goa and across the hidden islands of Lakshadweep, the ocean becomes a dream without edges, stretching into shades of blue that feel almost unreal. Goa hums with a free-spirited heartbeat - golden beaches, palm-framed sunsets, and a breeze that carries a hint of music, salt, and stories of distant lands. Farther out, Lakshadweep emerges like a secret whispered by the sea: a constellation of coral islands suspended over crystal lagoons, untouched and impossibly serene. Here, time slips into the rhythm of the tides, and every horizon feels like a doorway into wonder. These shores are not just destinations - they are states of mind, where the world glows brighter, softer, and endlessly alive.',
+    nextLocation: 'Rajasthan',
+  },
+];
+
 type IndiaJourneyLayoutProps = {
   journey: JourneyShowcase;
 };
@@ -136,6 +171,18 @@ export function IndiaJourneyLayout({ journey }: IndiaJourneyLayoutProps) {
   const [mobileSelectedIndex, setMobileSelectedIndex] = useState(0);
   const [mobileCanScrollPrev, setMobileCanScrollPrev] = useState(false);
   const [mobileCanScrollNext, setMobileCanScrollNext] = useState(false);
+  const [activeLocationStoryId, setActiveLocationStoryId] = useState<string | null>(null);
+  const [locationCanScrollPrev, setLocationCanScrollPrev] = useState(false);
+  const [locationCanScrollNext, setLocationCanScrollNext] = useState(false);
+  const [locationNarrativeVisible, setLocationNarrativeVisible] = useState(false);
+  const [isDesktopViewport, setIsDesktopViewport] = useState(false);
+  const [locationImageAspectRatio, setLocationImageAspectRatio] = useState(4);
+  const [locationImageRightEdgePx, setLocationImageRightEdgePx] = useState<number | null>(null);
+  const [locationImageFrameWidthPx, setLocationImageFrameWidthPx] = useState<number | null>(null);
+  const [leftHeadingTopPx, setLeftHeadingTopPx] = useState<number | null>(null);
+  const locationScrollerRef = useRef<HTMLDivElement | null>(null);
+  const locationImageFrameRef = useRef<HTMLDivElement | null>(null);
+  const locationLeftHeadingRef = useRef<HTMLDivElement | null>(null);
   const [mobileEmblaRef, mobileEmblaApi] = useEmblaCarousel({
     align: 'center',
     loop: false,
@@ -144,6 +191,65 @@ export function IndiaJourneyLayout({ journey }: IndiaJourneyLayoutProps) {
   });
 
   const cards = useMemo(() => SECTION_CONTENT[activeSection], [activeSection]);
+  const activeLocationStory = useMemo(
+    () => LOCATION_STORIES.find((story) => story.id === activeLocationStoryId) ?? null,
+    [activeLocationStoryId]
+  );
+  const activeLocationStoryIndex = useMemo(
+    () => LOCATION_STORIES.findIndex((story) => story.id === activeLocationStoryId),
+    [activeLocationStoryId]
+  );
+  const activeLocationStoryHeadingKey = useMemo(
+    () => activeLocationStory?.leftTitle.join('|') ?? '',
+    [activeLocationStory]
+  );
+
+  const syncLocationScrollState = useCallback(() => {
+    const scroller = locationScrollerRef.current;
+    if (!scroller) return;
+
+    const maxScrollLeft = scroller.scrollWidth - scroller.clientWidth;
+    const progress = maxScrollLeft > 0 ? scroller.scrollLeft / maxScrollLeft : 0;
+
+    setLocationCanScrollPrev(scroller.scrollLeft > 4);
+    setLocationCanScrollNext(scroller.scrollLeft < maxScrollLeft - 4);
+    setLocationNarrativeVisible(progress > 0.3);
+  }, []);
+
+  const handleLocationDiscover = useCallback(
+    (index: number) => {
+      if (activeSection !== 'locations') return;
+      const targetStory = LOCATION_STORIES[index];
+      if (!targetStory) return;
+      setActiveLocationStoryId(targetStory.id);
+    },
+    [activeSection]
+  );
+
+  const closeLocationStory = useCallback(() => {
+    setActiveLocationStoryId(null);
+  }, []);
+
+  const scrollLocationStory = useCallback((direction: 'prev' | 'next') => {
+    const scroller = locationScrollerRef.current;
+    if (!scroller) return;
+
+    const distance = scroller.clientWidth * 0.64;
+    scroller.scrollBy({
+      left: direction === 'next' ? distance : -distance,
+      behavior: 'smooth',
+    });
+  }, []);
+
+  const openNextLocationStory = useCallback(() => {
+    if (!activeLocationStoryId) return;
+
+    const currentIndex = LOCATION_STORIES.findIndex((story) => story.id === activeLocationStoryId);
+    if (currentIndex < 0) return;
+
+    const nextIndex = (currentIndex + 1) % LOCATION_STORIES.length;
+    setActiveLocationStoryId(LOCATION_STORIES[nextIndex].id);
+  }, [activeLocationStoryId]);
 
   useEffect(() => {
     if (!mobileEmblaApi) return;
@@ -170,6 +276,290 @@ export function IndiaJourneyLayout({ journey }: IndiaJourneyLayoutProps) {
     mobileEmblaApi.scrollTo(0, true);
     setMobileSelectedIndex(0);
   }, [activeSection, mobileEmblaApi]);
+
+  useEffect(() => {
+    if (activeSection !== 'locations' && activeLocationStoryId) {
+      setActiveLocationStoryId(null);
+    }
+  }, [activeLocationStoryId, activeSection]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const mediaQuery = window.matchMedia('(min-width: 768px)');
+    const syncViewport = () => setIsDesktopViewport(mediaQuery.matches);
+
+    syncViewport();
+    mediaQuery.addEventListener('change', syncViewport);
+
+    return () => mediaQuery.removeEventListener('change', syncViewport);
+  }, []);
+
+  useEffect(() => {
+    if (!activeLocationStoryId) return;
+
+    const scroller = locationScrollerRef.current;
+    if (!scroller) return;
+
+    const resetPosition = () => {
+      scroller.scrollLeft = 0;
+      syncLocationScrollState();
+    };
+
+    const rafId = requestAnimationFrame(resetPosition);
+    return () => cancelAnimationFrame(rafId);
+  }, [activeLocationStoryId, syncLocationScrollState]);
+
+  useEffect(() => {
+    if (!activeLocationStoryId) return;
+
+    const scroller = locationScrollerRef.current;
+    if (!scroller) return;
+
+    const onScroll = () => syncLocationScrollState();
+    scroller.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+
+    onScroll();
+
+    return () => {
+      scroller.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+    };
+  }, [activeLocationStoryId, syncLocationScrollState]);
+
+  useEffect(() => {
+    if (!activeLocationStoryId) return;
+
+    const frame = locationImageFrameRef.current;
+    if (!frame) return;
+
+    const syncImageEdge = () => {
+      const { width, height } = frame.getBoundingClientRect();
+      if (width <= 0 || height <= 0 || locationImageAspectRatio <= 0) {
+        setLocationImageRightEdgePx(null);
+        setLocationImageFrameWidthPx(null);
+        return;
+      }
+
+      const renderedImageWidth = Math.min(width, height * locationImageAspectRatio);
+      setLocationImageFrameWidthPx(width);
+      setLocationImageRightEdgePx(renderedImageWidth);
+    };
+
+    const resizeObserver = new ResizeObserver(syncImageEdge);
+    resizeObserver.observe(frame);
+    syncImageEdge();
+
+    return () => resizeObserver.disconnect();
+  }, [activeLocationStoryId, locationImageAspectRatio]);
+
+  useEffect(() => {
+    if (!activeLocationStoryId) return;
+
+    const frame = locationImageFrameRef.current;
+    const heading = locationLeftHeadingRef.current;
+    if (!frame || !heading) return;
+
+    const syncHeadingTop = () => {
+      const frameRect = frame.getBoundingClientRect();
+      const headingRect = heading.getBoundingClientRect();
+      if (frameRect.height <= 0) return;
+      setLeftHeadingTopPx(Math.max(0, headingRect.top - frameRect.top));
+    };
+
+    const resizeObserver = new ResizeObserver(syncHeadingTop);
+    resizeObserver.observe(frame);
+    resizeObserver.observe(heading);
+    window.addEventListener('resize', syncHeadingTop);
+
+    const rafId = requestAnimationFrame(syncHeadingTop);
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      resizeObserver.disconnect();
+      window.removeEventListener('resize', syncHeadingTop);
+    };
+  }, [activeLocationStoryHeadingKey, activeLocationStoryId]);
+
+  const isLocationStoryOpen = activeSection === 'locations' && Boolean(activeLocationStory);
+  const locationImageMaskStyle = useMemo<CSSProperties>(() => {
+    if (!locationImageRightEdgePx) {
+      const fallback =
+        'linear-gradient(to right, transparent 0px, black 110px, black calc(100% - 180px), transparent 100%)';
+      return {
+        maskImage: fallback,
+        WebkitMaskImage: fallback,
+      };
+    }
+
+    const leftOpaqueStartPx = 110;
+    const rightFadeStartPx = Math.max(leftOpaqueStartPx + 120, locationImageRightEdgePx - 180);
+    const dynamicMask = `linear-gradient(to right, transparent 0px, black ${leftOpaqueStartPx}px, black ${rightFadeStartPx}px, transparent ${locationImageRightEdgePx}px)`;
+
+    return {
+      maskImage: dynamicMask,
+      WebkitMaskImage: dynamicMask,
+    };
+  }, [locationImageRightEdgePx]);
+
+  const renderLocationStoryExperience = (compact: boolean) => {
+    if (!activeLocationStory) return null;
+    const narrativeWidthPx = compact ? 430 : 560;
+    const narrativeGapFromImagePx = compact ? 22 : 30;
+    const maxLeftWithinFramePx = Math.max(
+      16,
+      (locationImageFrameWidthPx ?? (compact ? 1680 : 1900)) - narrativeWidthPx - 16
+    );
+    const narrativeLeftPosition = Math.min(
+      maxLeftWithinFramePx,
+      (locationImageRightEdgePx ?? (compact ? 1450 : 1300)) + narrativeGapFromImagePx
+    );
+
+    return (
+      <motion.div
+        key={activeLocationStory.id}
+        initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 18 }}
+        animate={reduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
+        transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
+        className={clsx(
+          'flex w-full flex-col',
+          compact ? 'h-full px-2 pb-4 pt-2' : 'mx-auto h-[min(80vh,700px)] max-w-[1240px]'
+        )}
+      >
+        <div className={clsx('mb-3 flex items-center justify-between', compact ? 'px-1' : '')}>
+          <button
+            type="button"
+            onClick={closeLocationStory}
+            className="group inline-flex items-center gap-2 px-1 py-1.5 font-display text-[10px] uppercase tracking-[0.18em] text-white/85 transition hover:text-[#d9a24b] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/55"
+          >
+            <ArrowLeft className="h-5 w-5 transition-transform group-hover:-translate-x-0.5 group-hover:text-[#d9a24b]" />
+            Back
+          </button>
+
+          <div className="flex items-center gap-2 sm:gap-3">
+            <button
+              type="button"
+              onClick={() => scrollLocationStory('prev')}
+              disabled={!locationCanScrollPrev}
+              className={clsx(
+                'flex h-11 w-11 items-center justify-center transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/55',
+                locationCanScrollPrev ? 'text-white/80 hover:text-[#d9a24b]' : 'text-white/35'
+              )}
+              aria-label="Scroll left"
+            >
+              <ArrowLeft className="h-7 w-7" />
+            </button>
+            <button
+              type="button"
+              onClick={() => scrollLocationStory('next')}
+              disabled={!locationCanScrollNext}
+              className={clsx(
+                'flex h-11 w-11 items-center justify-center transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/55',
+                locationCanScrollNext ? 'text-white/80 hover:text-[#d9a24b]' : 'text-white/35'
+              )}
+              aria-label="Scroll right"
+            >
+              <ArrowRight className="h-7 w-7" />
+            </button>
+          </div>
+        </div>
+
+        <div className={clsx('relative min-h-0 flex-1 overflow-hidden', compact ? '' : 'px-2')}>
+          <div
+            ref={locationScrollerRef}
+            className={clsx(
+              'relative overflow-x-auto overflow-y-hidden scroll-smooth [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
+              compact ? 'h-full' : 'mx-auto h-[84%] max-h-[640px] min-h-[400px]'
+            )}
+            onWheel={(event) => {
+              if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
+              event.currentTarget.scrollLeft += event.deltaY;
+            }}
+          >
+            <div
+              ref={locationImageFrameRef}
+              className={clsx(
+                'relative h-full overflow-hidden',
+                compact
+                  ? 'w-[max(320vw,1750px)] min-w-[1600px]'
+                  : 'w-[max(190vw,1700px)] min-w-[1500px]'
+              )}
+            >
+              <Image
+                src={activeLocationStory.image}
+                alt={`Location ${activeLocationStoryIndex + 1}`}
+                fill
+                priority
+                onLoadingComplete={(image) => {
+                  if (image.naturalWidth > 0 && image.naturalHeight > 0) {
+                    setLocationImageAspectRatio(image.naturalWidth / image.naturalHeight);
+                  }
+                }}
+                style={locationImageMaskStyle}
+                className="object-contain object-left"
+                sizes="(min-width: 1024px) 140vw, (min-width: 768px) 190vw, 320vw"
+              />
+              <div
+                ref={locationLeftHeadingRef}
+                className="absolute left-[clamp(1.4rem,3.8vw,3.8rem)] top-1/2 max-w-[20ch] -translate-y-1/2"
+              >
+                <div className="relative">
+                  <span
+                    aria-hidden
+                    className="pointer-events-none absolute -inset-x-6 -inset-y-5 -z-10 rounded-full bg-[radial-gradient(circle,rgba(255,241,218,0.33)_0%,rgba(255,241,218,0)_74%)] blur-xl"
+                  />
+                  <p className="font-menu text-[clamp(2.7rem,5.8vw,5.4rem)] normal-case leading-[0.84] tracking-[-0.01em] text-[#fff9ef] [text-shadow:0_0_22px_rgba(255,238,214,0.62),0_0_46px_rgba(255,238,214,0.32)]">
+                    {activeLocationStory.leftTitle.map((line, index) => (
+                      <span key={`${activeLocationStory.id}-title-${index}`} className="block">
+                        {line}
+                      </span>
+                    ))}
+                  </p>
+                </div>
+              </div>
+
+              <motion.article
+                initial={reduceMotion ? undefined : { opacity: 0, x: 18 }}
+                animate={
+                  reduceMotion
+                    ? { opacity: 1, x: 0 }
+                    : locationNarrativeVisible
+                      ? { opacity: 1, x: 0 }
+                      : { opacity: 0.04, x: 30 }
+                }
+                transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
+                style={{
+                  left: `${narrativeLeftPosition}px`,
+                  top: leftHeadingTopPx !== null ? `${leftHeadingTopPx}px` : undefined,
+                }}
+                className={clsx(
+                  'absolute text-left text-[#fffef8]',
+                  compact ? 'top-[18%] w-[min(50ch,90vw)]' : 'top-[22%] w-[min(34ch,44vw)]',
+                  locationNarrativeVisible ? 'pointer-events-auto' : 'pointer-events-none'
+                )}
+              >
+                <span
+                  aria-hidden
+                  className="pointer-events-none absolute -inset-x-4 -inset-y-3 -z-10 rounded-[32px] bg-[radial-gradient(circle,rgba(255,240,216,0.3)_0%,rgba(255,240,216,0)_76%)] blur-xl"
+                />
+                <p className="font-sans text-[13px] italic leading-[1.86] text-[#fffef8] [text-shadow:0_0_16px_rgba(255,237,210,0.48),0_1px_12px_rgba(59,36,18,0.45)] sm:text-[14px]">
+                  {activeLocationStory.narrative}
+                </p>
+                <button
+                  type="button"
+                  onClick={openNextLocationStory}
+                  className="mt-4 block w-fit border border-[#f3dfc4]/55 px-4 py-2 font-display text-[9px] uppercase tracking-[0.2em] text-[#fff4e3] transition hover:border-[#fff2de] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/55"
+                >
+                  Discover {activeLocationStory.nextLocation}
+                </button>
+              </motion.article>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+    );
+  };
 
   return (
     <main className="relative h-[100dvh] w-full overflow-hidden text-white">
@@ -256,129 +646,140 @@ export function IndiaJourneyLayout({ journey }: IndiaJourneyLayoutProps) {
         </div>
 
         <div className="relative flex flex-1 items-center">
-          <div className="w-full overflow-visible pb-5 pt-4" ref={mobileEmblaRef}>
-            <div className="embla__container -mx-2 flex touch-pan-x items-end">
-              {cards.map((card, index) => (
-                <div key={`${card.id}-mobile`} className="embla__slide flex flex-[0_0_78%] px-2">
-                  <article
-                    className={clsx(
-                      'group relative aspect-[3/4] w-full overflow-hidden bg-black/20 transition-opacity duration-300',
-                      mobileSelectedIndex !== index ? 'opacity-55' : 'opacity-100'
-                    )}
-                  >
-                    <Image
-                      src={card.image}
-                      alt={card.title}
-                      fill
-                      className="object-cover"
-                      sizes="78vw"
-                      priority={index === 0 && activeSection === 'locations'}
-                    />
-                    <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.05)_18%,rgba(0,0,0,0.5)_100%)]" />
-                    <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between gap-2">
-                      <button
-                        type="button"
-                        className="bg-black/20 px-4 py-1.5 font-display text-[8px] uppercase tracking-[0.28em] text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
-                      >
-                        Discover
-                      </button>
-                      <span className="truncate font-display text-[9px] uppercase tracking-[0.22em] text-white/85">
-                        {card.title}
-                      </span>
-                    </div>
-                  </article>
-                </div>
-              ))}
+          {isLocationStoryOpen && !isDesktopViewport ? (
+            <div className="h-full w-full px-2 pb-3 pt-2">
+              {renderLocationStoryExperience(true)}
             </div>
-          </div>
+          ) : (
+            <div className="w-full overflow-visible pb-5 pt-4" ref={mobileEmblaRef}>
+              <div className="embla__container -mx-2 flex touch-pan-x items-end">
+                {cards.map((card, index) => (
+                  <div key={`${card.id}-mobile`} className="embla__slide flex flex-[0_0_78%] px-2">
+                    <article
+                      className={clsx(
+                        'group relative aspect-[3/4] w-full overflow-hidden bg-black/20 transition-opacity duration-300',
+                        mobileSelectedIndex !== index ? 'opacity-55' : 'opacity-100'
+                      )}
+                    >
+                      <Image
+                        src={card.image}
+                        alt={card.title}
+                        fill
+                        className="object-cover"
+                        sizes="78vw"
+                        priority={index === 0 && activeSection === 'locations'}
+                      />
+                      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.05)_18%,rgba(0,0,0,0.5)_100%)]" />
+                      <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between gap-2">
+                        <button
+                          type="button"
+                          onClick={() => handleLocationDiscover(index)}
+                          className="bg-black/20 px-4 py-1.5 font-display text-[8px] uppercase tracking-[0.28em] text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+                        >
+                          Discover
+                        </button>
+                        <span className="truncate font-display text-[9px] uppercase tracking-[0.22em] text-white/85">
+                          {card.title}
+                        </span>
+                      </div>
+                    </article>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
-        <div className="pointer-events-none relative z-20 flex flex-col items-center gap-2 pb-[max(0.9rem,env(safe-area-inset-bottom))]">
-          <h1 className="font-title text-[clamp(3.6rem,20vw,6.2rem)] leading-[0.8] text-white [text-shadow:0_0_20px_rgba(255,255,255,0.35)]">
-            INDIA
-          </h1>
-          <p className="whitespace-nowrap font-display text-[9px] uppercase tracking-[0.18em] text-white/90">
-            EDITION - JANUARY - FROM 27TH JANUARY
-          </p>
-          <div className="pointer-events-auto mt-1 flex items-center gap-3 text-white">
-            <button
-              type="button"
-              onClick={() => mobileEmblaApi?.scrollPrev()}
-              disabled={!mobileCanScrollPrev}
-              className={clsx(
-                'flex h-7 w-7 items-center justify-center transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/55',
-                mobileCanScrollPrev
-                  ? 'text-white/75 hover:text-white'
-                  : 'cursor-not-allowed text-white/30'
-              )}
-              aria-label="Previous location"
-            >
-              <ArrowLeft className="h-4 w-4" />
-            </button>
-            <span className="font-display text-[10px] uppercase tracking-[0.2em] text-white/90">
-              {String(mobileSelectedIndex + 1).padStart(2, '0')} /{' '}
-              {String(cards.length).padStart(2, '0')}
-            </span>
-            <button
-              type="button"
-              onClick={() => mobileEmblaApi?.scrollNext()}
-              disabled={!mobileCanScrollNext}
-              className={clsx(
-                'flex h-7 w-7 items-center justify-center transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/55',
-                mobileCanScrollNext
-                  ? 'text-white/75 hover:text-white'
-                  : 'cursor-not-allowed text-white/30'
-              )}
-              aria-label="Next location"
-            >
-              <ArrowRight className="h-4 w-4" />
-            </button>
+        {!isLocationStoryOpen && (
+          <div className="pointer-events-none relative z-20 flex flex-col items-center gap-2 pb-[max(0.9rem,env(safe-area-inset-bottom))]">
+            <h1 className="font-title text-[clamp(3.6rem,20vw,6.2rem)] leading-[0.8] text-white [text-shadow:0_0_20px_rgba(255,255,255,0.35)]">
+              INDIA
+            </h1>
+            <p className="whitespace-nowrap font-display text-[9px] uppercase tracking-[0.18em] text-white/90">
+              EDITION - JANUARY - FROM 27TH JANUARY
+            </p>
+            <div className="pointer-events-auto mt-1 flex items-center gap-3 text-white">
+              <button
+                type="button"
+                onClick={() => mobileEmblaApi?.scrollPrev()}
+                disabled={!mobileCanScrollPrev}
+                className={clsx(
+                  'flex h-7 w-7 items-center justify-center transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/55',
+                  mobileCanScrollPrev
+                    ? 'text-white/75 hover:text-white'
+                    : 'cursor-not-allowed text-white/30'
+                )}
+                aria-label="Previous location"
+              >
+                <ArrowLeft className="h-4 w-4" />
+              </button>
+              <span className="font-display text-[10px] uppercase tracking-[0.2em] text-white/90">
+                {String(mobileSelectedIndex + 1).padStart(2, '0')} /{' '}
+                {String(cards.length).padStart(2, '0')}
+              </span>
+              <button
+                type="button"
+                onClick={() => mobileEmblaApi?.scrollNext()}
+                disabled={!mobileCanScrollNext}
+                className={clsx(
+                  'flex h-7 w-7 items-center justify-center transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/55',
+                  mobileCanScrollNext
+                    ? 'text-white/75 hover:text-white'
+                    : 'cursor-not-allowed text-white/30'
+                )}
+                aria-label="Next location"
+              >
+                <ArrowRight className="h-4 w-4" />
+              </button>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       <div className="relative z-10 hidden h-full w-full grid-cols-[clamp(250px,32vw,460px)_1fr] md:grid">
-        <aside className="flex min-h-0 flex-col justify-between px-6 py-8 sm:px-10 sm:py-10">
-          <nav className="flex flex-col gap-10 pt-[15dvh]" aria-label="Journey sections">
-            {SECTION_TABS.map((item) => {
-              const isActive = item.id === activeSection;
-              return (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => setActiveSection(item.id)}
-                  className={clsx(
-                    'group flex items-center gap-2.5 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50',
-                    isActive ? 'opacity-100' : 'opacity-75 hover:opacity-100'
-                  )}
-                  aria-pressed={isActive}
-                >
-                  <Image
-                    src={item.icon}
-                    alt=""
-                    width={32}
-                    height={32}
+        <aside className="flex min-h-0 flex-col px-6 py-8 sm:px-10 sm:py-10">
+          <div className="flex min-h-0 flex-1 items-center">
+            <nav className="flex flex-col gap-10" aria-label="Journey sections">
+              {SECTION_TABS.map((item) => {
+                const isActive = item.id === activeSection;
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => setActiveSection(item.id)}
                     className={clsx(
-                      'h-8 w-8 shrink-0 transition',
-                      isActive ? 'drop-shadow-[0_0_9px_rgba(255,255,255,0.6)]' : 'opacity-90'
+                      'group flex items-center gap-2.5 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50',
+                      isActive ? 'opacity-100' : 'opacity-75 hover:opacity-100'
                     )}
-                  />
-                  <span className="relative flex flex-col">
-                    <span className="font-display text-[17px] font-bold uppercase tracking-[0.22em] text-white sm:text-[20px]">
-                      {item.label}
-                    </span>
-                    <span
-                      aria-hidden
+                    aria-pressed={isActive}
+                  >
+                    <Image
+                      src={item.icon}
+                      alt=""
+                      width={32}
+                      height={32}
                       className={clsx(
-                        'mt-1.5 h-px w-full origin-left scale-x-0 rounded-full bg-gradient-to-r from-white/20 via-white/80 to-white/95 transition-transform duration-300 ease-out group-hover:scale-x-100',
-                        isActive && 'scale-x-100'
+                        'h-8 w-8 shrink-0 transition',
+                        isActive ? 'drop-shadow-[0_0_9px_rgba(255,255,255,0.6)]' : 'opacity-90'
                       )}
                     />
-                  </span>
-                </button>
-              );
-            })}
-          </nav>
+                    <span className="relative flex flex-col">
+                      <span className="font-display text-[17px] font-bold uppercase tracking-[0.22em] text-white sm:text-[20px]">
+                        {item.label}
+                      </span>
+                      <span
+                        aria-hidden
+                        className={clsx(
+                          'mt-1.5 h-px w-full origin-left scale-x-0 rounded-full bg-gradient-to-r from-white/20 via-white/80 to-white/95 transition-transform duration-300 ease-out group-hover:scale-x-100',
+                          isActive && 'scale-x-100'
+                        )}
+                      />
+                    </span>
+                  </button>
+                );
+              })}
+            </nav>
+          </div>
 
           <div className="space-y-3">
             <h1 className="font-title text-[clamp(4.8rem,14vw,10.8rem)] leading-[0.8] text-white [text-shadow:0_0_20px_rgba(255,255,255,0.35)]">
@@ -390,68 +791,68 @@ export function IndiaJourneyLayout({ journey }: IndiaJourneyLayoutProps) {
           </div>
         </aside>
 
-        <section className="flex min-w-0 items-center pb-10 pl-1 pr-3 sm:pb-14 sm:pl-4 sm:pr-7 lg:pl-6 lg:pr-12">
-          <div className="mx-auto w-full max-w-[1300px]">
-            <div
-              className="overflow-x-auto overflow-y-hidden [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-              onWheel={(event) => {
-                if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
-                event.currentTarget.scrollLeft += event.deltaY;
-              }}
-            >
-              <div
-                className="flex min-w-[980px] items-end"
-                onMouseLeave={() => setHoveredCardIndex(null)}
-              >
-                {cards.map((card, index) => (
-                  <article
-                    key={card.id}
-                    onMouseEnter={() => setHoveredCardIndex(index)}
-                    onFocusCapture={() => setHoveredCardIndex(index)}
-                    onBlurCapture={(event) => {
-                      if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
-                        setHoveredCardIndex(null);
-                      }
-                    }}
-                    className={clsx(
-                      'duration-400 ease-[cubic-bezier(0.22,1,0.36,1)] group relative aspect-[3/4] shrink-0 grow-0 overflow-hidden bg-black/20 transition-[flex-basis,opacity]',
-                      hoveredCardIndex !== null && hoveredCardIndex !== index
-                        ? 'opacity-45'
-                        : 'opacity-100'
-                    )}
-                    style={{
-                      flexBasis:
-                        hoveredCardIndex === null
-                          ? '33.3333%'
-                          : hoveredCardIndex === index
-                            ? '40%'
-                            : '30%',
-                    }}
+        <section className="flex min-w-0 items-center py-8 pl-1 pr-3 sm:py-10 sm:pl-4 sm:pr-7 lg:py-12 lg:pl-6 lg:pr-12">
+          <div className="mx-auto flex h-full w-full max-w-[1300px] items-center">
+            {isLocationStoryOpen && isDesktopViewport ? (
+              <div className="w-full">{renderLocationStoryExperience(false)}</div>
+            ) : (
+              <div className="w-full">
+                <div
+                  className="overflow-x-auto overflow-y-hidden [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                  onWheel={(event) => {
+                    if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
+                    event.currentTarget.scrollLeft += event.deltaY;
+                  }}
+                >
+                  <div
+                    className="flex min-w-[980px] items-end"
+                    onMouseLeave={() => setHoveredCardIndex(null)}
                   >
-                    <Image
-                      src={card.image}
-                      alt={card.title}
-                      fill
-                      className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
-                      sizes="(min-width: 1280px) 33vw, (min-width: 768px) 34vw, 66vw"
-                      priority={index === 0 && activeSection === 'locations'}
-                    />
-                    <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.03)_18%,rgba(0,0,0,0.48)_100%)]" />
-                    <div className="absolute bottom-4 left-4 right-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                      <button
-                        type="button"
-                        className="bg-black/20 px-5 py-1.5 font-display text-[9px] uppercase tracking-[0.32em] text-white transition hover:bg-black/35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+                    {cards.map((card, index) => (
+                      <article
+                        key={card.id}
+                        onMouseEnter={() => setHoveredCardIndex(index)}
+                        onFocusCapture={() => setHoveredCardIndex(index)}
+                        onBlurCapture={(event) => {
+                          if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+                            setHoveredCardIndex(null);
+                          }
+                        }}
+                        className={clsx(
+                          'duration-400 ease-[cubic-bezier(0.22,1,0.36,1)] group relative aspect-[3/4] shrink-0 grow-0 overflow-hidden bg-black/20 transition-opacity',
+                          hoveredCardIndex !== null && hoveredCardIndex !== index
+                            ? 'opacity-45'
+                            : 'opacity-100'
+                        )}
+                        style={{ flexBasis: '33.3333%' }}
                       >
-                        Discover
-                      </button>
-                      <span className="truncate font-display text-[9px] uppercase tracking-[0.28em] text-white/85">
-                        {card.title}
-                      </span>
-                    </div>
-                  </article>
-                ))}
+                        <Image
+                          src={card.image}
+                          alt={card.title}
+                          fill
+                          className="object-cover"
+                          sizes="(min-width: 1280px) 33vw, (min-width: 768px) 34vw, 66vw"
+                          priority={index === 0 && activeSection === 'locations'}
+                        />
+                        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.03)_18%,rgba(0,0,0,0.48)_100%)]" />
+                        <div className="absolute bottom-4 left-4 right-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                          <button
+                            type="button"
+                            onClick={() => handleLocationDiscover(index)}
+                            className="bg-black/20 px-5 py-1.5 font-display text-[9px] uppercase tracking-[0.32em] text-white transition hover:bg-black/35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+                          >
+                            Discover
+                          </button>
+                          <span className="truncate font-display text-[9px] uppercase tracking-[0.28em] text-white/85">
+                            {card.title}
+                          </span>
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </section>
       </div>
