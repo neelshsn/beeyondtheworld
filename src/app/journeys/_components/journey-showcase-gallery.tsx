@@ -57,34 +57,6 @@ const MONTH_INDEX: Record<string, number> = {
   december: 12,
 };
 
-const DUST_PARTICLES = [
-  { left: '4%', top: '10%', delay: 0, duration: 8.5, size: 2.8 },
-  { left: '9%', top: '22%', delay: 0.7, duration: 10.2, size: 2.1 },
-  { left: '14%', top: '34%', delay: 1.3, duration: 9.7, size: 2.4 },
-  { left: '22%', top: '12%', delay: 2.1, duration: 11, size: 2.2 },
-  { left: '28%', top: '25%', delay: 2.8, duration: 9.1, size: 1.9 },
-  { left: '34%', top: '8%', delay: 3.2, duration: 12.3, size: 2.6 },
-  { left: '42%', top: '18%', delay: 0.5, duration: 8.8, size: 2.2 },
-  { left: '48%', top: '6%', delay: 1.8, duration: 10.8, size: 1.8 },
-  { left: '54%', top: '24%', delay: 2.6, duration: 11.6, size: 2.1 },
-  { left: '62%', top: '9%', delay: 0.3, duration: 9.4, size: 2.4 },
-  { left: '68%', top: '16%', delay: 1.4, duration: 10.5, size: 2 },
-  { left: '74%', top: '30%', delay: 2.7, duration: 8.9, size: 2.7 },
-  { left: '82%', top: '12%', delay: 3.1, duration: 11.2, size: 2.3 },
-  { left: '90%', top: '24%', delay: 0.9, duration: 9.8, size: 2.1 },
-  { left: '95%', top: '36%', delay: 1.7, duration: 10.1, size: 1.9 },
-  { left: '8%', top: '64%', delay: 2.4, duration: 12.1, size: 2.2 },
-  { left: '16%', top: '78%', delay: 0.6, duration: 9.3, size: 2.7 },
-  { left: '24%', top: '88%', delay: 1.5, duration: 10.4, size: 2.2 },
-  { left: '33%', top: '72%', delay: 2.2, duration: 8.7, size: 2.5 },
-  { left: '46%', top: '84%', delay: 3, duration: 11.5, size: 2 },
-  { left: '57%', top: '92%', delay: 0.2, duration: 10.9, size: 2.4 },
-  { left: '66%', top: '76%', delay: 1.1, duration: 9.2, size: 2.6 },
-  { left: '76%', top: '86%', delay: 1.9, duration: 12.4, size: 2.1 },
-  { left: '86%', top: '72%', delay: 2.5, duration: 10.7, size: 2.3 },
-  { left: '94%', top: '82%', delay: 3.3, duration: 8.6, size: 1.8 },
-] as const;
-
 const JOURNEY_TRANSITION_FADE_MS = 980;
 
 function parseSeasonFilter(value: string | null): SeasonFilterValue {
@@ -133,8 +105,9 @@ function getJourneyChronologyKey(dateValue: string) {
 
 function filterJourneys(data: Journey[], season: SeasonFilterValue) {
   const filtered = data.filter((journey) => {
-    if (season === 'summer') return journey.season === 'spring-summer';
-    if (season === 'winter') return journey.season === 'fall-winter';
+    const isIndiaDualSeason = journey.slug === 'india-january-2026';
+    if (season === 'summer') return journey.season === 'spring-summer' || isIndiaDualSeason;
+    if (season === 'winter') return journey.season === 'fall-winter' || isIndiaDualSeason;
     return true;
   });
 
@@ -504,7 +477,6 @@ export function JourneyShowcaseGallery() {
         season={season}
         useLiteEffects={useLiteEffects}
       />
-      <CornerFogGlows prefersReducedMotion={prefersReducedMotion} useLiteEffects={useLiteEffects} />
 
       <div
         className={clsx(
@@ -906,21 +878,21 @@ function BackgroundImage({
   const seasonOverlayClass = clsx(
     'absolute inset-[-18%] blur-[64px]',
     season === 'summer' &&
-      'bg-[radial-gradient(60%_48%_at_18%_18%,rgba(255,193,96,0.34),rgba(255,193,96,0)_70%),radial-gradient(56%_46%_at_82%_84%,rgba(255,155,62,0.28),rgba(255,155,62,0)_72%)]',
+      'bg-[radial-gradient(60%_48%_at_18%_18%,rgba(176,206,244,0.3),rgba(176,206,244,0)_70%),radial-gradient(56%_46%_at_82%_84%,rgba(152,188,230,0.24),rgba(152,188,230,0)_72%)]',
     season === 'winter' &&
       'bg-[radial-gradient(60%_48%_at_18%_18%,rgba(152,198,255,0.3),rgba(152,198,255,0)_70%),radial-gradient(56%_46%_at_82%_84%,rgba(198,229,255,0.24),rgba(198,229,255,0)_72%)]',
     season === 'all' &&
-      'bg-[radial-gradient(58%_46%_at_18%_20%,rgba(255,213,139,0.24),rgba(255,213,139,0)_70%),radial-gradient(56%_44%_at_82%_84%,rgba(255,232,186,0.2),rgba(255,232,186,0)_72%)]'
+      'bg-[radial-gradient(58%_46%_at_18%_20%,rgba(205,220,244,0.22),rgba(205,220,244,0)_70%),radial-gradient(56%_44%_at_82%_84%,rgba(222,234,250,0.18),rgba(222,234,250,0)_72%)]'
   );
 
   const seasonVeilClass = clsx(
     'absolute inset-[-10%] blur-[54px]',
     season === 'summer' &&
-      'bg-[radial-gradient(50%_36%_at_50%_50%,rgba(255,207,128,0.2),rgba(255,207,128,0)_78%)]',
+      'bg-[radial-gradient(50%_36%_at_50%_50%,rgba(190,214,242,0.18),rgba(190,214,242,0)_78%)]',
     season === 'winter' &&
       'bg-[radial-gradient(50%_36%_at_50%_50%,rgba(191,220,255,0.18),rgba(191,220,255,0)_78%)]',
     season === 'all' &&
-      'bg-[radial-gradient(50%_36%_at_50%_50%,rgba(255,226,165,0.16),rgba(255,226,165,0)_78%)]'
+      'bg-[radial-gradient(50%_36%_at_50%_50%,rgba(212,224,246,0.15),rgba(212,224,246,0)_78%)]'
   );
 
   return (
@@ -1032,7 +1004,7 @@ function BackgroundImage({
               transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
             >
               <motion.div
-                className="absolute left-1/2 top-[46%] h-[86vw] w-[62vw] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(255,228,171,0.34)_0%,rgba(255,228,171,0.16)_32%,rgba(255,228,171,0)_74%)] blur-[62px] md:left-[41%] md:h-[58vw] md:w-[42vw]"
+                className="absolute left-1/2 top-[46%] h-[86vw] w-[62vw] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(218,232,255,0.28)_0%,rgba(218,232,255,0.14)_32%,rgba(218,232,255,0)_74%)] blur-[62px] md:left-[41%] md:h-[58vw] md:w-[42vw]"
                 animate={{
                   opacity: [0.38, 0.76, 0.5, 0.68, 0.38],
                   scale: [0.95, 1.08, 0.98, 1.05, 0.95],
@@ -1041,7 +1013,7 @@ function BackgroundImage({
                 style={{ willChange: 'transform, opacity' }}
               />
               <motion.div
-                className="absolute left-1/2 top-[46%] h-[54vw] w-[40vw] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(255,245,214,0.2)_0%,rgba(255,245,214,0.08)_34%,rgba(255,245,214,0)_76%)] blur-[52px] md:left-[41%] md:h-[36vw] md:w-[26vw]"
+                className="absolute left-1/2 top-[46%] h-[54vw] w-[40vw] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(238,245,255,0.2)_0%,rgba(238,245,255,0.08)_34%,rgba(238,245,255,0)_76%)] blur-[52px] md:left-[41%] md:h-[36vw] md:w-[26vw]"
                 animate={{
                   opacity: [0.24, 0.52, 0.3, 0.44, 0.24],
                   scale: [0.94, 1.12, 0.98, 1.08, 0.94],
@@ -1066,7 +1038,7 @@ function BackgroundImage({
               transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
             >
               <motion.div
-                className="absolute left-1/2 top-[46%] h-[64vw] w-[46vw] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(255,228,171,0.26)_0%,rgba(255,228,171,0.1)_32%,rgba(255,228,171,0)_74%)] blur-[48px] md:left-[41%] md:h-[44vw] md:w-[31vw]"
+                className="absolute left-1/2 top-[46%] h-[64vw] w-[46vw] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(221,234,255,0.24)_0%,rgba(221,234,255,0.1)_32%,rgba(221,234,255,0)_74%)] blur-[48px] md:left-[41%] md:h-[44vw] md:w-[31vw]"
                 animate={{ opacity: [0.26, 0.46, 0.32, 0.42, 0.26] }}
                 transition={{ duration: 6.4, repeat: Infinity, ease: 'easeInOut' }}
                 style={{ willChange: 'opacity' }}
@@ -1089,7 +1061,7 @@ function BackgroundImage({
                 transition={{ duration: 0.35 }}
               >
                 <motion.div
-                  className="absolute inset-[-6%] bg-[linear-gradient(90deg,rgba(255,222,165,0)_0%,rgba(255,222,165,0.36)_42%,rgba(255,222,165,0)_100%)]"
+                  className="absolute inset-[-6%] bg-[linear-gradient(90deg,rgba(224,236,255,0)_0%,rgba(224,236,255,0.3)_42%,rgba(224,236,255,0)_100%)]"
                   initial={{ x: direction > 0 ? '16%' : '-16%', opacity: 0 }}
                   animate={{
                     x: direction > 0 ? ['16%', '-12%'] : ['-16%', '12%'],
@@ -1113,7 +1085,7 @@ function BackgroundImage({
                 transition={{ duration: 0.48 }}
               >
                 <motion.div
-                  className="absolute inset-[-8%] bg-[linear-gradient(90deg,rgba(255,222,165,0)_0%,rgba(255,222,165,0.45)_36%,rgba(255,222,165,0.18)_50%,rgba(255,222,165,0.45)_64%,rgba(255,222,165,0)_100%)] blur-[6px]"
+                  className="absolute inset-[-8%] bg-[linear-gradient(90deg,rgba(225,238,255,0)_0%,rgba(225,238,255,0.36)_36%,rgba(225,238,255,0.14)_50%,rgba(225,238,255,0.36)_64%,rgba(225,238,255,0)_100%)] blur-[6px]"
                   initial={{ x: direction > 0 ? '22%' : '-22%', opacity: 0 }}
                   animate={{
                     x: direction > 0 ? ['22%', '-20%'] : ['-22%', '20%'],
@@ -1150,427 +1122,6 @@ function BackgroundImage({
           ) : null}
         </AnimatePresence>
       ) : null}
-    </div>
-  );
-}
-
-function CornerFogGlows({
-  prefersReducedMotion,
-  useLiteEffects,
-}: {
-  prefersReducedMotion: boolean;
-  useLiteEffects: boolean;
-}) {
-  const visibleDustParticles = useLiteEffects
-    ? DUST_PARTICLES.filter((_, index) => index % 4 !== 0)
-    : DUST_PARTICLES;
-
-  if (useLiteEffects) {
-    return (
-      <div className="pointer-events-none absolute inset-0 z-10 overflow-hidden" aria-hidden>
-        <motion.div
-          className="absolute inset-[-26%] bg-[radial-gradient(56%_42%_at_14%_16%,rgba(255,211,132,0.28),rgba(255,211,132,0)_64%),radial-gradient(54%_40%_at_86%_84%,rgba(246,176,74,0.24),rgba(246,176,74,0)_66%)] blur-[68px]"
-          animate={
-            prefersReducedMotion
-              ? { opacity: 0.5 }
-              : {
-                  x: [0, 18, -12, 0],
-                  y: [0, -14, 12, 0],
-                  opacity: [0.4, 0.68, 0.48, 0.4],
-                }
-          }
-          transition={
-            prefersReducedMotion
-              ? undefined
-              : { duration: 9.8, repeat: Infinity, ease: 'easeInOut' }
-          }
-          style={{ willChange: 'transform, opacity' }}
-        />
-        <motion.div
-          className="absolute inset-[-16%] bg-[radial-gradient(48%_34%_at_50%_50%,rgba(255,220,155,0.2),rgba(255,220,155,0)_78%)] blur-[52px]"
-          animate={
-            prefersReducedMotion
-              ? { opacity: 0.34 }
-              : {
-                  opacity: [0.24, 0.44, 0.28, 0.38, 0.24],
-                  scale: [0.97, 1.04, 0.99, 1.03, 0.97],
-                }
-          }
-          transition={
-            prefersReducedMotion
-              ? undefined
-              : { duration: 8.2, repeat: Infinity, ease: 'easeInOut' }
-          }
-          style={{ willChange: 'transform, opacity' }}
-        />
-        <motion.div
-          className="absolute -left-[24vw] -top-[18vh] h-[56vw] w-[56vw] rounded-full bg-[radial-gradient(circle,rgba(255,204,108,0.72)_0%,rgba(255,204,108,0.3)_32%,rgba(255,204,108,0)_74%)] blur-[62px]"
-          animate={
-            prefersReducedMotion
-              ? { opacity: 0.72 }
-              : {
-                  x: [0, 20, -12, 0],
-                  y: [0, 18, -12, 0],
-                  opacity: [0.5, 0.82, 0.6, 0.5],
-                }
-          }
-          transition={
-            prefersReducedMotion
-              ? undefined
-              : { duration: 8.8, repeat: Infinity, ease: 'easeInOut' }
-          }
-          style={{ willChange: 'transform, opacity' }}
-        />
-        <motion.div
-          className="absolute -right-[24vw] -top-[18vh] h-[56vw] w-[56vw] rounded-full bg-[radial-gradient(circle,rgba(255,232,186,0.62)_0%,rgba(255,232,186,0.26)_34%,rgba(255,232,186,0)_74%)] blur-[60px]"
-          animate={
-            prefersReducedMotion
-              ? { opacity: 0.62 }
-              : {
-                  x: [0, -20, 12, 0],
-                  y: [0, 16, -10, 0],
-                  opacity: [0.42, 0.72, 0.5, 0.42],
-                }
-          }
-          transition={
-            prefersReducedMotion
-              ? undefined
-              : { duration: 9.2, repeat: Infinity, ease: 'easeInOut' }
-          }
-          style={{ willChange: 'transform, opacity' }}
-        />
-        <motion.div
-          className="absolute -bottom-[20vh] -left-[20vw] h-[54vw] w-[54vw] rounded-full bg-[radial-gradient(circle,rgba(255,191,84,0.62)_0%,rgba(255,191,84,0.26)_32%,rgba(255,191,84,0)_74%)] blur-[62px]"
-          animate={
-            prefersReducedMotion
-              ? { opacity: 0.56 }
-              : {
-                  x: [0, 16, -12, 0],
-                  y: [0, -16, 12, 0],
-                  opacity: [0.38, 0.68, 0.46, 0.38],
-                }
-          }
-          transition={
-            prefersReducedMotion
-              ? undefined
-              : { duration: 8.6, repeat: Infinity, ease: 'easeInOut' }
-          }
-          style={{ willChange: 'transform, opacity' }}
-        />
-        <motion.div
-          className="absolute -bottom-[20vh] -right-[20vw] h-[56vw] w-[56vw] rounded-full bg-[radial-gradient(circle,rgba(244,177,72,0.66)_0%,rgba(244,177,72,0.28)_32%,rgba(244,177,72,0)_74%)] blur-[64px]"
-          animate={
-            prefersReducedMotion
-              ? { opacity: 0.6 }
-              : {
-                  x: [0, -18, 12, 0],
-                  y: [0, -16, 10, 0],
-                  opacity: [0.4, 0.72, 0.5, 0.4],
-                }
-          }
-          transition={
-            prefersReducedMotion
-              ? undefined
-              : { duration: 8.9, repeat: Infinity, ease: 'easeInOut' }
-          }
-          style={{ willChange: 'transform, opacity' }}
-        />
-        {visibleDustParticles.map((particle, index) => (
-          <motion.span
-            key={`dust-lite-${index}`}
-            className="absolute rounded-full bg-[#ffe5b0]"
-            style={{
-              left: particle.left,
-              top: particle.top,
-              width: `${particle.size}px`,
-              height: `${particle.size}px`,
-              boxShadow: '0 0 8px rgba(255, 219, 154, 0.56)',
-              willChange: 'transform, opacity',
-            }}
-            animate={
-              prefersReducedMotion
-                ? { opacity: 0.44 }
-                : {
-                    y: [0, -12, 3, -6, 0],
-                    x: [0, 4, -3, 2, 0],
-                    opacity: [0.14, 0.7, 0.24, 0.58, 0.14],
-                    scale: [0.84, 1.12, 0.92, 1.02, 0.84],
-                  }
-            }
-            transition={
-              prefersReducedMotion
-                ? undefined
-                : {
-                    duration: particle.duration * 0.68,
-                    delay: particle.delay,
-                    repeat: Infinity,
-                    ease: 'easeInOut',
-                  }
-            }
-          />
-        ))}
-      </div>
-    );
-  }
-
-  return (
-    <div className="pointer-events-none absolute inset-0 z-10 overflow-hidden" aria-hidden>
-      <motion.div
-        className="absolute inset-[-34%] bg-[radial-gradient(58%_48%_at_14%_16%,rgba(255,211,132,0.3),rgba(255,211,132,0)_62%),radial-gradient(56%_44%_at_86%_18%,rgba(255,199,111,0.24),rgba(255,199,111,0)_66%),radial-gradient(56%_44%_at_16%_84%,rgba(251,182,80,0.24),rgba(251,182,80,0)_66%),radial-gradient(58%_46%_at_88%_86%,rgba(246,176,74,0.28),rgba(246,176,74,0)_64%)] blur-[96px]"
-        animate={
-          prefersReducedMotion
-            ? { opacity: 0.56 }
-            : {
-                x: [0, 26, -22, 14, 0],
-                y: [0, -20, 18, -12, 0],
-                opacity: [0.42, 0.72, 0.5, 0.66, 0.42],
-                scale: [1, 1.06, 0.97, 1.03, 1],
-              }
-        }
-        transition={
-          prefersReducedMotion ? undefined : { duration: 12.6, repeat: Infinity, ease: 'easeInOut' }
-        }
-        style={{ willChange: 'transform, opacity' }}
-      />
-      <motion.div
-        className="absolute inset-[-30%] bg-[radial-gradient(55%_45%_at_18%_24%,rgba(255,214,145,0.24),rgba(255,214,145,0)_66%),radial-gradient(52%_42%_at_84%_74%,rgba(240,176,77,0.2),rgba(240,176,77,0)_68%)] blur-[88px]"
-        animate={
-          prefersReducedMotion
-            ? { opacity: 0.5 }
-            : {
-                x: [0, 30, -26, 18, 0],
-                y: [0, -24, 20, -12, 0],
-                opacity: [0.36, 0.62, 0.42, 0.58, 0.36],
-                scale: [1, 1.05, 0.98, 1.03, 1],
-              }
-        }
-        transition={
-          prefersReducedMotion ? undefined : { duration: 13, repeat: Infinity, ease: 'easeInOut' }
-        }
-        style={{ willChange: 'transform, opacity' }}
-      />
-      <motion.div
-        className="absolute inset-[-20%] bg-[radial-gradient(45%_38%_at_46%_52%,rgba(247,188,92,0.2),rgba(247,188,92,0)_70%),radial-gradient(34%_30%_at_72%_42%,rgba(255,231,186,0.16),rgba(255,231,186,0)_72%)] blur-[76px]"
-        animate={
-          prefersReducedMotion
-            ? { opacity: 0.42 }
-            : {
-                x: [0, -24, 18, -12, 0],
-                y: [0, 18, -14, 10, 0],
-                opacity: [0.3, 0.52, 0.38, 0.5, 0.3],
-                scale: [1, 1.06, 0.97, 1.04, 1],
-              }
-        }
-        transition={
-          prefersReducedMotion ? undefined : { duration: 11.5, repeat: Infinity, ease: 'easeInOut' }
-        }
-        style={{ willChange: 'transform, opacity' }}
-      />
-      <motion.div
-        className="absolute -left-[28vw] -top-[24vh] h-[70vw] w-[70vw] rounded-full bg-[radial-gradient(circle,rgba(255,204,108,0.8)_0%,rgba(255,204,108,0.4)_30%,rgba(255,204,108,0)_72%)] blur-[74px]"
-        animate={
-          prefersReducedMotion
-            ? { opacity: 0.92 }
-            : {
-                x: [0, 42, -26, 20, 0],
-                y: [0, 34, -24, 16, 0],
-                scale: [1, 1.2, 0.9, 1.1, 1],
-                opacity: [0.76, 1, 0.82, 0.96, 0.76],
-              }
-        }
-        transition={
-          prefersReducedMotion ? undefined : { duration: 9.2, repeat: Infinity, ease: 'easeInOut' }
-        }
-        style={{ willChange: 'transform, opacity' }}
-      />
-      <motion.div
-        className="absolute -right-[25vw] -top-[22vh] h-[66vw] w-[66vw] rounded-full bg-[radial-gradient(circle,rgba(255,232,186,0.68)_0%,rgba(255,232,186,0.32)_34%,rgba(255,232,186,0)_74%)] blur-[72px]"
-        animate={
-          prefersReducedMotion
-            ? { opacity: 0.82 }
-            : {
-                x: [0, -36, 22, -16, 0],
-                y: [0, 30, -20, 12, 0],
-                scale: [1, 1.18, 0.92, 1.08, 1],
-                opacity: [0.62, 0.94, 0.7, 0.88, 0.62],
-              }
-        }
-        transition={
-          prefersReducedMotion ? undefined : { duration: 9.8, repeat: Infinity, ease: 'easeInOut' }
-        }
-        style={{ willChange: 'transform, opacity' }}
-      />
-      <motion.div
-        className="absolute -bottom-[24vh] -left-[22vw] h-[64vw] w-[64vw] rounded-full bg-[radial-gradient(circle,rgba(255,191,84,0.72)_0%,rgba(255,191,84,0.34)_32%,rgba(255,191,84,0)_74%)] blur-[72px]"
-        animate={
-          prefersReducedMotion
-            ? { opacity: 0.78 }
-            : {
-                x: [0, 32, -22, 12, 0],
-                y: [0, -34, 20, -14, 0],
-                scale: [1, 1.16, 0.9, 1.06, 1],
-                opacity: [0.6, 0.92, 0.68, 0.84, 0.6],
-              }
-        }
-        transition={
-          prefersReducedMotion ? undefined : { duration: 9.1, repeat: Infinity, ease: 'easeInOut' }
-        }
-        style={{ willChange: 'transform, opacity' }}
-      />
-      <motion.div
-        className="absolute -bottom-[24vh] -right-[24vw] h-[68vw] w-[68vw] rounded-full bg-[radial-gradient(circle,rgba(244,177,72,0.78)_0%,rgba(244,177,72,0.36)_33%,rgba(244,177,72,0)_74%)] blur-[76px]"
-        animate={
-          prefersReducedMotion
-            ? { opacity: 0.86 }
-            : {
-                x: [0, -40, 24, -18, 0],
-                y: [0, -36, 24, -14, 0],
-                scale: [1, 1.2, 0.9, 1.1, 1],
-                opacity: [0.68, 1, 0.78, 0.92, 0.68],
-              }
-        }
-        transition={
-          prefersReducedMotion ? undefined : { duration: 9.4, repeat: Infinity, ease: 'easeInOut' }
-        }
-        style={{ willChange: 'transform, opacity' }}
-      />
-      <motion.div
-        className="absolute -left-[26vw] -top-[22vh] h-[72vw] w-[72vw] rounded-full bg-[radial-gradient(circle,rgba(251,205,120,0.64)_0%,rgba(251,205,120,0.32)_34%,rgba(251,205,120,0)_76%)] blur-[72px]"
-        animate={
-          prefersReducedMotion
-            ? { opacity: 0.82 }
-            : {
-                x: [0, 52, -28, 34, 0],
-                y: [0, 42, -30, 18, 0],
-                scale: [1, 1.2, 0.92, 1.12, 1],
-                rotate: [0, 4, -3, 2, 0],
-                opacity: [0.64, 1, 0.72, 0.92, 0.64],
-              }
-        }
-        transition={
-          prefersReducedMotion ? undefined : { duration: 10.5, repeat: Infinity, ease: 'easeInOut' }
-        }
-        style={{ willChange: 'transform, opacity' }}
-      />
-      <motion.div
-        className="absolute -bottom-[24vh] -right-[24vw] h-[76vw] w-[76vw] rounded-full bg-[radial-gradient(circle,rgba(243,185,88,0.6)_0%,rgba(243,185,88,0.3)_36%,rgba(243,185,88,0)_76%)] blur-[76px]"
-        animate={
-          prefersReducedMotion
-            ? { opacity: 0.8 }
-            : {
-                x: [0, -56, 20, -26, 0],
-                y: [0, -44, 24, -14, 0],
-                scale: [1, 1.22, 0.94, 1.1, 1],
-                rotate: [0, -5, 3, -2, 0],
-                opacity: [0.62, 0.98, 0.76, 0.9, 0.62],
-              }
-        }
-        transition={
-          prefersReducedMotion ? undefined : { duration: 11.2, repeat: Infinity, ease: 'easeInOut' }
-        }
-        style={{ willChange: 'transform, opacity' }}
-      />
-      <motion.div
-        className="absolute -right-[10vw] -top-[12vh] h-[36vw] w-[36vw] rounded-full bg-[radial-gradient(circle,rgba(255,236,196,0.48)_0%,rgba(255,236,196,0.22)_40%,rgba(255,236,196,0)_76%)] blur-[62px]"
-        animate={
-          prefersReducedMotion
-            ? { opacity: 0.68 }
-            : {
-                x: [0, -34, 14, -18, 0],
-                y: [0, 28, -18, 8, 0],
-                scale: [1, 1.18, 0.9, 1.08, 1],
-                rotate: [0, -3, 2, -1, 0],
-                opacity: [0.46, 0.8, 0.54, 0.72, 0.46],
-              }
-        }
-        transition={
-          prefersReducedMotion ? undefined : { duration: 8.8, repeat: Infinity, ease: 'easeInOut' }
-        }
-        style={{ willChange: 'transform, opacity' }}
-      />
-      <motion.div
-        className="absolute -left-[12vw] bottom-[8%] h-[32vw] w-[32vw] rounded-full bg-[radial-gradient(circle,rgba(255,220,155,0.42)_0%,rgba(255,220,155,0.18)_42%,rgba(255,220,155,0)_76%)] blur-[58px]"
-        animate={
-          prefersReducedMotion
-            ? { opacity: 0.62 }
-            : {
-                x: [0, 28, -14, 10, 0],
-                y: [0, -24, 16, -10, 0],
-                scale: [1, 1.16, 0.92, 1.06, 1],
-                rotate: [0, 3, -2, 1, 0],
-                opacity: [0.42, 0.74, 0.5, 0.66, 0.42],
-              }
-        }
-        transition={
-          prefersReducedMotion ? undefined : { duration: 9.4, repeat: Infinity, ease: 'easeInOut' }
-        }
-        style={{ willChange: 'transform, opacity' }}
-      />
-      <motion.div
-        className="absolute left-[34%] top-[44%] h-[28vw] w-[28vw] rounded-full bg-[radial-gradient(circle,rgba(255,224,162,0.28)_0%,rgba(255,224,162,0.12)_38%,rgba(255,224,162,0)_76%)] blur-[54px]"
-        animate={
-          prefersReducedMotion
-            ? { opacity: 0.42 }
-            : {
-                x: [0, 22, -18, 12, 0],
-                y: [0, -18, 16, -10, 0],
-                opacity: [0.26, 0.54, 0.34, 0.5, 0.26],
-                scale: [0.95, 1.14, 0.92, 1.08, 0.95],
-              }
-        }
-        transition={
-          prefersReducedMotion ? undefined : { duration: 10.2, repeat: Infinity, ease: 'easeInOut' }
-        }
-        style={{ willChange: 'transform, opacity' }}
-      />
-      <motion.div
-        className="absolute inset-[-6%] bg-[radial-gradient(60%_40%_at_50%_50%,rgba(255,231,186,0.14),rgba(255,231,186,0)_76%)] blur-[44px]"
-        animate={
-          prefersReducedMotion
-            ? { opacity: 0.42 }
-            : {
-                opacity: [0.24, 0.5, 0.32, 0.44, 0.24],
-                scale: [0.98, 1.03, 0.99, 1.02, 0.98],
-              }
-        }
-        transition={
-          prefersReducedMotion ? undefined : { duration: 8.4, repeat: Infinity, ease: 'easeInOut' }
-        }
-        style={{ willChange: 'transform, opacity' }}
-      />
-      {visibleDustParticles.map((particle, index) => (
-        <motion.span
-          key={`dust-${index}`}
-          className="absolute rounded-full bg-[#ffe5b0]"
-          style={{
-            left: particle.left,
-            top: particle.top,
-            width: `${particle.size}px`,
-            height: `${particle.size}px`,
-            boxShadow: '0 0 10px rgba(255, 219, 154, 0.62)',
-            willChange: 'transform, opacity',
-          }}
-          animate={
-            prefersReducedMotion
-              ? { opacity: 0.55 }
-              : {
-                  y: [0, -14, 4, -8, 0],
-                  opacity: [0.16, 0.72, 0.28, 0.6, 0.16],
-                  scale: [0.84, 1.12, 0.92, 1.02, 0.84],
-                }
-          }
-          transition={
-            prefersReducedMotion
-              ? undefined
-              : {
-                  duration: particle.duration * 0.66,
-                  delay: particle.delay,
-                  repeat: Infinity,
-                  ease: 'easeInOut',
-                }
-          }
-        />
-      ))}
     </div>
   );
 }
