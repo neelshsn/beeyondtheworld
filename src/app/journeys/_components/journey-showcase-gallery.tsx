@@ -85,6 +85,8 @@ const DUST_PARTICLES = [
   { left: '94%', top: '82%', delay: 3.3, duration: 8.6, size: 1.8 },
 ] as const;
 
+const JOURNEY_TRANSITION_FADE_MS = 980;
+
 function parseSeasonFilter(value: string | null): SeasonFilterValue {
   if (value === 'summer') return 'summer';
   if (value === 'winter') return 'winter';
@@ -288,7 +290,7 @@ export function JourneyShowcaseGallery() {
 
       journeyTransitionTimeoutRef.current = window.setTimeout(() => {
         router.push(destination);
-      }, 320);
+      }, JOURNEY_TRANSITION_FADE_MS);
     },
     [isJourneyTransitioning, prefersReducedMotion, router]
   );
@@ -506,7 +508,8 @@ export function JourneyShowcaseGallery() {
 
       <div
         className={clsx(
-          'ease-[cubic-bezier(0.22,1,0.36,1)] relative z-20 flex min-h-[100svh] flex-col transition-opacity duration-300',
+          'ease-[cubic-bezier(0.22,1,0.36,1)] relative z-20 flex min-h-[100svh] flex-col transition-opacity',
+          prefersReducedMotion ? 'duration-150' : 'duration-[980ms]',
           isJourneyTransitioning ? 'pointer-events-none opacity-0' : 'opacity-100'
         )}
       >
@@ -528,20 +531,20 @@ export function JourneyShowcaseGallery() {
                 <motion.div
                   key={filteredIdsSignature}
                   className="embla__container -mx-2 flex touch-pan-x items-center sm:-mx-3"
-                  initial={prefersReducedMotion ? undefined : { opacity: 0.5, x: 18 }}
-                  animate={prefersReducedMotion ? undefined : { opacity: 1, x: 0 }}
-                  transition={{ duration: 0.62, ease: [0.22, 1, 0.36, 1] }}
+                  initial={prefersReducedMotion ? undefined : { opacity: 0 }}
+                  animate={prefersReducedMotion ? undefined : { opacity: 1 }}
+                  transition={{ duration: 1.08, ease: [0.22, 1, 0.36, 1] }}
                 >
                   {filteredJourneys.map((journey, index) => (
                     <motion.div
                       key={journey.id}
                       className="embla__slide flex flex-[0_0_74%] items-center px-2 sm:flex-[0_0_60%] sm:px-3 md:flex-[0_0_48%] lg:flex-[0_0_34%] xl:flex-[0_0_30%]"
-                      initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}
-                      animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+                      initial={prefersReducedMotion ? false : { opacity: 0 }}
+                      animate={prefersReducedMotion ? undefined : { opacity: 1 }}
                       transition={{
-                        duration: 0.55,
+                        duration: 0.92,
                         ease: [0.22, 1, 0.36, 1],
-                        delay: Math.min(index * 0.035, 0.24),
+                        delay: Math.min(index * 0.07, 0.42),
                       }}
                     >
                       <JourneyCard

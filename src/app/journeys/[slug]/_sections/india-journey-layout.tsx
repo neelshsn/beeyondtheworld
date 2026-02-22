@@ -2,7 +2,7 @@
 
 import clsx from 'clsx';
 import useEmblaCarousel from 'embla-carousel-react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import Image from 'next/image';
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
@@ -158,6 +158,8 @@ const LOCATION_STORIES: IndiaLocationStory[] = [
   },
 ];
 
+const DISCOVER_FADE_DURATION = 1.42;
+
 type IndiaJourneyLayoutProps = {
   journey: JourneyShowcase;
 };
@@ -213,7 +215,7 @@ export function IndiaJourneyLayout({ journey }: IndiaJourneyLayoutProps) {
 
     setLocationCanScrollPrev(scroller.scrollLeft > 4);
     setLocationCanScrollNext(scroller.scrollLeft < maxScrollLeft - 4);
-    setLocationNarrativeVisible(progress > 0.3);
+    setLocationNarrativeVisible(progress > 0.12);
   }, []);
 
   const handleLocationDiscover = useCallback(
@@ -407,6 +409,7 @@ export function IndiaJourneyLayout({ journey }: IndiaJourneyLayoutProps) {
     if (!activeLocationStory) return null;
     const narrativeWidthPx = compact ? 430 : 560;
     const narrativeGapFromImagePx = compact ? 22 : 30;
+    const narrativeTopAlignOffsetPx = compact ? -4 : -10;
     const maxLeftWithinFramePx = Math.max(
       16,
       (locationImageFrameWidthPx ?? (compact ? 1680 : 1900)) - narrativeWidthPx - 16
@@ -415,13 +418,18 @@ export function IndiaJourneyLayout({ journey }: IndiaJourneyLayoutProps) {
       maxLeftWithinFramePx,
       (locationImageRightEdgePx ?? (compact ? 1450 : 1300)) + narrativeGapFromImagePx
     );
+    const narrativeTopPositionPx =
+      leftHeadingTopPx !== null ? Math.max(0, leftHeadingTopPx + narrativeTopAlignOffsetPx) : null;
 
     return (
       <motion.div
         key={activeLocationStory.id}
-        initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 18 }}
-        animate={reduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
-        transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{
+          duration: reduceMotion ? 0.18 : DISCOVER_FADE_DURATION,
+          ease: [0.22, 1, 0.36, 1],
+        }}
         className={clsx(
           'flex w-full flex-col',
           compact ? 'h-full px-2 pb-4 pt-2' : 'mx-auto h-[min(80vh,700px)] max-w-[1240px]'
@@ -526,17 +534,20 @@ export function IndiaJourneyLayout({ journey }: IndiaJourneyLayoutProps) {
                     ? { opacity: 1, x: 0 }
                     : locationNarrativeVisible
                       ? { opacity: 1, x: 0 }
-                      : { opacity: 0.04, x: 30 }
+                      : { opacity: 0.58, x: 10 }
                 }
-                transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
+                transition={{
+                  duration: reduceMotion ? 0.2 : 0.92,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
                 style={{
                   left: `${narrativeLeftPosition}px`,
-                  top: leftHeadingTopPx !== null ? `${leftHeadingTopPx}px` : undefined,
+                  top: narrativeTopPositionPx !== null ? `${narrativeTopPositionPx}px` : undefined,
                 }}
                 className={clsx(
                   'absolute text-left text-[#fffef8]',
                   compact ? 'top-[18%] w-[min(50ch,90vw)]' : 'top-[22%] w-[min(34ch,44vw)]',
-                  locationNarrativeVisible ? 'pointer-events-auto' : 'pointer-events-none'
+                  'pointer-events-auto'
                 )}
               >
                 <span
@@ -646,48 +657,74 @@ export function IndiaJourneyLayout({ journey }: IndiaJourneyLayoutProps) {
         </div>
 
         <div className="relative flex flex-1 items-center">
-          {isLocationStoryOpen && !isDesktopViewport ? (
-            <div className="h-full w-full px-2 pb-3 pt-2">
-              {renderLocationStoryExperience(true)}
-            </div>
-          ) : (
-            <div className="w-full overflow-visible pb-5 pt-4" ref={mobileEmblaRef}>
-              <div className="embla__container -mx-2 flex touch-pan-x items-end">
-                {cards.map((card, index) => (
-                  <div key={`${card.id}-mobile`} className="embla__slide flex flex-[0_0_78%] px-2">
-                    <article
-                      className={clsx(
-                        'group relative aspect-[3/4] w-full overflow-hidden bg-black/20 transition-opacity duration-300',
-                        mobileSelectedIndex !== index ? 'opacity-55' : 'opacity-100'
-                      )}
+          <AnimatePresence mode="wait" initial={false}>
+            {isLocationStoryOpen && !isDesktopViewport ? (
+              <motion.div
+                key="mobile-discover-story"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{
+                  duration: reduceMotion ? 0.18 : DISCOVER_FADE_DURATION,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+                className="h-full w-full px-2 pb-3 pt-2"
+              >
+                {renderLocationStoryExperience(true)}
+              </motion.div>
+            ) : (
+              <motion.div
+                key="mobile-discover-cards"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{
+                  duration: reduceMotion ? 0.18 : DISCOVER_FADE_DURATION,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+                className="w-full overflow-visible pb-5 pt-4"
+                ref={mobileEmblaRef}
+              >
+                <div className="embla__container -mx-2 flex touch-pan-x items-end">
+                  {cards.map((card, index) => (
+                    <div
+                      key={`${card.id}-mobile`}
+                      className="embla__slide flex flex-[0_0_78%] px-2"
                     >
-                      <Image
-                        src={card.image}
-                        alt={card.title}
-                        fill
-                        className="object-cover"
-                        sizes="78vw"
-                        priority={index === 0 && activeSection === 'locations'}
-                      />
-                      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.05)_18%,rgba(0,0,0,0.5)_100%)]" />
-                      <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between gap-2">
-                        <button
-                          type="button"
-                          onClick={() => handleLocationDiscover(index)}
-                          className="bg-black/20 px-4 py-1.5 font-display text-[8px] uppercase tracking-[0.28em] text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
-                        >
-                          Discover
-                        </button>
-                        <span className="truncate font-display text-[9px] uppercase tracking-[0.22em] text-white/85">
-                          {card.title}
-                        </span>
-                      </div>
-                    </article>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+                      <article
+                        className={clsx(
+                          'group relative aspect-[3/4] w-full overflow-hidden bg-black/20 transition-opacity duration-300',
+                          mobileSelectedIndex !== index ? 'opacity-55' : 'opacity-100'
+                        )}
+                      >
+                        <Image
+                          src={card.image}
+                          alt={card.title}
+                          fill
+                          className="object-cover"
+                          sizes="78vw"
+                          priority={index === 0 && activeSection === 'locations'}
+                        />
+                        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.05)_18%,rgba(0,0,0,0.5)_100%)]" />
+                        <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between gap-2">
+                          <button
+                            type="button"
+                            onClick={() => handleLocationDiscover(index)}
+                            className="bg-black/20 px-4 py-1.5 font-display text-[8px] uppercase tracking-[0.28em] text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+                          >
+                            Discover
+                          </button>
+                          <span className="truncate font-display text-[9px] uppercase tracking-[0.22em] text-white/85">
+                            {card.title}
+                          </span>
+                        </div>
+                      </article>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         {!isLocationStoryOpen && (
@@ -793,66 +830,90 @@ export function IndiaJourneyLayout({ journey }: IndiaJourneyLayoutProps) {
 
         <section className="flex min-w-0 items-center py-8 pl-1 pr-3 sm:py-10 sm:pl-4 sm:pr-7 lg:py-12 lg:pl-6 lg:pr-12">
           <div className="mx-auto flex h-full w-full max-w-[1300px] items-center">
-            {isLocationStoryOpen && isDesktopViewport ? (
-              <div className="w-full">{renderLocationStoryExperience(false)}</div>
-            ) : (
-              <div className="w-full">
-                <div
-                  className="overflow-x-auto overflow-y-hidden [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-                  onWheel={(event) => {
-                    if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
-                    event.currentTarget.scrollLeft += event.deltaY;
+            <AnimatePresence mode="wait" initial={false}>
+              {isLocationStoryOpen && isDesktopViewport ? (
+                <motion.div
+                  key="desktop-discover-story"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{
+                    duration: reduceMotion ? 0.2 : DISCOVER_FADE_DURATION,
+                    ease: [0.22, 1, 0.36, 1],
                   }}
+                  className="w-full"
+                >
+                  {renderLocationStoryExperience(false)}
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="desktop-discover-cards"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{
+                    duration: reduceMotion ? 0.2 : DISCOVER_FADE_DURATION,
+                    ease: [0.22, 1, 0.36, 1],
+                  }}
+                  className="w-full"
                 >
                   <div
-                    className="flex min-w-[980px] items-end"
-                    onMouseLeave={() => setHoveredCardIndex(null)}
+                    className="overflow-x-auto overflow-y-hidden [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                    onWheel={(event) => {
+                      if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
+                      event.currentTarget.scrollLeft += event.deltaY;
+                    }}
                   >
-                    {cards.map((card, index) => (
-                      <article
-                        key={card.id}
-                        onMouseEnter={() => setHoveredCardIndex(index)}
-                        onFocusCapture={() => setHoveredCardIndex(index)}
-                        onBlurCapture={(event) => {
-                          if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
-                            setHoveredCardIndex(null);
-                          }
-                        }}
-                        className={clsx(
-                          'duration-400 ease-[cubic-bezier(0.22,1,0.36,1)] group relative aspect-[3/4] shrink-0 grow-0 overflow-hidden bg-black/20 transition-opacity',
-                          hoveredCardIndex !== null && hoveredCardIndex !== index
-                            ? 'opacity-45'
-                            : 'opacity-100'
-                        )}
-                        style={{ flexBasis: '33.3333%' }}
-                      >
-                        <Image
-                          src={card.image}
-                          alt={card.title}
-                          fill
-                          className="object-cover"
-                          sizes="(min-width: 1280px) 33vw, (min-width: 768px) 34vw, 66vw"
-                          priority={index === 0 && activeSection === 'locations'}
-                        />
-                        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.03)_18%,rgba(0,0,0,0.48)_100%)]" />
-                        <div className="absolute bottom-4 left-4 right-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                          <button
-                            type="button"
-                            onClick={() => handleLocationDiscover(index)}
-                            className="bg-black/20 px-5 py-1.5 font-display text-[9px] uppercase tracking-[0.32em] text-white transition hover:bg-black/35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
-                          >
-                            Discover
-                          </button>
-                          <span className="truncate font-display text-[9px] uppercase tracking-[0.28em] text-white/85">
-                            {card.title}
-                          </span>
-                        </div>
-                      </article>
-                    ))}
+                    <div
+                      className="flex min-w-[980px] items-end"
+                      onMouseLeave={() => setHoveredCardIndex(null)}
+                    >
+                      {cards.map((card, index) => (
+                        <article
+                          key={card.id}
+                          onMouseEnter={() => setHoveredCardIndex(index)}
+                          onFocusCapture={() => setHoveredCardIndex(index)}
+                          onBlurCapture={(event) => {
+                            if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+                              setHoveredCardIndex(null);
+                            }
+                          }}
+                          className={clsx(
+                            'duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] group relative aspect-[3/4] shrink-0 grow-0 overflow-hidden bg-black/20 transition-opacity',
+                            hoveredCardIndex !== null && hoveredCardIndex !== index
+                              ? 'opacity-45'
+                              : 'opacity-100'
+                          )}
+                          style={{ flexBasis: '33.3333%' }}
+                        >
+                          <Image
+                            src={card.image}
+                            alt={card.title}
+                            fill
+                            className="object-cover"
+                            sizes="(min-width: 1280px) 33vw, (min-width: 768px) 34vw, 66vw"
+                            priority={index === 0 && activeSection === 'locations'}
+                          />
+                          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.03)_18%,rgba(0,0,0,0.48)_100%)]" />
+                          <div className="absolute bottom-4 left-4 right-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                            <button
+                              type="button"
+                              onClick={() => handleLocationDiscover(index)}
+                              className="bg-black/20 px-5 py-1.5 font-display text-[9px] uppercase tracking-[0.32em] text-white transition hover:bg-black/35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+                            >
+                              Discover
+                            </button>
+                            <span className="truncate font-display text-[9px] uppercase tracking-[0.28em] text-white/85">
+                              {card.title}
+                            </span>
+                          </div>
+                        </article>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              </div>
-            )}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </section>
       </div>
