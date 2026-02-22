@@ -443,6 +443,7 @@ export function JourneyShowcaseGallery() {
         currentJourney={currentJourney}
         prefersReducedMotion={prefersReducedMotion}
         direction={backgroundDirection}
+        season={season}
       />
       <CornerFogGlows prefersReducedMotion={prefersReducedMotion} />
 
@@ -812,15 +813,73 @@ type BackgroundImageProps = {
   currentJourney: Journey | null;
   prefersReducedMotion: boolean;
   direction: 1 | -1;
+  season: SeasonFilterValue;
 };
 
 function BackgroundImage({
   currentJourney,
   prefersReducedMotion,
   direction,
+  season,
 }: BackgroundImageProps) {
+  const seasonOverlayClass = clsx(
+    'absolute inset-[-18%] blur-[64px]',
+    season === 'summer' &&
+      'bg-[radial-gradient(60%_48%_at_18%_18%,rgba(255,193,96,0.34),rgba(255,193,96,0)_70%),radial-gradient(56%_46%_at_82%_84%,rgba(255,155,62,0.28),rgba(255,155,62,0)_72%)]',
+    season === 'winter' &&
+      'bg-[radial-gradient(60%_48%_at_18%_18%,rgba(152,198,255,0.3),rgba(152,198,255,0)_70%),radial-gradient(56%_46%_at_82%_84%,rgba(198,229,255,0.24),rgba(198,229,255,0)_72%)]',
+    season === 'all' &&
+      'bg-[radial-gradient(58%_46%_at_18%_20%,rgba(255,213,139,0.24),rgba(255,213,139,0)_70%),radial-gradient(56%_44%_at_82%_84%,rgba(255,232,186,0.2),rgba(255,232,186,0)_72%)]'
+  );
+
+  const seasonVeilClass = clsx(
+    'absolute inset-[-10%] blur-[54px]',
+    season === 'summer' &&
+      'bg-[radial-gradient(50%_36%_at_50%_50%,rgba(255,207,128,0.2),rgba(255,207,128,0)_78%)]',
+    season === 'winter' &&
+      'bg-[radial-gradient(50%_36%_at_50%_50%,rgba(191,220,255,0.18),rgba(191,220,255,0)_78%)]',
+    season === 'all' &&
+      'bg-[radial-gradient(50%_36%_at_50%_50%,rgba(255,226,165,0.16),rgba(255,226,165,0)_78%)]'
+  );
+
   return (
     <div className="pointer-events-none absolute inset-0" aria-hidden>
+      {!prefersReducedMotion ? (
+        <AnimatePresence initial={false} mode="wait">
+          <motion.div
+            key={`season-breath-${season}`}
+            className={seasonOverlayClass}
+            initial={{ opacity: 0 }}
+            animate={{
+              opacity: [0.22, 0.44, 0.28, 0.4, 0.22],
+              scale: [0.98, 1.05, 1, 1.04, 0.98],
+            }}
+            exit={{ opacity: 0 }}
+            transition={{
+              opacity: { duration: 0.7, ease: [0.22, 1, 0.36, 1] },
+              scale: { duration: 13.5, repeat: Infinity, ease: 'easeInOut' },
+            }}
+            style={{ willChange: 'transform, opacity' }}
+          />
+        </AnimatePresence>
+      ) : (
+        <div className={seasonOverlayClass} style={{ opacity: 0.32 }} />
+      )}
+
+      {!prefersReducedMotion ? (
+        <motion.div
+          className={seasonVeilClass}
+          animate={{
+            opacity: [0.16, 0.3, 0.2, 0.28, 0.16],
+            scale: [0.96, 1.04, 0.99, 1.02, 0.96],
+          }}
+          transition={{ duration: 10.8, repeat: Infinity, ease: 'easeInOut' }}
+          style={{ willChange: 'transform, opacity' }}
+        />
+      ) : (
+        <div className={seasonVeilClass} style={{ opacity: 0.2 }} />
+      )}
+
       <AnimatePresence initial={false}>
         {currentJourney ? (
           <motion.div
@@ -829,10 +888,10 @@ function BackgroundImage({
               prefersReducedMotion
                 ? { opacity: 0 }
                 : {
-                    opacity: 0.25,
-                    scale: 1.045,
-                    x: direction > 0 ? 44 : -44,
-                    filter: 'blur(2px)',
+                    opacity: 0.12,
+                    scale: 1.1,
+                    x: direction > 0 ? 92 : -92,
+                    filter: 'blur(7px)',
                   }
             }
             animate={{ opacity: 1, scale: 1, x: 0, filter: 'blur(0px)' }}
@@ -840,14 +899,14 @@ function BackgroundImage({
               prefersReducedMotion
                 ? { opacity: 0 }
                 : {
-                    opacity: 0.22,
-                    scale: 1.02,
-                    x: direction > 0 ? -34 : 34,
-                    filter: 'blur(2px)',
+                    opacity: 0.08,
+                    scale: 1.05,
+                    x: direction > 0 ? -70 : 70,
+                    filter: 'blur(5px)',
                   }
             }
             transition={{
-              duration: prefersReducedMotion ? 0.2 : 0.9,
+              duration: prefersReducedMotion ? 0.2 : 1.1,
               ease: [0.22, 1, 0.36, 1],
             }}
             className="absolute inset-0"
@@ -865,38 +924,82 @@ function BackgroundImage({
       </AnimatePresence>
 
       {!prefersReducedMotion ? (
+        <AnimatePresence initial={false} mode="wait">
+          {currentJourney ? (
+            <motion.div
+              key={`${currentJourney.id}-focus-halo`}
+              className="absolute inset-0 overflow-hidden"
+              initial={{ opacity: 0, x: direction > 0 ? 34 : -34, scale: 0.92 }}
+              animate={{ opacity: 1, x: 0, scale: 1 }}
+              exit={{ opacity: 0, x: direction > 0 ? -26 : 26, scale: 0.94 }}
+              transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <motion.div
+                className="absolute left-1/2 top-[46%] h-[86vw] w-[62vw] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(255,228,171,0.34)_0%,rgba(255,228,171,0.16)_32%,rgba(255,228,171,0)_74%)] blur-[62px] md:left-[41%] md:h-[58vw] md:w-[42vw]"
+                animate={{
+                  opacity: [0.38, 0.76, 0.5, 0.68, 0.38],
+                  scale: [0.95, 1.08, 0.98, 1.05, 0.95],
+                }}
+                transition={{ duration: 6.8, repeat: Infinity, ease: 'easeInOut' }}
+                style={{ willChange: 'transform, opacity' }}
+              />
+              <motion.div
+                className="absolute left-1/2 top-[46%] h-[54vw] w-[40vw] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(255,245,214,0.2)_0%,rgba(255,245,214,0.08)_34%,rgba(255,245,214,0)_76%)] blur-[52px] md:left-[41%] md:h-[36vw] md:w-[26vw]"
+                animate={{
+                  opacity: [0.24, 0.52, 0.3, 0.44, 0.24],
+                  scale: [0.94, 1.12, 0.98, 1.08, 0.94],
+                }}
+                transition={{ duration: 5.7, repeat: Infinity, ease: 'easeInOut' }}
+                style={{ willChange: 'transform, opacity' }}
+              />
+            </motion.div>
+          ) : null}
+        </AnimatePresence>
+      ) : null}
+
+      {!prefersReducedMotion ? (
         <AnimatePresence initial={false}>
           {currentJourney ? (
             <motion.div
               key={`${currentJourney.id}-directional-pan-morph`}
               className="absolute inset-0 overflow-hidden"
-              initial={{ opacity: 0 }}
+              initial={{ opacity: 0.1 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.35 }}
+              transition={{ duration: 0.48 }}
             >
               <motion.div
-                className="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,220,158,0.16)_0%,rgba(255,220,158,0)_30%,rgba(255,220,158,0)_70%,rgba(255,220,158,0.16)_100%)]"
-                initial={{ x: direction > 0 ? '10%' : '-10%', opacity: 0.3 }}
-                animate={{ x: '0%', opacity: [0.3, 0.2, 0.1] }}
+                className="absolute inset-[-8%] bg-[linear-gradient(90deg,rgba(255,222,165,0)_0%,rgba(255,222,165,0.45)_36%,rgba(255,222,165,0.18)_50%,rgba(255,222,165,0.45)_64%,rgba(255,222,165,0)_100%)] blur-[6px]"
+                initial={{ x: direction > 0 ? '22%' : '-22%', opacity: 0 }}
+                animate={{
+                  x: direction > 0 ? ['22%', '-20%'] : ['-22%', '20%'],
+                  opacity: [0, 0.72, 0.24, 0],
+                }}
                 transition={{
-                  duration: 0.95,
+                  duration: 1.12,
                   ease: [0.16, 1, 0.3, 1],
-                  times: [0, 0.5, 1],
+                  times: [0, 0.32, 0.7, 1],
                 }}
                 style={{ willChange: 'transform, opacity' }}
               />
               <motion.div
-                className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.08)_0%,rgba(255,255,255,0)_45%,rgba(0,0,0,0.12)_100%)]"
-                initial={{ x: direction > 0 ? '-6%' : '6%', opacity: 0.24, filter: 'blur(2px)' }}
-                animate={{ x: '0%', opacity: [0.24, 0.16, 0.08], filter: 'blur(0px)' }}
+                className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.16)_0%,rgba(255,255,255,0)_38%,rgba(0,0,0,0.2)_100%)]"
+                initial={{ x: direction > 0 ? '-10%' : '10%', opacity: 0.4, filter: 'blur(4px)' }}
+                animate={{ x: '0%', opacity: [0.4, 0.22, 0.1], filter: 'blur(0px)' }}
                 transition={{
-                  duration: 1.05,
-                  delay: 0.02,
+                  duration: 1.18,
+                  delay: 0.03,
                   ease: [0.16, 1, 0.3, 1],
                   times: [0, 0.52, 1],
                 }}
                 style={{ willChange: 'transform, opacity' }}
+              />
+              <motion.div
+                className="absolute inset-0 bg-black"
+                initial={{ opacity: 0.28 }}
+                animate={{ opacity: [0.28, 0.08, 0] }}
+                transition={{ duration: 0.82, ease: [0.22, 1, 0.36, 1] }}
+                style={{ willChange: 'opacity' }}
               />
             </motion.div>
           ) : null}
