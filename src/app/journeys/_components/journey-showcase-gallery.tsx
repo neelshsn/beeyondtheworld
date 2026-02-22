@@ -217,6 +217,8 @@ export function JourneyShowcaseGallery() {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [canScrollPrev, setCanScrollPrev] = useState(false);
   const [canScrollNext, setCanScrollNext] = useState(false);
+  const [backgroundDirection, setBackgroundDirection] = useState<1 | -1>(1);
+  const previousSelectedIndexRef = useRef(0);
 
   const safeLength = filteredJourneys.length;
   const displayIndex = safeLength ? Math.min(selectedIndex, safeLength - 1) : 0;
@@ -228,7 +230,13 @@ export function JourneyShowcaseGallery() {
     }
 
     const onSelect = () => {
-      setSelectedIndex(emblaApi.selectedScrollSnap());
+      const nextIndex = emblaApi.selectedScrollSnap();
+      const previousIndex = previousSelectedIndexRef.current;
+      if (nextIndex !== previousIndex) {
+        setBackgroundDirection(nextIndex > previousIndex ? 1 : -1);
+      }
+      previousSelectedIndexRef.current = nextIndex;
+      setSelectedIndex(nextIndex);
       setCanScrollPrev(emblaApi.canScrollPrev());
       setCanScrollNext(emblaApi.canScrollNext());
     };
@@ -264,7 +272,9 @@ export function JourneyShowcaseGallery() {
     });
 
     emblaApi.scrollTo(0, true);
+    previousSelectedIndexRef.current = 0;
     setSelectedIndex(0);
+    setBackgroundDirection(1);
   }, [emblaApi, filteredJourneys.length, filteredIdsSignature]);
 
   useEffect(() => {
@@ -419,6 +429,7 @@ export function JourneyShowcaseGallery() {
       <BackgroundImage
         currentJourney={currentJourney}
         prefersReducedMotion={prefersReducedMotion}
+        direction={backgroundDirection}
       />
       <CornerFogGlows prefersReducedMotion={prefersReducedMotion} />
 
@@ -600,7 +611,7 @@ function JourneyHeadline({
         >
           <h2
             className={clsx(
-              'font-title uppercase tracking-[0em] text-white [text-shadow:0_24px_52px_rgba(0,0,0,0.35)]',
+              'font-title uppercase tracking-normal text-white [text-shadow:0_24px_52px_rgba(0,0,0,0.35)]',
               compact
                 ? 'text-[clamp(2.15rem,12vw,4.4rem)] leading-[0.82]'
                 : 'text-[clamp(3.4rem,11vw,10.2rem)] leading-[0.8]'
@@ -610,7 +621,7 @@ function JourneyHeadline({
           </h2>
           <p
             className={clsx(
-              'mt-1 uppercase tracking-[0.38em] text-white [text-shadow:0_0_18px_rgba(255,255,255,0.48)]',
+              'mt-0 uppercase tracking-[0.38em] text-white [text-shadow:0_0_18px_rgba(255,255,255,0.48)]',
               compact ? 'text-[0.56rem]' : 'text-[0.68rem] sm:text-[0.78rem]'
             )}
           >
@@ -787,19 +798,45 @@ function JourneyCard({
 type BackgroundImageProps = {
   currentJourney: Journey | null;
   prefersReducedMotion: boolean;
+  direction: 1 | -1;
 };
 
-function BackgroundImage({ currentJourney, prefersReducedMotion }: BackgroundImageProps) {
+function BackgroundImage({
+  currentJourney,
+  prefersReducedMotion,
+  direction,
+}: BackgroundImageProps) {
   return (
     <div className="pointer-events-none absolute inset-0" aria-hidden>
-      <AnimatePresence mode="wait">
+      <AnimatePresence initial={false}>
         {currentJourney ? (
           <motion.div
             key={currentJourney.id}
-            initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0.5 }}
-            animate={{ opacity: 1 }}
-            exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0.5 }}
-            transition={{ duration: prefersReducedMotion ? 0.2 : 0.45, ease: [0.22, 1, 0.36, 1] }}
+            initial={
+              prefersReducedMotion
+                ? { opacity: 0 }
+                : {
+                    opacity: 0.25,
+                    scale: 1.045,
+                    x: direction > 0 ? 44 : -44,
+                    filter: 'blur(2px)',
+                  }
+            }
+            animate={{ opacity: 1, scale: 1, x: 0, filter: 'blur(0px)' }}
+            exit={
+              prefersReducedMotion
+                ? { opacity: 0 }
+                : {
+                    opacity: 0.22,
+                    scale: 1.02,
+                    x: direction > 0 ? -34 : 34,
+                    filter: 'blur(2px)',
+                  }
+            }
+            transition={{
+              duration: prefersReducedMotion ? 0.2 : 0.9,
+              ease: [0.22, 1, 0.36, 1],
+            }}
             className="absolute inset-0"
           >
             <Image
@@ -813,6 +850,45 @@ function BackgroundImage({ currentJourney, prefersReducedMotion }: BackgroundIma
           </motion.div>
         ) : null}
       </AnimatePresence>
+
+      {!prefersReducedMotion ? (
+        <AnimatePresence initial={false}>
+          {currentJourney ? (
+            <motion.div
+              key={`${currentJourney.id}-directional-pan-morph`}
+              className="absolute inset-0 overflow-hidden"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.35 }}
+            >
+              <motion.div
+                className="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,220,158,0.16)_0%,rgba(255,220,158,0)_30%,rgba(255,220,158,0)_70%,rgba(255,220,158,0.16)_100%)]"
+                initial={{ x: direction > 0 ? '10%' : '-10%', opacity: 0.3 }}
+                animate={{ x: '0%', opacity: [0.3, 0.2, 0.1] }}
+                transition={{
+                  duration: 0.95,
+                  ease: [0.16, 1, 0.3, 1],
+                  times: [0, 0.5, 1],
+                }}
+                style={{ willChange: 'transform, opacity' }}
+              />
+              <motion.div
+                className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.08)_0%,rgba(255,255,255,0)_45%,rgba(0,0,0,0.12)_100%)]"
+                initial={{ x: direction > 0 ? '-6%' : '6%', opacity: 0.24, filter: 'blur(2px)' }}
+                animate={{ x: '0%', opacity: [0.24, 0.16, 0.08], filter: 'blur(0px)' }}
+                transition={{
+                  duration: 1.05,
+                  delay: 0.02,
+                  ease: [0.16, 1, 0.3, 1],
+                  times: [0, 0.52, 1],
+                }}
+                style={{ willChange: 'transform, opacity' }}
+              />
+            </motion.div>
+          ) : null}
+        </AnimatePresence>
+      ) : null}
     </div>
   );
 }
