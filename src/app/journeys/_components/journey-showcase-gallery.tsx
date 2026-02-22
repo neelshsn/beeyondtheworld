@@ -163,18 +163,31 @@ export function JourneyShowcaseGallery() {
   );
   const [seasonDirection, setSeasonDirection] = useState(1);
   const [isMobileViewport, setIsMobileViewport] = useState(false);
+  const [useLiteEffects, setUseLiteEffects] = useState(false);
 
   useEffect(() => {
     if (typeof window === 'undefined') {
       return;
     }
 
-    const mediaQuery = window.matchMedia('(max-width: 767px)');
-    const onChange = () => setIsMobileViewport(mediaQuery.matches);
+    const mobileQuery = window.matchMedia('(max-width: 767px)');
+    const liteQuery = window.matchMedia('(max-width: 1200px)');
+    const nav = window.navigator as Navigator & { deviceMemory?: number };
+    const lowCpu = typeof nav.hardwareConcurrency === 'number' && nav.hardwareConcurrency <= 4;
+    const lowMemory = typeof nav.deviceMemory === 'number' && nav.deviceMemory <= 4;
+
+    const onChange = () => {
+      setIsMobileViewport(mobileQuery.matches);
+      setUseLiteEffects(liteQuery.matches || lowCpu || lowMemory);
+    };
 
     onChange();
-    mediaQuery.addEventListener('change', onChange);
-    return () => mediaQuery.removeEventListener('change', onChange);
+    mobileQuery.addEventListener('change', onChange);
+    liteQuery.addEventListener('change', onChange);
+    return () => {
+      mobileQuery.removeEventListener('change', onChange);
+      liteQuery.removeEventListener('change', onChange);
+    };
   }, []);
 
   useEffect(() => {
@@ -444,8 +457,9 @@ export function JourneyShowcaseGallery() {
         prefersReducedMotion={prefersReducedMotion}
         direction={backgroundDirection}
         season={season}
+        useLiteEffects={useLiteEffects}
       />
-      <CornerFogGlows prefersReducedMotion={prefersReducedMotion} />
+      <CornerFogGlows prefersReducedMotion={prefersReducedMotion} useLiteEffects={useLiteEffects} />
 
       <div className="relative z-20 flex min-h-[100svh] flex-col">
         <div className="pointer-events-none absolute left-4 top-5 z-30 sm:left-6 sm:top-7 lg:left-10 lg:top-8">
@@ -488,6 +502,7 @@ export function JourneyShowcaseGallery() {
                         onAction={() => handleCardAction(journey, index)}
                         prefersReducedMotion={prefersReducedMotion}
                         isMobileViewport={isMobileViewport}
+                        useLiteEffects={useLiteEffects}
                       />
                     </motion.div>
                   ))}
@@ -743,6 +758,7 @@ type JourneyCardProps = {
   isActive: boolean;
   prefersReducedMotion: boolean;
   isMobileViewport: boolean;
+  useLiteEffects: boolean;
   onAction: () => void;
 };
 
@@ -751,12 +767,13 @@ function JourneyCard({
   isActive,
   prefersReducedMotion,
   isMobileViewport,
+  useLiteEffects,
   onAction,
 }: JourneyCardProps) {
-  const activeScaleX = isMobileViewport ? 1.02 : 1.08;
-  const inactiveScaleX = isMobileViewport ? 0.98 : 0.94;
-  const activeScaleY = isMobileViewport ? 1.08 : 1.22;
-  const inactiveScaleY = isMobileViewport ? 0.98 : 0.94;
+  const activeScaleX = isMobileViewport ? 1.01 : useLiteEffects ? 1.04 : 1.08;
+  const inactiveScaleX = isMobileViewport ? 0.99 : useLiteEffects ? 0.96 : 0.94;
+  const activeScaleY = isMobileViewport ? 1.04 : useLiteEffects ? 1.12 : 1.22;
+  const inactiveScaleY = isMobileViewport ? 0.99 : useLiteEffects ? 0.96 : 0.94;
 
   return (
     <motion.button
@@ -778,7 +795,7 @@ function JourneyCard({
             }
       }
       whileHover={
-        prefersReducedMotion
+        prefersReducedMotion || useLiteEffects
           ? undefined
           : {
               scaleX: isActive ? activeScaleX + 0.02 : inactiveScaleX + 0.02,
@@ -786,11 +803,22 @@ function JourneyCard({
               y: -6,
             }
       }
-      transition={prefersReducedMotion ? undefined : { duration: 0.62, ease: [0.22, 1, 0.36, 1] }}
+      transition={
+        prefersReducedMotion
+          ? undefined
+          : { duration: useLiteEffects ? 0.42 : 0.62, ease: [0.22, 1, 0.36, 1] }
+      }
       aria-label={`Journey: ${journey.title}, ${journey.date}`}
       style={{ transformOrigin: 'center center' }}
     >
-      <div className="relative aspect-[3/4] w-full overflow-hidden bg-black/30 shadow-[0_30px_75px_-24px_rgba(0,0,0,0.78)]">
+      <div
+        className={clsx(
+          'relative aspect-[3/4] w-full overflow-hidden bg-black/30',
+          useLiteEffects
+            ? 'shadow-[0_18px_42px_-24px_rgba(0,0,0,0.72)]'
+            : 'shadow-[0_30px_75px_-24px_rgba(0,0,0,0.78)]'
+        )}
+      >
         <Image
           src={journey.image}
           alt={journey.title}
@@ -814,6 +842,7 @@ type BackgroundImageProps = {
   prefersReducedMotion: boolean;
   direction: 1 | -1;
   season: SeasonFilterValue;
+  useLiteEffects: boolean;
 };
 
 function BackgroundImage({
@@ -821,6 +850,7 @@ function BackgroundImage({
   prefersReducedMotion,
   direction,
   season,
+  useLiteEffects,
 }: BackgroundImageProps) {
   const seasonOverlayClass = clsx(
     'absolute inset-[-18%] blur-[64px]',
@@ -850,14 +880,24 @@ function BackgroundImage({
             key={`season-breath-${season}`}
             className={seasonOverlayClass}
             initial={{ opacity: 0 }}
-            animate={{
-              opacity: [0.22, 0.44, 0.28, 0.4, 0.22],
-              scale: [0.98, 1.05, 1, 1.04, 0.98],
-            }}
+            animate={
+              useLiteEffects
+                ? { opacity: [0.2, 0.34, 0.24, 0.3, 0.2] }
+                : {
+                    opacity: [0.22, 0.44, 0.28, 0.4, 0.22],
+                    scale: [0.98, 1.05, 1, 1.04, 0.98],
+                  }
+            }
             exit={{ opacity: 0 }}
             transition={{
-              opacity: { duration: 0.7, ease: [0.22, 1, 0.36, 1] },
-              scale: { duration: 13.5, repeat: Infinity, ease: 'easeInOut' },
+              opacity: {
+                duration: useLiteEffects ? 0.45 : 0.7,
+                ease: [0.22, 1, 0.36, 1],
+                repeat: useLiteEffects ? Infinity : undefined,
+              },
+              scale: useLiteEffects
+                ? undefined
+                : { duration: 13.5, repeat: Infinity, ease: 'easeInOut' },
             }}
             style={{ willChange: 'transform, opacity' }}
           />
@@ -869,11 +909,19 @@ function BackgroundImage({
       {!prefersReducedMotion ? (
         <motion.div
           className={seasonVeilClass}
-          animate={{
-            opacity: [0.16, 0.3, 0.2, 0.28, 0.16],
-            scale: [0.96, 1.04, 0.99, 1.02, 0.96],
+          animate={
+            useLiteEffects
+              ? { opacity: [0.14, 0.24, 0.18, 0.22, 0.14] }
+              : {
+                  opacity: [0.16, 0.3, 0.2, 0.28, 0.16],
+                  scale: [0.96, 1.04, 0.99, 1.02, 0.96],
+                }
+          }
+          transition={{
+            duration: useLiteEffects ? 8.2 : 10.8,
+            repeat: Infinity,
+            ease: 'easeInOut',
           }}
-          transition={{ duration: 10.8, repeat: Infinity, ease: 'easeInOut' }}
           style={{ willChange: 'transform, opacity' }}
         />
       ) : (
@@ -888,25 +936,23 @@ function BackgroundImage({
               prefersReducedMotion
                 ? { opacity: 0 }
                 : {
-                    opacity: 0.12,
-                    scale: 1.1,
-                    x: direction > 0 ? 92 : -92,
-                    filter: 'blur(7px)',
+                    opacity: 0.16,
+                    scale: useLiteEffects ? 1.04 : 1.1,
+                    x: direction > 0 ? (useLiteEffects ? 48 : 92) : useLiteEffects ? -48 : -92,
                   }
             }
-            animate={{ opacity: 1, scale: 1, x: 0, filter: 'blur(0px)' }}
+            animate={{ opacity: 1, scale: 1, x: 0 }}
             exit={
               prefersReducedMotion
                 ? { opacity: 0 }
                 : {
-                    opacity: 0.08,
-                    scale: 1.05,
-                    x: direction > 0 ? -70 : 70,
-                    filter: 'blur(5px)',
+                    opacity: 0.1,
+                    scale: useLiteEffects ? 1.03 : 1.05,
+                    x: direction > 0 ? (useLiteEffects ? -40 : -70) : useLiteEffects ? 40 : 70,
                   }
             }
             transition={{
-              duration: prefersReducedMotion ? 0.2 : 1.1,
+              duration: prefersReducedMotion ? 0.2 : useLiteEffects ? 0.72 : 1.1,
               ease: [0.22, 1, 0.36, 1],
             }}
             className="absolute inset-0"
@@ -923,7 +969,7 @@ function BackgroundImage({
         ) : null}
       </AnimatePresence>
 
-      {!prefersReducedMotion ? (
+      {!prefersReducedMotion && !useLiteEffects ? (
         <AnimatePresence initial={false} mode="wait">
           {currentJourney ? (
             <motion.div
@@ -957,51 +1003,99 @@ function BackgroundImage({
         </AnimatePresence>
       ) : null}
 
-      {!prefersReducedMotion ? (
-        <AnimatePresence initial={false}>
+      {!prefersReducedMotion && useLiteEffects ? (
+        <AnimatePresence initial={false} mode="wait">
           {currentJourney ? (
             <motion.div
-              key={`${currentJourney.id}-directional-pan-morph`}
+              key={`${currentJourney.id}-focus-halo-lite`}
               className="absolute inset-0 overflow-hidden"
-              initial={{ opacity: 0.1 }}
+              initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.48 }}
+              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
             >
               <motion.div
-                className="absolute inset-[-8%] bg-[linear-gradient(90deg,rgba(255,222,165,0)_0%,rgba(255,222,165,0.45)_36%,rgba(255,222,165,0.18)_50%,rgba(255,222,165,0.45)_64%,rgba(255,222,165,0)_100%)] blur-[6px]"
-                initial={{ x: direction > 0 ? '22%' : '-22%', opacity: 0 }}
-                animate={{
-                  x: direction > 0 ? ['22%', '-20%'] : ['-22%', '20%'],
-                  opacity: [0, 0.72, 0.24, 0],
-                }}
-                transition={{
-                  duration: 1.12,
-                  ease: [0.16, 1, 0.3, 1],
-                  times: [0, 0.32, 0.7, 1],
-                }}
-                style={{ willChange: 'transform, opacity' }}
-              />
-              <motion.div
-                className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.16)_0%,rgba(255,255,255,0)_38%,rgba(0,0,0,0.2)_100%)]"
-                initial={{ x: direction > 0 ? '-10%' : '10%', opacity: 0.4, filter: 'blur(4px)' }}
-                animate={{ x: '0%', opacity: [0.4, 0.22, 0.1], filter: 'blur(0px)' }}
-                transition={{
-                  duration: 1.18,
-                  delay: 0.03,
-                  ease: [0.16, 1, 0.3, 1],
-                  times: [0, 0.52, 1],
-                }}
-                style={{ willChange: 'transform, opacity' }}
-              />
-              <motion.div
-                className="absolute inset-0 bg-black"
-                initial={{ opacity: 0.28 }}
-                animate={{ opacity: [0.28, 0.08, 0] }}
-                transition={{ duration: 0.82, ease: [0.22, 1, 0.36, 1] }}
+                className="absolute left-1/2 top-[46%] h-[64vw] w-[46vw] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(255,228,171,0.26)_0%,rgba(255,228,171,0.1)_32%,rgba(255,228,171,0)_74%)] blur-[48px] md:left-[41%] md:h-[44vw] md:w-[31vw]"
+                animate={{ opacity: [0.26, 0.46, 0.32, 0.42, 0.26] }}
+                transition={{ duration: 6.4, repeat: Infinity, ease: 'easeInOut' }}
                 style={{ willChange: 'opacity' }}
               />
             </motion.div>
+          ) : null}
+        </AnimatePresence>
+      ) : null}
+
+      {!prefersReducedMotion ? (
+        <AnimatePresence initial={false}>
+          {currentJourney ? (
+            useLiteEffects ? (
+              <motion.div
+                key={`${currentJourney.id}-directional-pan-morph-lite`}
+                className="absolute inset-0 overflow-hidden"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.35 }}
+              >
+                <motion.div
+                  className="absolute inset-[-6%] bg-[linear-gradient(90deg,rgba(255,222,165,0)_0%,rgba(255,222,165,0.36)_42%,rgba(255,222,165,0)_100%)]"
+                  initial={{ x: direction > 0 ? '16%' : '-16%', opacity: 0 }}
+                  animate={{
+                    x: direction > 0 ? ['16%', '-12%'] : ['-16%', '12%'],
+                    opacity: [0, 0.52, 0.14, 0],
+                  }}
+                  transition={{
+                    duration: 0.9,
+                    ease: [0.16, 1, 0.3, 1],
+                    times: [0, 0.35, 0.72, 1],
+                  }}
+                  style={{ willChange: 'transform, opacity' }}
+                />
+              </motion.div>
+            ) : (
+              <motion.div
+                key={`${currentJourney.id}-directional-pan-morph`}
+                className="absolute inset-0 overflow-hidden"
+                initial={{ opacity: 0.1 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.48 }}
+              >
+                <motion.div
+                  className="absolute inset-[-8%] bg-[linear-gradient(90deg,rgba(255,222,165,0)_0%,rgba(255,222,165,0.45)_36%,rgba(255,222,165,0.18)_50%,rgba(255,222,165,0.45)_64%,rgba(255,222,165,0)_100%)] blur-[6px]"
+                  initial={{ x: direction > 0 ? '22%' : '-22%', opacity: 0 }}
+                  animate={{
+                    x: direction > 0 ? ['22%', '-20%'] : ['-22%', '20%'],
+                    opacity: [0, 0.72, 0.24, 0],
+                  }}
+                  transition={{
+                    duration: 1.12,
+                    ease: [0.16, 1, 0.3, 1],
+                    times: [0, 0.32, 0.7, 1],
+                  }}
+                  style={{ willChange: 'transform, opacity' }}
+                />
+                <motion.div
+                  className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.16)_0%,rgba(255,255,255,0)_38%,rgba(0,0,0,0.2)_100%)]"
+                  initial={{ x: direction > 0 ? '-10%' : '10%', opacity: 0.4 }}
+                  animate={{ x: '0%', opacity: [0.4, 0.22, 0.1] }}
+                  transition={{
+                    duration: 1.18,
+                    delay: 0.03,
+                    ease: [0.16, 1, 0.3, 1],
+                    times: [0, 0.52, 1],
+                  }}
+                  style={{ willChange: 'transform, opacity' }}
+                />
+                <motion.div
+                  className="absolute inset-0 bg-black"
+                  initial={{ opacity: 0.28 }}
+                  animate={{ opacity: [0.28, 0.08, 0] }}
+                  transition={{ duration: 0.82, ease: [0.22, 1, 0.36, 1] }}
+                  style={{ willChange: 'opacity' }}
+                />
+              </motion.div>
+            )
           ) : null}
         </AnimatePresence>
       ) : null}
@@ -1009,7 +1103,165 @@ function BackgroundImage({
   );
 }
 
-function CornerFogGlows({ prefersReducedMotion }: { prefersReducedMotion: boolean }) {
+function CornerFogGlows({
+  prefersReducedMotion,
+  useLiteEffects,
+}: {
+  prefersReducedMotion: boolean;
+  useLiteEffects: boolean;
+}) {
+  const visibleDustParticles = useLiteEffects
+    ? DUST_PARTICLES.filter((_, index) => index % 4 !== 0)
+    : DUST_PARTICLES;
+
+  if (useLiteEffects) {
+    return (
+      <div className="pointer-events-none absolute inset-0 z-10 overflow-hidden" aria-hidden>
+        <motion.div
+          className="absolute inset-[-26%] bg-[radial-gradient(56%_42%_at_14%_16%,rgba(255,211,132,0.28),rgba(255,211,132,0)_64%),radial-gradient(54%_40%_at_86%_84%,rgba(246,176,74,0.24),rgba(246,176,74,0)_66%)] blur-[68px]"
+          animate={
+            prefersReducedMotion
+              ? { opacity: 0.5 }
+              : {
+                  x: [0, 18, -12, 0],
+                  y: [0, -14, 12, 0],
+                  opacity: [0.4, 0.68, 0.48, 0.4],
+                }
+          }
+          transition={
+            prefersReducedMotion
+              ? undefined
+              : { duration: 9.8, repeat: Infinity, ease: 'easeInOut' }
+          }
+          style={{ willChange: 'transform, opacity' }}
+        />
+        <motion.div
+          className="absolute inset-[-16%] bg-[radial-gradient(48%_34%_at_50%_50%,rgba(255,220,155,0.2),rgba(255,220,155,0)_78%)] blur-[52px]"
+          animate={
+            prefersReducedMotion
+              ? { opacity: 0.34 }
+              : {
+                  opacity: [0.24, 0.44, 0.28, 0.38, 0.24],
+                  scale: [0.97, 1.04, 0.99, 1.03, 0.97],
+                }
+          }
+          transition={
+            prefersReducedMotion
+              ? undefined
+              : { duration: 8.2, repeat: Infinity, ease: 'easeInOut' }
+          }
+          style={{ willChange: 'transform, opacity' }}
+        />
+        <motion.div
+          className="absolute -left-[24vw] -top-[18vh] h-[56vw] w-[56vw] rounded-full bg-[radial-gradient(circle,rgba(255,204,108,0.72)_0%,rgba(255,204,108,0.3)_32%,rgba(255,204,108,0)_74%)] blur-[62px]"
+          animate={
+            prefersReducedMotion
+              ? { opacity: 0.72 }
+              : {
+                  x: [0, 20, -12, 0],
+                  y: [0, 18, -12, 0],
+                  opacity: [0.5, 0.82, 0.6, 0.5],
+                }
+          }
+          transition={
+            prefersReducedMotion
+              ? undefined
+              : { duration: 8.8, repeat: Infinity, ease: 'easeInOut' }
+          }
+          style={{ willChange: 'transform, opacity' }}
+        />
+        <motion.div
+          className="absolute -right-[24vw] -top-[18vh] h-[56vw] w-[56vw] rounded-full bg-[radial-gradient(circle,rgba(255,232,186,0.62)_0%,rgba(255,232,186,0.26)_34%,rgba(255,232,186,0)_74%)] blur-[60px]"
+          animate={
+            prefersReducedMotion
+              ? { opacity: 0.62 }
+              : {
+                  x: [0, -20, 12, 0],
+                  y: [0, 16, -10, 0],
+                  opacity: [0.42, 0.72, 0.5, 0.42],
+                }
+          }
+          transition={
+            prefersReducedMotion
+              ? undefined
+              : { duration: 9.2, repeat: Infinity, ease: 'easeInOut' }
+          }
+          style={{ willChange: 'transform, opacity' }}
+        />
+        <motion.div
+          className="absolute -bottom-[20vh] -left-[20vw] h-[54vw] w-[54vw] rounded-full bg-[radial-gradient(circle,rgba(255,191,84,0.62)_0%,rgba(255,191,84,0.26)_32%,rgba(255,191,84,0)_74%)] blur-[62px]"
+          animate={
+            prefersReducedMotion
+              ? { opacity: 0.56 }
+              : {
+                  x: [0, 16, -12, 0],
+                  y: [0, -16, 12, 0],
+                  opacity: [0.38, 0.68, 0.46, 0.38],
+                }
+          }
+          transition={
+            prefersReducedMotion
+              ? undefined
+              : { duration: 8.6, repeat: Infinity, ease: 'easeInOut' }
+          }
+          style={{ willChange: 'transform, opacity' }}
+        />
+        <motion.div
+          className="absolute -bottom-[20vh] -right-[20vw] h-[56vw] w-[56vw] rounded-full bg-[radial-gradient(circle,rgba(244,177,72,0.66)_0%,rgba(244,177,72,0.28)_32%,rgba(244,177,72,0)_74%)] blur-[64px]"
+          animate={
+            prefersReducedMotion
+              ? { opacity: 0.6 }
+              : {
+                  x: [0, -18, 12, 0],
+                  y: [0, -16, 10, 0],
+                  opacity: [0.4, 0.72, 0.5, 0.4],
+                }
+          }
+          transition={
+            prefersReducedMotion
+              ? undefined
+              : { duration: 8.9, repeat: Infinity, ease: 'easeInOut' }
+          }
+          style={{ willChange: 'transform, opacity' }}
+        />
+        {visibleDustParticles.map((particle, index) => (
+          <motion.span
+            key={`dust-lite-${index}`}
+            className="absolute rounded-full bg-[#ffe5b0]"
+            style={{
+              left: particle.left,
+              top: particle.top,
+              width: `${particle.size}px`,
+              height: `${particle.size}px`,
+              boxShadow: '0 0 8px rgba(255, 219, 154, 0.56)',
+              willChange: 'transform, opacity',
+            }}
+            animate={
+              prefersReducedMotion
+                ? { opacity: 0.44 }
+                : {
+                    y: [0, -12, 3, -6, 0],
+                    x: [0, 4, -3, 2, 0],
+                    opacity: [0.14, 0.7, 0.24, 0.58, 0.14],
+                    scale: [0.84, 1.12, 0.92, 1.02, 0.84],
+                  }
+            }
+            transition={
+              prefersReducedMotion
+                ? undefined
+                : {
+                    duration: particle.duration * 0.68,
+                    delay: particle.delay,
+                    repeat: Infinity,
+                    ease: 'easeInOut',
+                  }
+            }
+          />
+        ))}
+      </div>
+    );
+  }
+
   return (
     <div className="pointer-events-none absolute inset-0 z-10 overflow-hidden" aria-hidden>
       <motion.div
@@ -1235,7 +1487,7 @@ function CornerFogGlows({ prefersReducedMotion }: { prefersReducedMotion: boolea
         }
         style={{ willChange: 'transform, opacity' }}
       />
-      {DUST_PARTICLES.map((particle, index) => (
+      {visibleDustParticles.map((particle, index) => (
         <motion.span
           key={`dust-${index}`}
           className="absolute rounded-full bg-[#ffe5b0]"
@@ -1244,24 +1496,23 @@ function CornerFogGlows({ prefersReducedMotion }: { prefersReducedMotion: boolea
             top: particle.top,
             width: `${particle.size}px`,
             height: `${particle.size}px`,
-            boxShadow: '0 0 14px rgba(255, 219, 154, 0.75)',
+            boxShadow: '0 0 10px rgba(255, 219, 154, 0.62)',
             willChange: 'transform, opacity',
           }}
           animate={
             prefersReducedMotion
               ? { opacity: 0.55 }
               : {
-                  y: [0, -20, 6, -12, 0],
-                  x: [0, 8, -5, 3, 0],
-                  opacity: [0.16, 0.92, 0.32, 0.78, 0.16],
-                  scale: [0.78, 1.24, 0.9, 1.08, 0.78],
+                  y: [0, -14, 4, -8, 0],
+                  opacity: [0.16, 0.72, 0.28, 0.6, 0.16],
+                  scale: [0.84, 1.12, 0.92, 1.02, 0.84],
                 }
           }
           transition={
             prefersReducedMotion
               ? undefined
               : {
-                  duration: particle.duration * 0.72,
+                  duration: particle.duration * 0.66,
                   delay: particle.delay,
                   repeat: Infinity,
                   ease: 'easeInOut',
