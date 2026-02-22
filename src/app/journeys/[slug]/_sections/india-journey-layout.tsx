@@ -181,10 +181,9 @@ export function IndiaJourneyLayout({ journey }: IndiaJourneyLayoutProps) {
   const [locationImageAspectRatio, setLocationImageAspectRatio] = useState(4);
   const [locationImageRightEdgePx, setLocationImageRightEdgePx] = useState<number | null>(null);
   const [locationImageFrameWidthPx, setLocationImageFrameWidthPx] = useState<number | null>(null);
-  const [leftHeadingTopPx, setLeftHeadingTopPx] = useState<number | null>(null);
+  const [locationImageTopInsetPx, setLocationImageTopInsetPx] = useState<number | null>(null);
   const locationScrollerRef = useRef<HTMLDivElement | null>(null);
   const locationImageFrameRef = useRef<HTMLDivElement | null>(null);
-  const locationLeftHeadingRef = useRef<HTMLDivElement | null>(null);
   const [mobileEmblaRef, mobileEmblaApi] = useEmblaCarousel({
     align: 'center',
     loop: false,
@@ -201,20 +200,16 @@ export function IndiaJourneyLayout({ journey }: IndiaJourneyLayoutProps) {
     () => LOCATION_STORIES.findIndex((story) => story.id === activeLocationStoryId),
     [activeLocationStoryId]
   );
-  const activeLocationStoryHeadingKey = useMemo(
-    () => activeLocationStory?.leftTitle.join('|') ?? '',
-    [activeLocationStory]
-  );
-
   const syncLocationScrollState = useCallback(() => {
     const scroller = locationScrollerRef.current;
     if (!scroller) return;
 
-    const maxScrollLeft = scroller.scrollWidth - scroller.clientWidth;
-    const progress = maxScrollLeft > 0 ? scroller.scrollLeft / maxScrollLeft : 0;
+    const maxScrollLeft = Math.max(0, scroller.scrollWidth - scroller.clientWidth);
+    const currentScrollLeft = Math.max(0, Math.min(maxScrollLeft, scroller.scrollLeft));
+    const progress = maxScrollLeft > 0 ? currentScrollLeft / maxScrollLeft : 0;
 
-    setLocationCanScrollPrev(scroller.scrollLeft > 4);
-    setLocationCanScrollNext(scroller.scrollLeft < maxScrollLeft - 4);
+    setLocationCanScrollPrev(currentScrollLeft > 1);
+    setLocationCanScrollNext(currentScrollLeft < maxScrollLeft - 1);
     setLocationNarrativeVisible(progress > 0.12);
   }, []);
 
@@ -232,16 +227,42 @@ export function IndiaJourneyLayout({ journey }: IndiaJourneyLayoutProps) {
     setActiveLocationStoryId(null);
   }, []);
 
-  const scrollLocationStory = useCallback((direction: 'prev' | 'next') => {
-    const scroller = locationScrollerRef.current;
-    if (!scroller) return;
+  const scrollLocationStory = useCallback(
+    (direction: 'prev' | 'next') => {
+      const scroller = locationScrollerRef.current;
+      if (!scroller) return;
 
-    const distance = scroller.clientWidth * 0.64;
-    scroller.scrollBy({
-      left: direction === 'next' ? distance : -distance,
-      behavior: 'smooth',
-    });
-  }, []);
+      const maxScrollLeft = Math.max(0, scroller.scrollWidth - scroller.clientWidth);
+      if (maxScrollLeft <= 0) {
+        syncLocationScrollState();
+        return;
+      }
+
+      const distance = Math.max(scroller.clientWidth * 0.64, 220);
+      const delta = direction === 'next' ? distance : -distance;
+      const startLeft = scroller.scrollLeft;
+      const nextLeft = Math.max(0, Math.min(maxScrollLeft, startLeft + delta));
+
+      scroller.scrollTo({
+        left: nextLeft,
+        behavior: 'smooth',
+      });
+
+      requestAnimationFrame(() => {
+        if (Math.abs(scroller.scrollLeft - startLeft) < 0.5) {
+          scroller.scrollLeft = nextLeft;
+        }
+        syncLocationScrollState();
+      });
+      window.setTimeout(() => {
+        if (Math.abs(scroller.scrollLeft - startLeft) < 0.5) {
+          scroller.scrollLeft = nextLeft;
+        }
+        syncLocationScrollState();
+      }, 260);
+    },
+    [syncLocationScrollState]
+  );
 
   const openNextLocationStory = useCallback(() => {
     if (!activeLocationStoryId) return;
@@ -319,12 +340,17 @@ export function IndiaJourneyLayout({ journey }: IndiaJourneyLayoutProps) {
     if (!scroller) return;
 
     const onScroll = () => syncLocationScrollState();
+    const resizeObserver = new ResizeObserver(onScroll);
+    resizeObserver.observe(scroller);
+    if (locationImageFrameRef.current) {
+      resizeObserver.observe(locationImageFrameRef.current);
+    }
     scroller.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', onScroll);
-
-    onScroll();
+    requestAnimationFrame(onScroll);
 
     return () => {
+      resizeObserver.disconnect();
       scroller.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', onScroll);
     };
@@ -341,12 +367,15 @@ export function IndiaJourneyLayout({ journey }: IndiaJourneyLayoutProps) {
       if (width <= 0 || height <= 0 || locationImageAspectRatio <= 0) {
         setLocationImageRightEdgePx(null);
         setLocationImageFrameWidthPx(null);
+        setLocationImageTopInsetPx(null);
         return;
       }
 
       const renderedImageWidth = Math.min(width, height * locationImageAspectRatio);
+      const renderedImageHeight = Math.min(height, width / locationImageAspectRatio);
       setLocationImageFrameWidthPx(width);
       setLocationImageRightEdgePx(renderedImageWidth);
+      setLocationImageTopInsetPx(Math.max(0, (height - renderedImageHeight) / 2));
     };
 
     const resizeObserver = new ResizeObserver(syncImageEdge);
@@ -355,34 +384,6 @@ export function IndiaJourneyLayout({ journey }: IndiaJourneyLayoutProps) {
 
     return () => resizeObserver.disconnect();
   }, [activeLocationStoryId, locationImageAspectRatio]);
-
-  useEffect(() => {
-    if (!activeLocationStoryId) return;
-
-    const frame = locationImageFrameRef.current;
-    const heading = locationLeftHeadingRef.current;
-    if (!frame || !heading) return;
-
-    const syncHeadingTop = () => {
-      const frameRect = frame.getBoundingClientRect();
-      const headingRect = heading.getBoundingClientRect();
-      if (frameRect.height <= 0) return;
-      setLeftHeadingTopPx(Math.max(0, headingRect.top - frameRect.top));
-    };
-
-    const resizeObserver = new ResizeObserver(syncHeadingTop);
-    resizeObserver.observe(frame);
-    resizeObserver.observe(heading);
-    window.addEventListener('resize', syncHeadingTop);
-
-    const rafId = requestAnimationFrame(syncHeadingTop);
-
-    return () => {
-      cancelAnimationFrame(rafId);
-      resizeObserver.disconnect();
-      window.removeEventListener('resize', syncHeadingTop);
-    };
-  }, [activeLocationStoryHeadingKey, activeLocationStoryId]);
 
   const isLocationStoryOpen = activeSection === 'locations' && Boolean(activeLocationStory);
   const locationImageMaskStyle = useMemo<CSSProperties>(() => {
@@ -409,7 +410,7 @@ export function IndiaJourneyLayout({ journey }: IndiaJourneyLayoutProps) {
     if (!activeLocationStory) return null;
     const narrativeWidthPx = compact ? 430 : 560;
     const narrativeGapFromImagePx = compact ? 22 : 30;
-    const narrativeTopAlignOffsetPx = compact ? -4 : -10;
+    const narrativeVisualOffsetPx = 0;
     const maxLeftWithinFramePx = Math.max(
       16,
       (locationImageFrameWidthPx ?? (compact ? 1680 : 1900)) - narrativeWidthPx - 16
@@ -419,7 +420,9 @@ export function IndiaJourneyLayout({ journey }: IndiaJourneyLayoutProps) {
       (locationImageRightEdgePx ?? (compact ? 1450 : 1300)) + narrativeGapFromImagePx
     );
     const narrativeTopPositionPx =
-      leftHeadingTopPx !== null ? Math.max(0, leftHeadingTopPx + narrativeTopAlignOffsetPx) : null;
+      locationImageTopInsetPx !== null
+        ? Math.max(0, locationImageTopInsetPx + narrativeVisualOffsetPx)
+        : null;
 
     return (
       <motion.div
@@ -449,7 +452,7 @@ export function IndiaJourneyLayout({ journey }: IndiaJourneyLayoutProps) {
             <button
               type="button"
               onClick={() => scrollLocationStory('prev')}
-              disabled={!locationCanScrollPrev}
+              aria-disabled={!locationCanScrollPrev}
               className={clsx(
                 'flex h-11 w-11 items-center justify-center transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/55',
                 locationCanScrollPrev ? 'text-white/80 hover:text-[#d9a24b]' : 'text-white/35'
@@ -461,7 +464,7 @@ export function IndiaJourneyLayout({ journey }: IndiaJourneyLayoutProps) {
             <button
               type="button"
               onClick={() => scrollLocationStory('next')}
-              disabled={!locationCanScrollNext}
+              aria-disabled={!locationCanScrollNext}
               className={clsx(
                 'flex h-11 w-11 items-center justify-center transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/55',
                 locationCanScrollNext ? 'text-white/80 hover:text-[#d9a24b]' : 'text-white/35'
@@ -508,10 +511,7 @@ export function IndiaJourneyLayout({ journey }: IndiaJourneyLayoutProps) {
                 className="object-contain object-left"
                 sizes="(min-width: 1024px) 140vw, (min-width: 768px) 190vw, 320vw"
               />
-              <div
-                ref={locationLeftHeadingRef}
-                className="absolute left-[clamp(1.4rem,3.8vw,3.8rem)] top-1/2 max-w-[20ch] -translate-y-1/2"
-              >
+              <div className="absolute left-[clamp(1.4rem,3.8vw,3.8rem)] top-1/2 max-w-[20ch] -translate-y-1/2">
                 <div className="relative">
                   <span
                     aria-hidden
@@ -546,7 +546,7 @@ export function IndiaJourneyLayout({ journey }: IndiaJourneyLayoutProps) {
                 }}
                 className={clsx(
                   'absolute text-left text-[#fffef8]',
-                  compact ? 'top-[18%] w-[min(50ch,90vw)]' : 'top-[22%] w-[min(34ch,44vw)]',
+                  compact ? 'top-0 w-[min(50ch,90vw)]' : 'top-0 w-[min(34ch,44vw)]',
                   'pointer-events-auto'
                 )}
               >
