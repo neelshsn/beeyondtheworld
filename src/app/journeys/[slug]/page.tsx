@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import type { JourneyShowcase } from '@/data/showcases';
 import { journeyShowcases } from '@/data/showcases';
 
+import { IndiaJourneyLayout } from './_sections/india-journey-layout';
 import { PhilippinesJourneyLayout } from './_sections/philippines-journey-layout';
 
 type JourneyPageProps = {
@@ -42,6 +43,10 @@ export default async function JourneyPage({ params }: JourneyPageProps) {
 
   if (slug === 'philippines') {
     return <PhilippinesJourneyLayout journey={journey} />;
+  }
+
+  if (slug === 'india-january-2026') {
+    return <IndiaJourneyLayout journey={journey} />;
   }
 
   return <DefaultJourneyLayout journey={journey} />;
