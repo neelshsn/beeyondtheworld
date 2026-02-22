@@ -386,6 +386,15 @@ export function IndiaJourneyLayout({ journey }: IndiaJourneyLayoutProps) {
   }, [activeLocationStoryId, locationImageAspectRatio]);
 
   const isLocationStoryOpen = activeSection === 'locations' && Boolean(activeLocationStory);
+  const desktopCardBaseWidthPercent = cards.length > 0 ? 100 / cards.length : 100;
+  const desktopCardHoveredWidthPercent =
+    cards.length > 1
+      ? Math.min(52, Math.max(40, desktopCardBaseWidthPercent + 10))
+      : desktopCardBaseWidthPercent;
+  const desktopCardOtherWidthPercent =
+    cards.length > 1
+      ? (100 - desktopCardHoveredWidthPercent) / (cards.length - 1)
+      : desktopCardBaseWidthPercent;
   const locationImageMaskStyle = useMemo<CSSProperties>(() => {
     if (!locationImageRightEdgePx) {
       const fallback =
@@ -879,12 +888,16 @@ export function IndiaJourneyLayout({ journey }: IndiaJourneyLayoutProps) {
                             }
                           }}
                           className={clsx(
-                            'duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] group relative aspect-[3/4] shrink-0 grow-0 overflow-hidden bg-black/20 transition-opacity',
-                            hoveredCardIndex !== null && hoveredCardIndex !== index
-                              ? 'opacity-45'
-                              : 'opacity-100'
+                            'ease-[cubic-bezier(0.22,1,0.36,1)] group relative aspect-[3/4] shrink-0 grow-0 overflow-hidden bg-black/20 transition-[flex-basis] duration-500'
                           )}
-                          style={{ flexBasis: '33.3333%' }}
+                          style={{
+                            flexBasis:
+                              hoveredCardIndex === null
+                                ? `${desktopCardBaseWidthPercent}%`
+                                : hoveredCardIndex === index
+                                  ? `${desktopCardHoveredWidthPercent}%`
+                                  : `${desktopCardOtherWidthPercent}%`,
+                          }}
                         >
                           <Image
                             src={card.image}
