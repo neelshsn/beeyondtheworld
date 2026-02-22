@@ -149,6 +149,20 @@ export function JourneyShowcaseGallery() {
     parseSeasonFilter(searchParams?.get('season') ?? null)
   );
   const [seasonDirection, setSeasonDirection] = useState(1);
+  const [isMobileViewport, setIsMobileViewport] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const mediaQuery = window.matchMedia('(max-width: 767px)');
+    const onChange = () => setIsMobileViewport(mediaQuery.matches);
+
+    onChange();
+    mediaQuery.addEventListener('change', onChange);
+    return () => mediaQuery.removeEventListener('change', onChange);
+  }, []);
 
   useEffect(() => {
     const nextSeason = parseSeasonFilter(searchParams?.get('season') ?? null);
@@ -186,12 +200,17 @@ export function JourneyShowcaseGallery() {
   );
 
   const [emblaRef, emblaApi] = useEmblaCarousel({
-    align: 'start',
+    align: 'center',
     loop: false,
     containScroll: false,
     duration: 30,
     skipSnaps: false,
     dragFree: false,
+    breakpoints: {
+      '(min-width: 768px)': {
+        align: 'start',
+      },
+    },
   });
 
   const rootRef = useRef<HTMLDivElement | null>(null);
@@ -230,13 +249,18 @@ export function JourneyShowcaseGallery() {
     }
 
     emblaApi.reInit({
-      align: 'start',
+      align: 'center',
       loop: false,
       containScroll: false,
       duration: 30,
       skipSnaps: false,
       dragFree: false,
       startIndex: 0,
+      breakpoints: {
+        '(min-width: 768px)': {
+          align: 'start',
+        },
+      },
     });
 
     emblaApi.scrollTo(0, true);
@@ -388,7 +412,7 @@ export function JourneyShowcaseGallery() {
   return (
     <section
       ref={rootRef}
-      className="relative flex min-h-screen flex-col overflow-hidden bg-black text-white"
+      className="relative flex min-h-[100svh] flex-col overflow-hidden bg-black text-white"
       tabIndex={0}
       aria-label="Journey carousel"
     >
@@ -398,7 +422,7 @@ export function JourneyShowcaseGallery() {
       />
       <CornerFogGlows prefersReducedMotion={prefersReducedMotion} />
 
-      <div className="relative z-20 flex min-h-screen flex-col">
+      <div className="relative z-20 flex min-h-[100svh] flex-col">
         <div className="pointer-events-none absolute left-4 top-5 z-30 sm:left-6 sm:top-7 lg:left-10 lg:top-8">
           <div className="pointer-events-auto">
             <SeasonElevator
@@ -410,10 +434,10 @@ export function JourneyShowcaseGallery() {
           </div>
         </div>
 
-        <div className="relative flex flex-1 -translate-y-3 items-center justify-end sm:-translate-y-4 lg:-translate-y-5">
-          <div className="w-full px-2 py-6 sm:px-6 sm:py-8 md:w-[75%] md:pr-6 lg:py-10 lg:pr-10">
+        <div className="relative flex flex-1 items-center justify-end md:-translate-y-3 lg:-translate-y-5">
+          <div className="w-full px-2 pb-2 pt-20 sm:px-6 sm:pb-4 sm:pt-24 md:w-[75%] md:pb-0 md:pr-6 md:pt-0 lg:py-10 lg:pr-10">
             {safeLength ? (
-              <div className="overflow-visible" ref={emblaRef}>
+              <div className="overflow-visible pb-8 sm:pb-10 md:pb-0" ref={emblaRef}>
                 <motion.div
                   key={filteredIdsSignature}
                   className="embla__container -mx-2 flex touch-pan-x items-center sm:-mx-3"
@@ -424,7 +448,7 @@ export function JourneyShowcaseGallery() {
                   {filteredJourneys.map((journey, index) => (
                     <motion.div
                       key={journey.id}
-                      className="embla__slide flex flex-[0_0_76%] items-center px-2 sm:flex-[0_0_48%] sm:px-3 lg:flex-[0_0_34%] xl:flex-[0_0_30%]"
+                      className="embla__slide flex flex-[0_0_74%] items-center px-2 sm:flex-[0_0_60%] sm:px-3 md:flex-[0_0_48%] lg:flex-[0_0_34%] xl:flex-[0_0_30%]"
                       initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}
                       animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
                       transition={{
@@ -438,6 +462,7 @@ export function JourneyShowcaseGallery() {
                         isActive={Boolean(currentJourney && currentJourney.id === journey.id)}
                         onAction={() => handleCardAction(journey, index)}
                         prefersReducedMotion={prefersReducedMotion}
+                        isMobileViewport={isMobileViewport}
                       />
                     </motion.div>
                   ))}
@@ -448,57 +473,32 @@ export function JourneyShowcaseGallery() {
                 No journeys for this season.
               </div>
             )}
+
+            <div className="pointer-events-none relative z-40 mt-8 flex flex-col items-center gap-3 pb-5 md:hidden">
+              <JourneyHeadline currentJourney={currentJourney} compact centered />
+              <JourneyNavigation
+                canScrollPrev={canScrollPrev}
+                canScrollNext={canScrollNext}
+                onPrev={scrollPrev}
+                onNext={scrollNext}
+                compact
+                centered
+              />
+            </div>
           </div>
         </div>
 
-        <div className="pointer-events-none absolute bottom-5 left-4 z-30 sm:bottom-7 sm:left-6 lg:bottom-10 lg:left-10">
+        <div className="pointer-events-none absolute bottom-5 left-4 z-40 hidden sm:bottom-7 sm:left-6 md:block lg:bottom-10 lg:left-10">
           <JourneyHeadline currentJourney={currentJourney} />
         </div>
 
-        <div className="pointer-events-none absolute bottom-5 right-4 z-30 sm:bottom-7 sm:right-6 lg:bottom-10 lg:right-10">
-          <div className="pointer-events-auto flex items-center gap-3 text-white sm:gap-4">
-            <button
-              type="button"
-              onClick={scrollPrev}
-              disabled={!canScrollPrev}
-              className={clsx(
-                'group flex h-7 w-7 items-center justify-center transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/45',
-                canScrollPrev
-                  ? 'text-white/45 hover:text-white/80'
-                  : 'cursor-not-allowed text-white/20'
-              )}
-              aria-label="Previous journey"
-            >
-              <ArrowLeft className="h-4 w-4 transition-transform duration-300 group-hover:-translate-x-1" />
-            </button>
-            <div className="relative flex min-w-0 items-center gap-3 overflow-hidden">
-              <Image
-                src="/assets/icones/Ico White BEE-12.svg"
-                alt=""
-                width={42}
-                height={42}
-                className="h-10 w-10 shrink-0 drop-shadow-[0_0_20px_rgba(255,255,255,0.42)] sm:h-11 sm:w-11"
-                priority
-              />
-              <span className="truncate font-display text-[1.1rem] uppercase tracking-[0.14em] text-white [text-shadow:0_0_18px_rgba(255,255,255,0.35)] sm:text-[1.55rem]">
-                Next Journey
-              </span>
-            </div>
-            <button
-              type="button"
-              onClick={scrollNext}
-              disabled={!canScrollNext}
-              className={clsx(
-                'group flex h-7 w-7 items-center justify-center transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/45',
-                canScrollNext
-                  ? 'text-white/45 hover:text-white/80'
-                  : 'cursor-not-allowed text-white/20'
-              )}
-              aria-label="Next journey"
-            >
-              <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-            </button>
-          </div>
+        <div className="pointer-events-none absolute bottom-5 right-4 z-30 hidden sm:bottom-7 sm:right-6 md:block lg:bottom-10 lg:right-10">
+          <JourneyNavigation
+            canScrollPrev={canScrollPrev}
+            canScrollNext={canScrollNext}
+            onPrev={scrollPrev}
+            onNext={scrollNext}
+          />
         </div>
       </div>
     </section>
@@ -572,9 +572,15 @@ function SeasonElevator({ value, direction, prefersReducedMotion, onCycle }: Sea
 
 type JourneyHeadlineProps = {
   currentJourney: Journey | null;
+  compact?: boolean;
+  centered?: boolean;
 };
 
-function JourneyHeadline({ currentJourney }: JourneyHeadlineProps) {
+function JourneyHeadline({
+  currentJourney,
+  compact = false,
+  centered = false,
+}: JourneyHeadlineProps) {
   const country = currentJourney ? extractCountry(currentJourney.location) : '';
 
   return (
@@ -582,16 +588,32 @@ function JourneyHeadline({ currentJourney }: JourneyHeadlineProps) {
       {currentJourney ? (
         <motion.div
           key={currentJourney.id}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -12 }}
+          initial={{ y: 10 }}
+          animate={{ y: 0 }}
+          exit={{ y: -12 }}
           transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-          className="max-w-[62vw]"
+          className={clsx(
+            'relative z-10',
+            compact ? 'max-w-[80vw]' : 'max-w-[62vw]',
+            centered && 'text-center'
+          )}
         >
-          <h2 className="font-title text-[clamp(3.4rem,11vw,10.2rem)] uppercase leading-[0.8] tracking-[0em] text-white [text-shadow:0_24px_52px_rgba(0,0,0,0.35)]">
+          <h2
+            className={clsx(
+              'font-title uppercase tracking-[0em] text-white [text-shadow:0_24px_52px_rgba(0,0,0,0.35)]',
+              compact
+                ? 'text-[clamp(2.15rem,12vw,4.4rem)] leading-[0.82]'
+                : 'text-[clamp(3.4rem,11vw,10.2rem)] leading-[0.8]'
+            )}
+          >
             {country}
           </h2>
-          <p className="mt-1 text-[0.68rem] uppercase tracking-[0.38em] text-[#f6d6a0] [text-shadow:0_0_15px_rgba(246,214,160,0.55)] sm:text-[0.78rem]">
+          <p
+            className={clsx(
+              'mt-1 uppercase tracking-[0.38em] text-white [text-shadow:0_0_18px_rgba(255,255,255,0.48)]',
+              compact ? 'text-[0.56rem]' : 'text-[0.68rem] sm:text-[0.78rem]'
+            )}
+          >
             {currentJourney.date}
           </p>
         </motion.div>
@@ -600,14 +622,117 @@ function JourneyHeadline({ currentJourney }: JourneyHeadlineProps) {
   );
 }
 
+type JourneyNavigationProps = {
+  canScrollPrev: boolean;
+  canScrollNext: boolean;
+  onPrev: () => void;
+  onNext: () => void;
+  compact?: boolean;
+  centered?: boolean;
+};
+
+function JourneyNavigation({
+  canScrollPrev,
+  canScrollNext,
+  onPrev,
+  onNext,
+  compact = false,
+  centered = false,
+}: JourneyNavigationProps) {
+  return (
+    <div
+      className={clsx(
+        'pointer-events-auto flex items-center text-white',
+        compact ? 'gap-2' : 'gap-3 sm:gap-4',
+        centered && 'justify-center'
+      )}
+    >
+      <button
+        type="button"
+        onClick={onPrev}
+        disabled={!canScrollPrev}
+        className={clsx(
+          'group flex items-center justify-center transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/45',
+          compact ? 'h-6 w-6' : 'h-7 w-7',
+          canScrollPrev ? 'text-white/45 hover:text-white/80' : 'cursor-not-allowed text-white/20'
+        )}
+        aria-label="Previous journey"
+      >
+        <ArrowLeft
+          className={clsx(
+            'transition-transform duration-300 group-hover:-translate-x-1',
+            compact ? 'h-3.5 w-3.5' : 'h-4 w-4'
+          )}
+        />
+      </button>
+      <div
+        className={clsx(
+          'relative flex min-w-0 items-center overflow-hidden',
+          compact ? 'gap-1.5' : 'gap-3'
+        )}
+      >
+        <Image
+          src="/assets/icones/Ico White BEE-12.svg"
+          alt=""
+          width={42}
+          height={42}
+          className={clsx(
+            'shrink-0 drop-shadow-[0_0_20px_rgba(255,255,255,0.42)]',
+            compact ? 'h-7 w-7' : 'h-10 w-10 sm:h-11 sm:w-11'
+          )}
+          priority
+        />
+        <span
+          className={clsx(
+            'truncate font-display uppercase tracking-[0.14em] text-white [text-shadow:0_0_18px_rgba(255,255,255,0.35)]',
+            compact ? 'text-[0.7rem]' : 'text-[1.1rem] sm:text-[1.55rem]'
+          )}
+        >
+          Next Journey
+        </span>
+      </div>
+      <button
+        type="button"
+        onClick={onNext}
+        disabled={!canScrollNext}
+        className={clsx(
+          'group flex items-center justify-center transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/45',
+          compact ? 'h-6 w-6' : 'h-7 w-7',
+          canScrollNext ? 'text-white/45 hover:text-white/80' : 'cursor-not-allowed text-white/20'
+        )}
+        aria-label="Next journey"
+      >
+        <ArrowRight
+          className={clsx(
+            'transition-transform duration-300 group-hover:translate-x-1',
+            compact ? 'h-3.5 w-3.5' : 'h-4 w-4'
+          )}
+        />
+      </button>
+    </div>
+  );
+}
+
 type JourneyCardProps = {
   journey: Journey;
   isActive: boolean;
   prefersReducedMotion: boolean;
+  isMobileViewport: boolean;
   onAction: () => void;
 };
 
-function JourneyCard({ journey, isActive, prefersReducedMotion, onAction }: JourneyCardProps) {
+function JourneyCard({
+  journey,
+  isActive,
+  prefersReducedMotion,
+  isMobileViewport,
+  onAction,
+}: JourneyCardProps) {
+  const activeScaleX = isMobileViewport ? 1.02 : 1.08;
+  const inactiveScaleX = isMobileViewport ? 0.98 : 0.94;
+  const activeScaleY = isMobileViewport ? 1.08 : 1.22;
+  const inactiveScaleY = isMobileViewport ? 0.98 : 0.94;
+
   return (
     <motion.button
       type="button"
@@ -622,21 +747,25 @@ function JourneyCard({ journey, isActive, prefersReducedMotion, onAction }: Jour
         prefersReducedMotion
           ? undefined
           : {
-              scaleX: isActive ? 1.08 : 0.94,
-              scaleY: isActive ? 1.22 : 0.94,
+              scaleX: isActive ? activeScaleX : inactiveScaleX,
+              scaleY: isActive ? activeScaleY : inactiveScaleY,
               y: 0,
             }
       }
       whileHover={
         prefersReducedMotion
           ? undefined
-          : { scaleX: isActive ? 1.1 : 0.97, scaleY: isActive ? 1.24 : 0.97, y: -6 }
+          : {
+              scaleX: isActive ? activeScaleX + 0.02 : inactiveScaleX + 0.02,
+              scaleY: isActive ? activeScaleY + 0.02 : inactiveScaleY + 0.02,
+              y: -6,
+            }
       }
       transition={prefersReducedMotion ? undefined : { duration: 0.62, ease: [0.22, 1, 0.36, 1] }}
       aria-label={`Journey: ${journey.title}, ${journey.date}`}
       style={{ transformOrigin: 'center center' }}
     >
-      <div className="relative aspect-[3/4] w-full overflow-hidden bg-black/30 shadow-[0_34px_90px_rgba(0,0,0,0.55)]">
+      <div className="relative aspect-[3/4] w-full overflow-hidden bg-black/30 shadow-[0_30px_75px_-24px_rgba(0,0,0,0.78)]">
         <Image
           src={journey.image}
           alt={journey.title}
@@ -745,7 +874,7 @@ function CornerFogGlows({ prefersReducedMotion }: { prefersReducedMotion: boolea
         style={{ willChange: 'transform, opacity' }}
       />
       <motion.div
-        className="absolute -right-[10vw] -top-[12vh] h-[36vw] w-[36vw] rounded-full bg-[radial-gradient(circle,rgba(255,236,196,0.48)_0%,rgba(255,236,196,0.22)_40%,rgba(255,236,196,0)_76%)] blur-[62px]"
+        className="absolute -right-[10vw] -top-[12vh] hidden h-[36vw] w-[36vw] rounded-full bg-[radial-gradient(circle,rgba(255,236,196,0.48)_0%,rgba(255,236,196,0.22)_40%,rgba(255,236,196,0)_76%)] blur-[62px] sm:block"
         animate={
           prefersReducedMotion
             ? { opacity: 0.68 }
@@ -763,7 +892,7 @@ function CornerFogGlows({ prefersReducedMotion }: { prefersReducedMotion: boolea
         style={{ willChange: 'transform, opacity' }}
       />
       <motion.div
-        className="absolute -left-[12vw] bottom-[8%] h-[32vw] w-[32vw] rounded-full bg-[radial-gradient(circle,rgba(255,220,155,0.42)_0%,rgba(255,220,155,0.18)_42%,rgba(255,220,155,0)_76%)] blur-[58px]"
+        className="absolute -left-[12vw] bottom-[8%] hidden h-[32vw] w-[32vw] rounded-full bg-[radial-gradient(circle,rgba(255,220,155,0.42)_0%,rgba(255,220,155,0.18)_42%,rgba(255,220,155,0)_76%)] blur-[58px] sm:block"
         animate={
           prefersReducedMotion
             ? { opacity: 0.62 }
@@ -783,7 +912,7 @@ function CornerFogGlows({ prefersReducedMotion }: { prefersReducedMotion: boolea
       {DUST_PARTICLES.map((particle, index) => (
         <motion.span
           key={`dust-${index}`}
-          className="absolute rounded-full bg-[#ffe5b0]"
+          className={clsx('absolute rounded-full bg-[#ffe5b0]', index > 7 && 'hidden sm:block')}
           style={{
             left: particle.left,
             top: particle.top,
