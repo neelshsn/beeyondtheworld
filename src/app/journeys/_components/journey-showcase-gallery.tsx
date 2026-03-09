@@ -3,6 +3,7 @@
 import clsx from 'clsx';
 import useEmblaCarousel from 'embla-carousel-react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { gsap } from 'gsap';
 import { ArrowLeft, ArrowRight, ChevronDown, ChevronUp } from 'lucide-react';
 import Image from 'next/image';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
@@ -471,7 +472,8 @@ export function JourneyShowcaseGallery() {
       aria-label="Journey carousel"
     >
       <BackgroundImage
-        currentJourney={currentJourney}
+        journeyItems={filteredJourneys}
+        activeIndex={displayIndex}
         prefersReducedMotion={prefersReducedMotion}
         direction={backgroundDirection}
         season={season}
@@ -861,7 +863,8 @@ function JourneyCard({
 }
 
 type BackgroundImageProps = {
-  currentJourney: Journey | null;
+  journeyItems: Journey[];
+  activeIndex: number;
   prefersReducedMotion: boolean;
   direction: 1 | -1;
   season: SeasonFilterValue;
@@ -869,12 +872,138 @@ type BackgroundImageProps = {
 };
 
 function BackgroundImage({
-  currentJourney,
+  journeyItems,
+  activeIndex,
   prefersReducedMotion,
   direction,
   season,
   useLiteEffects,
 }: BackgroundImageProps) {
+  const outerSlideRefs = useRef<Array<HTMLDivElement | null>>([]);
+  const innerSlideRefs = useRef<Array<HTMLDivElement | null>>([]);
+  const activeIndexRef = useRef(0);
+  const backgroundTimelineRef = useRef<gsap.core.Timeline | null>(null);
+  const journeySignature = useMemo(
+    () => journeyItems.map((journey) => journey.id).join('|'),
+    [journeyItems]
+  );
+
+  useEffect(() => {
+    return () => {
+      backgroundTimelineRef.current?.kill();
+    };
+  }, []);
+
+  useEffect(() => {
+    backgroundTimelineRef.current?.kill();
+
+    if (!journeyItems.length) {
+      activeIndexRef.current = 0;
+      return;
+    }
+
+    const clampedActiveIndex = Math.min(activeIndex, journeyItems.length - 1);
+    journeyItems.forEach((_, index) => {
+      const outerSlide = outerSlideRefs.current[index];
+      const innerSlide = innerSlideRefs.current[index];
+      if (!outerSlide || !innerSlide) {
+        return;
+      }
+
+      gsap.set(outerSlide, {
+        opacity: index === clampedActiveIndex ? 1 : 0,
+        xPercent: 0,
+        zIndex: index === clampedActiveIndex ? 3 : 1,
+      });
+      gsap.set(innerSlide, { xPercent: 0, rotation: 0, scaleX: 1 });
+    });
+
+    activeIndexRef.current = clampedActiveIndex;
+  }, [journeyItems.length, journeySignature]);
+
+  useEffect(() => {
+    if (!journeyItems.length) {
+      return;
+    }
+
+    const clampedNextIndex = Math.min(activeIndex, journeyItems.length - 1);
+    const previousIndex = activeIndexRef.current;
+
+    if (previousIndex === clampedNextIndex) {
+      return;
+    }
+
+    const currentItem = outerSlideRefs.current[previousIndex];
+    const currentInner = innerSlideRefs.current[previousIndex];
+    const upcomingItem = outerSlideRefs.current[clampedNextIndex];
+    const upcomingInner = innerSlideRefs.current[clampedNextIndex];
+
+    if (!currentItem || !currentInner || !upcomingItem || !upcomingInner) {
+      activeIndexRef.current = clampedNextIndex;
+      return;
+    }
+
+    backgroundTimelineRef.current?.kill();
+
+    if (prefersReducedMotion) {
+      gsap.set(currentItem, { opacity: 0, xPercent: 0, zIndex: 1 });
+      gsap.set(currentInner, { xPercent: 0, rotation: 0, scaleX: 1 });
+      gsap.set(upcomingItem, { opacity: 1, xPercent: 0, zIndex: 3 });
+      gsap.set(upcomingInner, { xPercent: 0, rotation: 0, scaleX: 1 });
+      activeIndexRef.current = clampedNextIndex;
+      return;
+    }
+
+    gsap.set(currentItem, { opacity: 1, zIndex: 2 });
+    gsap.set(upcomingItem, { opacity: 1, zIndex: 3 });
+
+    const timeline = gsap.timeline({
+      defaults: { duration: 1.1, ease: 'power3.inOut' },
+      onComplete: () => {
+        gsap.set(currentItem, { opacity: 0, xPercent: 0, zIndex: 1 });
+        gsap.set(currentInner, { xPercent: 0, rotation: 0, scaleX: 1 });
+        gsap.set(upcomingItem, { opacity: 1, xPercent: 0, zIndex: 3 });
+        gsap.set(upcomingInner, { xPercent: 0, rotation: 0, scaleX: 1 });
+      },
+    });
+
+    timeline
+      .to(currentItem, {
+        xPercent: -direction * 100,
+      })
+      .to(
+        currentInner,
+        {
+          xPercent: direction * 30,
+          startAt: { rotation: 0 },
+          rotation: -direction * 20,
+          scaleX: 2.8,
+        },
+        0
+      )
+      .to(
+        upcomingItem,
+        {
+          startAt: { opacity: 1, xPercent: direction * 80 },
+          xPercent: 0,
+        },
+        0
+      )
+      .to(
+        upcomingInner,
+        {
+          startAt: { xPercent: -direction * 30, scaleX: 2.8, rotation: direction * 20 },
+          xPercent: 0,
+          scaleX: 1,
+          rotation: 0,
+        },
+        0
+      );
+
+    backgroundTimelineRef.current = timeline;
+    activeIndexRef.current = clampedNextIndex;
+  }, [activeIndex, direction, journeyItems.length, journeySignature, prefersReducedMotion]);
+
   const seasonOverlayClass = clsx(
     'absolute inset-[-18%] blur-[64px]',
     season === 'summer' &&
@@ -951,177 +1080,36 @@ function BackgroundImage({
         <div className={seasonVeilClass} style={{ opacity: 0.2 }} />
       )}
 
-      <AnimatePresence initial={false}>
-        {currentJourney ? (
-          <motion.div
-            key={currentJourney.id}
-            initial={
-              prefersReducedMotion
-                ? { opacity: 0 }
-                : {
-                    opacity: 0.16,
-                    scale: useLiteEffects ? 1.04 : 1.1,
-                    x: direction > 0 ? (useLiteEffects ? 48 : 92) : useLiteEffects ? -48 : -92,
-                  }
-            }
-            animate={{ opacity: 1, scale: 1, x: 0 }}
-            exit={
-              prefersReducedMotion
-                ? { opacity: 0 }
-                : {
-                    opacity: 0.1,
-                    scale: useLiteEffects ? 1.03 : 1.05,
-                    x: direction > 0 ? (useLiteEffects ? -40 : -70) : useLiteEffects ? 40 : 70,
-                  }
-            }
-            transition={{
-              duration: prefersReducedMotion ? 0.2 : useLiteEffects ? 0.72 : 1.1,
-              ease: [0.22, 1, 0.36, 1],
+      <div className="absolute inset-0">
+        {journeyItems.map((journey, index) => (
+          <div
+            key={journey.id}
+            ref={(node) => {
+              outerSlideRefs.current[index] = node;
             }}
-            className="absolute inset-0"
+            className="absolute inset-0 overflow-hidden opacity-0"
           >
-            <Image
-              src={currentJourney.image}
-              alt=""
-              fill
-              sizes="100vw"
-              className="object-cover"
-              priority
-            />
-          </motion.div>
-        ) : null}
-      </AnimatePresence>
-
-      {!prefersReducedMotion && !useLiteEffects ? (
-        <AnimatePresence initial={false} mode="wait">
-          {currentJourney ? (
-            <motion.div
-              key={`${currentJourney.id}-focus-halo`}
-              className="absolute inset-0 overflow-hidden"
-              initial={{ opacity: 0, x: direction > 0 ? 34 : -34, scale: 0.92 }}
-              animate={{ opacity: 1, x: 0, scale: 1 }}
-              exit={{ opacity: 0, x: direction > 0 ? -26 : 26, scale: 0.94 }}
-              transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
+            <div
+              ref={(node) => {
+                innerSlideRefs.current[index] = node;
+              }}
+              className="absolute inset-[-10%]"
+              style={{ willChange: 'transform' }}
             >
-              <motion.div
-                className="absolute left-1/2 top-[46%] h-[86vw] w-[62vw] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(218,232,255,0.28)_0%,rgba(218,232,255,0.14)_32%,rgba(218,232,255,0)_74%)] blur-[62px] md:left-[41%] md:h-[58vw] md:w-[42vw]"
-                animate={{
-                  opacity: [0.38, 0.76, 0.5, 0.68, 0.38],
-                  scale: [0.95, 1.08, 0.98, 1.05, 0.95],
-                }}
-                transition={{ duration: 6.8, repeat: Infinity, ease: 'easeInOut' }}
-                style={{ willChange: 'transform, opacity' }}
+              <Image
+                src={journey.image}
+                alt=""
+                fill
+                sizes="100vw"
+                className="object-cover"
+                priority={index === activeIndex}
               />
-              <motion.div
-                className="absolute left-1/2 top-[46%] h-[54vw] w-[40vw] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(238,245,255,0.2)_0%,rgba(238,245,255,0.08)_34%,rgba(238,245,255,0)_76%)] blur-[52px] md:left-[41%] md:h-[36vw] md:w-[26vw]"
-                animate={{
-                  opacity: [0.24, 0.52, 0.3, 0.44, 0.24],
-                  scale: [0.94, 1.12, 0.98, 1.08, 0.94],
-                }}
-                transition={{ duration: 5.7, repeat: Infinity, ease: 'easeInOut' }}
-                style={{ willChange: 'transform, opacity' }}
-              />
-            </motion.div>
-          ) : null}
-        </AnimatePresence>
-      ) : null}
+            </div>
+          </div>
+        ))}
+      </div>
 
-      {!prefersReducedMotion && useLiteEffects ? (
-        <AnimatePresence initial={false} mode="wait">
-          {currentJourney ? (
-            <motion.div
-              key={`${currentJourney.id}-focus-halo-lite`}
-              className="absolute inset-0 overflow-hidden"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <motion.div
-                className="absolute left-1/2 top-[46%] h-[64vw] w-[46vw] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(221,234,255,0.24)_0%,rgba(221,234,255,0.1)_32%,rgba(221,234,255,0)_74%)] blur-[48px] md:left-[41%] md:h-[44vw] md:w-[31vw]"
-                animate={{ opacity: [0.26, 0.46, 0.32, 0.42, 0.26] }}
-                transition={{ duration: 6.4, repeat: Infinity, ease: 'easeInOut' }}
-                style={{ willChange: 'opacity' }}
-              />
-            </motion.div>
-          ) : null}
-        </AnimatePresence>
-      ) : null}
-
-      {!prefersReducedMotion ? (
-        <AnimatePresence initial={false}>
-          {currentJourney ? (
-            useLiteEffects ? (
-              <motion.div
-                key={`${currentJourney.id}-directional-pan-morph-lite`}
-                className="absolute inset-0 overflow-hidden"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.35 }}
-              >
-                <motion.div
-                  className="absolute inset-[-6%] bg-[linear-gradient(90deg,rgba(224,236,255,0)_0%,rgba(224,236,255,0.3)_42%,rgba(224,236,255,0)_100%)]"
-                  initial={{ x: direction > 0 ? '16%' : '-16%', opacity: 0 }}
-                  animate={{
-                    x: direction > 0 ? ['16%', '-12%'] : ['-16%', '12%'],
-                    opacity: [0, 0.52, 0.14, 0],
-                  }}
-                  transition={{
-                    duration: 0.9,
-                    ease: [0.16, 1, 0.3, 1],
-                    times: [0, 0.35, 0.72, 1],
-                  }}
-                  style={{ willChange: 'transform, opacity' }}
-                />
-              </motion.div>
-            ) : (
-              <motion.div
-                key={`${currentJourney.id}-directional-pan-morph`}
-                className="absolute inset-0 overflow-hidden"
-                initial={{ opacity: 0.1 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.48 }}
-              >
-                <motion.div
-                  className="absolute inset-[-8%] bg-[linear-gradient(90deg,rgba(225,238,255,0)_0%,rgba(225,238,255,0.36)_36%,rgba(225,238,255,0.14)_50%,rgba(225,238,255,0.36)_64%,rgba(225,238,255,0)_100%)] blur-[6px]"
-                  initial={{ x: direction > 0 ? '22%' : '-22%', opacity: 0 }}
-                  animate={{
-                    x: direction > 0 ? ['22%', '-20%'] : ['-22%', '20%'],
-                    opacity: [0, 0.72, 0.24, 0],
-                  }}
-                  transition={{
-                    duration: 1.12,
-                    ease: [0.16, 1, 0.3, 1],
-                    times: [0, 0.32, 0.7, 1],
-                  }}
-                  style={{ willChange: 'transform, opacity' }}
-                />
-                <motion.div
-                  className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.16)_0%,rgba(255,255,255,0)_38%,rgba(0,0,0,0.2)_100%)]"
-                  initial={{ x: direction > 0 ? '-10%' : '10%', opacity: 0.4 }}
-                  animate={{ x: '0%', opacity: [0.4, 0.22, 0.1] }}
-                  transition={{
-                    duration: 1.18,
-                    delay: 0.03,
-                    ease: [0.16, 1, 0.3, 1],
-                    times: [0, 0.52, 1],
-                  }}
-                  style={{ willChange: 'transform, opacity' }}
-                />
-                <motion.div
-                  className="absolute inset-0 bg-black"
-                  initial={{ opacity: 0.28 }}
-                  animate={{ opacity: [0.28, 0.08, 0] }}
-                  transition={{ duration: 0.82, ease: [0.22, 1, 0.36, 1] }}
-                  style={{ willChange: 'opacity' }}
-                />
-              </motion.div>
-            )
-          ) : null}
-        </AnimatePresence>
-      ) : null}
+      <div className="absolute inset-0 bg-[rgba(2,2,1,0.2)]" />
     </div>
   );
 }

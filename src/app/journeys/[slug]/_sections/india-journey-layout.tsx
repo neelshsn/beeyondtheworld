@@ -77,6 +77,8 @@ const SECTION_TABS: SectionTab[] = [
   },
 ];
 
+const DESKTOP_SECTION_TABS = SECTION_TABS.filter((item) => item.id !== 'community');
+
 const SECTION_CONTENT: Record<ContentSectionId, IndiaCard[]> = {
   locations: [
     {
@@ -786,7 +788,7 @@ export function IndiaJourneyLayout({ journey }: IndiaJourneyLayoutProps) {
         <aside className="flex min-h-0 flex-col px-6 py-8 sm:px-10 sm:py-10">
           <div className="flex min-h-0 flex-1 items-center">
             <nav className="flex flex-col gap-10" aria-label="Journey sections">
-              {SECTION_TABS.map((item) => {
+              {DESKTOP_SECTION_TABS.map((item) => {
                 const isActive = item.id === activeSection;
                 return (
                   <button
