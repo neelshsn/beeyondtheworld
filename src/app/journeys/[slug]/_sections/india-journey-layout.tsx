@@ -161,6 +161,8 @@ const LOCATION_STORIES: IndiaLocationStory[] = [
 ];
 
 const DISCOVER_FADE_DURATION = 1.42;
+const INDIA_BACKGROUND_VIDEO =
+  '/assets/journeys/india-january-2026/anime_cette_image__Kling_30__17267.mp4';
 
 type IndiaJourneyLayoutProps = {
   journey: JourneyShowcase;
@@ -585,13 +587,16 @@ export function IndiaJourneyLayout({ journey }: IndiaJourneyLayoutProps) {
 
   return (
     <main className="relative h-[100dvh] w-full overflow-hidden text-white">
-      <Image
-        src="/assets/journeys/india-january-2026/india-january-2026-gallery-03.png"
-        alt={`${journey.title} background`}
-        fill
-        priority
-        className="object-cover object-center"
-        sizes="100vw"
+      <video
+        key={INDIA_BACKGROUND_VIDEO}
+        src={INDIA_BACKGROUND_VIDEO}
+        poster="/assets/journeys/india-january-2026/india-january-2026-gallery-03.png"
+        className="absolute inset-0 h-full w-full object-cover object-center"
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="auto"
       />
       <div className="absolute inset-0 bg-[linear-gradient(110deg,rgba(41,22,9,0.58)_0%,rgba(99,62,33,0.44)_38%,rgba(56,34,21,0.5)_100%)]" />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_70%,rgba(222,166,112,0.36)_0%,rgba(222,166,112,0)_44%),radial-gradient(circle_at_86%_24%,rgba(255,232,181,0.14)_0%,rgba(255,232,181,0)_42%)]" />

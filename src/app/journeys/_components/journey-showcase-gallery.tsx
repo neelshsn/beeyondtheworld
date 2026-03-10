@@ -3,8 +3,7 @@
 import clsx from 'clsx';
 import useEmblaCarousel from 'embla-carousel-react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { gsap } from 'gsap';
-import { ArrowLeft, ArrowRight, ChevronDown, ChevronUp } from 'lucide-react';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 import Image from 'next/image';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -20,6 +19,7 @@ type SeasonOption = {
   label: string;
   value: SeasonFilterValue;
   icon: string;
+  hoverIcon?: string;
   season?: JourneySeason;
 };
 
@@ -28,18 +28,21 @@ const SEASON_OPTIONS: SeasonOption[] = [
     label: 'All Journeys',
     value: 'all',
     icon: '/assets/icones/Ico White BEE-02.svg',
+    hoverIcon: '/assets/icones/Ico Gold BEE-02.svg',
   },
   {
     label: 'Spring Summer',
     value: 'summer',
     season: 'spring-summer',
     icon: '/assets/icones/Ico White BEE-14.svg',
+    hoverIcon: '/assets/icones/Ico Gold BEE-14.svg',
   },
   {
     label: 'Fall Winter',
     value: 'winter',
     season: 'fall-winter',
     icon: '/assets/icones/Ico White BEE-01.svg',
+    hoverIcon: '/assets/icones/Ico Gold BEE-01.svg',
   },
 ];
 
@@ -78,6 +81,89 @@ function getSeasonDirection(from: SeasonFilterValue, to: SeasonFilterValue) {
   const fromIndex = getSeasonIndex(from);
   const toIndex = getSeasonIndex(to);
   return toIndex > fromIndex ? 1 : -1;
+}
+
+function getForwardOffset(index: number, activeIndex: number, total: number) {
+  if (total <= 0) return 0;
+  return (index - activeIndex + total) % total;
+}
+
+function getDesktopSlideBasisClass(forwardOffset: number) {
+  if (forwardOffset === 0) {
+    return 'md:flex-[0_0_calc((100%-(var(--journey-gap)*3))*0.4)]';
+  }
+  if (forwardOffset === 1) {
+    return 'md:flex-[0_0_calc((100%-(var(--journey-gap)*3))*0.27)]';
+  }
+  if (forwardOffset === 2) {
+    return 'md:flex-[0_0_calc((100%-(var(--journey-gap)*3))*0.23)]';
+  }
+  return 'md:flex-[0_0_calc((100%-(var(--journey-gap)*3))*0.18)]';
+}
+
+function getCardFadeProfile(
+  forwardOffset: number,
+  isMobileViewport: boolean,
+  useLiteEffects: boolean
+) {
+  if (isMobileViewport) {
+    return {
+      opacity: forwardOffset === 0 ? 1 : 0.86,
+      y: 0,
+      scale: forwardOffset === 0 ? 1 : 0.985,
+      imageScale: forwardOffset === 0 ? 1.02 : 1.05,
+      imageFilter:
+        forwardOffset === 0 ? 'saturate(1) brightness(1)' : 'saturate(0.9) brightness(0.9)',
+      overlayOpacity: forwardOffset === 0 ? 0.14 : 0.26,
+      hoverBoost: 0.018,
+    };
+  }
+
+  if (forwardOffset === 0) {
+    return {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      imageScale: 1.015,
+      imageFilter: 'saturate(1) brightness(1)',
+      overlayOpacity: 0.12,
+      hoverBoost: useLiteEffects ? 0.008 : 0.012,
+    };
+  }
+
+  if (forwardOffset === 1) {
+    return {
+      opacity: 0.88,
+      y: 5,
+      scale: 0.996,
+      imageScale: 1.03,
+      imageFilter: 'saturate(0.94) brightness(0.97)',
+      overlayOpacity: 0.16,
+      hoverBoost: useLiteEffects ? 0.006 : 0.01,
+    };
+  }
+
+  if (forwardOffset === 2) {
+    return {
+      opacity: 0.74,
+      y: 9,
+      scale: 0.989,
+      imageScale: 1.045,
+      imageFilter: 'saturate(0.9) brightness(0.95)',
+      overlayOpacity: 0.2,
+      hoverBoost: useLiteEffects ? 0.004 : 0.008,
+    };
+  }
+
+  return {
+    opacity: 0.6,
+    y: 12,
+    scale: 0.984,
+    imageScale: 1.055,
+    imageFilter: 'saturate(0.86) brightness(0.91)',
+    overlayOpacity: 0.24,
+    hoverBoost: useLiteEffects ? 0.003 : 0.006,
+  };
 }
 
 function getJourneyChronologyKey(dateValue: string) {
@@ -201,19 +287,24 @@ export function JourneyShowcaseGallery() {
     [filteredJourneys]
   );
 
-  const [emblaRef, emblaApi] = useEmblaCarousel({
-    align: 'center',
-    loop: false,
-    containScroll: false,
-    duration: 30,
-    skipSnaps: false,
-    dragFree: false,
-    breakpoints: {
-      '(min-width: 768px)': {
-        align: 'start',
+  const emblaOptions = useMemo(
+    () => ({
+      align: 'center' as const,
+      loop: filteredJourneys.length > 1,
+      containScroll: false as const,
+      duration: 30,
+      skipSnaps: false,
+      dragFree: false,
+      breakpoints: {
+        '(min-width: 768px)': {
+          align: 'start' as const,
+        },
       },
-    },
-  });
+    }),
+    [filteredJourneys.length]
+  );
+
+  const [emblaRef, emblaApi] = useEmblaCarousel(emblaOptions);
 
   const rootRef = useRef<HTMLDivElement | null>(null);
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -302,25 +393,15 @@ export function JourneyShowcaseGallery() {
     }
 
     emblaApi.reInit({
-      align: 'center',
-      loop: false,
-      containScroll: false,
-      duration: 30,
-      skipSnaps: false,
-      dragFree: false,
+      ...emblaOptions,
       startIndex: 0,
-      breakpoints: {
-        '(min-width: 768px)': {
-          align: 'start',
-        },
-      },
     });
 
     emblaApi.scrollTo(0, true);
     previousSelectedIndexRef.current = 0;
     setSelectedIndex(0);
     setBackgroundDirection(1);
-  }, [emblaApi, filteredJourneys.length, filteredIdsSignature]);
+  }, [emblaApi, emblaOptions, filteredJourneys.length, filteredIdsSignature]);
 
   useEffect(() => {
     const node = rootRef.current;
@@ -487,7 +568,7 @@ export function JourneyShowcaseGallery() {
           isJourneyTransitioning ? 'pointer-events-none opacity-0' : 'opacity-100'
         )}
       >
-        <div className="pointer-events-none absolute left-4 top-5 z-30 sm:left-6 sm:top-7 lg:left-10 lg:top-8">
+        <div className="pointer-events-none absolute left-4 top-5 z-30 sm:left-6 sm:top-7 md:hidden lg:left-10 lg:top-8">
           <div className="pointer-events-auto">
             <SeasonElevator
               value={season}
@@ -498,39 +579,59 @@ export function JourneyShowcaseGallery() {
           </div>
         </div>
 
-        <div className="relative flex flex-1 items-center justify-end md:-translate-y-3 lg:-translate-y-5">
-          <div className="w-full px-2 pb-2 pt-20 sm:px-6 sm:pb-4 sm:pt-24 md:w-[75%] md:pb-0 md:pr-6 md:pt-0 lg:py-10 lg:pr-10">
+        <div className="relative flex flex-1 items-center justify-end">
+          <div className="w-full px-2 pb-2 pt-20 sm:px-6 sm:pb-4 sm:pt-24 md:ml-auto md:w-[75%] md:pb-0 md:pl-10 md:pr-6 md:pt-0 lg:py-10 lg:pl-16 lg:pr-10 xl:pl-20">
             {safeLength ? (
-              <div className="overflow-visible pb-8 sm:pb-10 md:pb-0" ref={emblaRef}>
+              <div
+                className="overflow-visible pb-8 sm:pb-10 md:overflow-hidden md:pb-0"
+                ref={emblaRef}
+              >
                 <motion.div
                   key={filteredIdsSignature}
-                  className="embla__container -mx-2 flex touch-pan-x items-center sm:-mx-3"
+                  className="embla__container flex touch-pan-x items-center gap-3 sm:gap-4 md:ml-0 md:gap-[var(--journey-gap)] md:[--journey-gap:clamp(14px,1.7vw,28px)]"
                   initial={prefersReducedMotion ? undefined : { opacity: 0 }}
                   animate={prefersReducedMotion ? undefined : { opacity: 1 }}
                   transition={{ duration: 1.08, ease: [0.22, 1, 0.36, 1] }}
                 >
-                  {filteredJourneys.map((journey, index) => (
-                    <motion.div
-                      key={journey.id}
-                      className="embla__slide flex flex-[0_0_74%] items-center px-2 sm:flex-[0_0_60%] sm:px-3 md:flex-[0_0_48%] lg:flex-[0_0_34%] xl:flex-[0_0_30%]"
-                      initial={prefersReducedMotion ? false : { opacity: 0 }}
-                      animate={prefersReducedMotion ? undefined : { opacity: 1 }}
-                      transition={{
-                        duration: 0.92,
-                        ease: [0.22, 1, 0.36, 1],
-                        delay: Math.min(index * 0.07, 0.42),
-                      }}
-                    >
-                      <JourneyCard
-                        journey={journey}
-                        isActive={Boolean(currentJourney && currentJourney.id === journey.id)}
-                        onAction={() => handleCardAction(journey, index)}
-                        prefersReducedMotion={prefersReducedMotion}
-                        isMobileViewport={isMobileViewport}
-                        useLiteEffects={useLiteEffects}
-                      />
-                    </motion.div>
-                  ))}
+                  {filteredJourneys.map((journey, index) => {
+                    const forwardOffset = getForwardOffset(
+                      index,
+                      displayIndex,
+                      filteredJourneys.length
+                    );
+
+                    return (
+                      <motion.div
+                        key={journey.id}
+                        layout
+                        className={clsx(
+                          'embla__slide flex flex-[0_0_74%] items-center sm:flex-[0_0_60%]',
+                          getDesktopSlideBasisClass(forwardOffset)
+                        )}
+                        initial={prefersReducedMotion ? false : { opacity: 0 }}
+                        animate={prefersReducedMotion ? undefined : { opacity: 1 }}
+                        transition={{
+                          duration: 0.92,
+                          ease: [0.22, 1, 0.36, 1],
+                          delay: Math.min(index * 0.07, 0.42),
+                          layout: {
+                            duration: useLiteEffects ? 0.46 : 0.7,
+                            ease: [0.22, 1, 0.36, 1],
+                          },
+                        }}
+                      >
+                        <JourneyCard
+                          journey={journey}
+                          isActive={Boolean(currentJourney && currentJourney.id === journey.id)}
+                          forwardOffset={forwardOffset}
+                          onAction={() => handleCardAction(journey, index)}
+                          prefersReducedMotion={prefersReducedMotion}
+                          isMobileViewport={isMobileViewport}
+                          useLiteEffects={useLiteEffects}
+                        />
+                      </motion.div>
+                    );
+                  })}
                 </motion.div>
               </div>
             ) : (
@@ -553,16 +654,16 @@ export function JourneyShowcaseGallery() {
           </div>
         </div>
 
-        <div className="pointer-events-none absolute bottom-5 left-4 z-40 hidden sm:bottom-7 sm:left-6 md:block lg:bottom-10 lg:left-10">
-          <JourneyHeadline currentJourney={currentJourney} />
+        <div className="pointer-events-none absolute left-6 top-1/2 z-40 hidden -translate-y-1/2 md:block lg:left-10 xl:left-14">
+          <JourneyHeadline currentJourney={currentJourney} sideAligned />
         </div>
 
-        <div className="pointer-events-none absolute bottom-5 right-4 z-30 hidden sm:bottom-7 sm:right-6 md:block lg:bottom-10 lg:right-10">
-          <JourneyNavigation
-            canScrollPrev={canScrollPrev}
-            canScrollNext={canScrollNext}
-            onPrev={scrollPrev}
-            onNext={scrollNext}
+        <div className="pointer-events-none absolute bottom-5 right-4 z-30 hidden sm:bottom-7 sm:right-6 md:right-10 md:block lg:bottom-10 lg:right-16 xl:right-20">
+          <JourneyDesktopControls
+            season={season}
+            seasonDirection={seasonDirection}
+            prefersReducedMotion={prefersReducedMotion}
+            onSeasonCycle={handleSeasonCycle}
           />
         </div>
       </div>
@@ -579,59 +680,88 @@ type SeasonElevatorProps = {
 
 function SeasonElevator({ value, direction, prefersReducedMotion, onCycle }: SeasonElevatorProps) {
   const option = getSeasonOption(value);
+  const hoverIcon = option.hoverIcon ?? option.icon;
 
   return (
-    <div className="flex items-center gap-3 text-white sm:gap-4">
-      <div className="flex flex-col gap-1.5">
-        <button
-          type="button"
-          onClick={() => onCycle(-1)}
-          className="flex h-7 w-7 items-center justify-center text-white/45 transition hover:text-white/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/45"
-          aria-label="Previous season"
-        >
-          <ChevronUp className="h-4 w-4" aria-hidden />
-        </button>
-        <button
-          type="button"
-          onClick={() => onCycle(1)}
-          className="flex h-7 w-7 items-center justify-center text-white/45 transition hover:text-white/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/45"
-          aria-label="Next season"
-        >
-          <ChevronDown className="h-4 w-4" aria-hidden />
-        </button>
-      </div>
+    <motion.div
+      layout
+      className="group inline-flex items-center gap-2 text-white drop-shadow-[0_12px_28px_rgba(0,0,0,0.38)] sm:gap-3"
+      transition={{
+        layout: { duration: prefersReducedMotion ? 0.18 : 0.42, ease: [0.22, 1, 0.36, 1] },
+      }}
+    >
+      <motion.button
+        layout="position"
+        type="button"
+        onClick={() => onCycle(-1)}
+        className="flex h-7 w-7 items-center justify-center text-white/45 transition hover:text-[#f6c452] hover:drop-shadow-[0_0_10px_rgba(246,196,82,0.42)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/45 group-hover:text-[#f6c452]"
+        aria-label="Previous season"
+      >
+        <ArrowLeft className="h-4 w-4" aria-hidden />
+      </motion.button>
 
-      <div className="relative flex min-w-0 items-center gap-3 overflow-hidden">
-        <Image
-          src={option.icon}
-          alt=""
-          width={42}
-          height={42}
-          className="h-10 w-10 shrink-0 sm:h-11 sm:w-11"
-          priority
-        />
-        <div className="relative h-12 min-w-0 min-[420px]:w-[260px] sm:w-[320px]">
-          <AnimatePresence initial={false} mode="wait">
-            <motion.div
-              key={value}
-              initial={
-                prefersReducedMotion ? { opacity: 0 } : { opacity: 0, x: direction > 0 ? 36 : -36 }
-              }
-              animate={{ opacity: 1, x: 0 }}
-              exit={
-                prefersReducedMotion ? { opacity: 0 } : { opacity: 0, x: direction > 0 ? -36 : 36 }
-              }
-              transition={{ duration: prefersReducedMotion ? 0.2 : 0.42, ease: [0.22, 1, 0.36, 1] }}
-              className="absolute inset-0 flex items-center"
+      <motion.div layout className="relative flex min-w-0 items-center overflow-hidden">
+        <AnimatePresence initial={false} mode="popLayout">
+          <motion.div
+            key={value}
+            layout
+            initial={
+              prefersReducedMotion ? { opacity: 0 } : { opacity: 0, x: direction > 0 ? 28 : -28 }
+            }
+            animate={{ opacity: 1, x: 0 }}
+            exit={
+              prefersReducedMotion ? { opacity: 0 } : { opacity: 0, x: direction > 0 ? -28 : 28 }
+            }
+            transition={{
+              duration: prefersReducedMotion ? 0.2 : 0.42,
+              ease: [0.22, 1, 0.36, 1],
+              layout: { duration: prefersReducedMotion ? 0.18 : 0.42, ease: [0.22, 1, 0.36, 1] },
+            }}
+            className="relative flex items-center gap-3 sm:gap-4"
+          >
+            <div className="relative h-10 w-10 shrink-0 sm:h-11 sm:w-11">
+              <Image
+                src={option.icon}
+                alt=""
+                fill
+                className={clsx(
+                  'object-contain transition-opacity duration-300',
+                  option.hoverIcon ? 'opacity-100 group-hover:opacity-0' : 'opacity-100'
+                )}
+                priority
+              />
+              {hoverIcon ? (
+                <Image
+                  src={hoverIcon}
+                  alt=""
+                  fill
+                  className="object-contain opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                />
+              ) : null}
+            </div>
+
+            <span
+              className={clsx(
+                'whitespace-nowrap font-display text-[1.1rem] uppercase tracking-[0.14em] text-white transition-colors duration-300 [text-shadow:0_0_18px_rgba(255,255,255,0.35)] sm:text-[1.55rem]',
+                'group-hover:text-[#f6c452]'
+              )}
             >
-              <span className="truncate font-display text-[1.1rem] uppercase tracking-[0.14em] text-white [text-shadow:0_0_18px_rgba(255,255,255,0.35)] sm:text-[1.55rem]">
-                {option.label}
-              </span>
-            </motion.div>
-          </AnimatePresence>
-        </div>
-      </div>
-    </div>
+              {option.label}
+            </span>
+          </motion.div>
+        </AnimatePresence>
+      </motion.div>
+
+      <motion.button
+        layout="position"
+        type="button"
+        onClick={() => onCycle(1)}
+        className="flex h-7 w-7 items-center justify-center text-white/45 transition hover:text-[#f6c452] hover:drop-shadow-[0_0_10px_rgba(246,196,82,0.42)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/45 group-hover:text-[#f6c452]"
+        aria-label="Next season"
+      >
+        <ArrowRight className="h-4 w-4" aria-hidden />
+      </motion.button>
+    </motion.div>
   );
 }
 
@@ -639,12 +769,14 @@ type JourneyHeadlineProps = {
   currentJourney: Journey | null;
   compact?: boolean;
   centered?: boolean;
+  sideAligned?: boolean;
 };
 
 function JourneyHeadline({
   currentJourney,
   compact = false,
   centered = false,
+  sideAligned = false,
 }: JourneyHeadlineProps) {
   const country = currentJourney ? extractCountry(currentJourney.location) : '';
 
@@ -660,6 +792,7 @@ function JourneyHeadline({
           className={clsx(
             'relative z-10',
             compact ? 'max-w-[80vw]' : 'max-w-[62vw]',
+            sideAligned && !compact && 'max-w-[28vw] xl:max-w-[24vw]',
             centered && 'text-center'
           )}
         >
@@ -668,7 +801,9 @@ function JourneyHeadline({
               'font-title uppercase tracking-normal text-white [text-shadow:0_24px_52px_rgba(0,0,0,0.35)]',
               compact
                 ? 'text-[clamp(2.15rem,12vw,4.4rem)] leading-[0.82]'
-                : 'text-[clamp(3.4rem,11vw,10.2rem)] leading-[0.8]'
+                : sideAligned
+                  ? 'text-[clamp(3.2rem,7vw,7.4rem)] leading-[0.82]'
+                  : 'text-[clamp(3.4rem,11vw,10.2rem)] leading-[0.8]'
             )}
           >
             {country}
@@ -712,24 +847,12 @@ function JourneyNavigation({
         centered && 'justify-center'
       )}
     >
-      <button
-        type="button"
-        onClick={onPrev}
+      <JourneyNavButton
+        direction="prev"
         disabled={!canScrollPrev}
-        className={clsx(
-          'group flex items-center justify-center transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/45',
-          compact ? 'h-6 w-6' : 'h-7 w-7',
-          canScrollPrev ? 'text-white/45 hover:text-white/80' : 'cursor-not-allowed text-white/20'
-        )}
-        aria-label="Previous journey"
-      >
-        <ArrowLeft
-          className={clsx(
-            'transition-transform duration-300 group-hover:-translate-x-1',
-            compact ? 'h-3.5 w-3.5' : 'h-4 w-4'
-          )}
-        />
-      </button>
+        onClick={onPrev}
+        compact={compact}
+      />
       <div
         className={clsx(
           'relative flex min-w-0 items-center overflow-hidden',
@@ -756,31 +879,83 @@ function JourneyNavigation({
           Next Journey
         </span>
       </div>
-      <button
-        type="button"
-        onClick={onNext}
+      <JourneyNavButton
+        direction="next"
         disabled={!canScrollNext}
-        className={clsx(
-          'group flex items-center justify-center transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/45',
-          compact ? 'h-6 w-6' : 'h-7 w-7',
-          canScrollNext ? 'text-white/45 hover:text-white/80' : 'cursor-not-allowed text-white/20'
-        )}
-        aria-label="Next journey"
-      >
-        <ArrowRight
-          className={clsx(
-            'transition-transform duration-300 group-hover:translate-x-1',
-            compact ? 'h-3.5 w-3.5' : 'h-4 w-4'
-          )}
-        />
-      </button>
+        onClick={onNext}
+        compact={compact}
+      />
     </div>
+  );
+}
+
+type JourneyDesktopControlsProps = {
+  season: SeasonFilterValue;
+  seasonDirection: number;
+  prefersReducedMotion: boolean;
+  onSeasonCycle: (direction: 1 | -1) => void;
+};
+
+function JourneyDesktopControls({
+  season,
+  seasonDirection,
+  prefersReducedMotion,
+  onSeasonCycle,
+}: JourneyDesktopControlsProps) {
+  return (
+    <div className="pointer-events-auto flex items-center text-white">
+      <SeasonElevator
+        value={season}
+        direction={seasonDirection}
+        prefersReducedMotion={prefersReducedMotion}
+        onCycle={onSeasonCycle}
+      />
+    </div>
+  );
+}
+
+type JourneyNavButtonProps = {
+  direction: 'prev' | 'next';
+  disabled: boolean;
+  onClick: () => void;
+  compact?: boolean;
+};
+
+function JourneyNavButton({
+  direction,
+  disabled,
+  onClick,
+  compact = false,
+}: JourneyNavButtonProps) {
+  const Icon = direction === 'prev' ? ArrowLeft : ArrowRight;
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      className={clsx(
+        'group flex items-center justify-center transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/45',
+        compact ? 'h-6 w-6' : 'h-7 w-7',
+        disabled ? 'cursor-not-allowed text-white/20' : 'text-white/45 hover:text-white/80'
+      )}
+      aria-label={direction === 'prev' ? 'Previous journey' : 'Next journey'}
+    >
+      <Icon
+        className={clsx(
+          'transition-transform duration-300',
+          direction === 'prev' ? 'group-hover:-translate-x-1' : 'group-hover:translate-x-1',
+          compact ? 'h-3.5 w-3.5' : 'h-4 w-4'
+        )}
+      />
+    </button>
   );
 }
 
 type JourneyCardProps = {
   journey: Journey;
   isActive: boolean;
+  forwardOffset: number;
   prefersReducedMotion: boolean;
   isMobileViewport: boolean;
   useLiteEffects: boolean;
@@ -790,20 +965,19 @@ type JourneyCardProps = {
 function JourneyCard({
   journey,
   isActive,
+  forwardOffset,
   prefersReducedMotion,
   isMobileViewport,
   useLiteEffects,
   onAction,
 }: JourneyCardProps) {
-  const activeScaleX = isMobileViewport ? 1.01 : useLiteEffects ? 1.04 : 1.08;
-  const inactiveScaleX = isMobileViewport ? 0.99 : useLiteEffects ? 0.96 : 0.94;
-  const activeScaleY = isMobileViewport ? 1.04 : useLiteEffects ? 1.12 : 1.22;
-  const inactiveScaleY = isMobileViewport ? 0.99 : useLiteEffects ? 0.96 : 0.94;
+  const fadeProfile = getCardFadeProfile(forwardOffset, isMobileViewport, useLiteEffects);
 
   return (
     <motion.button
       type="button"
       onClick={onAction}
+      layout
       className={clsx(
         'group relative w-full overflow-visible focus:outline-none focus-visible:ring-2 focus-visible:ring-[#f5d49b] focus-visible:ring-offset-0',
         prefersReducedMotion
@@ -814,49 +988,82 @@ function JourneyCard({
         prefersReducedMotion
           ? undefined
           : {
-              scaleX: isActive ? activeScaleX : inactiveScaleX,
-              scaleY: isActive ? activeScaleY : inactiveScaleY,
-              y: 0,
+              opacity: fadeProfile.opacity,
+              scale: fadeProfile.scale,
+              y: fadeProfile.y,
             }
       }
       whileHover={
         prefersReducedMotion || useLiteEffects
           ? undefined
           : {
-              scaleX: isActive ? activeScaleX + 0.02 : inactiveScaleX + 0.02,
-              scaleY: isActive ? activeScaleY + 0.02 : inactiveScaleY + 0.02,
-              y: -6,
+              opacity: Math.min(fadeProfile.opacity + 0.08, 1),
+              scale: fadeProfile.scale + fadeProfile.hoverBoost,
+              y: Math.max(fadeProfile.y - 4, -4),
             }
       }
       transition={
         prefersReducedMotion
           ? undefined
-          : { duration: useLiteEffects ? 0.42 : 0.62, ease: [0.22, 1, 0.36, 1] }
+          : {
+              duration: useLiteEffects ? 0.42 : 0.7,
+              ease: [0.22, 1, 0.36, 1],
+              layout: { duration: useLiteEffects ? 0.46 : 0.7, ease: [0.22, 1, 0.36, 1] },
+            }
       }
       aria-label={`Journey: ${journey.title}, ${journey.date}`}
-      style={{ transformOrigin: 'center center' }}
+      style={{ transformOrigin: isMobileViewport ? 'center center' : 'left center' }}
     >
       <div
         className={clsx(
-          'relative aspect-[3/4] w-full overflow-hidden bg-black/30',
+          'relative aspect-[3/4] w-full overflow-hidden',
           useLiteEffects
             ? 'shadow-[0_18px_42px_-24px_rgba(0,0,0,0.72)]'
             : 'shadow-[0_30px_75px_-24px_rgba(0,0,0,0.78)]'
         )}
       >
-        <Image
-          src={journey.image}
-          alt={journey.title}
-          fill
-          sizes="(min-width: 1536px) 27vw, (min-width: 1280px) 32vw, (min-width: 1024px) 34vw, (min-width: 640px) 52vw, 78vw"
-          className={clsx(
-            'duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] object-cover transition-transform',
-            isActive ? 'scale-[1.02]' : 'scale-[1.06]',
-            'group-hover:scale-[1.1]'
-          )}
-          priority={isActive}
+        <motion.div
+          className="absolute inset-0"
+          animate={
+            prefersReducedMotion
+              ? undefined
+              : {
+                  scale: fadeProfile.imageScale,
+                  filter: fadeProfile.imageFilter,
+                }
+          }
+          whileHover={
+            prefersReducedMotion || useLiteEffects
+              ? undefined
+              : {
+                  scale: fadeProfile.imageScale + 0.025,
+                  filter: 'saturate(1.02) brightness(1.01)',
+                }
+          }
+          transition={
+            prefersReducedMotion
+              ? undefined
+              : { duration: useLiteEffects ? 0.45 : 0.8, ease: [0.22, 1, 0.36, 1] }
+          }
+        >
+          <Image
+            src={journey.image}
+            alt={journey.title}
+            fill
+            sizes="(min-width: 1536px) 27vw, (min-width: 1280px) 32vw, (min-width: 1024px) 34vw, (min-width: 640px) 52vw, 78vw"
+            className="object-cover"
+            priority={isActive}
+          />
+        </motion.div>
+        <motion.div
+          className="from-black/58 absolute inset-0 bg-gradient-to-t via-transparent to-black/10"
+          animate={prefersReducedMotion ? undefined : { opacity: fadeProfile.overlayOpacity }}
+          transition={
+            prefersReducedMotion
+              ? undefined
+              : { duration: useLiteEffects ? 0.38 : 0.62, ease: [0.22, 1, 0.36, 1] }
+          }
         />
-        <div className="from-black/58 absolute inset-0 bg-gradient-to-t via-transparent to-black/10" />
       </div>
     </motion.button>
   );
@@ -879,130 +1086,13 @@ function BackgroundImage({
   season,
   useLiteEffects,
 }: BackgroundImageProps) {
-  const outerSlideRefs = useRef<Array<HTMLDivElement | null>>([]);
-  const innerSlideRefs = useRef<Array<HTMLDivElement | null>>([]);
-  const activeIndexRef = useRef(0);
-  const backgroundTimelineRef = useRef<gsap.core.Timeline | null>(null);
-  const journeySignature = useMemo(
-    () => journeyItems.map((journey) => journey.id).join('|'),
-    [journeyItems]
-  );
-
-  useEffect(() => {
-    return () => {
-      backgroundTimelineRef.current?.kill();
-    };
-  }, []);
-
-  useEffect(() => {
-    backgroundTimelineRef.current?.kill();
-
-    if (!journeyItems.length) {
-      activeIndexRef.current = 0;
-      return;
-    }
-
-    const clampedActiveIndex = Math.min(activeIndex, journeyItems.length - 1);
-    journeyItems.forEach((_, index) => {
-      const outerSlide = outerSlideRefs.current[index];
-      const innerSlide = innerSlideRefs.current[index];
-      if (!outerSlide || !innerSlide) {
-        return;
-      }
-
-      gsap.set(outerSlide, {
-        opacity: index === clampedActiveIndex ? 1 : 0,
-        xPercent: 0,
-        zIndex: index === clampedActiveIndex ? 3 : 1,
-      });
-      gsap.set(innerSlide, { xPercent: 0, rotation: 0, scaleX: 1 });
-    });
-
-    activeIndexRef.current = clampedActiveIndex;
-  }, [journeyItems.length, journeySignature]);
-
-  useEffect(() => {
-    if (!journeyItems.length) {
-      return;
-    }
-
-    const clampedNextIndex = Math.min(activeIndex, journeyItems.length - 1);
-    const previousIndex = activeIndexRef.current;
-
-    if (previousIndex === clampedNextIndex) {
-      return;
-    }
-
-    const currentItem = outerSlideRefs.current[previousIndex];
-    const currentInner = innerSlideRefs.current[previousIndex];
-    const upcomingItem = outerSlideRefs.current[clampedNextIndex];
-    const upcomingInner = innerSlideRefs.current[clampedNextIndex];
-
-    if (!currentItem || !currentInner || !upcomingItem || !upcomingInner) {
-      activeIndexRef.current = clampedNextIndex;
-      return;
-    }
-
-    backgroundTimelineRef.current?.kill();
-
-    if (prefersReducedMotion) {
-      gsap.set(currentItem, { opacity: 0, xPercent: 0, zIndex: 1 });
-      gsap.set(currentInner, { xPercent: 0, rotation: 0, scaleX: 1 });
-      gsap.set(upcomingItem, { opacity: 1, xPercent: 0, zIndex: 3 });
-      gsap.set(upcomingInner, { xPercent: 0, rotation: 0, scaleX: 1 });
-      activeIndexRef.current = clampedNextIndex;
-      return;
-    }
-
-    gsap.set(currentItem, { opacity: 1, zIndex: 2 });
-    gsap.set(upcomingItem, { opacity: 1, zIndex: 3 });
-
-    const timeline = gsap.timeline({
-      defaults: { duration: 1.1, ease: 'power3.inOut' },
-      onComplete: () => {
-        gsap.set(currentItem, { opacity: 0, xPercent: 0, zIndex: 1 });
-        gsap.set(currentInner, { xPercent: 0, rotation: 0, scaleX: 1 });
-        gsap.set(upcomingItem, { opacity: 1, xPercent: 0, zIndex: 3 });
-        gsap.set(upcomingInner, { xPercent: 0, rotation: 0, scaleX: 1 });
-      },
-    });
-
-    timeline
-      .to(currentItem, {
-        xPercent: -direction * 100,
-      })
-      .to(
-        currentInner,
-        {
-          xPercent: direction * 30,
-          startAt: { rotation: 0 },
-          rotation: -direction * 20,
-          scaleX: 2.8,
-        },
-        0
-      )
-      .to(
-        upcomingItem,
-        {
-          startAt: { opacity: 1, xPercent: direction * 80 },
-          xPercent: 0,
-        },
-        0
-      )
-      .to(
-        upcomingInner,
-        {
-          startAt: { xPercent: -direction * 30, scaleX: 2.8, rotation: direction * 20 },
-          xPercent: 0,
-          scaleX: 1,
-          rotation: 0,
-        },
-        0
-      );
-
-    backgroundTimelineRef.current = timeline;
-    activeIndexRef.current = clampedNextIndex;
-  }, [activeIndex, direction, journeyItems.length, journeySignature, prefersReducedMotion]);
+  const clampedActiveIndex = journeyItems.length
+    ? Math.min(activeIndex, journeyItems.length - 1)
+    : 0;
+  const activeJourney = journeyItems[clampedActiveIndex] ?? null;
+  const backgroundDuration = prefersReducedMotion ? 0.2 : useLiteEffects ? 0.72 : 0.98;
+  const seamPeakOpacity = useLiteEffects ? 0.34 : 0.5;
+  const seamShift = direction > 0 ? 42 : -42;
 
   const seasonOverlayClass = clsx(
     'absolute inset-[-18%] blur-[64px]',
@@ -1081,32 +1171,84 @@ function BackgroundImage({
       )}
 
       <div className="absolute inset-0">
-        {journeyItems.map((journey, index) => (
-          <div
-            key={journey.id}
-            ref={(node) => {
-              outerSlideRefs.current[index] = node;
-            }}
-            className="absolute inset-0 overflow-hidden opacity-0"
-          >
-            <div
-              ref={(node) => {
-                innerSlideRefs.current[index] = node;
-              }}
-              className="absolute inset-[-10%]"
-              style={{ willChange: 'transform' }}
+        <AnimatePresence initial={false} mode="sync">
+          {activeJourney ? (
+            <motion.div
+              key={activeJourney.id}
+              className="absolute inset-0 overflow-hidden"
+              initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={prefersReducedMotion ? { opacity: 1 } : { opacity: 0 }}
+              transition={{ duration: backgroundDuration, ease: [0.22, 1, 0.36, 1] }}
             >
-              <Image
-                src={journey.image}
-                alt=""
-                fill
-                sizes="100vw"
-                className="object-cover"
-                priority={index === activeIndex}
+              <motion.div
+                className="absolute inset-[-10%]"
+                initial={
+                  prefersReducedMotion
+                    ? { scale: 1.01, x: 0 }
+                    : { scale: 1.05, x: direction > 0 ? 18 : -18 }
+                }
+                animate={{ scale: 1.01, x: 0 }}
+                exit={
+                  prefersReducedMotion
+                    ? { scale: 1.01, x: 0 }
+                    : { scale: 1.04, x: direction > 0 ? -12 : 12 }
+                }
+                transition={{ duration: backgroundDuration, ease: [0.22, 1, 0.36, 1] }}
+                style={{ willChange: 'transform, opacity' }}
+              >
+                <Image
+                  src={activeJourney.image}
+                  alt=""
+                  fill
+                  sizes="100vw"
+                  className={clsx('object-cover', activeJourney.backgroundVideo && 'opacity-0')}
+                  priority
+                />
+                {activeJourney.backgroundVideo ? (
+                  <video
+                    key={activeJourney.backgroundVideo}
+                    src={activeJourney.backgroundVideo}
+                    poster={activeJourney.image}
+                    className="absolute inset-0 h-full w-full object-cover"
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    preload="auto"
+                  />
+                ) : null}
+              </motion.div>
+            </motion.div>
+          ) : null}
+        </AnimatePresence>
+      </div>
+
+      <div className="absolute inset-0 overflow-hidden">
+        <AnimatePresence initial={false} mode="sync">
+          {activeJourney && !prefersReducedMotion ? (
+            <motion.div
+              key={`seam-${activeJourney.id}`}
+              className="absolute inset-0"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: backgroundDuration, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <motion.div
+                className="absolute inset-y-[-8%] left-1/2 z-10 w-[46vw] -translate-x-1/2 bg-[linear-gradient(90deg,rgba(255,255,255,0)_0%,rgba(255,255,255,0.05)_18%,rgba(255,255,255,0.2)_50%,rgba(255,255,255,0.05)_82%,rgba(255,255,255,0)_100%)] mix-blend-screen blur-[28px]"
+                initial={{ opacity: 0, x: seamShift }}
+                animate={{ opacity: [0, seamPeakOpacity, 0], x: [seamShift, 0, -seamShift * 0.4] }}
+                exit={{ opacity: 0 }}
+                transition={{
+                  duration: backgroundDuration,
+                  ease: [0.22, 1, 0.36, 1],
+                  times: [0, 0.45, 1],
+                }}
               />
-            </div>
-          </div>
-        ))}
+            </motion.div>
+          ) : null}
+        </AnimatePresence>
       </div>
 
       <div className="absolute inset-0 bg-[rgba(2,2,1,0.2)]" />

@@ -9,6 +9,7 @@ export const journeys: Journey[] = [
     date: 'January 2026',
     location: 'Jaipur, Udaipur & Goa, India',
     image: '/assets/journeys/india-january-2026/india-january-2026-gallery-03.png',
+    backgroundVideo: '/assets/journeys/india-january-2026/anime_cette_image__Kling_30__17267.mp4',
     regions: ['asia'],
     moods: ['city', 'spiritual'],
   },

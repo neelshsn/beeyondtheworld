@@ -10,6 +10,7 @@ export type Journey = {
   date: string;
   location: string;
   image: string;
+  backgroundVideo?: string;
   regions: JourneyRegion[];
   moods: JourneyMood[];
 };
