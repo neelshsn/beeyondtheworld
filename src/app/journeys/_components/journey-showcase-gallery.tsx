@@ -23,6 +23,12 @@ type SeasonOption = {
   season?: JourneySeason;
 };
 
+type RenderedJourneySlide = {
+  journey: Journey;
+  sourceIndex: number;
+  renderKey: string;
+};
+
 const SEASON_OPTIONS: SeasonOption[] = [
   {
     label: 'All Journeys',
@@ -207,6 +213,26 @@ function filterJourneys(data: Journey[], season: SeasonFilterValue) {
   });
 }
 
+function buildRenderedJourneySlides(data: Journey[]): RenderedJourneySlide[] {
+  if (!data.length) return [];
+
+  // Build several cycles so we can keep re-centering the viewport and
+  // preserve an effectively infinite loop for every filter state.
+  const repeatCycles = Math.max(7, Math.ceil(18 / data.length));
+  const targetCount = data.length * repeatCycles;
+
+  return Array.from({ length: targetCount }, (_, index) => {
+    const sourceIndex = index % data.length;
+    const journey = data[sourceIndex];
+
+    return {
+      journey,
+      sourceIndex,
+      renderKey: `${journey.id}-${index}`,
+    };
+  });
+}
+
 function extractCountry(location: string) {
   const parts = location.split(',');
   return parts[parts.length - 1]?.trim() || location;
@@ -282,15 +308,29 @@ export function JourneyShowcaseGallery() {
   );
 
   const filteredJourneys = useMemo(() => filterJourneys(journeys, season), [season]);
-  const filteredIdsSignature = useMemo(
-    () => filteredJourneys.map((journey) => journey.id).join('|'),
+  const renderedJourneys = useMemo(
+    () => buildRenderedJourneySlides(filteredJourneys),
     [filteredJourneys]
   );
+  const renderedIdsSignature = useMemo(
+    () => renderedJourneys.map((journey) => journey.renderKey).join('|'),
+    [renderedJourneys]
+  );
+  const uniqueJourneyCount = filteredJourneys.length;
+  const centeredStartIndex = useMemo(() => {
+    if (!uniqueJourneyCount || !renderedJourneys.length) {
+      return 0;
+    }
+
+    const cycleCount = Math.max(1, Math.floor(renderedJourneys.length / uniqueJourneyCount));
+    const centeredCycle = Math.max(0, Math.floor(cycleCount / 2));
+    return centeredCycle * uniqueJourneyCount;
+  }, [renderedJourneys.length, uniqueJourneyCount]);
 
   const emblaOptions = useMemo(
     () => ({
       align: 'center' as const,
-      loop: filteredJourneys.length > 1,
+      loop: false,
       containScroll: false as const,
       duration: 30,
       skipSnaps: false,
@@ -301,7 +341,7 @@ export function JourneyShowcaseGallery() {
         },
       },
     }),
-    [filteredJourneys.length]
+    [renderedJourneys.length]
   );
 
   const [emblaRef, emblaApi] = useEmblaCarousel(emblaOptions);
@@ -313,11 +353,14 @@ export function JourneyShowcaseGallery() {
   const [backgroundDirection, setBackgroundDirection] = useState<1 | -1>(1);
   const [isJourneyTransitioning, setIsJourneyTransitioning] = useState(false);
   const previousSelectedIndexRef = useRef(0);
+  const isRecenteringRef = useRef(false);
+  const pendingDirectionRef = useRef<1 | -1>(1);
   const journeyTransitionTimeoutRef = useRef<number | null>(null);
 
-  const safeLength = filteredJourneys.length;
+  const safeLength = renderedJourneys.length;
   const displayIndex = safeLength ? Math.min(selectedIndex, safeLength - 1) : 0;
-  const currentJourney = safeLength ? filteredJourneys[displayIndex] : null;
+  const activeRenderedJourney = safeLength ? renderedJourneys[displayIndex] : null;
+  const currentJourney = activeRenderedJourney?.journey ?? null;
 
   useEffect(() => {
     return () => {
@@ -368,13 +411,47 @@ export function JourneyShowcaseGallery() {
     const onSelect = () => {
       const nextIndex = emblaApi.selectedScrollSnap();
       const previousIndex = previousSelectedIndexRef.current;
-      if (nextIndex !== previousIndex) {
-        setBackgroundDirection(nextIndex > previousIndex ? 1 : -1);
+
+      if (isRecenteringRef.current) {
+        isRecenteringRef.current = false;
+        previousSelectedIndexRef.current = nextIndex;
+        setSelectedIndex(nextIndex);
+        setBackgroundDirection(pendingDirectionRef.current);
+        setCanScrollPrev(uniqueJourneyCount > 1);
+        setCanScrollNext(uniqueJourneyCount > 1);
+        return;
       }
+
+      const rawDirection =
+        nextIndex === previousIndex
+          ? pendingDirectionRef.current
+          : nextIndex > previousIndex
+            ? 1
+            : -1;
+
+      if (
+        uniqueJourneyCount > 1 &&
+        renderedJourneys.length > uniqueJourneyCount * 2 &&
+        (nextIndex < uniqueJourneyCount ||
+          nextIndex >= renderedJourneys.length - uniqueJourneyCount)
+      ) {
+        const sourceIndex = renderedJourneys[nextIndex]?.sourceIndex ?? 0;
+        const targetIndex = centeredStartIndex + sourceIndex;
+
+        if (targetIndex !== nextIndex) {
+          pendingDirectionRef.current = rawDirection;
+          isRecenteringRef.current = true;
+          emblaApi.scrollTo(targetIndex, true);
+          return;
+        }
+      }
+
+      pendingDirectionRef.current = rawDirection;
       previousSelectedIndexRef.current = nextIndex;
       setSelectedIndex(nextIndex);
-      setCanScrollPrev(emblaApi.canScrollPrev());
-      setCanScrollNext(emblaApi.canScrollNext());
+      setBackgroundDirection(rawDirection);
+      setCanScrollPrev(uniqueJourneyCount > 1);
+      setCanScrollNext(uniqueJourneyCount > 1);
     };
 
     emblaApi.on('select', onSelect);
@@ -385,7 +462,7 @@ export function JourneyShowcaseGallery() {
       emblaApi.off('select', onSelect);
       emblaApi.off('reInit', onSelect);
     };
-  }, [emblaApi]);
+  }, [centeredStartIndex, emblaApi, renderedJourneys, uniqueJourneyCount]);
 
   useEffect(() => {
     if (!emblaApi) {
@@ -394,14 +471,25 @@ export function JourneyShowcaseGallery() {
 
     emblaApi.reInit({
       ...emblaOptions,
-      startIndex: 0,
+      startIndex: centeredStartIndex,
     });
 
-    emblaApi.scrollTo(0, true);
-    previousSelectedIndexRef.current = 0;
-    setSelectedIndex(0);
+    isRecenteringRef.current = false;
+    pendingDirectionRef.current = 1;
+    emblaApi.scrollTo(centeredStartIndex, true);
+    previousSelectedIndexRef.current = centeredStartIndex;
+    setSelectedIndex(centeredStartIndex);
     setBackgroundDirection(1);
-  }, [emblaApi, emblaOptions, filteredJourneys.length, filteredIdsSignature]);
+    setCanScrollPrev(uniqueJourneyCount > 1);
+    setCanScrollNext(uniqueJourneyCount > 1);
+  }, [
+    centeredStartIndex,
+    emblaApi,
+    emblaOptions,
+    renderedIdsSignature,
+    renderedJourneys.length,
+    uniqueJourneyCount,
+  ]);
 
   useEffect(() => {
     const node = rootRef.current;
@@ -410,12 +498,12 @@ export function JourneyShowcaseGallery() {
     }
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (!filteredJourneys.length || event.key !== 'Enter') {
+      if (!renderedJourneys.length || event.key !== 'Enter') {
         return;
       }
 
       event.preventDefault();
-      const current = filteredJourneys[emblaApi.selectedScrollSnap()];
+      const current = renderedJourneys[emblaApi.selectedScrollSnap()]?.journey;
       if (current) {
         navigateToJourney(current);
       }
@@ -425,7 +513,7 @@ export function JourneyShowcaseGallery() {
     return () => {
       node.removeEventListener('keydown', handleKeyDown);
     };
-  }, [emblaApi, filteredJourneys, navigateToJourney]);
+  }, [emblaApi, navigateToJourney, renderedJourneys]);
 
   useEffect(() => {
     if (!emblaApi) {
@@ -553,8 +641,7 @@ export function JourneyShowcaseGallery() {
       aria-label="Journey carousel"
     >
       <BackgroundImage
-        journeyItems={filteredJourneys}
-        activeIndex={displayIndex}
+        activeJourney={currentJourney}
         prefersReducedMotion={prefersReducedMotion}
         direction={backgroundDirection}
         season={season}
@@ -587,22 +674,22 @@ export function JourneyShowcaseGallery() {
                 ref={emblaRef}
               >
                 <motion.div
-                  key={filteredIdsSignature}
+                  key={renderedIdsSignature}
                   className="embla__container flex touch-pan-x items-center gap-3 sm:gap-4 md:ml-0 md:gap-[var(--journey-gap)] md:[--journey-gap:clamp(14px,1.7vw,28px)]"
                   initial={prefersReducedMotion ? undefined : { opacity: 0 }}
                   animate={prefersReducedMotion ? undefined : { opacity: 1 }}
                   transition={{ duration: 1.08, ease: [0.22, 1, 0.36, 1] }}
                 >
-                  {filteredJourneys.map((journey, index) => {
+                  {renderedJourneys.map((slide, index) => {
                     const forwardOffset = getForwardOffset(
                       index,
                       displayIndex,
-                      filteredJourneys.length
+                      renderedJourneys.length
                     );
 
                     return (
                       <motion.div
-                        key={journey.id}
+                        key={slide.renderKey}
                         layout
                         className={clsx(
                           'embla__slide flex flex-[0_0_74%] items-center sm:flex-[0_0_60%]',
@@ -621,10 +708,10 @@ export function JourneyShowcaseGallery() {
                         }}
                       >
                         <JourneyCard
-                          journey={journey}
-                          isActive={Boolean(currentJourney && currentJourney.id === journey.id)}
+                          journey={slide.journey}
+                          isActive={activeRenderedJourney?.renderKey === slide.renderKey}
                           forwardOffset={forwardOffset}
-                          onAction={() => handleCardAction(journey, index)}
+                          onAction={() => handleCardAction(slide.journey, index)}
                           prefersReducedMotion={prefersReducedMotion}
                           isMobileViewport={isMobileViewport}
                           useLiteEffects={useLiteEffects}
@@ -1070,8 +1157,7 @@ function JourneyCard({
 }
 
 type BackgroundImageProps = {
-  journeyItems: Journey[];
-  activeIndex: number;
+  activeJourney: Journey | null;
   prefersReducedMotion: boolean;
   direction: 1 | -1;
   season: SeasonFilterValue;
@@ -1079,17 +1165,12 @@ type BackgroundImageProps = {
 };
 
 function BackgroundImage({
-  journeyItems,
-  activeIndex,
+  activeJourney,
   prefersReducedMotion,
   direction,
   season,
   useLiteEffects,
 }: BackgroundImageProps) {
-  const clampedActiveIndex = journeyItems.length
-    ? Math.min(activeIndex, journeyItems.length - 1)
-    : 0;
-  const activeJourney = journeyItems[clampedActiveIndex] ?? null;
   const backgroundDuration = prefersReducedMotion ? 0.2 : useLiteEffects ? 0.72 : 0.98;
   const seamPeakOpacity = useLiteEffects ? 0.34 : 0.5;
   const seamShift = direction > 0 ? 42 : -42;
