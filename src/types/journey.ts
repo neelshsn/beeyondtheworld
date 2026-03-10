@@ -7,6 +7,16 @@ export type Journey = {
   slug: string;
   title: string;
   season: JourneySeason;
+  seasonTags?: JourneySeason[];
+  seasonVisuals?: Partial<
+    Record<
+      JourneySeason,
+      {
+        image?: string;
+        backgroundVideo?: string;
+      }
+    >
+  >;
   date: string;
   location: string;
   image: string;

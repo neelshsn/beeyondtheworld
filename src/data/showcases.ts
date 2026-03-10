@@ -40,7 +40,7 @@ export type CampaignShowcase = {
   cta?: { label: string; href: string };
 };
 
-export const journeyShowcases: JourneyShowcase[] = [
+const allJourneyShowcases: JourneyShowcase[] = [
   {
     id: 'philippines',
     slug: 'philippines',
@@ -516,6 +516,10 @@ export const journeyShowcases: JourneyShowcase[] = [
     },
   },
 ];
+
+export const journeyShowcases: JourneyShowcase[] = allJourneyShowcases.filter(
+  (journey) => journey.slug === 'india-january-2026'
+);
 
 export const campaignShowcases: CampaignShowcase[] = [
   {

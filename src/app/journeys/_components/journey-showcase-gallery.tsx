@@ -67,7 +67,26 @@ const MONTH_INDEX: Record<string, number> = {
   december: 12,
 };
 
+const JOURNEY_SEASON_ICONS: Record<
+  JourneySeason,
+  { icon: string; hoverIcon: string; label: string }
+> = {
+  'spring-summer': {
+    icon: '/assets/icones/Ico White BEE-14.svg',
+    hoverIcon: '/assets/icones/Ico Gold BEE-14.svg',
+    label: 'Spring Summer',
+  },
+  'fall-winter': {
+    icon: '/assets/icones/Ico White BEE-01.svg',
+    hoverIcon: '/assets/icones/Ico Gold BEE-01.svg',
+    label: 'Fall Winter',
+  },
+};
+
 const JOURNEY_TRANSITION_FADE_MS = 980;
+const VIDEO_CONTINUITY_STORAGE_KEY = 'journey-background-video-state';
+const INDIA_BACKGROUND_VIDEO =
+  '/assets/journeys/india-january-2026/anime_cette_image__Kling_30__17267.mp4';
 
 function parseSeasonFilter(value: string | null): SeasonFilterValue {
   if (value === 'summer') return 'summer';
@@ -196,6 +215,18 @@ function getJourneyChronologyKey(dateValue: string) {
   return year * 100 + month;
 }
 
+function getJourneyMediaForSeason(journey: Journey, season: SeasonFilterValue) {
+  const seasonKey =
+    season === 'summer' ? 'spring-summer' : season === 'winter' ? 'fall-winter' : null;
+  const seasonVisual = seasonKey ? journey.seasonVisuals?.[seasonKey] : undefined;
+
+  return {
+    image: seasonVisual?.image ?? journey.image,
+    backgroundVideo: seasonVisual?.backgroundVideo ?? journey.backgroundVideo,
+    variantKey: `${journey.id}-${seasonKey ?? 'all'}-${seasonVisual?.image ?? journey.image}-${seasonVisual?.backgroundVideo ?? journey.backgroundVideo ?? 'none'}`,
+  };
+}
+
 function filterJourneys(data: Journey[], season: SeasonFilterValue) {
   const filtered = data.filter((journey) => {
     const isIndiaDualSeason = journey.slug === 'india-january-2026';
@@ -284,6 +315,7 @@ export function JourneyShowcaseGallery() {
       if (previous === nextSeason) {
         return previous;
       }
+      setIsSeasonSwitching(true);
       setSeasonDirection(getSeasonDirection(previous, nextSeason));
       return nextSeason;
     });
@@ -292,6 +324,7 @@ export function JourneyShowcaseGallery() {
   const applySeason = useCallback(
     (nextSeason: SeasonFilterValue, direction: number) => {
       setSeasonDirection(direction);
+      setIsSeasonSwitching(true);
       setSeason(nextSeason);
 
       const params = new URLSearchParams(searchParams.toString());
@@ -316,6 +349,7 @@ export function JourneyShowcaseGallery() {
     () => renderedJourneys.map((journey) => journey.renderKey).join('|'),
     [renderedJourneys]
   );
+
   const uniqueJourneyCount = filteredJourneys.length;
   const centeredStartIndex = useMemo(() => {
     if (!uniqueJourneyCount || !renderedJourneys.length) {
@@ -352,6 +386,8 @@ export function JourneyShowcaseGallery() {
   const [canScrollNext, setCanScrollNext] = useState(false);
   const [backgroundDirection, setBackgroundDirection] = useState<1 | -1>(1);
   const [isJourneyTransitioning, setIsJourneyTransitioning] = useState(false);
+  const [isSeasonSwitching, setIsSeasonSwitching] = useState(false);
+  const backgroundVideoRef = useRef<HTMLVideoElement | null>(null);
   const previousSelectedIndexRef = useRef(0);
   const isRecenteringRef = useRef(false);
   const pendingDirectionRef = useRef<1 | -1>(1);
@@ -361,6 +397,23 @@ export function JourneyShowcaseGallery() {
   const displayIndex = safeLength ? Math.min(selectedIndex, safeLength - 1) : 0;
   const activeRenderedJourney = safeLength ? renderedJourneys[displayIndex] : null;
   const currentJourney = activeRenderedJourney?.journey ?? null;
+  const currentJourneyMedia = currentJourney
+    ? getJourneyMediaForSeason(currentJourney, season)
+    : null;
+
+  useEffect(() => {
+    if (!isSeasonSwitching) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setIsSeasonSwitching(false);
+    }, 320);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [isSeasonSwitching, renderedIdsSignature]);
 
   useEffect(() => {
     return () => {
@@ -378,10 +431,27 @@ export function JourneyShowcaseGallery() {
 
       const destination = `/journeys/${journey.slug}`;
       setIsJourneyTransitioning(true);
+      const journeyMedia =
+        currentJourney?.id === journey.id && currentJourneyMedia
+          ? currentJourneyMedia
+          : getJourneyMediaForSeason(journey, season);
 
       if (typeof window !== 'undefined') {
         try {
           window.sessionStorage.setItem('journey-transition-target', journey.slug);
+          if (journeyMedia.backgroundVideo && backgroundVideoRef.current) {
+            window.sessionStorage.setItem(
+              VIDEO_CONTINUITY_STORAGE_KEY,
+              JSON.stringify({
+                slug: journey.slug,
+                src: journeyMedia.backgroundVideo,
+                currentTime: backgroundVideoRef.current.currentTime ?? 0,
+                capturedAt: Date.now(),
+              })
+            );
+          } else {
+            window.sessionStorage.removeItem(VIDEO_CONTINUITY_STORAGE_KEY);
+          }
         } catch {
           // Ignore storage failures and continue with navigation.
         }
@@ -400,7 +470,14 @@ export function JourneyShowcaseGallery() {
         router.push(destination);
       }, JOURNEY_TRANSITION_FADE_MS);
     },
-    [isJourneyTransitioning, prefersReducedMotion, router]
+    [
+      currentJourney?.id,
+      currentJourneyMedia,
+      isJourneyTransitioning,
+      prefersReducedMotion,
+      router,
+      season,
+    ]
   );
 
   useEffect(() => {
@@ -556,6 +633,17 @@ export function JourneyShowcaseGallery() {
     [applySeason, currentSeasonIndex]
   );
 
+  const handleJourneySeasonSelect = useCallback(
+    (nextJourneySeason: JourneySeason) => {
+      const nextSeason = nextJourneySeason === 'spring-summer' ? 'summer' : 'winter';
+      if (nextSeason === season) {
+        return;
+      }
+      applySeason(nextSeason, getSeasonDirection(season, nextSeason));
+    },
+    [applySeason, season]
+  );
+
   const handleCardAction = useCallback(
     (journey: Journey, index: number) => {
       if (!emblaApi) {
@@ -642,10 +730,16 @@ export function JourneyShowcaseGallery() {
     >
       <BackgroundImage
         activeJourney={currentJourney}
+        activeJourneyKey={
+          currentJourneyMedia?.variantKey ?? currentJourney?.id ?? 'journey-background'
+        }
+        activeJourneyImage={currentJourneyMedia?.image ?? currentJourney?.image ?? null}
+        activeJourneyVideo={currentJourneyMedia?.backgroundVideo ?? currentJourney?.backgroundVideo}
         prefersReducedMotion={prefersReducedMotion}
         direction={backgroundDirection}
         season={season}
         useLiteEffects={useLiteEffects}
+        videoRef={backgroundVideoRef}
       />
 
       <div
@@ -690,7 +784,7 @@ export function JourneyShowcaseGallery() {
                     return (
                       <motion.div
                         key={slide.renderKey}
-                        layout
+                        layout={!isSeasonSwitching}
                         className={clsx(
                           'embla__slide flex flex-[0_0_74%] items-center sm:flex-[0_0_60%]',
                           getDesktopSlideBasisClass(forwardOffset)
@@ -701,20 +795,25 @@ export function JourneyShowcaseGallery() {
                           duration: 0.92,
                           ease: [0.22, 1, 0.36, 1],
                           delay: Math.min(index * 0.07, 0.42),
-                          layout: {
-                            duration: useLiteEffects ? 0.46 : 0.7,
-                            ease: [0.22, 1, 0.36, 1],
-                          },
+                          layout: isSeasonSwitching
+                            ? undefined
+                            : {
+                                duration: useLiteEffects ? 0.46 : 0.7,
+                                ease: [0.22, 1, 0.36, 1],
+                              },
                         }}
                       >
                         <JourneyCard
                           journey={slide.journey}
+                          season={season}
                           isActive={activeRenderedJourney?.renderKey === slide.renderKey}
                           forwardOffset={forwardOffset}
                           onAction={() => handleCardAction(slide.journey, index)}
+                          onSeasonSelect={handleJourneySeasonSelect}
                           prefersReducedMotion={prefersReducedMotion}
                           isMobileViewport={isMobileViewport}
                           useLiteEffects={useLiteEffects}
+                          disableLayoutAnimation={isSeasonSwitching}
                         />
                       </motion.div>
                     );
@@ -1041,30 +1140,39 @@ function JourneyNavButton({
 
 type JourneyCardProps = {
   journey: Journey;
+  season: SeasonFilterValue;
   isActive: boolean;
   forwardOffset: number;
   prefersReducedMotion: boolean;
   isMobileViewport: boolean;
   useLiteEffects: boolean;
+  disableLayoutAnimation?: boolean;
+  onSeasonSelect?: (season: JourneySeason) => void;
   onAction: () => void;
 };
 
 function JourneyCard({
   journey,
+  season,
   isActive,
   forwardOffset,
   prefersReducedMotion,
   isMobileViewport,
   useLiteEffects,
+  disableLayoutAnimation = false,
+  onSeasonSelect,
   onAction,
 }: JourneyCardProps) {
   const fadeProfile = getCardFadeProfile(forwardOffset, isMobileViewport, useLiteEffects);
+  const seasonTags =
+    journey.seasonTags && journey.seasonTags.length > 0 ? journey.seasonTags : [journey.season];
+  const displayMedia = getJourneyMediaForSeason(journey, season);
 
   return (
     <motion.button
       type="button"
       onClick={onAction}
-      layout
+      layout={!disableLayoutAnimation}
       className={clsx(
         'group relative w-full overflow-visible focus:outline-none focus-visible:ring-2 focus-visible:ring-[#f5d49b] focus-visible:ring-offset-0',
         prefersReducedMotion
@@ -1095,7 +1203,9 @@ function JourneyCard({
           : {
               duration: useLiteEffects ? 0.42 : 0.7,
               ease: [0.22, 1, 0.36, 1],
-              layout: { duration: useLiteEffects ? 0.46 : 0.7, ease: [0.22, 1, 0.36, 1] },
+              layout: disableLayoutAnimation
+                ? undefined
+                : { duration: useLiteEffects ? 0.46 : 0.7, ease: [0.22, 1, 0.36, 1] },
             }
       }
       aria-label={`Journey: ${journey.title}, ${journey.date}`}
@@ -1133,14 +1243,26 @@ function JourneyCard({
               : { duration: useLiteEffects ? 0.45 : 0.8, ease: [0.22, 1, 0.36, 1] }
           }
         >
-          <Image
-            src={journey.image}
-            alt={journey.title}
-            fill
-            sizes="(min-width: 1536px) 27vw, (min-width: 1280px) 32vw, (min-width: 1024px) 34vw, (min-width: 640px) 52vw, 78vw"
-            className="object-cover"
-            priority={isActive}
-          />
+          <AnimatePresence initial={false} mode="wait">
+            <motion.div
+              key={displayMedia.variantKey}
+              className="absolute inset-0"
+              initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, rotateY: -90 }}
+              animate={{ opacity: 1, rotateY: 0 }}
+              exit={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, rotateY: 90 }}
+              transition={{ duration: prefersReducedMotion ? 0.2 : 0.52, ease: [0.22, 1, 0.36, 1] }}
+              style={{ transformStyle: 'preserve-3d' }}
+            >
+              <Image
+                src={displayMedia.image}
+                alt={journey.title}
+                fill
+                sizes="(min-width: 1536px) 27vw, (min-width: 1280px) 32vw, (min-width: 1024px) 34vw, (min-width: 640px) 52vw, 78vw"
+                className="object-cover"
+                priority={isActive}
+              />
+            </motion.div>
+          </AnimatePresence>
         </motion.div>
         <motion.div
           className="from-black/58 absolute inset-0 bg-gradient-to-t via-transparent to-black/10"
@@ -1151,29 +1273,119 @@ function JourneyCard({
               : { duration: useLiteEffects ? 0.38 : 0.62, ease: [0.22, 1, 0.36, 1] }
           }
         />
+        <div className="absolute inset-x-0 bottom-4 flex justify-center">
+          <SeasonIconRow
+            seasons={seasonTags}
+            compact={isMobileViewport}
+            activeFilter={season}
+            onSelect={onSeasonSelect}
+          />
+        </div>
       </div>
     </motion.button>
   );
 }
 
+function SeasonIconRow({
+  seasons,
+  compact = false,
+  activeFilter,
+  onSelect,
+}: {
+  seasons: JourneySeason[];
+  compact?: boolean;
+  activeFilter?: SeasonFilterValue;
+  onSelect?: (season: JourneySeason) => void;
+}) {
+  return (
+    <div className={clsx('flex items-center justify-center', compact ? 'gap-2.5' : 'gap-3')}>
+      {seasons.map((season) => {
+        const iconSet = JOURNEY_SEASON_ICONS[season];
+        const isSelected =
+          activeFilter === 'all'
+            ? false
+            : activeFilter === 'summer'
+              ? season === 'spring-summer'
+              : season === 'fall-winter';
+        return (
+          <span
+            key={season}
+            className={clsx('relative shrink-0', compact ? 'h-6 w-6' : 'h-7 w-7')}
+            aria-label={iconSet.label}
+            role={onSelect ? 'button' : undefined}
+            tabIndex={onSelect ? 0 : undefined}
+            onClick={
+              onSelect
+                ? (event) => {
+                    event.stopPropagation();
+                    onSelect(season);
+                  }
+                : undefined
+            }
+            onKeyDown={
+              onSelect
+                ? (event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault();
+                      event.stopPropagation();
+                      onSelect(season);
+                    }
+                  }
+                : undefined
+            }
+          >
+            <Image
+              src={iconSet.icon}
+              alt=""
+              fill
+              className={clsx(
+                'object-contain transition-all duration-300 group-hover:-translate-y-0.5 group-hover:scale-105',
+                isSelected ? 'opacity-0' : 'group-hover:opacity-0'
+              )}
+            />
+            <Image
+              src={iconSet.hoverIcon}
+              alt=""
+              fill
+              className={clsx(
+                'object-contain transition-all duration-300 group-hover:-translate-y-0.5 group-hover:scale-105',
+                isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+              )}
+            />
+          </span>
+        );
+      })}
+    </div>
+  );
+}
+
 type BackgroundImageProps = {
   activeJourney: Journey | null;
+  activeJourneyKey: string;
+  activeJourneyImage: string | null;
+  activeJourneyVideo?: string;
   prefersReducedMotion: boolean;
   direction: 1 | -1;
   season: SeasonFilterValue;
   useLiteEffects: boolean;
+  videoRef: { current: HTMLVideoElement | null };
 };
 
 function BackgroundImage({
   activeJourney,
+  activeJourneyKey,
+  activeJourneyImage,
+  activeJourneyVideo,
   prefersReducedMotion,
   direction,
   season,
   useLiteEffects,
+  videoRef,
 }: BackgroundImageProps) {
   const backgroundDuration = prefersReducedMotion ? 0.2 : useLiteEffects ? 0.72 : 0.98;
   const seamPeakOpacity = useLiteEffects ? 0.34 : 0.5;
   const seamShift = direction > 0 ? 42 : -42;
+  const isIndiaBackground = activeJourney?.slug === 'india-january-2026';
 
   const seasonOverlayClass = clsx(
     'absolute inset-[-18%] blur-[64px]',
@@ -1197,7 +1409,7 @@ function BackgroundImage({
 
   return (
     <div className="pointer-events-none absolute inset-0" aria-hidden>
-      {!prefersReducedMotion ? (
+      {!prefersReducedMotion && !isIndiaBackground ? (
         <AnimatePresence initial={false} mode="wait">
           <motion.div
             key={`season-breath-${season}`}
@@ -1229,7 +1441,7 @@ function BackgroundImage({
         <div className={seasonOverlayClass} style={{ opacity: 0.32 }} />
       )}
 
-      {!prefersReducedMotion ? (
+      {!prefersReducedMotion && !isIndiaBackground ? (
         <motion.div
           className={seasonVeilClass}
           animate={
@@ -1253,9 +1465,9 @@ function BackgroundImage({
 
       <div className="absolute inset-0">
         <AnimatePresence initial={false} mode="sync">
-          {activeJourney ? (
+          {activeJourney && activeJourneyImage ? (
             <motion.div
-              key={activeJourney.id}
+              key={activeJourneyKey}
               className="absolute inset-0 overflow-hidden"
               initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -1263,35 +1475,47 @@ function BackgroundImage({
               transition={{ duration: backgroundDuration, ease: [0.22, 1, 0.36, 1] }}
             >
               <motion.div
-                className="absolute inset-[-10%]"
+                className={clsx('absolute', isIndiaBackground ? 'inset-0' : 'inset-[-10%]')}
                 initial={
-                  prefersReducedMotion
-                    ? { scale: 1.01, x: 0 }
-                    : { scale: 1.05, x: direction > 0 ? 18 : -18 }
+                  isIndiaBackground
+                    ? { scale: 1, x: 0 }
+                    : prefersReducedMotion
+                      ? { scale: 1.01, x: 0 }
+                      : { scale: 1.05, x: direction > 0 ? 18 : -18 }
                 }
-                animate={{ scale: 1.01, x: 0 }}
+                animate={isIndiaBackground ? { scale: 1, x: 0 } : { scale: 1.01, x: 0 }}
                 exit={
-                  prefersReducedMotion
-                    ? { scale: 1.01, x: 0 }
-                    : { scale: 1.04, x: direction > 0 ? -12 : 12 }
+                  isIndiaBackground
+                    ? { scale: 1, x: 0 }
+                    : prefersReducedMotion
+                      ? { scale: 1.01, x: 0 }
+                      : { scale: 1.04, x: direction > 0 ? -12 : 12 }
                 }
                 transition={{ duration: backgroundDuration, ease: [0.22, 1, 0.36, 1] }}
                 style={{ willChange: 'transform, opacity' }}
               >
                 <Image
-                  src={activeJourney.image}
+                  src={activeJourneyImage}
                   alt=""
                   fill
                   sizes="100vw"
-                  className={clsx('object-cover', activeJourney.backgroundVideo && 'opacity-0')}
+                  className={clsx(
+                    'object-cover',
+                    isIndiaBackground && 'object-center',
+                    activeJourneyVideo && 'opacity-0'
+                  )}
                   priority
                 />
-                {activeJourney.backgroundVideo ? (
+                {activeJourneyVideo ? (
                   <video
-                    key={activeJourney.backgroundVideo}
-                    src={activeJourney.backgroundVideo}
-                    poster={activeJourney.image}
-                    className="absolute inset-0 h-full w-full object-cover"
+                    ref={videoRef}
+                    key={activeJourneyVideo}
+                    src={activeJourneyVideo}
+                    poster={activeJourneyImage}
+                    className={clsx(
+                      'absolute inset-0 h-full w-full object-cover',
+                      isIndiaBackground && 'object-center'
+                    )}
                     autoPlay
                     muted
                     loop
@@ -1307,9 +1531,9 @@ function BackgroundImage({
 
       <div className="absolute inset-0 overflow-hidden">
         <AnimatePresence initial={false} mode="sync">
-          {activeJourney && !prefersReducedMotion ? (
+          {activeJourney && !prefersReducedMotion && !isIndiaBackground ? (
             <motion.div
-              key={`seam-${activeJourney.id}`}
+              key={`seam-${activeJourneyKey}`}
               className="absolute inset-0"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -1332,7 +1556,14 @@ function BackgroundImage({
         </AnimatePresence>
       </div>
 
-      <div className="absolute inset-0 bg-[rgba(2,2,1,0.2)]" />
+      {isIndiaBackground ? (
+        <>
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_70%,rgba(222,166,112,0.36)_0%,rgba(222,166,112,0)_44%),radial-gradient(circle_at_86%_24%,rgba(255,232,181,0.14)_0%,rgba(255,232,181,0)_42%)]" />
+          <div className="absolute inset-0 bg-[linear-gradient(110deg,rgba(41,22,9,0.58)_0%,rgba(99,62,33,0.44)_38%,rgba(56,34,21,0.5)_100%)]" />
+        </>
+      ) : (
+        <div className="absolute inset-0 bg-[rgba(2,2,1,0.2)]" />
+      )}
     </div>
   );
 }
