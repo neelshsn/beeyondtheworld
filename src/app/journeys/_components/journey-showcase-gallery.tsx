@@ -445,6 +445,12 @@ export function JourneyShowcaseGallery() {
               JSON.stringify({
                 slug: journey.slug,
                 src: journeyMedia.backgroundVideo,
+                season:
+                  season === 'summer'
+                    ? 'spring-summer'
+                    : season === 'winter'
+                      ? 'fall-winter'
+                      : undefined,
                 currentTime: backgroundVideoRef.current.currentTime ?? 0,
                 capturedAt: Date.now(),
               })
@@ -1310,7 +1316,7 @@ function SeasonIconRow({
         return (
           <span
             key={season}
-            className={clsx('relative shrink-0', compact ? 'h-6 w-6' : 'h-7 w-7')}
+            className={clsx('group/season relative shrink-0', compact ? 'h-6 w-6' : 'h-7 w-7')}
             aria-label={iconSet.label}
             role={onSelect ? 'button' : undefined}
             tabIndex={onSelect ? 0 : undefined}
@@ -1339,8 +1345,8 @@ function SeasonIconRow({
               alt=""
               fill
               className={clsx(
-                'object-contain transition-all duration-300 group-hover:-translate-y-0.5 group-hover:scale-105',
-                isSelected ? 'opacity-0' : 'group-hover:opacity-0'
+                'object-contain transition-all duration-300 group-hover/season:-translate-y-0.5 group-hover/season:scale-105',
+                isSelected ? 'opacity-0' : 'group-hover/season:opacity-0'
               )}
             />
             <Image
@@ -1348,8 +1354,8 @@ function SeasonIconRow({
               alt=""
               fill
               className={clsx(
-                'object-contain transition-all duration-300 group-hover:-translate-y-0.5 group-hover:scale-105',
-                isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+                'object-contain transition-all duration-300 group-hover/season:-translate-y-0.5 group-hover/season:scale-105',
+                isSelected ? 'opacity-100' : 'opacity-0 group-hover/season:opacity-100'
               )}
             />
           </span>

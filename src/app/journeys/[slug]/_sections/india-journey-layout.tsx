@@ -6,7 +6,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 
 import { useBodyScrollLock } from '@/app/concept/_hooks/use-body-scroll-lock';
 import { usePrefersReducedMotion } from '@/app/concept/_hooks/use-prefers-reduced-motion';
@@ -22,8 +22,18 @@ type IndiaLocation = {
   seasons: JourneySeason[];
 };
 type RenderedLocationSlide = { location: IndiaLocation; sourceIndex: number; renderKey: string };
+type LoopingMobileSelectorItem = {
+  id: string;
+  icon: string;
+  label: string;
+};
+type RenderedLoopingMobileSelectorItem = {
+  item: LoopingMobileSelectorItem;
+  sourceIndex: number;
+  renderKey: string;
+};
 type LocationSectionValue = 'locations' | 'csr-impact';
-type MobileMenuValue = 'locations' | 'csr-impact' | 'back';
+type MobileMenuValue = 'locations' | 'csr-impact';
 type IndiaLocationStory = {
   id: string;
   locationId: IndiaLocation['id'];
@@ -33,6 +43,33 @@ type IndiaLocationStory = {
   nextLocationId: IndiaLocation['id'];
   nextLocation: string;
 };
+type VideoContinuityState = {
+  slug?: string;
+  src?: string;
+  currentTime?: number;
+  capturedAt?: number;
+  season?: JourneySeason;
+};
+type CsrImpactCategory = 'environment' | 'social' | 'societal';
+type CsrImpactCard = {
+  id: string;
+  category: CsrImpactCategory;
+  title: string;
+  image: string;
+  ctaLabel: string;
+  overlayText?: string;
+  titleSuffix?: string;
+  suffixSubscript?: string;
+  detailSubtitle?: string;
+  detailBody?: string[];
+  detailItems?: {
+    icon: string;
+    label: string;
+    handle?: string;
+    href?: string;
+  }[];
+};
+type RenderedCsrImpactSlide = { card: CsrImpactCard; sourceIndex: number; renderKey: string };
 
 const INDIA_BACKGROUND_VIDEO =
   '/assets/journeys/india-january-2026/anime_cette_image__Kling_30__17267.mp4';
@@ -95,7 +132,7 @@ const SECTION_OPTIONS = [
     value: 'csr-impact' as const,
     icon: '/assets/icones/Ico White BEE-06.svg',
     hoverIcon: '/assets/icones/Ico Gold BEE-06.svg',
-    disabled: true,
+    disabled: false,
   },
 ];
 
@@ -112,16 +149,66 @@ const MOBILE_MENU_OPTIONS = [
     value: 'csr-impact' as const,
     icon: '/assets/icones/Ico White BEE-06.svg',
     hoverIcon: '/assets/icones/Ico Gold BEE-06.svg',
-    disabled: true,
-  },
-  {
-    label: 'Back',
-    value: 'back' as const,
-    icon: '/assets/icones/Ico White BEE-12.svg',
-    hoverIcon: '/assets/icones/Ico Gold BEE-12.svg',
     disabled: false,
   },
 ];
+const CSR_CATEGORY_OPTIONS: {
+  value: CsrImpactCategory;
+  label: string;
+  icon: string;
+}[] = [
+  {
+    value: 'environment',
+    label: 'Environment',
+    icon: '/assets/icones/Ico Gold BEE-12.svg',
+  },
+  {
+    value: 'social',
+    label: 'Social',
+    icon: '/assets/icones/Ico Gold BEE-13.svg',
+  },
+  {
+    value: 'societal',
+    label: 'Societal',
+    icon: '/assets/icones/Ico Gold BEE-06.svg',
+  },
+];
+const CSR_CATEGORY_ARC_CONFIG: Record<
+  CsrImpactCategory,
+  {
+    desktopTopClass: string;
+    compactTopClass: string;
+    desktopPath: string;
+    compactPath: string;
+    desktopTextClass: string;
+    compactTextClass: string;
+  }
+> = {
+  environment: {
+    desktopTopClass: '-top-[3.65rem]',
+    compactTopClass: '-top-[2.65rem]',
+    desktopPath: 'M 8 126 A 112 112 0 0 1 232 126',
+    compactPath: 'M 14 124 A 108 108 0 0 1 226 124',
+    desktopTextClass: 'text-[44px] tracking-[0.05em]',
+    compactTextClass: 'text-[22px] tracking-[0.05em]',
+  },
+  social: {
+    desktopTopClass: '-top-[3.15rem]',
+    compactTopClass: '-top-[2.3rem]',
+    desktopPath: 'M 22 118 A 98 98 0 0 1 218 118',
+    compactPath: 'M 28 118 A 92 92 0 0 1 212 118',
+    desktopTextClass: 'text-[44px] tracking-[0.12em]',
+    compactTextClass: 'text-[22px] tracking-[0.12em]',
+  },
+  societal: {
+    desktopTopClass: '-top-[3.45rem]',
+    compactTopClass: '-top-[2.5rem]',
+    desktopPath: 'M 10 124 A 110 110 0 0 1 230 124',
+    compactPath: 'M 18 122 A 102 102 0 0 1 222 122',
+    desktopTextClass: 'text-[44px] tracking-[0.05em]',
+    compactTextClass: 'text-[22px] tracking-[0.05em]',
+  },
+};
 
 const LOCATION_STORIES: IndiaLocationStory[] = [
   {
@@ -155,6 +242,177 @@ const LOCATION_STORIES: IndiaLocationStory[] = [
     nextLocation: 'Rajasthan',
   },
 ];
+const CSR_IMPACT_CARDS: CsrImpactCard[] = [
+  {
+    id: 'csr-impact-social-15-6t',
+    category: 'environment',
+    title: '15,6t',
+    titleSuffix: 'CO2',
+    image: '/assets/journeys/india-january-2026/csr-impact-leaf.svg',
+    ctaLabel: 'Discover',
+    detailBody: [
+      'CO2 avoid on this journey: Our model orchestrates projects so several houses share the same territory, timeframe, and production.',
+      'What was multiplied becomes shared; what was logistical becomes intentional. By reducing travel and integrating local craftsmanship, each project anchors itself in its environment.',
+      "Impact isn't compensated: it's anticipated and reduced before it exists.",
+    ],
+  },
+  {
+    id: 'csr-impact-navdanya',
+    category: 'environment',
+    title: 'Navdanya',
+    image: '/assets/journeys/india-january-2026/csr-impact-navdama.svg',
+    ctaLabel: 'Discover',
+    detailBody: [
+      'Navdanya is an environmental NGO in India founded in 1991 by Vandana Shiva. It works to protect biodiversity and traditional seeds while promoting organic farming.',
+      'The organization helps farmers reduce the use of chemicals and adopt sustainable agricultural practices. It also educates communities about ecological farming and food sovereignty.',
+      'Overall, Navdanya supports both nature conservation and healthy food production.',
+    ],
+  },
+  {
+    id: 'csr-impact-pool-rate',
+    category: 'environment',
+    title: 'Pool Rate',
+    image: '/assets/journeys/india-january-2026/csr-impact-ring.svg',
+    overlayText: '65%',
+    ctaLabel: 'Discover',
+    detailBody: [
+      'A high resource sharing rate means many activities were avoided and resources were used more efficiently.',
+      'We measure how many activities were avoided thanks to sharing resources. The mutualization rate shows the proportion of resources that would have been used if each brand had worked independently, but were instead shared in a common project.',
+    ],
+  },
+  {
+    id: 'csr-impact-artisans-collective',
+    category: 'social',
+    title: 'Artisans Collective',
+    image: '/assets/journeys/india-january-2026/csr-impact-artisans-collective.svg',
+    ctaLabel: 'Discover',
+    detailItems: [
+      {
+        icon: '/assets/icones/Ico Gold BEE-08.svg',
+        label: 'SET DESIGN ARTIST',
+        handle: '@lula',
+        href: 'https://www.instagram.com/lula/',
+      },
+      {
+        icon: '/assets/journeys/india-january-2026/csr-impact-sound-design.svg',
+        label: 'SOUND DESIGN',
+        handle: '@Jannis',
+        href: 'https://www.instagram.com/jannis/',
+      },
+      {
+        icon: '/assets/icones/Ico Gold BEE-15.svg',
+        label: 'MAKE-UP ARTIST',
+        handle: '@estellemordant',
+        href: 'https://www.instagram.com/estellemordant/',
+      },
+    ],
+  },
+  {
+    id: 'csr-impact-smile-foundation',
+    category: 'social',
+    title: 'Smile Foundation',
+    image: '/assets/journeys/india-january-2026/csr-impact-smile-foundation.svg',
+    ctaLabel: 'Discover',
+    detailBody: [
+      'Smile Foundation support underprivileged children and communities through education, healthcare, and livelihood programs.',
+      'The organization runs schools and learning centers to improve access to quality education. It also organizes health camps and community development initiatives across India.',
+      'Its mission is to empower disadvantaged children and help them build a better future.',
+    ],
+  },
+  {
+    id: 'csr-impact-location-nature',
+    category: 'societal',
+    title: 'Local Nature',
+    image: '/assets/journeys/india-january-2026/csr-impact-ring.svg',
+    overlayText: '80%',
+    ctaLabel: 'Discover',
+    detailItems: [
+      {
+        icon: '/assets/journeys/india-january-2026/csr-impact-family-sustain.svg',
+        label: 'FAMILY, SUSTAIN',
+      },
+      {
+        icon: '/assets/journeys/india-january-2026/csr-impact-local-catering.svg',
+        label: 'LOCAL CATERING',
+      },
+      {
+        icon: '/assets/icones/Ico Gold BEE-16.svg',
+        label: 'LOCAL TEAM',
+      },
+    ],
+  },
+  {
+    id: 'csr-impact-cultural-ethic',
+    category: 'societal',
+    title: 'Cultural Ethic',
+    image: '/assets/journeys/india-january-2026/csr-impact-ring.svg',
+    overlayText: '90%',
+    ctaLabel: 'Discover',
+    detailItems: [
+      {
+        icon: '/assets/icones/Ico Gold BEE-04.svg',
+        label: 'LOCAL MODEL',
+      },
+      {
+        icon: '/assets/icones/Ico Gold BEE-10.svg',
+        label: 'INDI LESSONS',
+      },
+      {
+        icon: '/assets/icones/Ico Gold BEE-16.svg',
+        label: 'SCOUTING GUIDE',
+      },
+    ],
+  },
+  {
+    id: 'csr-impact-local-sponsoring',
+    category: 'societal',
+    title: 'Local Sponsoring',
+    image: '/assets/journeys/india-january-2026/csr-impact-local-sponsoring.svg',
+    ctaLabel: 'Discover',
+    detailBody: [
+      "In co-creation with the brand's on board, we identify local brands to highlighted, whether for its craftsmanship, cultural relevance, social commitment, or innovative approach.",
+      'We activate a cross-promotion strategy to maximize visibility and impact.',
+    ],
+  },
+  {
+    id: 'csr-impact-the-new-heiress',
+    category: 'societal',
+    title: 'The New Heiress',
+    image: '/assets/journeys/india-january-2026/csr-impact-smile-foundation.svg',
+    ctaLabel: 'Discover',
+    detailBody: [
+      'A fully local artvertising publication rooted in its territory. Created with local artisans, each image reflects lived culture rather than interpretation.',
+      'At its heart: the place of women in India not as subjects, but as authors. By producing locally, value returns to its origin.',
+      'Creation becomes dialogue, and representation belongs to those who live it.',
+    ],
+  },
+];
+const CSR_CATEGORY_START_INDEX: Record<CsrImpactCategory, number> = {
+  environment: CSR_IMPACT_CARDS.findIndex((card) => card.category === 'environment'),
+  social: CSR_IMPACT_CARDS.findIndex((card) => card.category === 'social'),
+  societal: CSR_IMPACT_CARDS.findIndex((card) => card.category === 'societal'),
+};
+
+function resolvePreferredEntryLocationId(state: VideoContinuityState | null) {
+  if (!state?.src) return null;
+
+  const exactBackgroundMatch = INDIA_LOCATIONS.find(
+    (location) => location.backgroundVideo && location.backgroundVideo === state.src
+  );
+  if (exactBackgroundMatch) {
+    return exactBackgroundMatch.id;
+  }
+
+  if (state.season) {
+    const season = state.season;
+    const seasonFallback = INDIA_LOCATIONS.find((location) => location.seasons.includes(season));
+    if (seasonFallback) {
+      return seasonFallback.id;
+    }
+  }
+
+  return null;
+}
 
 function buildRenderedLocationSlides(data: IndiaLocation[]): RenderedLocationSlide[] {
   if (!data.length) return [];
@@ -163,6 +421,34 @@ function buildRenderedLocationSlides(data: IndiaLocation[]): RenderedLocationSli
     const sourceIndex = index % data.length;
     return {
       location: data[sourceIndex],
+      sourceIndex,
+      renderKey: `${data[sourceIndex].id}-${index}`,
+    };
+  });
+}
+
+function buildRenderedCsrImpactSlides(data: CsrImpactCard[]): RenderedCsrImpactSlide[] {
+  if (!data.length) return [];
+  const repeatCycles = Math.max(7, Math.ceil(18 / data.length));
+  return Array.from({ length: data.length * repeatCycles }, (_, index) => {
+    const sourceIndex = index % data.length;
+    return {
+      card: data[sourceIndex],
+      sourceIndex,
+      renderKey: `${data[sourceIndex].id}-${index}`,
+    };
+  });
+}
+
+function buildRenderedLoopingMobileSelectorItems(
+  data: LoopingMobileSelectorItem[]
+): RenderedLoopingMobileSelectorItem[] {
+  if (!data.length) return [];
+  const repeatCycles = Math.max(7, Math.ceil(18 / data.length));
+  return Array.from({ length: data.length * repeatCycles }, (_, index) => {
+    const sourceIndex = index % data.length;
+    return {
+      item: data[sourceIndex],
       sourceIndex,
       renderKey: `${data[sourceIndex].id}-${index}`,
     };
@@ -205,9 +491,9 @@ function getCardFadeProfile(forwardOffset: number, isMobileViewport: boolean) {
   }
   if (forwardOffset === 1) {
     return {
-      opacity: 0.9,
-      y: 5,
-      scale: 0.996,
+      opacity: 0.76,
+      y: 0,
+      scale: 0.9,
       imageScale: 1.03,
       imageFilter: 'saturate(0.95) brightness(0.98)',
       overlayOpacity: 0.18,
@@ -215,18 +501,18 @@ function getCardFadeProfile(forwardOffset: number, isMobileViewport: boolean) {
   }
   if (forwardOffset === 2) {
     return {
-      opacity: 0.78,
-      y: 9,
-      scale: 0.989,
+      opacity: 0.56,
+      y: 0,
+      scale: 0.8,
       imageScale: 1.045,
       imageFilter: 'saturate(0.92) brightness(0.96)',
       overlayOpacity: 0.22,
     };
   }
   return {
-    opacity: 0.68,
-    y: 12,
-    scale: 0.984,
+    opacity: 0.38,
+    y: 0,
+    scale: 0.7,
     imageScale: 1.055,
     imageFilter: 'saturate(0.88) brightness(0.92)',
     overlayOpacity: 0.26,
@@ -240,8 +526,9 @@ export function IndiaJourneyLayout({ journey }: { journey: JourneyShowcase }) {
   const prefersReducedMotion = usePrefersReducedMotion();
   const [isMobileViewport, setIsMobileViewport] = useState(false);
   const [useLiteEffects, setUseLiteEffects] = useState(false);
-  const [activeSection] = useState<LocationSectionValue>('locations');
+  const [activeSection, setActiveSection] = useState<LocationSectionValue>('locations');
   const [mobileMenuIndex, setMobileMenuIndex] = useState(0);
+  const [activeCsrCategory, setActiveCsrCategory] = useState<CsrImpactCategory>('social');
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -268,13 +555,44 @@ export function IndiaJourneyLayout({ journey }: { journey: JourneyShowcase }) {
     () => renderedLocations.map((location) => location.renderKey).join('|'),
     [renderedLocations]
   );
+  const renderedCsrCards = useMemo(() => buildRenderedCsrImpactSlides(CSR_IMPACT_CARDS), []);
+  const renderedCsrIdsSignature = useMemo(
+    () => renderedCsrCards.map((card) => card.renderKey).join('|'),
+    [renderedCsrCards]
+  );
   const uniqueLocationCount = INDIA_LOCATIONS.length;
+  const uniqueCsrCardCount = CSR_IMPACT_CARDS.length;
   const centeredStartIndex = useMemo(() => {
     if (!uniqueLocationCount || !renderedLocations.length) return 0;
     return Math.floor(renderedLocations.length / uniqueLocationCount / 2) * uniqueLocationCount;
   }, [renderedLocations.length, uniqueLocationCount]);
+  const centeredCsrStartIndex = useMemo(() => {
+    if (!uniqueCsrCardCount || !renderedCsrCards.length) return 0;
+    return Math.floor(renderedCsrCards.length / uniqueCsrCardCount / 2) * uniqueCsrCardCount;
+  }, [renderedCsrCards.length, uniqueCsrCardCount]);
+  const centeredCsrSocialStartIndex = centeredCsrStartIndex + CSR_CATEGORY_START_INDEX.social;
+  const [preferredEntryLocationId, setPreferredEntryLocationId] = useState<
+    IndiaLocation['id'] | null
+  >(null);
+  const preferredEntrySourceIndex = useMemo(() => {
+    if (!preferredEntryLocationId) return 0;
+    const matchIndex = INDIA_LOCATIONS.findIndex(
+      (location) => location.id === preferredEntryLocationId
+    );
+    return matchIndex >= 0 ? matchIndex : 0;
+  }, [preferredEntryLocationId]);
+  const targetStartIndex = centeredStartIndex + preferredEntrySourceIndex;
 
   const [emblaRef, emblaApi] = useEmblaCarousel({
+    align: 'center',
+    loop: false,
+    containScroll: false,
+    duration: 30,
+    skipSnaps: false,
+    dragFree: false,
+    breakpoints: { '(min-width: 768px)': { align: 'start' } },
+  });
+  const [csrEmblaRef, csrEmblaApi] = useEmblaCarousel({
     align: 'center',
     loop: false,
     containScroll: false,
@@ -288,22 +606,66 @@ export function IndiaJourneyLayout({ journey }: { journey: JourneyShowcase }) {
   const previousSelectedIndexRef = useRef(0);
   const isRecenteringRef = useRef(false);
   const pendingDirectionRef = useRef<1 | -1>(1);
+  const previousCsrSelectedIndexRef = useRef(0);
+  const isCsrRecenteringRef = useRef(false);
+  const pendingCsrDirectionRef = useRef<1 | -1>(1);
+  const pendingStoryLocationIdRef = useRef<IndiaLocation['id'] | null>(null);
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [csrSelectedIndex, setCsrSelectedIndex] = useState(0);
+  const [activeCsrDetailId, setActiveCsrDetailId] = useState<string | null>(null);
+  const [isDesktopClosingDetail, setIsDesktopClosingDetail] = useState(false);
   const [canScrollPrev, setCanScrollPrev] = useState(false);
   const [canScrollNext, setCanScrollNext] = useState(false);
   const [backgroundDirection, setBackgroundDirection] = useState<1 | -1>(1);
   const [activeLocationStoryId, setActiveLocationStoryId] = useState<string | null>(null);
   const backgroundVideoRef = useRef<HTMLVideoElement | null>(null);
+  const desktopDetailCloseTimeoutRef = useRef<number | null>(null);
 
   const safeLength = renderedLocations.length;
   const displayIndex = safeLength ? Math.min(selectedIndex, safeLength - 1) : 0;
   const activeRenderedLocation = safeLength ? renderedLocations[displayIndex] : null;
   const currentLocation = activeRenderedLocation?.location ?? null;
+  const csrSafeLength = renderedCsrCards.length;
+  const csrDisplayIndex = csrSafeLength ? Math.min(csrSelectedIndex, csrSafeLength - 1) : 0;
+  const activeRenderedCsrCard = csrSafeLength ? renderedCsrCards[csrDisplayIndex] : null;
+  const activeCsrCard = activeRenderedCsrCard?.card ?? null;
   const activeLocationStory = useMemo(
     () => LOCATION_STORIES.find((story) => story.id === activeLocationStoryId) ?? null,
     [activeLocationStoryId]
   );
   const activeMobileMenuOption = MOBILE_MENU_OPTIONS[mobileMenuIndex] ?? MOBILE_MENU_OPTIONS[0];
+  const isLocationsSection = activeSection === 'locations';
+  const hasActiveCsrDetail = activeCsrDetailId != null && activeCsrCard?.id === activeCsrDetailId;
+  const isCsrDetailOpen = hasActiveCsrDetail || isDesktopClosingDetail;
+
+  useEffect(() => {
+    if (!activeCsrCard) return;
+    if (activeCsrCard.category !== activeCsrCategory) {
+      setActiveCsrCategory(activeCsrCard.category);
+    }
+  }, [activeCsrCard, activeCsrCategory]);
+
+  useEffect(() => {
+    const optionIndex = MOBILE_MENU_OPTIONS.findIndex((option) => option.value === activeSection);
+    if (optionIndex >= 0) {
+      setMobileMenuIndex(optionIndex);
+    }
+  }, [activeSection]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      const rawState = window.sessionStorage.getItem(VIDEO_CONTINUITY_STORAGE_KEY);
+      if (!rawState) return;
+
+      const state = JSON.parse(rawState) as VideoContinuityState;
+      if (state.slug !== journey.slug) return;
+
+      setPreferredEntryLocationId(resolvePreferredEntryLocationId(state));
+    } catch {
+      // Ignore malformed continuity state and keep the default entry location.
+    }
+  }, [journey.slug]);
 
   useEffect(() => {
     if (!emblaApi) return;
@@ -357,22 +719,83 @@ export function IndiaJourneyLayout({ journey }: { journey: JourneyShowcase }) {
   }, [centeredStartIndex, emblaApi, renderedLocations, uniqueLocationCount]);
 
   useEffect(() => {
+    if (!csrEmblaApi) return;
+    const onSelect = () => {
+      const nextIndex = csrEmblaApi.selectedScrollSnap();
+      const previousIndex = previousCsrSelectedIndexRef.current;
+      if (isCsrRecenteringRef.current) {
+        isCsrRecenteringRef.current = false;
+        previousCsrSelectedIndexRef.current = nextIndex;
+        setCsrSelectedIndex(nextIndex);
+        return;
+      }
+      const rawDirection =
+        nextIndex === previousIndex
+          ? pendingCsrDirectionRef.current
+          : nextIndex > previousIndex
+            ? 1
+            : -1;
+      if (
+        uniqueCsrCardCount > 1 &&
+        renderedCsrCards.length > uniqueCsrCardCount * 2 &&
+        (nextIndex < uniqueCsrCardCount ||
+          nextIndex >= renderedCsrCards.length - uniqueCsrCardCount)
+      ) {
+        const sourceIndex = renderedCsrCards[nextIndex]?.sourceIndex ?? 0;
+        const targetIndex = centeredCsrStartIndex + sourceIndex;
+        if (targetIndex !== nextIndex) {
+          pendingCsrDirectionRef.current = rawDirection;
+          isCsrRecenteringRef.current = true;
+          csrEmblaApi.scrollTo(targetIndex, true);
+          return;
+        }
+      }
+      pendingCsrDirectionRef.current = rawDirection;
+      previousCsrSelectedIndexRef.current = nextIndex;
+      setCsrSelectedIndex(nextIndex);
+    };
+    csrEmblaApi.on('select', onSelect);
+    csrEmblaApi.on('reInit', onSelect);
+    onSelect();
+    return () => {
+      csrEmblaApi.off('select', onSelect);
+      csrEmblaApi.off('reInit', onSelect);
+    };
+  }, [centeredCsrStartIndex, csrEmblaApi, renderedCsrCards, uniqueCsrCardCount]);
+
+  useEffect(() => {
     if (!emblaApi) return;
-    emblaApi.reInit({ startIndex: centeredStartIndex });
+    emblaApi.reInit({ startIndex: targetStartIndex });
     isRecenteringRef.current = false;
     pendingDirectionRef.current = 1;
-    emblaApi.scrollTo(centeredStartIndex, true);
-    previousSelectedIndexRef.current = centeredStartIndex;
-    setSelectedIndex(centeredStartIndex);
+    emblaApi.scrollTo(targetStartIndex, true);
+    previousSelectedIndexRef.current = targetStartIndex;
+    setSelectedIndex(targetStartIndex);
     setBackgroundDirection(1);
     setCanScrollPrev(uniqueLocationCount > 1);
     setCanScrollNext(uniqueLocationCount > 1);
   }, [
-    centeredStartIndex,
     emblaApi,
+    targetStartIndex,
     renderedIdsSignature,
     renderedLocations.length,
     uniqueLocationCount,
+  ]);
+
+  useEffect(() => {
+    if (!csrEmblaApi) return;
+    csrEmblaApi.reInit({ startIndex: centeredCsrSocialStartIndex });
+    isCsrRecenteringRef.current = false;
+    pendingCsrDirectionRef.current = 1;
+    csrEmblaApi.scrollTo(centeredCsrSocialStartIndex, true);
+    previousCsrSelectedIndexRef.current = centeredCsrSocialStartIndex;
+    setCsrSelectedIndex(centeredCsrSocialStartIndex);
+  }, [
+    centeredCsrSocialStartIndex,
+    csrEmblaApi,
+    renderedCsrIdsSignature,
+    renderedCsrCards.length,
+    uniqueCsrCardCount,
   ]);
 
   const scrollPrev = useCallback(() => {
@@ -381,6 +804,45 @@ export function IndiaJourneyLayout({ journey }: { journey: JourneyShowcase }) {
   const scrollNext = useCallback(() => {
     if (emblaApi?.canScrollNext()) emblaApi.scrollNext();
   }, [emblaApi]);
+  const scrollCsrPrev = useCallback(() => {
+    if (csrEmblaApi?.canScrollPrev()) csrEmblaApi.scrollPrev();
+  }, [csrEmblaApi]);
+  const scrollCsrNext = useCallback(() => {
+    if (csrEmblaApi?.canScrollNext()) csrEmblaApi.scrollNext();
+  }, [csrEmblaApi]);
+  const toggleActiveCsrDetail = useCallback(() => {
+    if (!activeCsrCard) return;
+    if (desktopDetailCloseTimeoutRef.current != null) {
+      window.clearTimeout(desktopDetailCloseTimeoutRef.current);
+      desktopDetailCloseTimeoutRef.current = null;
+    }
+    setActiveCsrDetailId((current) => {
+      if (current === activeCsrCard.id) {
+        if (isMobileViewport) {
+          return null;
+        }
+        setIsDesktopClosingDetail(true);
+        desktopDetailCloseTimeoutRef.current = window.setTimeout(() => {
+          setActiveCsrDetailId(null);
+          setIsDesktopClosingDetail(false);
+          desktopDetailCloseTimeoutRef.current = null;
+        }, 520);
+        return current;
+      }
+      setIsDesktopClosingDetail(false);
+      return activeCsrCard.id;
+    });
+  }, [activeCsrCard, isMobileViewport]);
+  const handleSelectCsrCategory = useCallback(
+    (category: CsrImpactCategory) => {
+      const targetSourceIndex = CSR_CATEGORY_START_INDEX[category];
+      if (targetSourceIndex < 0) return;
+      setActiveCsrDetailId(null);
+      setActiveCsrCategory(category);
+      csrEmblaApi?.scrollTo(centeredCsrStartIndex + targetSourceIndex);
+    },
+    [centeredCsrStartIndex, csrEmblaApi]
+  );
 
   const openLocationStory = useCallback((locationId: IndiaLocation['id']) => {
     const story = LOCATION_STORIES.find((item) => item.locationId === locationId);
@@ -395,6 +857,7 @@ export function IndiaJourneyLayout({ journey }: { journey: JourneyShowcase }) {
 
   const openNextLocationStory = useCallback(() => {
     if (!activeLocationStory) return;
+    pendingStoryLocationIdRef.current = activeLocationStory.nextLocationId;
     const nextLocationIndex = INDIA_LOCATIONS.findIndex(
       (location) => location.id === activeLocationStory.nextLocationId
     );
@@ -420,59 +883,139 @@ export function IndiaJourneyLayout({ journey }: { journey: JourneyShowcase }) {
       return;
     }
 
-    if (activeMobileMenuOption.value === 'back') {
-      router.back();
-      return;
-    }
-
     if (activeMobileMenuOption.value === 'locations') {
+      setActiveSection('locations');
+      setActiveCsrDetailId(null);
       if (activeLocationStory) {
         closeLocationStory();
       }
+      return;
     }
-  }, [activeLocationStory, activeMobileMenuOption, closeLocationStory, router]);
+
+    if (activeMobileMenuOption.value === 'csr-impact') {
+      setActiveSection('csr-impact');
+    }
+  }, [activeLocationStory, activeMobileMenuOption, closeLocationStory]);
+
+  useEffect(() => {
+    if (activeSection !== 'csr-impact' && activeCsrDetailId) {
+      setActiveCsrDetailId(null);
+      setIsDesktopClosingDetail(false);
+    }
+  }, [activeCsrDetailId, activeSection]);
+
+  useEffect(() => {
+    return () => {
+      if (desktopDetailCloseTimeoutRef.current != null) {
+        window.clearTimeout(desktopDetailCloseTimeoutRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (!emblaApi) return;
     const handleWindowKeyDown = (event: KeyboardEvent) => {
-      if (safeLength < 2) return;
+      const canNavigate =
+        (isLocationsSection && safeLength >= 2) ||
+        (!isLocationsSection && !isCsrDetailOpen && csrSafeLength >= 2);
+      if (!canNavigate) return;
       if (event.key === 'ArrowRight') {
         event.preventDefault();
-        scrollNext();
+        if (isLocationsSection) {
+          scrollNext();
+        } else {
+          scrollCsrNext();
+        }
       } else if (event.key === 'ArrowLeft') {
         event.preventDefault();
-        scrollPrev();
+        if (isLocationsSection) {
+          scrollPrev();
+        } else {
+          scrollCsrPrev();
+        }
       }
     };
     window.addEventListener('keydown', handleWindowKeyDown);
     return () => window.removeEventListener('keydown', handleWindowKeyDown);
-  }, [emblaApi, safeLength, scrollNext, scrollPrev]);
+  }, [
+    emblaApi,
+    isLocationsSection,
+    isCsrDetailOpen,
+    safeLength,
+    csrSafeLength,
+    scrollNext,
+    scrollPrev,
+    scrollCsrNext,
+    scrollCsrPrev,
+  ]);
 
   useEffect(() => {
     const node = rootRef.current;
-    if (!node || !emblaApi) return;
+    const activeEmblaApi = isLocationsSection ? emblaApi : csrEmblaApi;
+    if (!node || !activeEmblaApi) return;
     let wheelAccumulator = 0;
     const handleWheel = (event: WheelEvent) => {
-      if (safeLength < 2) return;
+      const canNavigate =
+        (isLocationsSection && safeLength >= 2) ||
+        (!isLocationsSection && !isCsrDetailOpen && csrSafeLength >= 2);
+      if (!canNavigate) return;
       const primaryDelta =
         Math.abs(event.deltaY) > Math.abs(event.deltaX) ? event.deltaY : event.deltaX;
       if (!primaryDelta) return;
       event.preventDefault();
       wheelAccumulator += primaryDelta;
       if (Math.abs(wheelAccumulator) < 30) return;
-      wheelAccumulator > 0 ? scrollNext() : scrollPrev();
+      if (wheelAccumulator > 0) {
+        if (isLocationsSection) {
+          scrollNext();
+        } else {
+          scrollCsrNext();
+        }
+      } else if (isLocationsSection) {
+        scrollPrev();
+      } else {
+        scrollCsrPrev();
+      }
       wheelAccumulator = 0;
     };
     node.addEventListener('wheel', handleWheel, { passive: false });
     return () => node.removeEventListener('wheel', handleWheel);
-  }, [emblaApi, safeLength, scrollNext, scrollPrev]);
+  }, [
+    emblaApi,
+    csrEmblaApi,
+    isLocationsSection,
+    isCsrDetailOpen,
+    safeLength,
+    csrSafeLength,
+    scrollNext,
+    scrollPrev,
+    scrollCsrNext,
+    scrollCsrPrev,
+  ]);
 
   useEffect(() => {
+    if (pendingStoryLocationIdRef.current && currentLocation) {
+      if (pendingStoryLocationIdRef.current === currentLocation.id) {
+        const pendingStory = LOCATION_STORIES.find(
+          (story) => story.locationId === pendingStoryLocationIdRef.current
+        );
+        setActiveLocationStoryId(pendingStory?.id ?? null);
+        pendingStoryLocationIdRef.current = null;
+      }
+      return;
+    }
     if (!activeLocationStory || !currentLocation) return;
     if (activeLocationStory.locationId !== currentLocation.id) {
       setActiveLocationStoryId(null);
     }
   }, [activeLocationStory, currentLocation]);
+
+  useEffect(() => {
+    if (!activeCsrDetailId || !activeCsrCard) return;
+    if (activeCsrDetailId !== activeCsrCard.id) {
+      setActiveCsrDetailId(null);
+    }
+  }, [activeCsrCard, activeCsrDetailId]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -482,14 +1025,11 @@ export function IndiaJourneyLayout({ journey }: { journey: JourneyShowcase }) {
       const rawState = window.sessionStorage.getItem(VIDEO_CONTINUITY_STORAGE_KEY);
       if (!rawState) return;
 
-      const state = JSON.parse(rawState) as {
-        slug?: string;
-        src?: string;
-        currentTime?: number;
-        capturedAt?: number;
-      };
+      const state = JSON.parse(rawState) as VideoContinuityState;
 
-      if (state.slug !== journey.slug || state.src !== INDIA_BACKGROUND_VIDEO) {
+      const expectedSrc = currentLocation?.backgroundVideo ?? INDIA_BACKGROUND_VIDEO;
+
+      if (state.slug !== journey.slug || state.src !== expectedSrc) {
         return;
       }
 
@@ -530,7 +1070,7 @@ export function IndiaJourneyLayout({ journey }: { journey: JourneyShowcase }) {
     }
 
     return () => cleanup?.();
-  }, [journey.slug]);
+  }, [currentLocation?.backgroundVideo, journey.slug]);
 
   return (
     <section
@@ -548,118 +1088,189 @@ export function IndiaJourneyLayout({ journey }: { journey: JourneyShowcase }) {
         prefersReducedMotion={prefersReducedMotion}
         useLiteEffects={useLiteEffects}
       />
-      <div className="relative z-20 flex min-h-[100svh] flex-col">
-        <div className="pointer-events-none absolute left-4 top-5 z-30 sm:left-6 sm:top-7 lg:left-10 lg:top-8">
-          <div className="pointer-events-auto">
-            <BackToJourneysButton onClick={() => router.push('/journeys')} />
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.div
+          key={`section-${activeSection}`}
+          initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={prefersReducedMotion ? { opacity: 1 } : { opacity: 0 }}
+          transition={{ duration: prefersReducedMotion ? 0.2 : 0.48, ease: [0.22, 1, 0.36, 1] }}
+          className="relative z-20 flex min-h-[100svh] flex-col"
+        >
+          <div className="pointer-events-none absolute left-4 top-5 z-30 sm:left-6 sm:top-7 lg:left-10 lg:top-8">
+            <div className="pointer-events-auto">
+              <BackToJourneysButton onClick={() => router.push('/journeys')} />
+            </div>
           </div>
-        </div>
-        <div className="relative flex flex-1 items-center justify-end">
-          <div className="w-full px-2 pb-2 pt-20 sm:px-6 sm:pb-4 sm:pt-24 md:ml-auto md:w-[75%] md:pb-0 md:pl-10 md:pr-6 md:pt-0 lg:py-10 lg:pl-16 lg:pr-10 xl:pl-20">
-            <AnimatePresence mode="wait" initial={false}>
-              {activeLocationStory ? (
-                <motion.div
-                  key={`story-${activeLocationStory.id}`}
-                  initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={prefersReducedMotion ? { opacity: 1 } : { opacity: 0 }}
-                  transition={{
-                    duration: prefersReducedMotion ? 0.2 : 0.65,
-                    ease: [0.22, 1, 0.36, 1],
-                  }}
-                  className="py-4 md:py-0"
-                >
-                  <LocationStoryBand
-                    story={activeLocationStory}
-                    compact={isMobileViewport}
-                    onClose={closeLocationStory}
-                    onNext={openNextLocationStory}
-                  />
-                </motion.div>
+          <div className="relative flex flex-1 items-center justify-end">
+            <div className="w-full px-2 pb-2 pt-20 sm:px-6 sm:pb-4 sm:pt-24 md:ml-auto md:w-[75%] md:pb-0 md:pl-10 md:pr-6 md:pt-0 lg:py-10 lg:pl-16 lg:pr-10 xl:pl-20">
+              {isLocationsSection ? (
+                <AnimatePresence mode="wait" initial={false}>
+                  {activeLocationStory ? (
+                    <motion.div
+                      key={`story-${activeLocationStory.id}`}
+                      initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={prefersReducedMotion ? { opacity: 1 } : { opacity: 0 }}
+                      transition={{
+                        duration: prefersReducedMotion ? 0.2 : 0.65,
+                        ease: [0.22, 1, 0.36, 1],
+                      }}
+                      className="py-4 md:py-0"
+                    >
+                      <LocationStoryBand
+                        story={activeLocationStory}
+                        compact={isMobileViewport}
+                        onClose={closeLocationStory}
+                        onNext={openNextLocationStory}
+                      />
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="location-carousel"
+                      initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={prefersReducedMotion ? { opacity: 1 } : { opacity: 0 }}
+                      transition={{
+                        duration: prefersReducedMotion ? 0.2 : 0.65,
+                        ease: [0.22, 1, 0.36, 1],
+                      }}
+                    >
+                      <div
+                        className="overflow-visible pb-8 sm:pb-10 md:overflow-hidden md:pb-0"
+                        ref={emblaRef}
+                      >
+                        <motion.div
+                          key={renderedIdsSignature}
+                          className="embla__container flex touch-pan-x items-center gap-3 sm:gap-4 md:gap-[var(--journey-gap)] md:[--journey-gap:clamp(14px,1.7vw,28px)]"
+                          initial={prefersReducedMotion ? undefined : { opacity: 0 }}
+                          animate={prefersReducedMotion ? undefined : { opacity: 1 }}
+                          transition={{ duration: 1.08, ease: [0.22, 1, 0.36, 1] }}
+                        >
+                          {renderedLocations.map((slide, index) => {
+                            const forwardOffset = getForwardOffset(
+                              index,
+                              displayIndex,
+                              renderedLocations.length
+                            );
+                            return (
+                              <motion.div
+                                key={slide.renderKey}
+                                layout
+                                className={clsx(
+                                  'embla__slide flex flex-[0_0_74%] items-center sm:flex-[0_0_60%]',
+                                  getDesktopSlideBasisClass(forwardOffset)
+                                )}
+                              >
+                                <LocationCard
+                                  location={slide.location}
+                                  isActive={activeRenderedLocation?.renderKey === slide.renderKey}
+                                  forwardOffset={forwardOffset}
+                                  onAction={() => {
+                                    if (index !== emblaApi?.selectedScrollSnap()) {
+                                      emblaApi?.scrollTo(index);
+                                      return;
+                                    }
+                                    openLocationStory(slide.location.id);
+                                  }}
+                                  prefersReducedMotion={prefersReducedMotion}
+                                  isMobileViewport={isMobileViewport}
+                                />
+                              </motion.div>
+                            );
+                          })}
+                        </motion.div>
+                      </div>
+                      <div className="pointer-events-none relative z-40 mt-8 flex flex-col items-center gap-3 pb-5 md:hidden">
+                        <LocationHeadline
+                          currentLocation={currentLocation}
+                          journey={journey}
+                          compact
+                          centered
+                        />
+                        <MobileMenuCycler
+                          option={activeMobileMenuOption}
+                          onPrev={() => cycleMobileMenu(-1)}
+                          onNext={() => cycleMobileMenu(1)}
+                          onSelect={runMobileMenuAction}
+                        />
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               ) : (
                 <motion.div
-                  key="location-carousel"
+                  key="csr-impact-panel"
                   initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={prefersReducedMotion ? { opacity: 1 } : { opacity: 0 }}
                   transition={{
-                    duration: prefersReducedMotion ? 0.2 : 0.65,
+                    duration: prefersReducedMotion ? 0.2 : 0.6,
                     ease: [0.22, 1, 0.36, 1],
                   }}
+                  className="min-h-[74svh] py-4 md:min-h-0 md:translate-y-8 md:py-0"
                 >
-                  <div
-                    className="overflow-visible pb-8 sm:pb-10 md:overflow-hidden md:pb-0"
-                    ref={emblaRef}
+                  <motion.div
+                    layout
+                    transition={{ duration: 0.58, ease: [0.22, 1, 0.36, 1] }}
+                    className="flex w-full flex-col items-center justify-start gap-5"
                   >
                     <motion.div
-                      key={renderedIdsSignature}
-                      className="embla__container flex touch-pan-x items-center gap-3 sm:gap-4 md:gap-[var(--journey-gap)] md:[--journey-gap:clamp(14px,1.7vw,28px)]"
-                      initial={prefersReducedMotion ? undefined : { opacity: 0 }}
-                      animate={prefersReducedMotion ? undefined : { opacity: 1 }}
-                      transition={{ duration: 1.08, ease: [0.22, 1, 0.36, 1] }}
+                      layout="position"
+                      transition={{ duration: 0.52, ease: [0.22, 1, 0.36, 1] }}
+                      className="relative z-40 w-full pt-1 md:hidden"
                     >
-                      {renderedLocations.map((slide, index) => {
-                        const forwardOffset = getForwardOffset(
-                          index,
-                          displayIndex,
-                          renderedLocations.length
-                        );
-                        return (
-                          <motion.div
-                            key={slide.renderKey}
-                            layout
-                            className={clsx(
-                              'embla__slide flex flex-[0_0_74%] items-center sm:flex-[0_0_60%]',
-                              getDesktopSlideBasisClass(forwardOffset)
-                            )}
-                          >
-                            <LocationCard
-                              location={slide.location}
-                              isActive={activeRenderedLocation?.renderKey === slide.renderKey}
-                              forwardOffset={forwardOffset}
-                              onAction={() => {
-                                if (index !== emblaApi?.selectedScrollSnap()) {
-                                  emblaApi?.scrollTo(index);
-                                  return;
-                                }
-                                openLocationStory(slide.location.id);
-                              }}
-                              prefersReducedMotion={prefersReducedMotion}
-                              isMobileViewport={isMobileViewport}
-                            />
-                          </motion.div>
-                        );
-                      })}
+                      <CsrImpactCategoryRow
+                        activeCategory={activeCsrCategory}
+                        onSelect={handleSelectCsrCategory}
+                      />
                     </motion.div>
-                  </div>
-                  <div className="pointer-events-none relative z-40 mt-8 flex flex-col items-center gap-3 pb-5 md:hidden">
-                    <LocationHeadline
-                      currentLocation={currentLocation}
-                      journey={journey}
-                      compact
-                      centered
+                    <CsrImpactCarousel
+                      compact={isMobileViewport}
+                      emblaRef={csrEmblaRef}
+                      renderedCards={renderedCsrCards}
+                      activeIndex={csrDisplayIndex}
+                      detailOpen={isCsrDetailOpen}
+                      isDesktopClosingDetail={isDesktopClosingDetail}
+                      activeCard={activeCsrCard}
+                      onSelect={(index) => csrEmblaApi?.scrollTo(index)}
+                      onToggleDetail={toggleActiveCsrDetail}
                     />
-                    <MobileMenuCycler
-                      option={activeMobileMenuOption}
-                      onPrev={() => cycleMobileMenu(-1)}
-                      onNext={() => cycleMobileMenu(1)}
-                      onSelect={runMobileMenuAction}
-                    />
-                  </div>
+                    <motion.div
+                      layout="position"
+                      transition={{ duration: 0.52, ease: [0.22, 1, 0.36, 1] }}
+                      className="pointer-events-none relative z-40 flex flex-col items-center gap-3 pb-5 md:hidden"
+                    >
+                      <MobileMenuCycler
+                        option={activeMobileMenuOption}
+                        onPrev={() => cycleMobileMenu(-1)}
+                        onNext={() => cycleMobileMenu(1)}
+                        onSelect={runMobileMenuAction}
+                      />
+                    </motion.div>
+                  </motion.div>
                 </motion.div>
               )}
-            </AnimatePresence>
+            </div>
           </div>
-        </div>
-        <div className="pointer-events-none absolute left-6 top-1/2 z-40 hidden -translate-y-1/2 md:block lg:left-10 xl:left-14">
-          <LocationHeadline currentLocation={currentLocation} journey={journey} sideAligned />
-        </div>
-        <div className="pointer-events-none absolute bottom-5 right-4 z-30 hidden sm:bottom-7 sm:right-6 md:right-10 md:block lg:bottom-10 lg:right-16 xl:right-20">
-          <div className="pointer-events-auto">
-            <LocationSectionMenu value={activeSection} />
+          <div className="pointer-events-none absolute left-6 top-1/2 z-40 hidden -translate-y-1/2 md:block lg:left-10 xl:left-14">
+            {isLocationsSection ? (
+              <LocationHeadline currentLocation={currentLocation} journey={journey} sideAligned />
+            ) : (
+              <CsrImpactCategoryCarousel
+                sideAligned
+                activeCategory={activeCsrCategory}
+                onSelect={handleSelectCsrCategory}
+              />
+            )}
           </div>
-        </div>
-      </div>
+          <div className="pointer-events-none absolute bottom-5 right-4 z-50 hidden sm:bottom-7 sm:right-6 md:right-10 md:block lg:bottom-10 lg:right-16 xl:right-20">
+            <div className="pointer-events-auto">
+              <LocationSectionMenu value={activeSection} onSelect={setActiveSection} />
+            </div>
+          </div>
+        </motion.div>
+      </AnimatePresence>
     </section>
   );
 }
@@ -667,14 +1278,16 @@ export function IndiaJourneyLayout({ journey }: { journey: JourneyShowcase }) {
 function LocationSectionMenu({
   value,
   compact = false,
+  onSelect,
 }: {
   value: LocationSectionValue;
   compact?: boolean;
+  onSelect?: (value: LocationSectionValue) => void;
 }) {
   return (
     <div
       className={clsx(
-        'inline-flex items-center text-white drop-shadow-[0_12px_28px_rgba(0,0,0,0.38)]',
+        'pointer-events-auto relative inline-flex items-center text-white drop-shadow-[0_12px_28px_rgba(0,0,0,0.38)]',
         compact ? 'gap-2.5' : 'gap-4'
       )}
     >
@@ -686,6 +1299,7 @@ function LocationSectionMenu({
             type="button"
             disabled={option.disabled}
             aria-pressed={isActive}
+            onClick={onSelect ? () => onSelect(option.value) : undefined}
             className={clsx(
               'group relative inline-flex items-center gap-2.5 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/45',
               compact ? 'gap-2' : 'gap-2.5',
@@ -736,6 +1350,252 @@ function LocationSectionMenu({
         );
       })}
     </div>
+  );
+}
+
+function SectionHeadline({
+  title,
+  subtitle,
+  compact = false,
+  centered = false,
+  sideAligned = false,
+}: {
+  title: string;
+  subtitle?: string;
+  compact?: boolean;
+  centered?: boolean;
+  sideAligned?: boolean;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+      className={clsx(
+        'relative z-10',
+        compact ? 'max-w-[80vw]' : 'max-w-[62vw]',
+        sideAligned && !compact && 'max-w-[28vw] xl:max-w-[24vw]',
+        centered && 'text-center'
+      )}
+    >
+      <h1
+        className={clsx(
+          'font-title uppercase tracking-normal text-white [text-shadow:0_24px_52px_rgba(0,0,0,0.35)]',
+          compact
+            ? 'text-[clamp(2.15rem,12vw,4.4rem)] leading-[0.82]'
+            : sideAligned
+              ? 'text-[clamp(3.2rem,7vw,7.4rem)] leading-[0.82]'
+              : 'text-[clamp(3.4rem,11vw,10.2rem)] leading-[0.8]'
+        )}
+      >
+        {title}
+      </h1>
+      {subtitle ? (
+        <p
+          className={clsx(
+            'mt-1 uppercase text-white [text-shadow:0_0_18px_rgba(255,255,255,0.48)]',
+            compact
+              ? 'text-[0.5rem] tracking-[0.32em]'
+              : 'text-[0.62rem] tracking-[0.34em] sm:text-[0.72rem]'
+          )}
+        >
+          {subtitle}
+        </p>
+      ) : null}
+    </motion.div>
+  );
+}
+
+function CsrImpactCategoryCarousel({
+  activeCategory,
+  onSelect,
+  compact = false,
+  centered = false,
+  sideAligned = false,
+}: {
+  activeCategory: CsrImpactCategory;
+  onSelect: (category: CsrImpactCategory) => void;
+  compact?: boolean;
+  centered?: boolean;
+  sideAligned?: boolean;
+}) {
+  const arcPathId = useId();
+  const arcGradientId = `${arcPathId}-gradient`;
+  const activeIndex = CSR_CATEGORY_OPTIONS.findIndex((option) => option.value === activeCategory);
+  const step = compact ? 114 : 214;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+      className={clsx(
+        'pointer-events-auto relative z-10 flex',
+        centered && 'justify-center',
+        sideAligned && 'justify-start pl-12 lg:pl-14 xl:pl-[5.25rem]'
+      )}
+    >
+      <div className={clsx('relative', compact ? 'h-[18rem] w-[10rem]' : 'h-[34rem] w-[18rem]')}>
+        {CSR_CATEGORY_OPTIONS.map((option, index) => {
+          const rawOffset =
+            (index - activeIndex + CSR_CATEGORY_OPTIONS.length) % CSR_CATEGORY_OPTIONS.length;
+          const verticalOffset = rawOffset === CSR_CATEGORY_OPTIONS.length - 1 ? -1 : rawOffset;
+          const isActive = verticalOffset === 0;
+          const arcConfig = CSR_CATEGORY_ARC_CONFIG[option.value];
+          return (
+            <div
+              key={option.value}
+              className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+            >
+              <motion.button
+                type="button"
+                onClick={() => onSelect(option.value)}
+                aria-pressed={isActive}
+                className="group relative flex items-center justify-center focus-visible:outline-none"
+                animate={{
+                  y: verticalOffset * step,
+                  scale: isActive ? 1 : compact ? 0.74 : 0.68,
+                  opacity: isActive ? 1 : 0.56,
+                }}
+                transition={{ duration: 0.72, ease: [0.22, 1, 0.36, 1] }}
+                style={{ zIndex: 10 - Math.abs(verticalOffset) }}
+              >
+                <div
+                  className={clsx(
+                    'bg-white/12 relative flex items-center justify-center rounded-full transition-colors duration-300',
+                    isActive
+                      ? 'shadow-[0_0_52px_rgba(246,196,82,0.45)]'
+                      : 'shadow-[0_0_28px_rgba(246,196,82,0.16)] group-hover:bg-white/15'
+                  )}
+                >
+                  {isActive ? (
+                    <span
+                      aria-hidden
+                      className={clsx(
+                        'pointer-events-none absolute left-1/2 top-1/2 -z-10 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(247,214,133,0.52)_0%,rgba(247,214,133,0.22)_34%,rgba(247,214,133,0)_74%)] blur-2xl',
+                        compact ? 'h-32 w-32' : 'h-56 w-56'
+                      )}
+                    />
+                  ) : null}
+                  {isActive ? (
+                    <svg
+                      viewBox="0 0 240 140"
+                      className={clsx(
+                        'pointer-events-none absolute left-1/2 -translate-x-1/2 overflow-visible',
+                        compact
+                          ? `${arcConfig.compactTopClass} h-16 w-28`
+                          : `${arcConfig.desktopTopClass} h-28 w-48`
+                      )}
+                      aria-hidden
+                    >
+                      <defs>
+                        <linearGradient
+                          id={arcGradientId}
+                          x1="24"
+                          y1="20"
+                          x2="200"
+                          y2="118"
+                          gradientUnits="userSpaceOnUse"
+                        >
+                          <stop offset="0%" stopColor="#f3bc58" />
+                          <stop offset="52%" stopColor="#f7d57d" />
+                          <stop offset="100%" stopColor="#f3bc58" />
+                        </linearGradient>
+                      </defs>
+                      <path
+                        id={arcPathId}
+                        d={compact ? arcConfig.compactPath : arcConfig.desktopPath}
+                        fill="none"
+                      />
+                      <text
+                        fill={`url(#${arcGradientId})`}
+                        className={clsx(
+                          '[font-family:var(--font-cannia)]',
+                          compact ? arcConfig.compactTextClass : arcConfig.desktopTextClass
+                        )}
+                        style={{
+                          filter:
+                            'drop-shadow(0 0 14px rgba(247,213,125,0.24)) drop-shadow(0 8px 18px rgba(52,29,8,0.24))',
+                        }}
+                      >
+                        <textPath href={`#${arcPathId}`} startOffset="50%" textAnchor="middle">
+                          {option.label}
+                        </textPath>
+                      </text>
+                    </svg>
+                  ) : null}
+                  <span
+                    className={clsx(
+                      'relative inline-flex items-center justify-center rounded-full',
+                      isActive
+                        ? compact
+                          ? 'h-28 w-28'
+                          : 'h-48 w-48'
+                        : compact
+                          ? 'h-20 w-20'
+                          : 'h-28 w-28'
+                    )}
+                  >
+                    <Image
+                      src={option.icon}
+                      alt={isActive ? option.label : ''}
+                      width={68}
+                      height={68}
+                      className={clsx(
+                        'object-contain drop-shadow-[0_0_24px_rgba(247,213,125,0.82)] [filter:drop-shadow(0_14px_26px_rgba(52,29,8,0.26))]',
+                        isActive
+                          ? compact
+                            ? 'h-[4.5rem] w-[4.5rem]'
+                            : 'h-28 w-28'
+                          : compact
+                            ? 'h-[2.75rem] w-[2.75rem]'
+                            : 'h-[3.5rem] w-[3.5rem]'
+                      )}
+                      aria-hidden={!isActive}
+                    />
+                  </span>
+                </div>
+              </motion.button>
+            </div>
+          );
+        })}
+      </div>
+    </motion.div>
+  );
+}
+
+function CsrImpactCategoryRow({
+  activeCategory,
+  onSelect,
+}: {
+  activeCategory: CsrImpactCategory;
+  onSelect: (category: CsrImpactCategory) => void;
+}) {
+  const items = useMemo<LoopingMobileSelectorItem[]>(
+    () =>
+      CSR_CATEGORY_OPTIONS.map((option) => ({
+        id: option.value,
+        icon: option.icon,
+        label: option.label,
+      })),
+    []
+  );
+  const activeIndex = Math.max(
+    0,
+    items.findIndex((item) => item.id === activeCategory)
+  );
+
+  return (
+    <LoopingMobileIconSelector
+      items={items}
+      activeIndex={activeIndex}
+      onChange={(index) => {
+        const nextCategory = CSR_CATEGORY_OPTIONS[index]?.value;
+        if (nextCategory) onSelect(nextCategory);
+      }}
+    />
   );
 }
 
@@ -793,6 +1653,668 @@ function LocationHeadline({
         </motion.div>
       ) : null}
     </AnimatePresence>
+  );
+}
+
+function CsrImpactCarousel({
+  compact = false,
+  emblaRef,
+  renderedCards,
+  activeIndex,
+  detailOpen,
+  isDesktopClosingDetail = false,
+  activeCard,
+  onSelect,
+  onToggleDetail,
+}: {
+  compact?: boolean;
+  emblaRef: (node: HTMLElement | null) => void;
+  renderedCards: RenderedCsrImpactSlide[];
+  activeIndex: number;
+  detailOpen: boolean;
+  isDesktopClosingDetail?: boolean;
+  activeCard: CsrImpactCard | null;
+  onSelect: (index: number) => void;
+  onToggleDetail: () => void;
+}) {
+  const showMobileDetail = compact && detailOpen;
+  const [showDesktopDetailContent, setShowDesktopDetailContent] = useState(false);
+
+  useEffect(() => {
+    if (compact) {
+      setShowDesktopDetailContent(false);
+      return;
+    }
+    if (isDesktopClosingDetail) {
+      setShowDesktopDetailContent(false);
+      return;
+    }
+    if (!detailOpen) {
+      setShowDesktopDetailContent(false);
+      return;
+    }
+    const timeout = window.setTimeout(() => {
+      setShowDesktopDetailContent(true);
+    }, 680);
+    return () => window.clearTimeout(timeout);
+  }, [compact, detailOpen, isDesktopClosingDetail]);
+
+  return (
+    <motion.div
+      layout={compact}
+      transition={{ duration: 0.58, ease: [0.22, 1, 0.36, 1] }}
+      className={clsx(
+        'w-full md:flex md:min-h-[560px]',
+        detailOpen ? 'md:items-start md:gap-10 xl:gap-14' : 'md:items-start'
+      )}
+    >
+      <AnimatePresence initial={false}>
+        {!showMobileDetail || !compact ? (
+          <motion.div
+            key="csr-mobile-rail"
+            layout={compact ? 'position' : false}
+            initial={compact ? { opacity: 1, height: 'auto' } : false}
+            animate={compact ? { opacity: 1, height: 'auto' } : undefined}
+            exit={compact ? { opacity: 0, height: 0, marginBottom: 0 } : undefined}
+            transition={{ duration: 0.52, ease: [0.22, 1, 0.36, 1] }}
+            className={clsx(
+              'ease-[cubic-bezier(0.22,1,0.36,1)] overflow-hidden transition-[max-width] duration-700 md:self-start',
+              detailOpen ? 'md:max-w-[36%] xl:max-w-[32%]' : 'md:max-w-full'
+            )}
+          >
+            <div
+              className="overflow-visible pb-8 sm:pb-10 md:overflow-hidden md:pb-0"
+              ref={emblaRef}
+            >
+              <motion.div
+                className={clsx(
+                  'embla__container flex touch-pan-x items-center gap-3 sm:gap-4 md:gap-[var(--journey-gap)] md:[--journey-gap:clamp(14px,1.7vw,28px)]',
+                  'md:items-start'
+                )}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 1.08, ease: [0.22, 1, 0.36, 1] }}
+              >
+                {renderedCards.map((slide, index) => {
+                  const forwardOffset = getForwardOffset(index, activeIndex, renderedCards.length);
+                  const shouldDelayDesktopHide = !compact && detailOpen && index !== activeIndex;
+                  return (
+                    <motion.div
+                      key={slide.renderKey}
+                      className={clsx(
+                        'embla__slide flex flex-[0_0_74%] items-center sm:flex-[0_0_60%]',
+                        'md:items-start',
+                        detailOpen && index !== activeIndex && 'pointer-events-none',
+                        getDesktopSlideBasisClass(forwardOffset)
+                      )}
+                      animate={{
+                        opacity: detailOpen && index !== activeIndex ? 0 : 1,
+                      }}
+                      transition={{
+                        duration: !compact && detailOpen && index !== activeIndex ? 0.42 : 0.28,
+                        delay: shouldDelayDesktopHide ? 0.18 : 0,
+                        ease: [0.22, 1, 0.36, 1],
+                      }}
+                    >
+                      <CsrImpactCardPanel
+                        card={slide.card}
+                        compact={compact}
+                        isActive={index === activeIndex}
+                        detailOpen={detailOpen}
+                        forwardOffset={forwardOffset}
+                        onAction={() => onSelect(index)}
+                        onToggleDetail={onToggleDetail}
+                      />
+                    </motion.div>
+                  );
+                })}
+              </motion.div>
+            </div>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
+      <AnimatePresence initial={false}>
+        {showMobileDetail ? (
+          <CsrImpactMobileDetailPanel card={activeCard} onClose={onToggleDetail} />
+        ) : null}
+      </AnimatePresence>
+      <AnimatePresence initial={false}>
+        {detailOpen ? (
+          <motion.div
+            key={`csr-detail-${activeCard?.id ?? 'active'}`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{
+              duration: 0.46,
+              delay: compact ? 0 : 0.58,
+              ease: [0.22, 1, 0.36, 1],
+            }}
+            className="hidden min-h-[560px] flex-1 md:flex md:items-center md:self-start"
+          >
+            {showDesktopDetailContent ? <CsrImpactDetailPanel card={activeCard} /> : null}
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
+    </motion.div>
+  );
+}
+
+function CsrImpactDetailPanel({ card }: { card: CsrImpactCard | null }) {
+  if (!card) return null;
+
+  return (
+    <div className="flex min-h-[560px] w-full items-center">
+      <article className="flex min-h-[320px] max-w-[560px] flex-col justify-center pl-2 pr-8 text-left xl:max-w-[620px]">
+        {card.detailItems?.length ? (
+          <div className="space-y-7">
+            {card.detailItems.map((item) => (
+              <div key={`${card.id}-${item.label}`} className="flex items-center gap-4">
+                <div className="relative h-12 w-12 shrink-0">
+                  <Image
+                    src={item.icon}
+                    alt=""
+                    fill
+                    className="object-contain [filter:drop-shadow(0_0_16px_rgba(247,213,125,0.26))_drop-shadow(0_12px_22px_rgba(52,29,8,0.22))]"
+                  />
+                </div>
+                <div className="min-w-0">
+                  {item.handle ? (
+                    <p className="text-[#f4e7cc]/88 font-display text-[11px] uppercase tracking-[0.22em]">
+                      {item.label}
+                    </p>
+                  ) : null}
+                  {item.handle ? (
+                    <a
+                      href={item.href}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="group/link mt-1 inline-flex items-center text-[1.18rem] text-[#fffef8] transition-colors duration-300 [font-family:var(--font-cannia)] [text-shadow:0_0_14px_rgba(255,237,210,0.42),0_8px_18px_rgba(59,36,18,0.26)] hover:text-[#f6c452]"
+                    >
+                      <span className="relative after:absolute after:-bottom-1 after:left-0 after:h-px after:w-full after:origin-left after:scale-x-0 after:bg-[linear-gradient(90deg,#f7d57d_0%,rgba(247,213,125,0)_100%)] after:transition-transform after:duration-300 group-hover/link:after:scale-x-100">
+                        {item.handle}
+                      </span>
+                    </a>
+                  ) : (
+                    <p className="text-[1.18rem] leading-[1.2] text-[#fffef8] [font-family:var(--font-cannia)] [text-shadow:0_0_14px_rgba(255,237,210,0.42),0_8px_18px_rgba(59,36,18,0.26)]">
+                      {item.label}
+                    </p>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="space-y-5">
+            {(card.detailBody ?? ['Content coming soon.']).map((paragraph) => (
+              <p
+                key={paragraph}
+                className="max-w-[54ch] font-sans text-[13px] italic leading-[1.86] text-[#fffef8] [text-shadow:0_0_16px_rgba(255,237,210,0.48),0_1px_12px_rgba(59,36,18,0.45)] sm:text-[14px]"
+              >
+                {paragraph}
+              </p>
+            ))}
+          </div>
+        )}
+      </article>
+    </div>
+  );
+}
+
+function LoopingMobileIconSelector({
+  items,
+  activeIndex,
+  onChange,
+}: {
+  items: LoopingMobileSelectorItem[];
+  activeIndex: number;
+  onChange: (index: number) => void;
+}) {
+  const renderedItems = useMemo(() => buildRenderedLoopingMobileSelectorItems(items), [items]);
+  const uniqueCount = items.length;
+  const centeredStartIndex = useMemo(() => {
+    if (!uniqueCount || !renderedItems.length) return 0;
+    return Math.floor(renderedItems.length / uniqueCount / 2) * uniqueCount;
+  }, [renderedItems.length, uniqueCount]);
+  const scrollerRef = useRef<HTMLDivElement | null>(null);
+  const itemRefs = useRef<Array<HTMLButtonElement | null>>([]);
+  const isAutoScrollingRef = useRef(false);
+  const [activeRenderIndex, setActiveRenderIndex] = useState(centeredStartIndex + activeIndex);
+
+  const centerRenderIndex = useCallback(
+    (renderIndex: number, behavior: ScrollBehavior = 'smooth') => {
+      const scroller = scrollerRef.current;
+      const node = itemRefs.current[renderIndex];
+      if (!scroller || !node) return;
+      const nextLeft = node.offsetLeft - (scroller.clientWidth - node.offsetWidth) / 2;
+      isAutoScrollingRef.current = true;
+      scroller.scrollTo({ left: nextLeft, behavior });
+      window.setTimeout(
+        () => {
+          isAutoScrollingRef.current = false;
+        },
+        behavior === 'smooth' ? 420 : 0
+      );
+      setActiveRenderIndex(renderIndex);
+    },
+    []
+  );
+
+  useEffect(() => {
+    const nextRenderIndex = centeredStartIndex + activeIndex;
+    setActiveRenderIndex(nextRenderIndex);
+    centerRenderIndex(nextRenderIndex, 'auto');
+  }, [activeIndex, centerRenderIndex, centeredStartIndex]);
+
+  return (
+    <div
+      ref={scrollerRef}
+      className="pointer-events-auto overflow-x-auto overflow-y-visible pt-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      onScroll={(event) => {
+        if (isAutoScrollingRef.current || !renderedItems.length || !uniqueCount) return;
+        const scroller = event.currentTarget;
+        const viewportCenter = scroller.scrollLeft + scroller.clientWidth / 2;
+        let closestRenderIndex = activeRenderIndex;
+        let closestDistance = Number.POSITIVE_INFINITY;
+        itemRefs.current.forEach((node, index) => {
+          if (!node) return;
+          const itemCenter = node.offsetLeft + node.offsetWidth / 2;
+          const distance = Math.abs(itemCenter - viewportCenter);
+          if (distance < closestDistance) {
+            closestDistance = distance;
+            closestRenderIndex = index;
+          }
+        });
+        const nextSourceIndex = renderedItems[closestRenderIndex]?.sourceIndex ?? 0;
+        setActiveRenderIndex(closestRenderIndex);
+        if (nextSourceIndex !== activeIndex) {
+          onChange(nextSourceIndex);
+        }
+        if (
+          closestRenderIndex < uniqueCount ||
+          closestRenderIndex >= renderedItems.length - uniqueCount
+        ) {
+          const recenteredIndex = centeredStartIndex + nextSourceIndex;
+          centerRenderIndex(recenteredIndex, 'auto');
+        }
+      }}
+    >
+      <div className="flex min-w-max items-start gap-3 px-0 pb-5 pt-1">
+        <div style={{ flex: '0 0 calc(50vw - 52px)' }} />
+        {renderedItems.map((renderedItem, index) => {
+          const isActive = index === activeRenderIndex;
+          return (
+            <button
+              key={renderedItem.renderKey}
+              ref={(node) => {
+                itemRefs.current[index] = node;
+              }}
+              type="button"
+              onClick={() => {
+                onChange(renderedItem.sourceIndex);
+                centerRenderIndex(centeredStartIndex + renderedItem.sourceIndex, 'smooth');
+              }}
+              aria-pressed={isActive}
+              className="group relative flex w-[6.5rem] shrink-0 flex-col items-center justify-center focus-visible:outline-none"
+            >
+              <motion.span
+                animate={{ scale: isActive ? 1 : 0.8, opacity: isActive ? 1 : 0.58 }}
+                transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                className={clsx(
+                  'bg-white/12 relative inline-flex items-center justify-center rounded-full',
+                  isActive
+                    ? 'h-20 w-20 shadow-[0_0_32px_rgba(246,196,82,0.36)]'
+                    : 'h-14 w-14 shadow-[0_0_18px_rgba(246,196,82,0.16)]'
+                )}
+              >
+                {isActive ? (
+                  <span
+                    aria-hidden
+                    className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-24 w-24 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(247,214,133,0.5)_0%,rgba(247,214,133,0.2)_34%,rgba(247,214,133,0)_74%)] blur-xl"
+                  />
+                ) : null}
+                <Image
+                  src={renderedItem.item.icon}
+                  alt={renderedItem.item.label}
+                  width={52}
+                  height={52}
+                  className={clsx(
+                    'object-contain drop-shadow-[0_0_18px_rgba(247,213,125,0.72)] [filter:drop-shadow(0_10px_18px_rgba(52,29,8,0.22))]',
+                    isActive ? 'h-12 w-12' : 'h-8 w-8'
+                  )}
+                />
+              </motion.span>
+              <AnimatePresence initial={false}>
+                {isActive ? (
+                  <motion.span
+                    key={`${renderedItem.renderKey}-label`}
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -4 }}
+                    transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                    className="mt-2 whitespace-nowrap bg-[linear-gradient(135deg,#f3bc58_0%,#f7d57d_52%,#f3bc58_100%)] bg-clip-text text-[1.15rem] text-transparent [font-family:var(--font-cannia)] [text-shadow:0_0_12px_rgba(247,213,125,0.2)]"
+                  >
+                    {renderedItem.item.label}
+                  </motion.span>
+                ) : null}
+              </AnimatePresence>
+            </button>
+          );
+        })}
+        <div style={{ flex: '0 0 calc(50vw - 52px)' }} />
+      </div>
+    </div>
+  );
+}
+
+function CsrImpactMobileDetailHeader({ card }: { card: CsrImpactCard }) {
+  return (
+    <div className="flex flex-col items-center text-center">
+      <div className="relative h-[220px] w-[220px]">
+        <Image src={card.image} alt={card.title} fill className="object-contain" sizes="220px" />
+        {card.overlayText ? (
+          <span className="pointer-events-none absolute inset-0 flex items-center justify-center text-[2.2rem] text-[#f8d784] [font-family:var(--font-cannia)] [text-shadow:0_0_22px_rgba(248,215,132,0.22)]">
+            {card.overlayText}
+          </span>
+        ) : null}
+      </div>
+      <h3 className="mt-4 bg-[linear-gradient(135deg,#f3bc58_0%,#f7d57d_52%,#f3bc58_100%)] bg-clip-text text-[clamp(1.65rem,7vw,2.2rem)] leading-none text-transparent [filter:drop-shadow(0_0_14px_rgba(247,213,125,0.2))_drop-shadow(0_10px_20px_rgba(52,29,8,0.24))] [font-family:var(--font-cannia)]">
+        {card.title}
+        {card.titleSuffix ? (
+          <span className="ml-1 inline-flex items-baseline">
+            <span>{card.titleSuffix}</span>
+            {card.suffixSubscript ? (
+              <sub className="ml-0.5 text-[0.46em] leading-none">{card.suffixSubscript}</sub>
+            ) : null}
+          </span>
+        ) : null}
+      </h3>
+      {card.detailSubtitle ? (
+        <p className="text-[#f4e7cc]/88 mt-2 font-display text-[0.7rem] uppercase tracking-[0.2em]">
+          {card.detailSubtitle}
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
+function CsrImpactMobileDetailItems({ card }: { card: CsrImpactCard }) {
+  const items = card.detailItems ?? [];
+  const [selectedIndex, setSelectedIndex] = useState(0);
+
+  useEffect(() => {
+    setSelectedIndex(0);
+  }, [card.id]);
+
+  const activeItem = items[selectedIndex] ?? items[0];
+
+  if (!activeItem) return null;
+
+  const selectorItems = items.map((item, index) => ({
+    id: `${card.id}-${index}`,
+    icon: item.icon,
+    label: item.handle ?? item.label,
+  }));
+
+  return (
+    <div className="space-y-5">
+      <LoopingMobileIconSelector
+        items={selectorItems}
+        activeIndex={selectedIndex}
+        onChange={setSelectedIndex}
+      />
+
+      <motion.div
+        key={`${card.id}-${activeItem.label}-copy`}
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -6 }}
+        transition={{ duration: 0.34, ease: [0.22, 1, 0.36, 1] }}
+        className="text-center"
+      >
+        {activeItem.handle ? (
+          <>
+            <p className="text-[#f4e7cc]/88 font-display text-[10px] uppercase tracking-[0.22em]">
+              {activeItem.label}
+            </p>
+            <a
+              href={activeItem.href}
+              target="_blank"
+              rel="noreferrer"
+              className="mt-2 inline-flex text-[1.18rem] text-[#fffef8] transition-colors duration-300 [font-family:var(--font-cannia)] [text-shadow:0_0_14px_rgba(255,237,210,0.42),0_8px_18px_rgba(59,36,18,0.26)] hover:text-[#f6c452]"
+            >
+              {activeItem.handle}
+            </a>
+          </>
+        ) : (
+          <p className="text-[#f4e7cc]/88 font-display text-[10px] uppercase tracking-[0.22em]">
+            {activeItem.label}
+          </p>
+        )}
+      </motion.div>
+    </div>
+  );
+}
+
+function CsrImpactMobileDetailPanel({
+  card,
+  onClose,
+}: {
+  card: CsrImpactCard | null;
+  onClose: () => void;
+}) {
+  if (!card) return null;
+  const hasDetailItems = Boolean(card.detailItems?.length);
+
+  return (
+    <AnimatePresence initial={false} mode="wait">
+      <motion.div
+        key={`mobile-detail-${card.id}`}
+        layout
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 8 }}
+        transition={{ duration: 0.48, ease: [0.22, 1, 0.36, 1] }}
+        className="mt-2 w-full px-2"
+      >
+        <div
+          className={clsx(
+            'px-4 py-5',
+            hasDetailItems
+              ? 'bg-transparent'
+              : 'rounded-[30px] bg-[radial-gradient(circle_at_top,rgba(255,241,218,0.14)_0%,rgba(255,241,218,0.04)_42%,rgba(255,241,218,0)_100%)]'
+          )}
+        >
+          {!hasDetailItems ? <CsrImpactMobileDetailHeader card={card} /> : null}
+          {hasDetailItems ? (
+            <CsrImpactMobileDetailItems card={card} />
+          ) : (
+            <div className="mt-5 space-y-5">
+              {(card.detailBody ?? ['Content coming soon.']).map((paragraph) => (
+                <p
+                  key={`${card.id}-${paragraph}`}
+                  className="font-sans text-[13px] italic leading-[1.86] text-[#fffef8] [text-shadow:0_0_16px_rgba(255,237,210,0.48),0_1px_12px_rgba(59,36,18,0.45)]"
+                >
+                  {paragraph}
+                </p>
+              ))}
+            </div>
+          )}
+          <div className="flex justify-center pt-6">
+            <button
+              type="button"
+              onClick={onClose}
+              className="inline-flex items-center gap-2 border border-[#f3dfc4]/55 px-4 py-2 font-display text-[9px] uppercase tracking-[0.2em] text-[#fff4e3] transition hover:border-[#fff2de] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/55"
+            >
+              Back
+            </button>
+          </div>
+        </div>
+      </motion.div>
+    </AnimatePresence>
+  );
+}
+
+function CsrImpactCardPanel({
+  card,
+  compact = false,
+  isActive = false,
+  detailOpen = false,
+  forwardOffset,
+  onAction,
+  onToggleDetail,
+}: {
+  card: CsrImpactCard;
+  compact?: boolean;
+  isActive?: boolean;
+  detailOpen?: boolean;
+  forwardOffset: number;
+  onAction: () => void;
+  onToggleDetail: () => void;
+}) {
+  const fadeProfile = getCardFadeProfile(forwardOffset, compact);
+  const effectiveOpacity = detailOpen ? (isActive ? 1 : 0) : fadeProfile.opacity;
+  const hasSvgGlow = card.image.endsWith('.svg');
+  const cardTransformOrigin = compact ? 'center center' : 'center 248px';
+  const isCompactDetailActive = compact && detailOpen && isActive;
+  const carouselTransition = { duration: 0.72, ease: [0.22, 1, 0.36, 1] as const };
+
+  return (
+    <motion.div
+      role="button"
+      tabIndex={0}
+      onClick={onAction}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          onAction();
+        }
+      }}
+      className={clsx(
+        'group relative flex w-full flex-col items-center bg-transparent text-center focus:outline-none',
+        compact ? 'justify-center px-5 py-6' : 'min-h-[560px] justify-start px-8 pb-8 pt-8'
+      )}
+      style={{ transformOrigin: cardTransformOrigin }}
+      animate={{
+        opacity: effectiveOpacity,
+        scale: compact ? (isCompactDetailActive ? 0.82 : 1) : fadeProfile.scale,
+        y: compact ? 0 : fadeProfile.y,
+        minHeight: compact ? (isCompactDetailActive ? 292 : 430) : 560,
+      }}
+      whileHover={detailOpen ? undefined : { opacity: Math.min(fadeProfile.opacity + 0.08, 1) }}
+      transition={{
+        duration: detailOpen ? 0.92 : carouselTransition.duration,
+        ease: carouselTransition.ease,
+      }}
+    >
+      <div className="absolute inset-0 bg-transparent" />
+      <AnimatePresence initial={false}>
+        {isActive ? (
+          <motion.p
+            key={`${card.id}-title`}
+            className={clsx(
+              'relative z-10 flex max-w-full items-start justify-center gap-2 whitespace-nowrap bg-[linear-gradient(135deg,#f3bc58_0%,#f7d57d_52%,#f3bc58_100%)] bg-clip-text text-transparent [filter:drop-shadow(0_0_14px_rgba(247,213,125,0.2))_drop-shadow(0_10px_20px_rgba(52,29,8,0.24))] [font-family:var(--font-cannia)]',
+              compact
+                ? 'text-[clamp(1.2rem,5vw,1.9rem)] leading-none'
+                : 'text-[clamp(1.7rem,2.5vw,2.65rem)] leading-none'
+            )}
+            initial={{ opacity: 0 }}
+            animate={{
+              opacity: isCompactDetailActive ? 0.82 : 1,
+              scale: isCompactDetailActive ? 0.9 : 1,
+            }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.42, ease: carouselTransition.ease }}
+          >
+            {card.title}
+            {card.titleSuffix ? (
+              <span className="ml-1 inline-flex items-baseline">
+                <span>{card.titleSuffix}</span>
+                {card.suffixSubscript ? (
+                  <sub
+                    className={clsx(
+                      'ml-0.5 leading-none',
+                      compact ? 'text-[0.5em]' : 'text-[0.46em]'
+                    )}
+                  >
+                    {card.suffixSubscript}
+                  </sub>
+                ) : null}
+              </span>
+            ) : null}
+          </motion.p>
+        ) : null}
+      </AnimatePresence>
+      <motion.div
+        className={clsx(
+          'relative z-10 mt-6',
+          hasSvgGlow ? 'overflow-visible' : 'overflow-hidden',
+          compact ? 'h-[220px] w-[220px]' : 'h-[300px] w-[300px]'
+        )}
+        animate={{
+          width: compact ? (isCompactDetailActive ? 150 : 220) : 300,
+          height: compact ? (isCompactDetailActive ? 150 : 220) : 300,
+          marginTop: isCompactDetailActive ? 10 : 24,
+        }}
+        transition={{
+          duration: detailOpen ? 0.92 : carouselTransition.duration,
+          ease: carouselTransition.ease,
+        }}
+      >
+        {hasSvgGlow ? (
+          <span
+            aria-hidden
+            className={clsx(
+              'pointer-events-none absolute left-1/2 top-1/2 -z-10 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(247,214,133,0.52)_0%,rgba(247,214,133,0.22)_34%,rgba(247,214,133,0)_74%)] blur-2xl',
+              compact ? 'h-[12rem] w-[12rem]' : 'h-[16rem] w-[16rem]'
+            )}
+          />
+        ) : null}
+        <motion.div
+          className="absolute inset-0 [filter:drop-shadow(0_0_18px_rgba(247,213,125,0.22))_drop-shadow(0_18px_28px_rgba(52,29,8,0.22))]"
+          animate={{ opacity: isActive ? 1 : 0.84 }}
+          whileHover={{ opacity: 1 }}
+          transition={{ duration: carouselTransition.duration, ease: carouselTransition.ease }}
+        >
+          <Image src={card.image} alt={card.title} fill className="object-contain" sizes="300px" />
+        </motion.div>
+        {card.overlayText ? (
+          <span
+            className={clsx(
+              'pointer-events-none absolute inset-0 flex items-center justify-center text-[#f8d784] [font-family:var(--font-cannia)] [text-shadow:0_0_26px_rgba(248,215,132,0.28)]',
+              compact ? (isCompactDetailActive ? 'text-[1.45rem]' : 'text-[2.2rem]') : 'text-[3rem]'
+            )}
+          >
+            {card.overlayText}
+          </span>
+        ) : null}
+      </motion.div>
+      {isActive && !(compact && detailOpen) ? (
+        <button
+          type="button"
+          onClick={(event) => {
+            event.stopPropagation();
+            onToggleDetail();
+          }}
+          className={clsx(
+            'relative z-10 mt-6 inline-flex items-center justify-center border border-[#f3dfc4]/55 px-4 py-2 font-display uppercase tracking-[0.2em] text-[#fff4e3] transition hover:border-[#fff2de] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/55',
+            compact ? 'text-[0.55rem]' : 'text-[0.62rem]'
+          )}
+        >
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.span
+              key={detailOpen ? 'back' : 'discover'}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
+            >
+              {detailOpen ? 'Back' : card.ctaLabel}
+            </motion.span>
+          </AnimatePresence>
+        </button>
+      ) : null}
+    </motion.div>
   );
 }
 
@@ -1074,7 +2596,7 @@ function LocationCard({
             prefersReducedMotion ? undefined : { duration: 0.62, ease: [0.22, 1, 0.36, 1] }
           }
         />
-        <div className="pointer-events-none absolute inset-x-0 bottom-4 flex justify-center">
+        <div className="absolute inset-x-0 bottom-4 flex justify-center">
           <SeasonIconRow seasons={location.seasons} compact={isMobileViewport} />
         </div>
       </div>
@@ -1096,20 +2618,20 @@ function SeasonIconRow({
         return (
           <div
             key={season}
-            className={clsx('relative shrink-0', compact ? 'h-6 w-6' : 'h-7 w-7')}
+            className={clsx('group/season relative shrink-0', compact ? 'h-6 w-6' : 'h-7 w-7')}
             aria-label={iconSet.label}
           >
             <Image
               src={iconSet.icon}
               alt=""
               fill
-              className="object-contain transition-all duration-300 group-hover:-translate-y-0.5 group-hover:scale-105 group-hover:opacity-0"
+              className="object-contain transition-all duration-300 group-hover/season:-translate-y-0.5 group-hover/season:scale-105 group-hover/season:opacity-0"
             />
             <Image
               src={iconSet.hoverIcon}
               alt=""
               fill
-              className="object-contain opacity-0 transition-all duration-300 group-hover:-translate-y-0.5 group-hover:scale-105 group-hover:opacity-100"
+              className="object-contain opacity-0 transition-all duration-300 group-hover/season:-translate-y-0.5 group-hover/season:scale-105 group-hover/season:opacity-100"
             />
           </div>
         );
@@ -1210,9 +2732,51 @@ function LocationStoryBand({
   onClose: () => void;
   onNext: () => void;
 }) {
+  const scrollViewportRef = useRef<HTMLDivElement | null>(null);
+  const imageViewportRef = useRef<HTMLDivElement | null>(null);
+  const [imageMask, setImageMask] = useState(
+    'linear-gradient(to right, transparent 0px, black 120px, black calc(100% - 120px), transparent 100%)'
+  );
+  const [imageShade, setImageShade] = useState(
+    'linear-gradient(90deg, rgba(0,0,0,0.24) 0px, rgba(0,0,0,0.06) 120px, rgba(0,0,0,0.06) calc(100% - 120px), rgba(0,0,0,0.24) 100%)'
+  );
+
+  const syncImageFade = useCallback(() => {
+    const scrollViewport = scrollViewportRef.current;
+    const imageViewport = imageViewportRef.current;
+    if (!scrollViewport || !imageViewport) return;
+
+    const fadeWidth = compact ? 88 : 132;
+    const scrollLeft = scrollViewport.scrollLeft;
+    const viewportWidth = scrollViewport.clientWidth;
+    const imageOffsetLeft = imageViewport.offsetLeft;
+    const imageWidth = imageViewport.offsetWidth;
+    const visibleStart = Math.max(0, Math.min(imageWidth, scrollLeft - imageOffsetLeft));
+    const visibleEnd = Math.max(
+      0,
+      Math.min(imageWidth, scrollLeft + viewportWidth - imageOffsetLeft)
+    );
+    const leftSolidStart = Math.min(visibleStart + fadeWidth, visibleEnd);
+    const rightSolidEnd = Math.max(visibleEnd - fadeWidth, visibleStart);
+
+    setImageMask(
+      `linear-gradient(to right, transparent 0px, transparent ${visibleStart}px, black ${leftSolidStart}px, black ${rightSolidEnd}px, transparent ${visibleEnd}px, transparent 100%)`
+    );
+    setImageShade(
+      `linear-gradient(90deg, rgba(0,0,0,0.24) 0px, rgba(0,0,0,0.18) ${visibleStart}px, rgba(0,0,0,0.06) ${leftSolidStart}px, rgba(0,0,0,0.06) ${rightSolidEnd}px, rgba(0,0,0,0.18) ${visibleEnd}px, rgba(0,0,0,0.24) 100%)`
+    );
+  }, [compact]);
+
+  useEffect(() => {
+    syncImageFade();
+    const handleResize = () => syncImageFade();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [syncImageFade]);
+
   return (
     <div className={clsx('mx-auto w-full', compact ? 'max-w-[94vw]' : 'max-w-[1280px]')}>
-      <div className="mb-4 flex items-center justify-between">
+      <div className="mb-4 flex items-center">
         <button
           type="button"
           onClick={onClose}
@@ -1220,15 +2784,6 @@ function LocationStoryBand({
         >
           <ArrowLeft className="h-5 w-5 transition-transform group-hover:-translate-x-0.5 group-hover:text-[#d9a24b]" />
           Back
-        </button>
-
-        <button
-          type="button"
-          onClick={onNext}
-          className="inline-flex items-center gap-2 border border-[#f3dfc4]/55 px-4 py-2 font-display text-[9px] uppercase tracking-[0.2em] text-[#fff4e3] transition hover:border-[#fff2de] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/55"
-        >
-          Discover {story.nextLocation}
-          <ArrowRight className="h-4 w-4" />
         </button>
       </div>
 
@@ -1239,11 +2794,13 @@ function LocationStoryBand({
         )}
       >
         <div
+          ref={scrollViewportRef}
           className="relative h-full overflow-x-auto overflow-y-hidden scroll-smooth [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           onWheel={(event) => {
             if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
             event.currentTarget.scrollLeft += event.deltaY;
           }}
+          onScroll={() => syncImageFade()}
         >
           <div
             className={clsx(
@@ -1275,15 +2832,14 @@ function LocationStoryBand({
             </div>
 
             <div
+              ref={imageViewportRef}
               className={clsx(
                 'relative aspect-[4/1] shrink-0 overflow-hidden bg-black/10',
                 compact ? 'h-[52svh] min-h-[360px]' : 'h-[min(60vh,560px)]'
               )}
               style={{
-                WebkitMaskImage:
-                  'linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%)',
-                maskImage:
-                  'linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%)',
+                WebkitMaskImage: imageMask,
+                maskImage: imageMask,
               }}
             >
               <Image
@@ -1294,7 +2850,7 @@ function LocationStoryBand({
                 sizes="(min-width: 1024px) 2240px, 1440px"
                 quality={100}
               />
-              <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.24)_0%,rgba(0,0,0,0.06)_16%,rgba(0,0,0,0.06)_84%,rgba(0,0,0,0.24)_100%)]" />
+              <div className="absolute inset-0" style={{ backgroundImage: imageShade }} />
             </div>
 
             <article
@@ -1310,6 +2866,16 @@ function LocationStoryBand({
               <p className="font-sans text-[13px] italic leading-[1.86] text-[#fffef8] [text-shadow:0_0_16px_rgba(255,237,210,0.48),0_1px_12px_rgba(59,36,18,0.45)] sm:text-[14px]">
                 {story.narrative}
               </p>
+              <div className="flex justify-center pt-8">
+                <button
+                  type="button"
+                  onClick={onNext}
+                  className="inline-flex items-center gap-2 border border-[#f3dfc4]/55 px-4 py-2 font-display text-[9px] uppercase tracking-[0.2em] text-[#fff4e3] transition hover:border-[#fff2de] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/55"
+                >
+                  Discover {story.nextLocation}
+                  <ArrowRight className="h-4 w-4" />
+                </button>
+              </div>
             </article>
           </div>
         </div>
