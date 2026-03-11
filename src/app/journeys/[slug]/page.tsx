@@ -39,56 +39,56 @@ export async function generateMetadata({ params }: JourneyPageProps): Promise<Me
 
   if (slug === 'india-january-2026') {
     return {
-      title: 'India - January 1st to October 2nd, 2026',
+      title: 'India - From 1st November 2026 to 31st March 2027',
       description: journey.summary,
     };
   }
 
   if (slug === 'philippines') {
     return {
-      title: 'Philippines - From 20th June to 5th October 2026',
+      title: 'Philippines - From 1st March to 31st May 2026',
       description: journey.summary,
     };
   }
 
   if (slug === 'thailand') {
     return {
-      title: 'Thailand - From 20th June to 5th October 2026',
+      title: 'Thailand - From 1st December 2026 to 31st March 2027',
       description: journey.summary,
     };
   }
 
   if (slug === 'azores') {
     return {
-      title: 'Azores - From 27th June to 13th September',
+      title: 'Azores - From 1st June to 30th September',
       description: journey.summary,
     };
   }
 
   if (slug === 'france') {
     return {
-      title: 'France - From 20th June to 30th September',
+      title: 'France - From 1st June to 30th September',
       description: journey.summary,
     };
   }
 
   if (slug === 'morocco') {
     return {
-      title: 'Morocco - From April 1st to December 10th',
+      title: 'Morocco - From 1st April to 30th June',
       description: journey.summary,
     };
   }
 
   if (slug === 'italy') {
     return {
-      title: 'Italy - From 20th March to 10th June',
+      title: 'Italy - From 1st May to 30th June',
       description: journey.summary,
     };
   }
 
   if (slug === 'balearic') {
     return {
-      title: 'Balearic - From 22nd February to 13th September',
+      title: 'Balearic - From 1st May to 30th September',
       description: journey.summary,
     };
   }

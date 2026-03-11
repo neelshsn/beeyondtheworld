@@ -3030,7 +3030,6 @@ function LocationStoryBand({
                     className="pointer-events-none absolute inset-0 z-0 -translate-x-full bg-gradient-to-r from-transparent via-[#f6c452bf] to-transparent opacity-0 transition-transform duration-500 group-hover:translate-x-full group-hover:opacity-100"
                   />
                   <span className="relative z-10">Discover {story.nextLocation}</span>
-                  <SiteArrowIcon direction="right" className="relative z-10 h-4 w-4" />
                 </button>
               </div>
             </article>

@@ -48,7 +48,7 @@ const allJourneyShowcases: JourneyShowcase[] = [
     headline:
       'An island journey of stone, sea, and Mediterranean stillness unfolding across Mallorca, Ibiza, and Menorca.',
     locale: 'Mallorca, Ibiza & Menorca',
-    timeframe: 'From 22nd February to 13th September',
+    timeframe: 'From 1st May to 30th September',
     summary:
       'A Balearic journey shaped by golden stone, hidden coves, white cliffs, and quiet turquoise waters where island life feels both luminous and deeply unhurried.',
     story: [
@@ -113,7 +113,7 @@ const allJourneyShowcases: JourneyShowcase[] = [
     headline:
       'A poetic Italian journey drifting from cypress hills to alpine peaks, Mediterranean stone, and cliffside coastlines.',
     locale: 'Tuscany, Dolomites, Sicily & Amalfi',
-    timeframe: 'From 20th March to 10th June',
+    timeframe: 'From 1st May to 30th June',
     summary:
       'A four-part Italy journey shaped by the green rhythm of Tuscany, the mineral stillness of the Dolomites, the architectural serenity of Sicily, and the luminous cliffs of Amalfi.',
     story: [
@@ -186,7 +186,7 @@ const allJourneyShowcases: JourneyShowcase[] = [
     headline:
       'A Moroccan arc unfolding between desert light, Atlantic stillness, medina textures, and vast horizons.',
     locale: 'Ouarzazate, Agafay, Dakhla, Taghazout & Essaouira',
-    timeframe: 'From April 1st to December 10th',
+    timeframe: 'From 1st April to 30th June',
     summary:
       'A multi-chapter Morocco journey shaped by desert silence, Atlantic breeze, medina density, and landscapes where water and stone constantly rebalance one another.',
     story: [
@@ -251,7 +251,7 @@ const allJourneyShowcases: JourneyShowcase[] = [
     headline:
       'A French journey drifting from Mediterranean stone gardens to salt lagoons and alpine light.',
     locale: 'Provence, Camargue & Avoriaz',
-    timeframe: 'From 20th June to 30th September',
+    timeframe: 'From 1st June to 30th September',
     summary:
       'A three-part France journey shaped by the warm stillness of Provence, the wild pastel horizons of the Camargue, and the crystalline mountain calm of Avoriaz.',
     story: [
@@ -316,7 +316,7 @@ const allJourneyShowcases: JourneyShowcase[] = [
     headline:
       'An Atlantic pause where volcanic lakes, misted forests, and open ocean light become one continuous horizon.',
     locale: 'Azores',
-    timeframe: 'From 27th June to 13th September',
+    timeframe: 'From 1st June to 30th September',
     summary:
       'A cinematic Azores journey shaped by emerald crater lakes, pale hydrangea cliffs, mist-washed forests, and the quiet force of the Atlantic.',
     story: [
@@ -381,7 +381,7 @@ const allJourneyShowcases: JourneyShowcase[] = [
     headline:
       'A cinematic drift from rainforest karsts to neon streets and luminous island horizons.',
     locale: 'Khao Sok, Bangkok & Koh Phi Phi',
-    timeframe: 'From 20th June to 5th October 2026',
+    timeframe: 'From 1st December 2026 to 31st March 2027',
     summary:
       'A three-part Thailand journey unfolding between the misted karst lake of Khao Sok, the electric density of Bangkok, and the crystalline tropical stillness of Koh Phi Phi.',
     story: [
@@ -445,7 +445,7 @@ const allJourneyShowcases: JourneyShowcase[] = [
     title: 'Philippines',
     headline: 'Island chapters drifting from turquoise lagoons to cloud-high inland landscapes.',
     locale: 'Palawan, Bukidnon & Siargao',
-    timeframe: 'From 20th June to 5th October 2026',
+    timeframe: 'From 1st March to 31st May 2026',
     summary:
       'A cinematic island journey unfolding between the translucent lagoons of Palawan, the cloud-wrapped highlands of Bukidnon, and the slow surf rhythm of Siargao.',
     story: [
@@ -754,7 +754,7 @@ const allJourneyShowcases: JourneyShowcase[] = [
     title: 'India Palace Circuit',
     headline: 'Couture caravans weaving through Jaipur, Udaipur lakes, and Goan sunsets.',
     locale: 'Jaipur, Udaipur & Goa',
-    timeframe: 'January 1st to October 2nd, 2026',
+    timeframe: 'From 1st November 2026 to 31st March 2027',
     summary:
       'A travelling palace narrative captures dawn pujas in Jaipur, mirrored lotus rides in Udaipur, and spice-scented Goa nights. Maison teams co-create with artisans to infuse each frame with royal craft and seaside ease.',
     story: [
