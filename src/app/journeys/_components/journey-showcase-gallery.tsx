@@ -1390,6 +1390,8 @@ function SeasonIconRow({
   onSelect?: (season: JourneySeason) => void;
 }) {
   const sizing = getSeasonIconSizing(compact, scale);
+  const seasonIconShadowClass =
+    '[filter:drop-shadow(0_0.16em_0.04em_rgba(0,0,0,0.88))_drop-shadow(0_0.05em_0.16em_rgba(0,0,0,0.45))]';
 
   return (
     <div className={clsx('flex items-center justify-center', sizing.gapClass)}>
@@ -1434,6 +1436,7 @@ function SeasonIconRow({
               fill
               className={clsx(
                 'object-contain transition-all duration-300 group-hover/season:-translate-y-0.5 group-hover/season:scale-105',
+                seasonIconShadowClass,
                 isSelected ? 'opacity-0' : 'group-hover/season:opacity-0'
               )}
             />
@@ -1443,6 +1446,7 @@ function SeasonIconRow({
               fill
               className={clsx(
                 'object-contain transition-all duration-300 group-hover/season:-translate-y-0.5 group-hover/season:scale-105',
+                seasonIconShadowClass,
                 isSelected ? 'opacity-100' : 'opacity-0 group-hover/season:opacity-100'
               )}
             />

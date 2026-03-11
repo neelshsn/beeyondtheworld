@@ -13,6 +13,11 @@ import { journeyShowcases } from '@/data/showcases';
 import { IndiaJourneyLayout } from './_sections/india-journey-layout';
 import { PhilippinesJourneyLayout } from './_sections/philippines-journey-layout';
 import { ThailandJourneyLayout } from './_sections/thailand-journey-layout';
+import { AzoresJourneyLayout } from './_sections/azores-journey-layout';
+import { FranceJourneyLayout } from './_sections/france-journey-layout';
+import { MoroccoJourneyLayout } from './_sections/morocco-journey-layout';
+import { ItalyJourneyLayout } from './_sections/italy-journey-layout';
+import { BalearicJourneyLayout } from './_sections/balearic-journey-layout';
 
 type JourneyPageProps = {
   params: Promise<{ slug: string }>;
@@ -53,6 +58,41 @@ export async function generateMetadata({ params }: JourneyPageProps): Promise<Me
     };
   }
 
+  if (slug === 'azores') {
+    return {
+      title: 'Azores - From 27th June to 13th September',
+      description: journey.summary,
+    };
+  }
+
+  if (slug === 'france') {
+    return {
+      title: 'France - From 20th June to 30th September',
+      description: journey.summary,
+    };
+  }
+
+  if (slug === 'morocco') {
+    return {
+      title: 'Morocco - From April 1st to December 10th',
+      description: journey.summary,
+    };
+  }
+
+  if (slug === 'italy') {
+    return {
+      title: 'Italy - From 20th March to 10th June',
+      description: journey.summary,
+    };
+  }
+
+  if (slug === 'balearic') {
+    return {
+      title: 'Balearic - From 22nd February to 13th September',
+      description: journey.summary,
+    };
+  }
+
   return {
     title: `${journey.title} - Beeyondtheworld`,
     description: journey.summary,
@@ -69,6 +109,26 @@ export default async function JourneyPage({ params }: JourneyPageProps) {
 
   if (slug === 'thailand') {
     return <ThailandJourneyLayout journey={journey} />;
+  }
+
+  if (slug === 'azores') {
+    return <AzoresJourneyLayout journey={journey} />;
+  }
+
+  if (slug === 'france') {
+    return <FranceJourneyLayout journey={journey} />;
+  }
+
+  if (slug === 'morocco') {
+    return <MoroccoJourneyLayout journey={journey} />;
+  }
+
+  if (slug === 'italy') {
+    return <ItalyJourneyLayout journey={journey} />;
+  }
+
+  if (slug === 'balearic') {
+    return <BalearicJourneyLayout journey={journey} />;
   }
 
   if (slug === 'india-january-2026') {

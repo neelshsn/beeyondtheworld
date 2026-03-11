@@ -72,8 +72,7 @@ type CsrImpactCard = {
 };
 type RenderedCsrImpactSlide = { card: CsrImpactCard; sourceIndex: number; renderKey: string };
 
-const INDIA_BACKGROUND_VIDEO =
-  '/assets/journeys/philippines-2026/philippines-all-journeys-thumbnail.png';
+const INDIA_BACKGROUND_VIDEO = '/assets/journeys/azores-2026/azores-all-journeys-thumbnail.jpg';
 const VIDEO_CONTINUITY_STORAGE_KEY = 'journey-background-video-state';
 const JOURNEY_SEASON_ICONS: Record<
   JourneySeason,
@@ -93,27 +92,11 @@ const JOURNEY_SEASON_ICONS: Record<
 
 const INDIA_LOCATIONS: IndiaLocation[] = [
   {
-    id: 'philippines-location-palawan',
-    title: 'Palawan',
-    region: 'Twin Lagoon',
-    image: '/assets/journeys/philippines-2026/philippines-location-palawan-thumbnail.jpg',
-    backgroundVideo: '/assets/journeys/philippines-2026/philippines-spring-summer-thumbnail.png',
-    seasons: ['spring-summer'],
-  },
-  {
-    id: 'philippines-location-bukidnon',
-    title: 'Bukidnon',
-    region: 'Cloud Highlands',
-    image: '/assets/journeys/philippines-2026/philippines-location-bukidnon-thumbnail.png',
-    backgroundVideo: '/assets/journeys/philippines-2026/philippines-fall-winter-thumbnail.png',
-    seasons: ['fall-winter'],
-  },
-  {
-    id: 'philippines-location-siargao',
-    title: 'Siargao',
-    region: 'Surf & Lagoons',
-    image: '/assets/journeys/philippines-2026/philippines-location-siargao-thumbnail.png',
-    backgroundVideo: '/assets/journeys/philippines-2026/philippines-all-journeys-thumbnail.png',
+    id: 'azores-location-azores',
+    title: 'Azores',
+    region: 'Volcanic Lakes',
+    image: '/assets/journeys/azores-2026/azores-location-azores-thumbnail.png',
+    backgroundVideo: '/assets/journeys/azores-2026/azores-location-azores-background.jpg',
     seasons: ['spring-summer', 'fall-winter'],
   },
 ];
@@ -227,111 +210,88 @@ const CSR_CATEGORY_ARC_CONFIG: Record<
 
 const LOCATION_STORIES: IndiaLocationStory[] = [
   {
-    id: 'philippines-story-palawan',
-    locationId: 'philippines-location-palawan',
-    image: '/assets/journeys/philippines-2026/philippines-location-palawan-story.jpg',
-    leftTitle: ['Where', 'Paradise', 'Stays', 'Wild'],
+    id: 'azores-story-azores',
+    locationId: 'azores-location-azores',
+    image: '/assets/journeys/azores-2026/azores-location-azores-story.jpg',
+    leftTitle: ['The', 'Silence', 'of the Azores'],
     narrative:
-      'In Palawan, islands seem to float on translucent waters shimmering in endless shades of turquoise. Jungle-covered limestone cliffs drop into hidden lagoons where the water becomes so clear it almost disappears. Sandbanks appear and vanish with the tide, and boats drift silently between rock formations. Everything feels untouched - just wind, salt, and light. Palawan feels like reaching the edge of the world, in a landscape still free and wild.',
-    nextLocationId: 'philippines-location-bukidnon',
-    nextLocation: 'Bukidnon',
-  },
-  {
-    id: 'philippines-story-bukidnon',
-    locationId: 'philippines-location-bukidnon',
-    image: '/assets/journeys/philippines-2026/philippines-location-bukidnon-story.jpg',
-    leftTitle: ['Where', 'Paradise', 'Stays', 'Wild'],
-    narrative:
-      'In Bukidnon, the highlands roll beneath an endless green blanket, often swallowed by a sea of clouds at sunrise. Roads cut through fields, plantations, and soft hills bathed in crisp, gentle light. Everything feels calm and suspended, the air cooler, the sounds distant, the landscape stretching endlessly. Bukidnon reveals another side of the Philippines, inland, serene, and deeply natural.',
-    nextLocationId: 'philippines-location-siargao',
-    nextLocation: 'Siargao',
-  },
-  {
-    id: 'philippines-story-siargao',
-    locationId: 'philippines-location-siargao',
-    image: '/assets/journeys/philippines-2026/philippines-location-siargao-story.jpg',
-    leftTitle: ['Where', 'Paradise', 'Stays', 'Wild'],
-    narrative:
-      'On Siargao, palm trees lean toward a shifting turquoise sea and days unfold slowly between surf and sun. Dirt roads lead to quiet beaches, tidal pools glimmer at low tide, and golden afternoons dissolve into soft pastel sunsets. Life follows the rhythm of the ocean: simple, warm, and unhurried, a place where you do not chase time, you drift with it.',
-    nextLocationId: 'philippines-location-palawan',
-    nextLocation: 'Palawan',
+      'In the heart of the Atlantic Ocean, the Azores rise like a mirage of deep greens and endless blues. Between volcanic lakes shimmering in emerald tones, cliffs lined with pale hydrangeas, and mist-washed forests glowing in golden light. The light is ever-changing, soft and milky above the craters, then brilliant over the open sea. The Azores invite you to slow down, wander along paths suspended between sky and water, and feel the rare harmony of a land shaped by fire yet soothed by the ocean.',
+    nextLocationId: 'azores-location-azores',
+    nextLocation: 'Azores',
   },
 ];
 const CSR_IMPACT_CARDS: CsrImpactCard[] = [
   {
     id: 'csr-impact-carbon-pool',
     category: 'environment',
-    title: '12,4t',
+    title: '9,6t',
     titleSuffix: 'CO2',
     image: '/assets/journeys/india-january-2026/csr-impact-leaf.svg',
     ctaLabel: 'Discover',
     detailBody: [
-      'CO2 avoided on this journey comes from pooling inter-island logistics instead of multiplying transfers for each production.',
-      'By sharing boats, accommodation windows, and local crews between different houses, the itinerary stays lighter and more coherent with the territory.',
-      'Impact is reduced upstream through design, not corrected after the fact.',
+      'CO2 avoided on this journey comes from concentrating scouting, production, and accommodation within one coherent Azores route rather than multiplying scattered island operations.',
+      'By sharing transport windows, local crews, and hospitality partners, the journey remains lighter and more aligned with the rhythms of the territory.',
+      'Impact is reduced through route design and local anchoring before it ever needs to be corrected.',
     ],
   },
   {
-    id: 'csr-impact-coral-keepers',
+    id: 'csr-impact-atlantic-watershed-alliance',
     category: 'environment',
-    title: 'Coral Keepers',
+    title: 'Atlantic Watershed Alliance',
     image: '/assets/journeys/india-january-2026/csr-impact-navdama.svg',
     ctaLabel: 'Discover',
     detailBody: [
-      'Coral Keepers is the local reef stewardship network we align with for marine-sensitive productions in Palawan and Siargao.',
-      'Their work combines coastal education, reef restoration, and community monitoring so the production footprint remains compatible with fragile ecosystems.',
-      'This partnership helps crews understand the site before filming it, and contributes to preserving the lagoons and shorelines that make the journey possible.',
+      'Atlantic Watershed Alliance reflects the kind of local ecological actor we align with when working across crater lakes, cliffs, and fragile Atlantic vegetation.',
+      'Its role is to protect water systems, preserve volcanic landscapes, and guide productions toward low-impact access to sensitive natural sites.',
+      'This keeps the visual narrative connected to the living environment instead of extracting from it.',
     ],
   },
   {
-    id: 'csr-impact-shared-sea-rate',
+    id: 'csr-impact-shared-island-rate',
     category: 'environment',
-    title: 'Shared Sea Rate',
+    title: 'Shared Island Rate',
     image: '/assets/journeys/india-january-2026/csr-impact-ring.svg',
-    overlayText: '72%',
+    overlayText: '81%',
     ctaLabel: 'Discover',
     detailBody: [
-      'A high shared sea rate means a large part of marine transport, lodging, and field production has been mutualized instead of duplicated.',
-      'We measure how many activities were avoided because resources were organized collectively across one common journey rather than as isolated productions.',
+      'A high shared island rate means transport, field production, and hospitality resources were pooled instead of duplicated across isolated activations.',
+      'We measure how many activities were avoided because the Azores production was organized as one shared ecosystem, not as separate fragmented journeys.',
     ],
   },
   {
-    id: 'csr-impact-island-artisans',
+    id: 'csr-impact-volcanic-craft-circle',
     category: 'social',
-    title: 'Island Artisans',
+    title: 'Volcanic Craft Circle',
     image: '/assets/journeys/india-january-2026/csr-impact-artisans-collective.svg',
     ctaLabel: 'Discover',
     detailItems: [
       {
         icon: '/assets/icones/Ico Gold BEE-08.svg',
-        label: 'SET DESIGN ARTIST',
-        handle: '@noraislandstudio',
-        href: 'https://www.instagram.com/noraislandstudio/',
+        label: 'SET DESIGN ARTISAN',
+        handle: 'LOCAL STONEWORK',
       },
       {
         icon: '/assets/journeys/india-january-2026/csr-impact-sound-design.svg',
-        label: 'SOUND DESIGN',
-        handle: '@wavesofmika',
-        href: 'https://www.instagram.com/wavesofmika/',
+        label: 'SOUND CURATION',
+        handle: 'ATLANTIC FIELD RECORDING',
       },
       {
         icon: '/assets/icones/Ico Gold BEE-15.svg',
         label: 'MAKE-UP ARTIST',
-        handle: '@camillemanalo',
-        href: 'https://www.instagram.com/camillemanalo/',
+        handle: 'ISLAND BEAUTY',
       },
     ],
   },
   {
-    id: 'csr-impact-seakind-foundation',
+    id: 'csr-impact-blue-horizon-foundation',
     category: 'social',
-    title: 'SeaKind Foundation',
+    title: 'Blue Horizon Foundation',
     image: '/assets/journeys/india-january-2026/csr-impact-smile-foundation.svg',
     ctaLabel: 'Discover',
     detailBody: [
-      'SeaKind Foundation supports coastal youth and island communities through education, health outreach, and livelihood programs connected to tourism and the sea.',
-      'Its teams help build long-term access to learning opportunities while strengthening local economies linked to responsible hospitality and marine stewardship.',
-      'The goal is simple: keep value, skills, and opportunity rooted in the communities that host the journey.',
+      'Blue Horizon Foundation reflects the type of community initiative we support across island territories where ecology, youth opportunity, and sustainable hospitality intersect.',
+      'Its programs encourage education, local employment, and cultural continuity in places shaped by both natural beauty and geographic isolation.',
+      'The goal is to keep value, skills, and future opportunities rooted in the communities that host the journey.',
     ],
   },
   {
@@ -339,16 +299,16 @@ const CSR_IMPACT_CARDS: CsrImpactCard[] = [
     category: 'societal',
     title: 'Local Nature',
     image: '/assets/journeys/india-january-2026/csr-impact-ring.svg',
-    overlayText: '84%',
+    overlayText: '92%',
     ctaLabel: 'Discover',
     detailItems: [
       {
         icon: '/assets/journeys/india-january-2026/csr-impact-family-sustain.svg',
-        label: 'COMMUNITY HOSTS',
+        label: 'ISLAND HOSTS',
       },
       {
         icon: '/assets/journeys/india-january-2026/csr-impact-local-catering.svg',
-        label: 'ISLAND CATERING',
+        label: 'LOCAL CATERING',
       },
       {
         icon: '/assets/icones/Ico Gold BEE-16.svg',
@@ -361,7 +321,7 @@ const CSR_IMPACT_CARDS: CsrImpactCard[] = [
     category: 'societal',
     title: 'Cultural Ethic',
     image: '/assets/journeys/india-january-2026/csr-impact-ring.svg',
-    overlayText: '91%',
+    overlayText: '94%',
     ctaLabel: 'Discover',
     detailItems: [
       {
@@ -370,7 +330,7 @@ const CSR_IMPACT_CARDS: CsrImpactCard[] = [
       },
       {
         icon: '/assets/icones/Ico Gold BEE-10.svg',
-        label: 'TAGBANWA LESSONS',
+        label: 'AZOREAN LESSONS',
       },
       {
         icon: '/assets/icones/Ico Gold BEE-16.svg',
@@ -385,8 +345,8 @@ const CSR_IMPACT_CARDS: CsrImpactCard[] = [
     image: '/assets/journeys/india-january-2026/csr-impact-local-sponsoring.svg',
     ctaLabel: 'Discover',
     detailBody: [
-      "In co-creation with the brand's team, we identify local actors to highlight for their craft, their cultural role, or their social value within the islands.",
-      'Resorts, surf communities, boat operators, makers, and food partners become visible through a shared activation strategy that benefits both the journey and the local ecosystem.',
+      "In co-creation with the brand's team, we identify Azorean actors to highlight for their craft, cultural role, ecological relevance, or social value within the journey.",
+      'Guesthouses, growers, nature guides, food houses, and local makers become visible through a shared activation strategy that benefits both the production and the territory.',
     ],
   },
   {
@@ -396,9 +356,9 @@ const CSR_IMPACT_CARDS: CsrImpactCard[] = [
     image: '/assets/journeys/india-january-2026/csr-impact-smile-foundation.svg',
     ctaLabel: 'Discover',
     detailBody: [
-      'A fully local artvertising publication rooted in island life. Created with local talents and makers, each image reflects lived culture rather than outside projection.',
-      'At its core is the place of Filipino women not as subjects, but as authors of the visual narrative.',
-      'By producing locally, value returns to its origin and representation belongs to those who inhabit the territory.',
+      'A fully local artvertising publication rooted in the Azores and produced with local talents, makers, and island voices rather than outside interpretation.',
+      'At its heart is the place of women in the Azores, not as subjects observed from afar, but as authors of the visual and cultural narrative.',
+      'By producing locally, value returns to its origin and representation belongs to those who live the territory every day.',
     ],
   },
 ];
@@ -596,7 +556,7 @@ function getCardFadeProfile(forwardOffset: number, isMobileViewport: boolean) {
   };
 }
 
-export function PhilippinesJourneyLayout({ journey }: { journey: JourneyShowcase }) {
+export function AzoresJourneyLayout({ journey }: { journey: JourneyShowcase }) {
   useBodyScrollLock();
 
   const router = useRouter();

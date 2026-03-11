@@ -72,8 +72,7 @@ type CsrImpactCard = {
 };
 type RenderedCsrImpactSlide = { card: CsrImpactCard; sourceIndex: number; renderKey: string };
 
-const INDIA_BACKGROUND_VIDEO =
-  '/assets/journeys/philippines-2026/philippines-all-journeys-thumbnail.png';
+const INDIA_BACKGROUND_VIDEO = '/assets/journeys/italy-2026/italy-all-journeys-thumbnail.jpg';
 const VIDEO_CONTINUITY_STORAGE_KEY = 'journey-background-video-state';
 const JOURNEY_SEASON_ICONS: Record<
   JourneySeason,
@@ -93,27 +92,35 @@ const JOURNEY_SEASON_ICONS: Record<
 
 const INDIA_LOCATIONS: IndiaLocation[] = [
   {
-    id: 'philippines-location-palawan',
-    title: 'Palawan',
-    region: 'Twin Lagoon',
-    image: '/assets/journeys/philippines-2026/philippines-location-palawan-thumbnail.jpg',
-    backgroundVideo: '/assets/journeys/philippines-2026/philippines-spring-summer-thumbnail.png',
-    seasons: ['spring-summer'],
+    id: 'italy-location-tuscany',
+    title: 'Tuscany',
+    region: 'Cypress Hills',
+    image: '/assets/journeys/italy-2026/italy-location-tuscany-thumbnail.png',
+    backgroundVideo: '/assets/journeys/italy-2026/italy-location-tuscany-background.jpg',
+    seasons: ['spring-summer', 'fall-winter'],
   },
   {
-    id: 'philippines-location-bukidnon',
-    title: 'Bukidnon',
-    region: 'Cloud Highlands',
-    image: '/assets/journeys/philippines-2026/philippines-location-bukidnon-thumbnail.png',
-    backgroundVideo: '/assets/journeys/philippines-2026/philippines-fall-winter-thumbnail.png',
+    id: 'italy-location-dolomites',
+    title: 'Dolomites',
+    region: 'Alpine Peaks',
+    image: '/assets/journeys/italy-2026/italy-location-dolomites-thumbnail.png',
+    backgroundVideo: '/assets/journeys/italy-2026/italy-location-dolomites-background.png',
     seasons: ['fall-winter'],
   },
   {
-    id: 'philippines-location-siargao',
-    title: 'Siargao',
-    region: 'Surf & Lagoons',
-    image: '/assets/journeys/philippines-2026/philippines-location-siargao-thumbnail.png',
-    backgroundVideo: '/assets/journeys/philippines-2026/philippines-all-journeys-thumbnail.png',
+    id: 'italy-location-sicily',
+    title: 'Sicily',
+    region: 'Mediterranean Stone',
+    image: '/assets/journeys/italy-2026/italy-location-sicily-thumbnail.png',
+    backgroundVideo: '/assets/journeys/italy-2026/italy-location-sicily-background.png',
+    seasons: ['spring-summer'],
+  },
+  {
+    id: 'italy-location-amalfi',
+    title: 'Amalfi',
+    region: 'Coastal Terraces',
+    image: '/assets/journeys/italy-2026/italy-location-amalfi-thumbnail.png',
+    backgroundVideo: '/assets/journeys/italy-2026/italy-location-amalfi-background.jpg',
     seasons: ['spring-summer', 'fall-winter'],
   },
 ];
@@ -227,111 +234,118 @@ const CSR_CATEGORY_ARC_CONFIG: Record<
 
 const LOCATION_STORIES: IndiaLocationStory[] = [
   {
-    id: 'philippines-story-palawan',
-    locationId: 'philippines-location-palawan',
-    image: '/assets/journeys/philippines-2026/philippines-location-palawan-story.jpg',
-    leftTitle: ['Where', 'Paradise', 'Stays', 'Wild'],
+    id: 'italy-story-tuscany',
+    locationId: 'italy-location-tuscany',
+    image: '/assets/journeys/italy-2026/italy-location-tuscany-story.jpg',
+    leftTitle: ['The Art', 'of Green,', 'Painted', 'by Nature'],
     narrative:
-      'In Palawan, islands seem to float on translucent waters shimmering in endless shades of turquoise. Jungle-covered limestone cliffs drop into hidden lagoons where the water becomes so clear it almost disappears. Sandbanks appear and vanish with the tide, and boats drift silently between rock formations. Everything feels untouched - just wind, salt, and light. Palawan feels like reaching the edge of the world, in a landscape still free and wild.',
-    nextLocationId: 'philippines-location-bukidnon',
-    nextLocation: 'Bukidnon',
+      'In Tuscany, the landscape unfolds in layers of green and gold, shaped by light and time. Rolling hills stretch gently into the distance, lined with vineyards, olive groves, and slender cypress trees that trace the horizon with quiet elegance. Morning mist softens the valleys, while stone villages rest calmly within the countryside. Here, nature and human presence exist in harmony, creating a timeless rhythm where beauty feels effortless and deeply serene.',
+    nextLocationId: 'italy-location-dolomites',
+    nextLocation: 'Dolomites',
   },
   {
-    id: 'philippines-story-bukidnon',
-    locationId: 'philippines-location-bukidnon',
-    image: '/assets/journeys/philippines-2026/philippines-location-bukidnon-story.jpg',
-    leftTitle: ['Where', 'Paradise', 'Stays', 'Wild'],
+    id: 'italy-story-dolomites',
+    locationId: 'italy-location-dolomites',
+    image: '/assets/journeys/italy-2026/italy-location-dolomites-story.jpg',
+    leftTitle: ['The Art', 'of Green,', 'Painted', 'by Nature.'],
     narrative:
-      'In Bukidnon, the highlands roll beneath an endless green blanket, often swallowed by a sea of clouds at sunrise. Roads cut through fields, plantations, and soft hills bathed in crisp, gentle light. Everything feels calm and suspended, the air cooler, the sounds distant, the landscape stretching endlessly. Bukidnon reveals another side of the Philippines, inland, serene, and deeply natural.',
-    nextLocationId: 'philippines-location-siargao',
-    nextLocation: 'Siargao',
+      'In the Dolomites, nature rises in a more vertical language. Jagged peaks catch the shifting alpine light, while meadows, forests, and still lakes soften the scale of the mountains. Villages rest quietly beneath vast stone walls, and every path feels suspended between earth and sky. The air is pure, the rhythm slower, the silence almost mineral. Here, Italy becomes expansive and elemental, a landscape where grandeur and calm live side by side.',
+    nextLocationId: 'italy-location-sicily',
+    nextLocation: 'Sicily',
   },
   {
-    id: 'philippines-story-siargao',
-    locationId: 'philippines-location-siargao',
-    image: '/assets/journeys/philippines-2026/philippines-location-siargao-story.jpg',
-    leftTitle: ['Where', 'Paradise', 'Stays', 'Wild'],
+    id: 'italy-story-sicily',
+    locationId: 'italy-location-sicily',
+    image: '/assets/journeys/italy-2026/italy-location-sicily-story.jpg',
+    leftTitle: ['Where', 'Time', 'Slow', 'Down'],
     narrative:
-      'On Siargao, palm trees lean toward a shifting turquoise sea and days unfold slowly between surf and sun. Dirt roads lead to quiet beaches, tidal pools glimmer at low tide, and golden afternoons dissolve into soft pastel sunsets. Life follows the rhythm of the ocean: simple, warm, and unhurried, a place where you do not chase time, you drift with it.',
-    nextLocationId: 'philippines-location-palawan',
-    nextLocation: 'Palawan',
+      'Sicily unfolds as a land of light, stone, and sea. In the Baroque streets of Noto, golden facades rise between narrow alleys, their ornate balconies and carved details reflecting centuries of history, while glimpses of the green countryside appear beyond the buildings. From a small balcony overlooking the sea, a simple table with a book and a cup of coffee invites quiet contemplation. The calm water, sculpted rocks, and pastel sky create a timeless scene where nature and everyday life blend effortlessly. Together, these images reveal Sicily’s essence: a place of architectural beauty and Mediterranean serenity, where grandeur and simplicity coexist in perfect balance.',
+    nextLocationId: 'italy-location-amalfi',
+    nextLocation: 'Amalfi',
+  },
+  {
+    id: 'italy-story-amalfi',
+    locationId: 'italy-location-amalfi',
+    image: '/assets/journeys/italy-2026/italy-location-amalfi-story.jpg',
+    leftTitle: ['Cliffside', 'Days of', 'Salt & Light'],
+    narrative:
+      'Along the Amalfi Coast, houses cling to the cliffs above a sea that shifts from deep cobalt to silver with the passing light. Terraces overflow with lemon trees and pale stone stairways descend toward hidden coves and quiet harbors. The landscape feels sculpted by both nature and daily life, dramatic yet intimate, luminous yet grounded. Amalfi is a place where every turn opens onto another layer of sea, sky, and architecture, and where time seems to move with the rhythm of the coast itself.',
+    nextLocationId: 'italy-location-tuscany',
+    nextLocation: 'Tuscany',
   },
 ];
 const CSR_IMPACT_CARDS: CsrImpactCard[] = [
   {
     id: 'csr-impact-carbon-pool',
     category: 'environment',
-    title: '12,4t',
+    title: '11,2t',
     titleSuffix: 'CO2',
     image: '/assets/journeys/india-january-2026/csr-impact-leaf.svg',
     ctaLabel: 'Discover',
     detailBody: [
-      'CO2 avoided on this journey comes from pooling inter-island logistics instead of multiplying transfers for each production.',
-      'By sharing boats, accommodation windows, and local crews between different houses, the itinerary stays lighter and more coherent with the territory.',
-      'Impact is reduced upstream through design, not corrected after the fact.',
+      'CO2 avoided on this journey comes from pooling regional transport, accommodation windows, and local crews between Tuscany, the Dolomites, Sicily, and Amalfi instead of multiplying separate productions.',
+      'By organizing Italy as one coherent seasonal route, the production footprint becomes lighter and more intentional.',
+      'Impact is reduced upstream through planning, mutualization, and local anchoring rather than corrected after the fact.',
     ],
   },
   {
-    id: 'csr-impact-coral-keepers',
+    id: 'csr-impact-landscape-heritage-alliance',
     category: 'environment',
-    title: 'Coral Keepers',
+    title: 'Landscape Heritage Alliance',
     image: '/assets/journeys/india-january-2026/csr-impact-navdama.svg',
     ctaLabel: 'Discover',
     detailBody: [
-      'Coral Keepers is the local reef stewardship network we align with for marine-sensitive productions in Palawan and Siargao.',
-      'Their work combines coastal education, reef restoration, and community monitoring so the production footprint remains compatible with fragile ecosystems.',
-      'This partnership helps crews understand the site before filming it, and contributes to preserving the lagoons and shorelines that make the journey possible.',
+      'Landscape Heritage Alliance reflects the kind of local ecological network we align with when working across vineyards, alpine territories, coastal cliffs, and historic landscapes in Italy.',
+      'Its role is to protect access, preserve biodiversity, and guide productions toward low-impact interactions with sensitive natural and cultural sites.',
+      'This keeps the visual narrative connected to the territory instead of extracting from it.',
     ],
   },
   {
-    id: 'csr-impact-shared-sea-rate',
+    id: 'csr-impact-shared-terroir-rate',
     category: 'environment',
-    title: 'Shared Sea Rate',
+    title: 'Shared Terroir Rate',
     image: '/assets/journeys/india-january-2026/csr-impact-ring.svg',
-    overlayText: '72%',
+    overlayText: '82%',
     ctaLabel: 'Discover',
     detailBody: [
-      'A high shared sea rate means a large part of marine transport, lodging, and field production has been mutualized instead of duplicated.',
-      'We measure how many activities were avoided because resources were organized collectively across one common journey rather than as isolated productions.',
+      'A high shared terroir rate means field production, transport, and hospitality resources were pooled across the Italian journey instead of duplicated region by region.',
+      'We measure how many activities were avoided because countryside, mountain, and coastal chapters were organized as one shared ecosystem rather than isolated productions.',
     ],
   },
   {
-    id: 'csr-impact-island-artisans',
+    id: 'csr-impact-italian-craft-circle',
     category: 'social',
-    title: 'Island Artisans',
+    title: 'Italian Craft Circle',
     image: '/assets/journeys/india-january-2026/csr-impact-artisans-collective.svg',
     ctaLabel: 'Discover',
     detailItems: [
       {
         icon: '/assets/icones/Ico Gold BEE-08.svg',
-        label: 'SET DESIGN ARTIST',
-        handle: '@noraislandstudio',
-        href: 'https://www.instagram.com/noraislandstudio/',
+        label: 'SET DESIGN ARTISAN',
+        handle: 'STONE & LIME',
       },
       {
         icon: '/assets/journeys/india-january-2026/csr-impact-sound-design.svg',
-        label: 'SOUND DESIGN',
-        handle: '@wavesofmika',
-        href: 'https://www.instagram.com/wavesofmika/',
+        label: 'SOUND CURATION',
+        handle: 'COUNTRYSIDE ATMOSPHERES',
       },
       {
         icon: '/assets/icones/Ico Gold BEE-15.svg',
         label: 'MAKE-UP ARTIST',
-        handle: '@camillemanalo',
-        href: 'https://www.instagram.com/camillemanalo/',
+        handle: 'MEDITERRANEAN GLOW',
       },
     ],
   },
   {
-    id: 'csr-impact-seakind-foundation',
+    id: 'csr-impact-bella-terra-foundation',
     category: 'social',
-    title: 'SeaKind Foundation',
+    title: 'Bella Terra Foundation',
     image: '/assets/journeys/india-january-2026/csr-impact-smile-foundation.svg',
     ctaLabel: 'Discover',
     detailBody: [
-      'SeaKind Foundation supports coastal youth and island communities through education, health outreach, and livelihood programs connected to tourism and the sea.',
-      'Its teams help build long-term access to learning opportunities while strengthening local economies linked to responsible hospitality and marine stewardship.',
-      'The goal is simple: keep value, skills, and opportunity rooted in the communities that host the journey.',
+      'Bella Terra Foundation reflects the kind of local initiative we support where education, social inclusion, and responsible hospitality intersect across Italian territories.',
+      'Its work strengthens access to training, local employment, and cultural continuity in places shaped by tourism, agriculture, craft, and environmental fragility.',
+      'The goal is to keep value, skills, and future opportunities rooted in the communities that host the journey.',
     ],
   },
   {
@@ -339,16 +353,16 @@ const CSR_IMPACT_CARDS: CsrImpactCard[] = [
     category: 'societal',
     title: 'Local Nature',
     image: '/assets/journeys/india-january-2026/csr-impact-ring.svg',
-    overlayText: '84%',
+    overlayText: '90%',
     ctaLabel: 'Discover',
     detailItems: [
       {
         icon: '/assets/journeys/india-january-2026/csr-impact-family-sustain.svg',
-        label: 'COMMUNITY HOSTS',
+        label: 'FAMILY HOSTS',
       },
       {
         icon: '/assets/journeys/india-january-2026/csr-impact-local-catering.svg',
-        label: 'ISLAND CATERING',
+        label: 'LOCAL CATERING',
       },
       {
         icon: '/assets/icones/Ico Gold BEE-16.svg',
@@ -361,7 +375,7 @@ const CSR_IMPACT_CARDS: CsrImpactCard[] = [
     category: 'societal',
     title: 'Cultural Ethic',
     image: '/assets/journeys/india-january-2026/csr-impact-ring.svg',
-    overlayText: '91%',
+    overlayText: '93%',
     ctaLabel: 'Discover',
     detailItems: [
       {
@@ -370,7 +384,7 @@ const CSR_IMPACT_CARDS: CsrImpactCard[] = [
       },
       {
         icon: '/assets/icones/Ico Gold BEE-10.svg',
-        label: 'TAGBANWA LESSONS',
+        label: 'ITALIAN LESSONS',
       },
       {
         icon: '/assets/icones/Ico Gold BEE-16.svg',
@@ -385,8 +399,8 @@ const CSR_IMPACT_CARDS: CsrImpactCard[] = [
     image: '/assets/journeys/india-january-2026/csr-impact-local-sponsoring.svg',
     ctaLabel: 'Discover',
     detailBody: [
-      "In co-creation with the brand's team, we identify local actors to highlight for their craft, their cultural role, or their social value within the islands.",
-      'Resorts, surf communities, boat operators, makers, and food partners become visible through a shared activation strategy that benefits both the journey and the local ecosystem.',
+      "In co-creation with the brand's team, we identify Italian actors to highlight for their craft, cultural role, ecological relevance, or social value within the journey.",
+      'Agriturismi, mountain houses, family kitchens, coastal partners, artisans, and local makers become visible through a shared activation strategy that benefits both the production and the territory.',
     ],
   },
   {
@@ -396,9 +410,9 @@ const CSR_IMPACT_CARDS: CsrImpactCard[] = [
     image: '/assets/journeys/india-january-2026/csr-impact-smile-foundation.svg',
     ctaLabel: 'Discover',
     detailBody: [
-      'A fully local artvertising publication rooted in island life. Created with local talents and makers, each image reflects lived culture rather than outside projection.',
-      'At its core is the place of Filipino women not as subjects, but as authors of the visual narrative.',
-      'By producing locally, value returns to its origin and representation belongs to those who inhabit the territory.',
+      'A fully local artvertising publication rooted in Italy and produced with local talents, makers, and voices rather than outside interpretation.',
+      'At its heart is the place of women in Italy, not as subjects framed from afar, but as authors of the visual and cultural narrative.',
+      'By producing locally, value returns to its origin and representation belongs to those who inhabit the territory every day.',
     ],
   },
 ];
@@ -596,7 +610,7 @@ function getCardFadeProfile(forwardOffset: number, isMobileViewport: boolean) {
   };
 }
 
-export function PhilippinesJourneyLayout({ journey }: { journey: JourneyShowcase }) {
+export function ItalyJourneyLayout({ journey }: { journey: JourneyShowcase }) {
   useBodyScrollLock();
 
   const router = useRouter();

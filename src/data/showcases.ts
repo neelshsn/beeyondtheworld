@@ -42,6 +42,339 @@ export type CampaignShowcase = {
 
 const allJourneyShowcases: JourneyShowcase[] = [
   {
+    id: 'balearic',
+    slug: 'balearic',
+    title: 'Balearic',
+    headline:
+      'An island journey of stone, sea, and Mediterranean stillness unfolding across Mallorca, Ibiza, and Menorca.',
+    locale: 'Mallorca, Ibiza & Menorca',
+    timeframe: 'From 22nd February to 13th September',
+    summary:
+      'A Balearic journey shaped by golden stone, hidden coves, white cliffs, and quiet turquoise waters where island life feels both luminous and deeply unhurried.',
+    story: [
+      'Mallorca opens the journey with dry-stone villages, secret calas, and a warm mineral light that binds hillside and sea together.',
+      'Ibiza brings a freer, brighter rhythm through white architecture, open horizons, and a landscape stripped back to light, pine, and salt.',
+      'Menorca closes the arc in a quieter key, where untouched coves and pale coastal paths create a more intimate and contemplative Mediterranean chapter.',
+    ],
+    highlights: [
+      'Golden-stone island storytelling between cliffs, terraces, calas, and sea air',
+      'Whitewashed Mediterranean chapters shaped by sky, pine, and luminous open horizons',
+      'Quiet coastal finales built around turquoise water, hidden beaches, and slowed island time',
+    ],
+    logistics: [
+      'Shared inter-island production system designed to limit transfers and maximize local anchoring',
+      'Flexible art direction balancing mineral stillness, bright Mediterranean architecture, and coastal intimacy',
+      'Editorial and motion delivery adapted for fashion, hospitality, beauty, and leisure-driven storytelling',
+    ],
+    hero: {
+      id: 'balearic-hero',
+      type: 'image',
+      src: '/assets/journeys/balearic-2026/balearic-all-journeys-thumbnail.png',
+      alt: 'Balearic journey background with Mallorca light',
+      aspectRatio: 'landscape',
+      caption: 'Balearic opening frame',
+      overlayLabel: 'Journey 09',
+    },
+    gallery: [
+      {
+        id: 'balearic-2026-gallery-01',
+        type: 'image',
+        src: '/assets/journeys/balearic-2026/balearic-location-mallorca-thumbnail.png',
+        alt: 'Mallorca journey thumbnail',
+        aspectRatio: 'landscape',
+        caption: 'Mallorca',
+      },
+      {
+        id: 'balearic-2026-gallery-02',
+        type: 'image',
+        src: '/assets/journeys/balearic-2026/balearic-location-ibiza-thumbnail.png',
+        alt: 'Ibiza journey thumbnail',
+        aspectRatio: 'landscape',
+        caption: 'Ibiza',
+      },
+      {
+        id: 'balearic-2026-gallery-03',
+        type: 'image',
+        src: '/assets/journeys/balearic-2026/balearic-location-menorca-thumbnail.png',
+        alt: 'Menorca journey thumbnail',
+        aspectRatio: 'landscape',
+        caption: 'Menorca',
+      },
+    ],
+    cta: {
+      label: 'Discuss Balearic',
+      href: 'mailto:hello@beeyondtheworld.com?subject=Balearic%20Journey',
+    },
+  },
+  {
+    id: 'italy',
+    slug: 'italy',
+    title: 'Italy',
+    headline:
+      'A poetic Italian journey drifting from cypress hills to alpine peaks, Mediterranean stone, and cliffside coastlines.',
+    locale: 'Tuscany, Dolomites, Sicily & Amalfi',
+    timeframe: 'From 20th March to 10th June',
+    summary:
+      'A four-part Italy journey shaped by the green rhythm of Tuscany, the mineral stillness of the Dolomites, the architectural serenity of Sicily, and the luminous cliffs of Amalfi.',
+    story: [
+      'Tuscany opens the journey with cypress lines, olive groves, and a countryside where light and time soften everything they touch.',
+      'The Dolomites shift the scale upward into alpine silence, where stone, lakes, and forests create a more elemental and vertical chapter.',
+      'Sicily and Amalfi close the arc through Mediterranean architecture, sea horizons, and coastlines where simplicity and grandeur coexist.',
+    ],
+    highlights: [
+      'Countryside storytelling through vineyards, cypress rhythms, and luminous Tuscan stillness',
+      'Alpine chapters between peaks, lakes, forests, and crisp mountain air',
+      'Mediterranean finales shaped by baroque stone, coastal terraces, and sea-borne light',
+    ],
+    logistics: [
+      'Shared route production connecting inland, alpine, and coastal Italy through one coherent seasonal system',
+      'Flexible art direction balancing pastoral calm, alpine scale, and Mediterranean elegance',
+      'Editorial and motion delivery adapted for fashion, hospitality, beauty, and culture-led storytelling',
+    ],
+    hero: {
+      id: 'italy-hero',
+      type: 'image',
+      src: '/assets/journeys/italy-2026/italy-all-journeys-thumbnail.jpg',
+      alt: 'Italy journey background with Tuscan hills',
+      aspectRatio: 'landscape',
+      caption: 'Tuscan opening frame',
+      overlayLabel: 'Journey 08',
+    },
+    gallery: [
+      {
+        id: 'italy-2026-gallery-01',
+        type: 'image',
+        src: '/assets/journeys/italy-2026/italy-location-tuscany-thumbnail.png',
+        alt: 'Tuscany journey thumbnail',
+        aspectRatio: 'landscape',
+        caption: 'Tuscany',
+      },
+      {
+        id: 'italy-2026-gallery-02',
+        type: 'image',
+        src: '/assets/journeys/italy-2026/italy-location-dolomites-thumbnail.png',
+        alt: 'Dolomites journey thumbnail',
+        aspectRatio: 'landscape',
+        caption: 'Dolomites',
+      },
+      {
+        id: 'italy-2026-gallery-03',
+        type: 'image',
+        src: '/assets/journeys/italy-2026/italy-location-sicily-thumbnail.png',
+        alt: 'Sicily journey thumbnail',
+        aspectRatio: 'landscape',
+        caption: 'Sicily',
+      },
+      {
+        id: 'italy-2026-gallery-04',
+        type: 'image',
+        src: '/assets/journeys/italy-2026/italy-location-amalfi-thumbnail.png',
+        alt: 'Amalfi journey thumbnail',
+        aspectRatio: 'landscape',
+        caption: 'Amalfi',
+      },
+    ],
+    cta: {
+      label: 'Discuss Italy',
+      href: 'mailto:hello@beeyondtheworld.com?subject=Italy%20Journey',
+    },
+  },
+  {
+    id: 'morocco',
+    slug: 'morocco',
+    title: 'Morocco',
+    headline:
+      'A Moroccan arc unfolding between desert light, Atlantic stillness, medina textures, and vast horizons.',
+    locale: 'Ouarzazate, Agafay, Dakhla, Taghazout & Essaouira',
+    timeframe: 'From April 1st to December 10th',
+    summary:
+      'A multi-chapter Morocco journey shaped by desert silence, Atlantic breeze, medina density, and landscapes where water and stone constantly rebalance one another.',
+    story: [
+      'Ouarzazate opens the journey with kasbah silhouettes, desert gold, and the softer mirror of lake water beneath the Atlas line.',
+      'Agafay and Marrakech accelerate the narrative through stone desert stillness and medina movement, where earth and culture breathe together.',
+      'Dakhla, Taghazout, and Essaouira stretch the arc toward the Atlantic, with lagoons, surf lines, wind-shaped ports, and minimalist horizons closing the story.',
+    ],
+    highlights: [
+      'Desert chapters between kasbahs, lake reflections, pale earth, and immense sky',
+      'Atlantic sequences shaped by surf culture, port textures, dunes, and wind-softened light',
+      'City and craft atmospheres woven through medinas, riads, and Moroccan material culture',
+    ],
+    logistics: [
+      'Shared route production linking desert, city, lagoon, surf coast, and port through one coherent seasonal system',
+      'Flexible art direction balancing raw earth, Atlantic minerality, and richly textured cultural chapters',
+      'Editorial and motion delivery adapted for fashion, hospitality, beauty, and culture-led storytelling',
+    ],
+    hero: {
+      id: 'morocco-hero',
+      type: 'image',
+      src: '/assets/journeys/morocco-2026/morocco-all-journeys-thumbnail.png',
+      alt: 'Morocco journey background with Atlantic oasis landscape',
+      aspectRatio: 'landscape',
+      caption: 'Atlantic opening frame',
+      overlayLabel: 'Journey 07',
+    },
+    gallery: [
+      {
+        id: 'morocco-2026-gallery-01',
+        type: 'image',
+        src: '/assets/journeys/morocco-2026/morocco-location-ouarzazate-thumbnail.png',
+        alt: 'Ouarzazate journey thumbnail',
+        aspectRatio: 'landscape',
+        caption: 'Ouarzazate',
+      },
+      {
+        id: 'morocco-2026-gallery-02',
+        type: 'image',
+        src: '/assets/journeys/morocco-2026/morocco-location-taghazout-thumbnail.png',
+        alt: 'Taghazout journey thumbnail',
+        aspectRatio: 'landscape',
+        caption: 'Taghazout',
+      },
+      {
+        id: 'morocco-2026-gallery-03',
+        type: 'image',
+        src: '/assets/journeys/morocco-2026/morocco-location-essaouira-thumbnail.png',
+        alt: 'Essaouira journey thumbnail',
+        aspectRatio: 'landscape',
+        caption: 'Essaouira',
+      },
+    ],
+    cta: {
+      label: 'Discuss Morocco',
+      href: 'mailto:hello@beeyondtheworld.com?subject=Morocco%20Journey',
+    },
+  },
+  {
+    id: 'france',
+    slug: 'france',
+    title: 'France',
+    headline:
+      'A French journey drifting from Mediterranean stone gardens to salt lagoons and alpine light.',
+    locale: 'Provence, Camargue & Avoriaz',
+    timeframe: 'From 20th June to 30th September',
+    summary:
+      'A three-part France journey shaped by the warm stillness of Provence, the wild pastel horizons of the Camargue, and the crystalline mountain calm of Avoriaz.',
+    story: [
+      'Provence opens the journey with ochre stone, fragrant gardens, and sun-softened light that turns every frame into a quiet Mediterranean tableau.',
+      'The Camargue expands the atmosphere into lagoons, white horses, and wind-shaped wetlands where sky and water dissolve into one continuous horizon.',
+      'Avoriaz closes the arc in alpine clarity, with lakes, forests, and mountain air creating a more elevated, mineral, and contemplative rhythm.',
+    ],
+    highlights: [
+      'Mediterranean chapters woven through stone houses, dry herbs, and warm evening light',
+      'Wetland storytelling between salt flats, flamingos, reeds, and pale pastel horizons',
+      'Alpine sequences built around lakes, forests, and crystalline mountain atmospheres',
+    ],
+    logistics: [
+      'Shared route production connecting south and alpine France through one coherent seasonal system',
+      'Flexible art direction balancing Mediterranean softness, wild wetland openness, and alpine purity',
+      'Editorial and motion delivery adapted for luxury, hospitality, beauty, and nature-led storytelling',
+    ],
+    hero: {
+      id: 'france-hero',
+      type: 'image',
+      src: '/assets/journeys/france-2026/france-all-journeys-thumbnail.png',
+      alt: 'France journey background with Camargue pastel landscape',
+      aspectRatio: 'landscape',
+      caption: 'Camargue opening frame',
+      overlayLabel: 'Journey 06',
+    },
+    gallery: [
+      {
+        id: 'france-2026-gallery-01',
+        type: 'image',
+        src: '/assets/journeys/france-2026/france-location-provence-thumbnail.png',
+        alt: 'Provence journey thumbnail',
+        aspectRatio: 'landscape',
+        caption: 'Provence',
+      },
+      {
+        id: 'france-2026-gallery-02',
+        type: 'image',
+        src: '/assets/journeys/france-2026/france-location-camargue-thumbnail.png',
+        alt: 'Camargue journey thumbnail',
+        aspectRatio: 'landscape',
+        caption: 'Camargue',
+      },
+      {
+        id: 'france-2026-gallery-03',
+        type: 'image',
+        src: '/assets/journeys/france-2026/france-location-avoriaz-thumbnail.png',
+        alt: 'Avoriaz journey thumbnail',
+        aspectRatio: 'landscape',
+        caption: 'Avoriaz',
+      },
+    ],
+    cta: {
+      label: 'Discuss France',
+      href: 'mailto:hello@beeyondtheworld.com?subject=France%20Journey',
+    },
+  },
+  {
+    id: 'azores',
+    slug: 'azores',
+    title: 'Azores',
+    headline:
+      'An Atlantic pause where volcanic lakes, misted forests, and open ocean light become one continuous horizon.',
+    locale: 'Azores',
+    timeframe: 'From 27th June to 13th September',
+    summary:
+      'A cinematic Azores journey shaped by emerald crater lakes, pale hydrangea cliffs, mist-washed forests, and the quiet force of the Atlantic.',
+    story: [
+      'The Azores open as a suspended landscape where volcanic lakes shimmer beneath shifting clouds and the ocean seems to begin just beyond every ridge.',
+      'Forests, cliffs, and winding paths create a rhythm of slowness and silence, turning the territory into a natural set shaped by mist, wind, and deep green light.',
+      'The journey closes in a state of rare balance, where fire-born landscapes are softened by water, and every frame feels both elemental and serene.',
+    ],
+    highlights: [
+      'Volcanic-lake storytelling between crater ridges, soft mist, and luminous Atlantic skies',
+      'Hydrangea-lined cliffs and island paths that keep the narrative suspended between land, ocean, and cloud',
+      'A naturally slowed atmosphere ideal for fashion, hospitality, beauty, and contemplative brand storytelling',
+    ],
+    logistics: [
+      'One coherent island-based production system designed to minimize movement and maximize local anchoring',
+      'Flexible art direction shaped for stillness, texture, weather shifts, and volcanic landscape continuity',
+      'Editorial and motion delivery adapted for luxury, lifestyle, hospitality, and ecology-led narratives',
+    ],
+    hero: {
+      id: 'azores-hero',
+      type: 'image',
+      src: '/assets/journeys/azores-2026/azores-all-journeys-thumbnail.jpg',
+      alt: 'Azores journey background with oceanic volcanic landscape',
+      aspectRatio: 'landscape',
+      caption: 'Azores opening frame',
+      overlayLabel: 'Journey 05',
+    },
+    gallery: [
+      {
+        id: 'azores-2026-gallery-01',
+        type: 'image',
+        src: '/assets/journeys/azores-2026/azores-location-azores-thumbnail.png',
+        alt: 'Azores journey location thumbnail',
+        aspectRatio: 'landscape',
+        caption: 'Azores',
+      },
+      {
+        id: 'azores-2026-gallery-02',
+        type: 'image',
+        src: '/assets/journeys/azores-2026/azores-location-azores-background.jpg',
+        alt: 'Azores journey background landscape',
+        aspectRatio: 'landscape',
+        caption: 'Atlantic landscape',
+      },
+      {
+        id: 'azores-2026-gallery-03',
+        type: 'image',
+        src: '/assets/journeys/azores-2026/azores-location-azores-story.jpg',
+        alt: 'Azores story panorama',
+        aspectRatio: 'landscape',
+        caption: 'Volcanic tale',
+      },
+    ],
+    cta: {
+      label: 'Discuss Azores',
+      href: 'mailto:hello@beeyondtheworld.com?subject=Azores%20Journey',
+    },
+  },
+  {
     id: 'thailand',
     slug: 'thailand',
     title: 'Thailand',
@@ -561,6 +894,11 @@ const allJourneyShowcases: JourneyShowcase[] = [
 
 export const journeyShowcases: JourneyShowcase[] = allJourneyShowcases.filter(
   (journey) =>
+    journey.slug === 'balearic' ||
+    journey.slug === 'italy' ||
+    journey.slug === 'morocco' ||
+    journey.slug === 'france' ||
+    journey.slug === 'azores' ||
     journey.slug === 'india-january-2026' ||
     journey.slug === 'philippines' ||
     journey.slug === 'thailand'

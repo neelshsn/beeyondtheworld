@@ -72,8 +72,7 @@ type CsrImpactCard = {
 };
 type RenderedCsrImpactSlide = { card: CsrImpactCard; sourceIndex: number; renderKey: string };
 
-const INDIA_BACKGROUND_VIDEO =
-  '/assets/journeys/philippines-2026/philippines-all-journeys-thumbnail.png';
+const INDIA_BACKGROUND_VIDEO = '/assets/journeys/morocco-2026/morocco-all-journeys-thumbnail.png';
 const VIDEO_CONTINUITY_STORAGE_KEY = 'journey-background-video-state';
 const JOURNEY_SEASON_ICONS: Record<
   JourneySeason,
@@ -93,27 +92,43 @@ const JOURNEY_SEASON_ICONS: Record<
 
 const INDIA_LOCATIONS: IndiaLocation[] = [
   {
-    id: 'philippines-location-palawan',
-    title: 'Palawan',
-    region: 'Twin Lagoon',
-    image: '/assets/journeys/philippines-2026/philippines-location-palawan-thumbnail.jpg',
-    backgroundVideo: '/assets/journeys/philippines-2026/philippines-spring-summer-thumbnail.png',
-    seasons: ['spring-summer'],
-  },
-  {
-    id: 'philippines-location-bukidnon',
-    title: 'Bukidnon',
-    region: 'Cloud Highlands',
-    image: '/assets/journeys/philippines-2026/philippines-location-bukidnon-thumbnail.png',
-    backgroundVideo: '/assets/journeys/philippines-2026/philippines-fall-winter-thumbnail.png',
+    id: 'morocco-location-ouarzazate',
+    title: 'Ouarzazate',
+    region: 'Desert & Lake',
+    image: '/assets/journeys/morocco-2026/morocco-location-ouarzazate-thumbnail.png',
+    backgroundVideo: '/assets/journeys/morocco-2026/morocco-location-ouarzazate-background.png',
     seasons: ['fall-winter'],
   },
   {
-    id: 'philippines-location-siargao',
-    title: 'Siargao',
-    region: 'Surf & Lagoons',
-    image: '/assets/journeys/philippines-2026/philippines-location-siargao-thumbnail.png',
-    backgroundVideo: '/assets/journeys/philippines-2026/philippines-all-journeys-thumbnail.png',
+    id: 'morocco-location-agafay',
+    title: 'Agafay',
+    region: 'Stone Desert',
+    image: '/assets/journeys/morocco-2026/morocco-location-agafay-thumbnail.png',
+    backgroundVideo: '/assets/journeys/morocco-2026/morocco-location-agafay-background.png',
+    seasons: ['spring-summer'],
+  },
+  {
+    id: 'morocco-location-dakhla',
+    title: 'Dakhla',
+    region: 'Lagoon Horizon',
+    image: '/assets/journeys/morocco-2026/morocco-location-dakhla-thumbnail.jpg',
+    backgroundVideo: '/assets/journeys/morocco-2026/morocco-location-dakhla-background.jpg',
+    seasons: ['spring-summer'],
+  },
+  {
+    id: 'morocco-location-taghazout',
+    title: 'Taghazout',
+    region: 'Atlantic Surfline',
+    image: '/assets/journeys/morocco-2026/morocco-location-taghazout-thumbnail.png',
+    backgroundVideo: '/assets/journeys/morocco-2026/morocco-location-taghazout-background.png',
+    seasons: ['spring-summer', 'fall-winter'],
+  },
+  {
+    id: 'morocco-location-essaouira',
+    title: 'Essaouira',
+    region: 'Wind Port',
+    image: '/assets/journeys/morocco-2026/morocco-location-essaouira-thumbnail.png',
+    backgroundVideo: '/assets/journeys/morocco-2026/morocco-location-essaouira-background.png',
     seasons: ['spring-summer', 'fall-winter'],
   },
 ];
@@ -227,111 +242,128 @@ const CSR_CATEGORY_ARC_CONFIG: Record<
 
 const LOCATION_STORIES: IndiaLocationStory[] = [
   {
-    id: 'philippines-story-palawan',
-    locationId: 'philippines-location-palawan',
-    image: '/assets/journeys/philippines-2026/philippines-location-palawan-story.jpg',
-    leftTitle: ['Where', 'Paradise', 'Stays', 'Wild'],
+    id: 'morocco-story-ouarzazate',
+    locationId: 'morocco-location-ouarzazate',
+    image: '/assets/journeys/morocco-2026/morocco-location-ouarzazate-story.jpg',
+    leftTitle: ['Between', 'Golden', 'Sands', '& Silent', 'Lakes'],
     narrative:
-      'In Palawan, islands seem to float on translucent waters shimmering in endless shades of turquoise. Jungle-covered limestone cliffs drop into hidden lagoons where the water becomes so clear it almost disappears. Sandbanks appear and vanish with the tide, and boats drift silently between rock formations. Everything feels untouched - just wind, salt, and light. Palawan feels like reaching the edge of the world, in a landscape still free and wild.',
-    nextLocationId: 'philippines-location-bukidnon',
-    nextLocation: 'Bukidnon',
+      'In Ouarzazate, light glides over vast deserts, shaping silence into shades of gold and amber. Ancient kasbahs emerge from the earth like forgotten dreams, while the horizon stretches endlessly, calm and powerful, under an immense sky. At Lalla Takerkoust, water brings a gentle pause to the land. The lake reflects the Atlas Mountains and the passing clouds, blending sky and stone into a peaceful, fluid harmony. Here, the air feels softer, and time seems to slow with each ripple. Ouarzazate and Lalla Takerkoust form a quiet dialogue between desert and water, a poetic balance where contrasts merge, and nature reveals its most timeless beauty.',
+    nextLocationId: 'morocco-location-agafay',
+    nextLocation: 'Agafay',
   },
   {
-    id: 'philippines-story-bukidnon',
-    locationId: 'philippines-location-bukidnon',
-    image: '/assets/journeys/philippines-2026/philippines-location-bukidnon-story.jpg',
-    leftTitle: ['Where', 'Paradise', 'Stays', 'Wild'],
+    id: 'morocco-story-agafay',
+    locationId: 'morocco-location-agafay',
+    image: '/assets/journeys/morocco-2026/morocco-location-agafay-story.jpg',
+    leftTitle: ['Nomad', 'Earth to', 'Medina', 'Walls'],
     narrative:
-      'In Bukidnon, the highlands roll beneath an endless green blanket, often swallowed by a sea of clouds at sunrise. Roads cut through fields, plantations, and soft hills bathed in crisp, gentle light. Everything feels calm and suspended, the air cooler, the sounds distant, the landscape stretching endlessly. Bukidnon reveals another side of the Philippines, inland, serene, and deeply natural.',
-    nextLocationId: 'philippines-location-siargao',
-    nextLocation: 'Siargao',
+      'From the quiet vastness of the Agafay Desert to the vibrant soul of Marrakech, beauty reveals itself through contrast. Agafay is a land of stone and silence, where light drifts slowly across pale earth and time seems suspended. Marrakech awakens the senses: red walls, winding medinas, and the echo of ancient gestures shaping daily life. Together, desert and city breathe as one: a quiet dream of earth and culture, where Morocco unfolds between stillness and motion.',
+    nextLocationId: 'morocco-location-dakhla',
+    nextLocation: 'Dakhla',
   },
   {
-    id: 'philippines-story-siargao',
-    locationId: 'philippines-location-siargao',
-    image: '/assets/journeys/philippines-2026/philippines-location-siargao-story.jpg',
-    leftTitle: ['Where', 'Paradise', 'Stays', 'Wild'],
+    id: 'morocco-story-dakhla',
+    locationId: 'morocco-location-dakhla',
+    image: '/assets/journeys/morocco-2026/morocco-location-dakhla-story.jpg',
+    leftTitle: ['Minimalist', 'Escape', 'Endless', 'Horizons'],
     narrative:
-      'On Siargao, palm trees lean toward a shifting turquoise sea and days unfold slowly between surf and sun. Dirt roads lead to quiet beaches, tidal pools glimmer at low tide, and golden afternoons dissolve into soft pastel sunsets. Life follows the rhythm of the ocean: simple, warm, and unhurried, a place where you do not chase time, you drift with it.',
-    nextLocationId: 'philippines-location-palawan',
-    nextLocation: 'Palawan',
+      'Dakhla reveals itself in silence, it does not demand attention, it invites contemplation. Soft dunes flow into the ocean, shaping clean, endless lines. Light moves gently across sand and water, leaving nothing unnecessary behind. Dakhla is a place to breathe. Wind, space, and horizon exist in perfect balance, creating a sense of calm that feels both raw and refined. Beauty is stripped back to its essence: natural, minimalist, and deeply soothing. Between lagoon and desert, time slows. Architecture blends into the landscape, textures speak louder than ornament, and simplicity becomes luxury.',
+    nextLocationId: 'morocco-location-taghazout',
+    nextLocation: 'Taghazout',
+  },
+  {
+    id: 'morocco-story-taghazout',
+    locationId: 'morocco-location-taghazout',
+    image: '/assets/journeys/morocco-2026/morocco-location-taghazout-story.jpg',
+    leftTitle: ['Atlantic', 'Stillness', 'in Motion'],
+    narrative:
+      'In Taghazout, the Atlantic sets the rhythm. White houses climb the hillside above long surf lines, while palm shadows and warm stone paths lead toward quiet coves and open horizons. Paradise Valley adds a softer pulse to the landscape, where clear pools rest between sunlit rocks and clusters of argan trees. Everything feels suspended between movement and calm: the ocean always in motion, the land deeply at peace. Taghazout reveals a Morocco shaped by salt, wind, and light, where simplicity becomes a way of living and beauty unfolds without effort.',
+    nextLocationId: 'morocco-location-essaouira',
+    nextLocation: 'Essaouira',
+  },
+  {
+    id: 'morocco-story-essaouira',
+    locationId: 'morocco-location-essaouira',
+    image: '/assets/journeys/morocco-2026/morocco-location-essaouira-story.jpg',
+    leftTitle: ['Blue Wind', 'on White', 'Stones'],
+    narrative:
+      'Essaouira moves to the sound of wind, gulls, and distant waves breaking below the ramparts. White walls edged in blue open onto narrow streets scented with salt and cedar, while the port glows with weathered boats and long Atlantic light. The city feels at once grounded and weightless, shaped by craft, sea air, and a slow, elegant rhythm. Here, Morocco turns softer, more mineral, more oceanic. Everything invites contemplation: the facades, the sky, the tide, the silence hidden beneath the breeze.',
+    nextLocationId: 'morocco-location-ouarzazate',
+    nextLocation: 'Ouarzazate',
   },
 ];
 const CSR_IMPACT_CARDS: CsrImpactCard[] = [
   {
     id: 'csr-impact-carbon-pool',
     category: 'environment',
-    title: '12,4t',
+    title: '13,4t',
     titleSuffix: 'CO2',
     image: '/assets/journeys/india-january-2026/csr-impact-leaf.svg',
     ctaLabel: 'Discover',
     detailBody: [
-      'CO2 avoided on this journey comes from pooling inter-island logistics instead of multiplying transfers for each production.',
-      'By sharing boats, accommodation windows, and local crews between different houses, the itinerary stays lighter and more coherent with the territory.',
-      'Impact is reduced upstream through design, not corrected after the fact.',
+      'CO2 avoided on this journey comes from pooling desert, Atlantic, and city logistics instead of multiplying isolated productions across Morocco.',
+      'By sharing routes, accommodation windows, and local crews between Ouarzazate, Agafay, Dakhla, Taghazout, and Essaouira, the journey remains lighter and more intentional.',
+      'Impact is reduced upstream through route design, mutualization, and local anchoring rather than corrected after the fact.',
     ],
   },
   {
-    id: 'csr-impact-coral-keepers',
+    id: 'csr-impact-desert-coast-alliance',
     category: 'environment',
-    title: 'Coral Keepers',
+    title: 'Desert Coast Alliance',
     image: '/assets/journeys/india-january-2026/csr-impact-navdama.svg',
     ctaLabel: 'Discover',
     detailBody: [
-      'Coral Keepers is the local reef stewardship network we align with for marine-sensitive productions in Palawan and Siargao.',
-      'Their work combines coastal education, reef restoration, and community monitoring so the production footprint remains compatible with fragile ecosystems.',
-      'This partnership helps crews understand the site before filming it, and contributes to preserving the lagoons and shorelines that make the journey possible.',
+      'Desert Coast Alliance reflects the type of local ecological network we align with when working across dunes, lagoons, mountain lakes, and fragile Atlantic coastlines in Morocco.',
+      'Its role is to protect access, preserve biodiversity, and guide productions toward low-impact interactions with sensitive natural sites.',
+      'This keeps the visual narrative connected to the territory instead of extracting from it.',
     ],
   },
   {
-    id: 'csr-impact-shared-sea-rate',
+    id: 'csr-impact-shared-terrain-rate',
     category: 'environment',
-    title: 'Shared Sea Rate',
+    title: 'Shared Terrain Rate',
     image: '/assets/journeys/india-january-2026/csr-impact-ring.svg',
-    overlayText: '72%',
+    overlayText: '79%',
     ctaLabel: 'Discover',
     detailBody: [
-      'A high shared sea rate means a large part of marine transport, lodging, and field production has been mutualized instead of duplicated.',
-      'We measure how many activities were avoided because resources were organized collectively across one common journey rather than as isolated productions.',
+      'A high shared terrain rate means field production, transport, and hospitality resources were pooled across the Moroccan journey instead of duplicated territory by territory.',
+      'We measure how many activities were avoided because desert, coast, and city chapters were organized as one shared ecosystem rather than isolated productions.',
     ],
   },
   {
-    id: 'csr-impact-island-artisans',
+    id: 'csr-impact-moroccan-craft-circle',
     category: 'social',
-    title: 'Island Artisans',
+    title: 'Moroccan Craft Circle',
     image: '/assets/journeys/india-january-2026/csr-impact-artisans-collective.svg',
     ctaLabel: 'Discover',
     detailItems: [
       {
         icon: '/assets/icones/Ico Gold BEE-08.svg',
-        label: 'SET DESIGN ARTIST',
-        handle: '@noraislandstudio',
-        href: 'https://www.instagram.com/noraislandstudio/',
+        label: 'SET DESIGN ARTISAN',
+        handle: 'EARTH & STUCCO',
       },
       {
         icon: '/assets/journeys/india-january-2026/csr-impact-sound-design.svg',
-        label: 'SOUND DESIGN',
-        handle: '@wavesofmika',
-        href: 'https://www.instagram.com/wavesofmika/',
+        label: 'SOUND CURATION',
+        handle: 'GNAWA ATMOSPHERES',
       },
       {
         icon: '/assets/icones/Ico Gold BEE-15.svg',
         label: 'MAKE-UP ARTIST',
-        handle: '@camillemanalo',
-        href: 'https://www.instagram.com/camillemanalo/',
+        handle: 'DESERT LIGHT',
       },
     ],
   },
   {
-    id: 'csr-impact-seakind-foundation',
+    id: 'csr-impact-atlas-horizon-foundation',
     category: 'social',
-    title: 'SeaKind Foundation',
+    title: 'Atlas Horizon Foundation',
     image: '/assets/journeys/india-january-2026/csr-impact-smile-foundation.svg',
     ctaLabel: 'Discover',
     detailBody: [
-      'SeaKind Foundation supports coastal youth and island communities through education, health outreach, and livelihood programs connected to tourism and the sea.',
-      'Its teams help build long-term access to learning opportunities while strengthening local economies linked to responsible hospitality and marine stewardship.',
-      'The goal is simple: keep value, skills, and opportunity rooted in the communities that host the journey.',
+      'Atlas Horizon Foundation reflects the type of local initiative we support where education, social inclusion, and responsible hospitality intersect across Moroccan territories.',
+      'Its work strengthens access to training, local employment, and cultural continuity in places shaped by tourism, craft, and environmental fragility.',
+      'The goal is to keep value, skills, and future opportunities rooted in the communities that host the journey.',
     ],
   },
   {
@@ -339,16 +371,16 @@ const CSR_IMPACT_CARDS: CsrImpactCard[] = [
     category: 'societal',
     title: 'Local Nature',
     image: '/assets/journeys/india-january-2026/csr-impact-ring.svg',
-    overlayText: '84%',
+    overlayText: '91%',
     ctaLabel: 'Discover',
     detailItems: [
       {
         icon: '/assets/journeys/india-january-2026/csr-impact-family-sustain.svg',
-        label: 'COMMUNITY HOSTS',
+        label: 'DESERT HOSTS',
       },
       {
         icon: '/assets/journeys/india-january-2026/csr-impact-local-catering.svg',
-        label: 'ISLAND CATERING',
+        label: 'LOCAL CATERING',
       },
       {
         icon: '/assets/icones/Ico Gold BEE-16.svg',
@@ -361,7 +393,7 @@ const CSR_IMPACT_CARDS: CsrImpactCard[] = [
     category: 'societal',
     title: 'Cultural Ethic',
     image: '/assets/journeys/india-january-2026/csr-impact-ring.svg',
-    overlayText: '91%',
+    overlayText: '95%',
     ctaLabel: 'Discover',
     detailItems: [
       {
@@ -370,7 +402,7 @@ const CSR_IMPACT_CARDS: CsrImpactCard[] = [
       },
       {
         icon: '/assets/icones/Ico Gold BEE-10.svg',
-        label: 'TAGBANWA LESSONS',
+        label: 'DARIJA LESSONS',
       },
       {
         icon: '/assets/icones/Ico Gold BEE-16.svg',
@@ -385,8 +417,8 @@ const CSR_IMPACT_CARDS: CsrImpactCard[] = [
     image: '/assets/journeys/india-january-2026/csr-impact-local-sponsoring.svg',
     ctaLabel: 'Discover',
     detailBody: [
-      "In co-creation with the brand's team, we identify local actors to highlight for their craft, their cultural role, or their social value within the islands.",
-      'Resorts, surf communities, boat operators, makers, and food partners become visible through a shared activation strategy that benefits both the journey and the local ecosystem.',
+      "In co-creation with the brand's team, we identify Moroccan actors to highlight for their craft, cultural role, ecological relevance, or social value within the journey.",
+      'Riads, surf houses, desert camps, lake partners, artisans, and coastal food houses become visible through a shared activation strategy that benefits both the production and the territory.',
     ],
   },
   {
@@ -396,9 +428,9 @@ const CSR_IMPACT_CARDS: CsrImpactCard[] = [
     image: '/assets/journeys/india-january-2026/csr-impact-smile-foundation.svg',
     ctaLabel: 'Discover',
     detailBody: [
-      'A fully local artvertising publication rooted in island life. Created with local talents and makers, each image reflects lived culture rather than outside projection.',
-      'At its core is the place of Filipino women not as subjects, but as authors of the visual narrative.',
-      'By producing locally, value returns to its origin and representation belongs to those who inhabit the territory.',
+      'A fully local artvertising publication rooted in Morocco and produced with local talents, makers, and voices rather than outside interpretation.',
+      'At its heart is the place of women in Morocco, not as subjects framed from afar, but as authors of the visual and cultural narrative.',
+      'By producing locally, value returns to its origin and representation belongs to those who inhabit the territory every day.',
     ],
   },
 ];
@@ -596,7 +628,7 @@ function getCardFadeProfile(forwardOffset: number, isMobileViewport: boolean) {
   };
 }
 
-export function PhilippinesJourneyLayout({ journey }: { journey: JourneyShowcase }) {
+export function MoroccoJourneyLayout({ journey }: { journey: JourneyShowcase }) {
   useBodyScrollLock();
 
   const router = useRouter();

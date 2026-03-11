@@ -2741,6 +2741,8 @@ function SeasonIconRow({
     <div className={clsx('flex items-center justify-center', sizing.gapClass)}>
       {seasons.map((season) => {
         const iconSet = JOURNEY_SEASON_ICONS[season];
+        const seasonIconShadowClass =
+          '[filter:drop-shadow(0_0.16em_0.04em_rgba(0,0,0,0.88))_drop-shadow(0_0.05em_0.16em_rgba(0,0,0,0.45))]';
         return (
           <div
             key={season}
@@ -2751,13 +2753,19 @@ function SeasonIconRow({
               src={iconSet.icon}
               alt=""
               fill
-              className="object-contain transition-all duration-300 group-hover/season:-translate-y-0.5 group-hover/season:scale-105 group-hover/season:opacity-0"
+              className={clsx(
+                'object-contain transition-all duration-300 group-hover/season:-translate-y-0.5 group-hover/season:scale-105 group-hover/season:opacity-0',
+                seasonIconShadowClass
+              )}
             />
             <Image
               src={iconSet.hoverIcon}
               alt=""
               fill
-              className="object-contain opacity-0 transition-all duration-300 group-hover/season:-translate-y-0.5 group-hover/season:scale-105 group-hover/season:opacity-100"
+              className={clsx(
+                'object-contain opacity-0 transition-all duration-300 group-hover/season:-translate-y-0.5 group-hover/season:scale-105 group-hover/season:opacity-100',
+                seasonIconShadowClass
+              )}
             />
           </div>
         );

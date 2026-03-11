@@ -72,8 +72,7 @@ type CsrImpactCard = {
 };
 type RenderedCsrImpactSlide = { card: CsrImpactCard; sourceIndex: number; renderKey: string };
 
-const INDIA_BACKGROUND_VIDEO =
-  '/assets/journeys/philippines-2026/philippines-all-journeys-thumbnail.png';
+const INDIA_BACKGROUND_VIDEO = '/assets/journeys/france-2026/france-all-journeys-thumbnail.png';
 const VIDEO_CONTINUITY_STORAGE_KEY = 'journey-background-video-state';
 const JOURNEY_SEASON_ICONS: Record<
   JourneySeason,
@@ -93,28 +92,28 @@ const JOURNEY_SEASON_ICONS: Record<
 
 const INDIA_LOCATIONS: IndiaLocation[] = [
   {
-    id: 'philippines-location-palawan',
-    title: 'Palawan',
-    region: 'Twin Lagoon',
-    image: '/assets/journeys/philippines-2026/philippines-location-palawan-thumbnail.jpg',
-    backgroundVideo: '/assets/journeys/philippines-2026/philippines-spring-summer-thumbnail.png',
+    id: 'france-location-provence',
+    title: 'Provence',
+    region: 'Stone Gardens',
+    image: '/assets/journeys/france-2026/france-location-provence-thumbnail.png',
+    backgroundVideo: '/assets/journeys/france-2026/france-location-provence-background.png',
     seasons: ['spring-summer'],
   },
   {
-    id: 'philippines-location-bukidnon',
-    title: 'Bukidnon',
-    region: 'Cloud Highlands',
-    image: '/assets/journeys/philippines-2026/philippines-location-bukidnon-thumbnail.png',
-    backgroundVideo: '/assets/journeys/philippines-2026/philippines-fall-winter-thumbnail.png',
-    seasons: ['fall-winter'],
+    id: 'france-location-camargue',
+    title: 'Camargue',
+    region: 'Salt Lagoons',
+    image: '/assets/journeys/france-2026/france-location-camargue-thumbnail.png',
+    backgroundVideo: '/assets/journeys/france-2026/france-location-camargue-background.png',
+    seasons: ['spring-summer', 'fall-winter'],
   },
   {
-    id: 'philippines-location-siargao',
-    title: 'Siargao',
-    region: 'Surf & Lagoons',
-    image: '/assets/journeys/philippines-2026/philippines-location-siargao-thumbnail.png',
-    backgroundVideo: '/assets/journeys/philippines-2026/philippines-all-journeys-thumbnail.png',
-    seasons: ['spring-summer', 'fall-winter'],
+    id: 'france-location-avoriaz',
+    title: 'Avoriaz',
+    region: 'Alpine Horizons',
+    image: '/assets/journeys/france-2026/france-location-avoriaz-thumbnail.png',
+    backgroundVideo: '/assets/journeys/france-2026/france-location-avoriaz-background.png',
+    seasons: ['fall-winter'],
   },
 ];
 
@@ -227,111 +226,108 @@ const CSR_CATEGORY_ARC_CONFIG: Record<
 
 const LOCATION_STORIES: IndiaLocationStory[] = [
   {
-    id: 'philippines-story-palawan',
-    locationId: 'philippines-location-palawan',
-    image: '/assets/journeys/philippines-2026/philippines-location-palawan-story.jpg',
-    leftTitle: ['Where', 'Paradise', 'Stays', 'Wild'],
+    id: 'france-story-provence',
+    locationId: 'france-location-provence',
+    image: '/assets/journeys/france-2026/france-location-provence-story.jpg',
+    leftTitle: ['The Art', 'of Provence'],
     narrative:
-      'In Palawan, islands seem to float on translucent waters shimmering in endless shades of turquoise. Jungle-covered limestone cliffs drop into hidden lagoons where the water becomes so clear it almost disappears. Sandbanks appear and vanish with the tide, and boats drift silently between rock formations. Everything feels untouched - just wind, salt, and light. Palawan feels like reaching the edge of the world, in a landscape still free and wild.',
-    nextLocationId: 'philippines-location-bukidnon',
-    nextLocation: 'Bukidnon',
+      'In Provence, warm light wraps around fragrant hills and sun-soaked stone houses. Pale shutters open onto gardens overflowing with bougainvillea and white blossoms, while cypress and pine trees trace the horizon toward the distant sea. At golden hour, everything softens, the stones turn ochre, the air carries the scent of warm earth and dry herbs. Provence is a gentle way of life, a peaceful landscape where time slows between nature, light, and silence.',
+    nextLocationId: 'france-location-camargue',
+    nextLocation: 'Camargue',
   },
   {
-    id: 'philippines-story-bukidnon',
-    locationId: 'philippines-location-bukidnon',
-    image: '/assets/journeys/philippines-2026/philippines-location-bukidnon-story.jpg',
-    leftTitle: ['Where', 'Paradise', 'Stays', 'Wild'],
+    id: 'france-story-camargue',
+    locationId: 'france-location-camargue',
+    image: '/assets/journeys/france-2026/france-location-camargue-story.jpg',
+    leftTitle: ['Salt', 'Wind', '& Freedom'],
     narrative:
-      'In Bukidnon, the highlands roll beneath an endless green blanket, often swallowed by a sea of clouds at sunrise. Roads cut through fields, plantations, and soft hills bathed in crisp, gentle light. Everything feels calm and suspended, the air cooler, the sounds distant, the landscape stretching endlessly. Bukidnon reveals another side of the Philippines, inland, serene, and deeply natural.',
-    nextLocationId: 'philippines-location-siargao',
-    nextLocation: 'Siargao',
+      'In the Camargue, water and sky blend into endless pastel tones. White horses gallop through the lagoons, scattering silver reflections, while pink flamingos drift across still waters. Between reeds and salt flats, wooden walkways lead toward a flat horizon bathed in soft light. Here, silence prevails, broken only by wind and birds - a wild and fragile land where nature still reigns.',
+    nextLocationId: 'france-location-avoriaz',
+    nextLocation: 'Avoriaz',
   },
   {
-    id: 'philippines-story-siargao',
-    locationId: 'philippines-location-siargao',
-    image: '/assets/journeys/philippines-2026/philippines-location-siargao-story.jpg',
-    leftTitle: ['Where', 'Paradise', 'Stays', 'Wild'],
+    id: 'france-story-avoriaz',
+    locationId: 'france-location-avoriaz',
+    image: '/assets/journeys/france-2026/france-location-avoriaz-story.jpg',
+    leftTitle: ['Elevate', 'Your Senses'],
     narrative:
-      'On Siargao, palm trees lean toward a shifting turquoise sea and days unfold slowly between surf and sun. Dirt roads lead to quiet beaches, tidal pools glimmer at low tide, and golden afternoons dissolve into soft pastel sunsets. Life follows the rhythm of the ocean: simple, warm, and unhurried, a place where you do not chase time, you drift with it.',
-    nextLocationId: 'philippines-location-palawan',
-    nextLocation: 'Palawan',
+      'In Avoriaz, the mountains stretch between alpine lakes and deep forests, bathed in pure, crystalline light. Peaks mirror themselves in still waters while the meadows glow at sunrise and sunset. Wooden chalets overlook green valleys, and trails wind through fir trees and wildflowers. Here, the air is fresh and the silence soothing, an alpine escape where nature sets a simple, majestic rhythm.',
+    nextLocationId: 'france-location-provence',
+    nextLocation: 'Provence',
   },
 ];
 const CSR_IMPACT_CARDS: CsrImpactCard[] = [
   {
     id: 'csr-impact-carbon-pool',
     category: 'environment',
-    title: '12,4t',
+    title: '10,8t',
     titleSuffix: 'CO2',
     image: '/assets/journeys/india-january-2026/csr-impact-leaf.svg',
     ctaLabel: 'Discover',
     detailBody: [
-      'CO2 avoided on this journey comes from pooling inter-island logistics instead of multiplying transfers for each production.',
-      'By sharing boats, accommodation windows, and local crews between different houses, the itinerary stays lighter and more coherent with the territory.',
-      'Impact is reduced upstream through design, not corrected after the fact.',
+      'CO2 avoided on this journey comes from pooling regional transport, accommodation windows, and local crews between Provence, Camargue, and Avoriaz instead of multiplying separate productions.',
+      'By organizing the route as one coherent seasonal journey, the production footprint becomes lighter and more intentional.',
+      'Impact is reduced upstream through planning, mutualization, and local anchoring rather than corrected after the fact.',
     ],
   },
   {
-    id: 'csr-impact-coral-keepers',
+    id: 'csr-impact-landscape-alliance',
     category: 'environment',
-    title: 'Coral Keepers',
+    title: 'Landscape Alliance',
     image: '/assets/journeys/india-january-2026/csr-impact-navdama.svg',
     ctaLabel: 'Discover',
     detailBody: [
-      'Coral Keepers is the local reef stewardship network we align with for marine-sensitive productions in Palawan and Siargao.',
-      'Their work combines coastal education, reef restoration, and community monitoring so the production footprint remains compatible with fragile ecosystems.',
-      'This partnership helps crews understand the site before filming it, and contributes to preserving the lagoons and shorelines that make the journey possible.',
+      'Landscape Alliance reflects the kind of local ecological network we align with when working across fragile wetlands, Mediterranean gardens, and alpine environments in France.',
+      'Its role is to protect access, preserve biodiversity, and guide productions toward low-impact interactions with sensitive natural sites.',
+      'This keeps the visual narrative connected to the territory instead of extracting from it.',
     ],
   },
   {
-    id: 'csr-impact-shared-sea-rate',
+    id: 'csr-impact-shared-territory-rate',
     category: 'environment',
-    title: 'Shared Sea Rate',
+    title: 'Shared Territory Rate',
     image: '/assets/journeys/india-january-2026/csr-impact-ring.svg',
-    overlayText: '72%',
+    overlayText: '78%',
     ctaLabel: 'Discover',
     detailBody: [
-      'A high shared sea rate means a large part of marine transport, lodging, and field production has been mutualized instead of duplicated.',
-      'We measure how many activities were avoided because resources were organized collectively across one common journey rather than as isolated productions.',
+      'A high shared territory rate means field production, transport, and hospitality resources were pooled across the French journey instead of duplicated location by location.',
+      'We measure how many activities were avoided because Provence, Camargue, and Avoriaz were organized as one shared ecosystem rather than isolated productions.',
     ],
   },
   {
-    id: 'csr-impact-island-artisans',
+    id: 'csr-impact-french-craft-circle',
     category: 'social',
-    title: 'Island Artisans',
+    title: 'French Craft Circle',
     image: '/assets/journeys/india-january-2026/csr-impact-artisans-collective.svg',
     ctaLabel: 'Discover',
     detailItems: [
       {
         icon: '/assets/icones/Ico Gold BEE-08.svg',
-        label: 'SET DESIGN ARTIST',
-        handle: '@noraislandstudio',
-        href: 'https://www.instagram.com/noraislandstudio/',
+        label: 'SET DESIGN ARTISAN',
+        handle: 'STONE & LINEN',
       },
       {
         icon: '/assets/journeys/india-january-2026/csr-impact-sound-design.svg',
-        label: 'SOUND DESIGN',
-        handle: '@wavesofmika',
-        href: 'https://www.instagram.com/wavesofmika/',
+        label: 'SOUND CURATION',
+        handle: 'FIELD ATMOSPHERES',
       },
       {
         icon: '/assets/icones/Ico Gold BEE-15.svg',
         label: 'MAKE-UP ARTIST',
-        handle: '@camillemanalo',
-        href: 'https://www.instagram.com/camillemanalo/',
+        handle: 'NATURAL GLOW',
       },
     ],
   },
   {
-    id: 'csr-impact-seakind-foundation',
+    id: 'csr-impact-horizon-foundation',
     category: 'social',
-    title: 'SeaKind Foundation',
+    title: 'Horizon Foundation',
     image: '/assets/journeys/india-january-2026/csr-impact-smile-foundation.svg',
     ctaLabel: 'Discover',
     detailBody: [
-      'SeaKind Foundation supports coastal youth and island communities through education, health outreach, and livelihood programs connected to tourism and the sea.',
-      'Its teams help build long-term access to learning opportunities while strengthening local economies linked to responsible hospitality and marine stewardship.',
-      'The goal is simple: keep value, skills, and opportunity rooted in the communities that host the journey.',
+      'Horizon Foundation reflects the kind of local initiative we support where education, social inclusion, and responsible hospitality intersect.',
+      'Its work strengthens access to training, local employment, and cultural continuity in territories shaped by tourism, agriculture, and environmental fragility.',
+      'The goal is to keep value, skills, and future opportunities rooted in the communities that host the journey.',
     ],
   },
   {
@@ -339,16 +335,16 @@ const CSR_IMPACT_CARDS: CsrImpactCard[] = [
     category: 'societal',
     title: 'Local Nature',
     image: '/assets/journeys/india-january-2026/csr-impact-ring.svg',
-    overlayText: '84%',
+    overlayText: '89%',
     ctaLabel: 'Discover',
     detailItems: [
       {
         icon: '/assets/journeys/india-january-2026/csr-impact-family-sustain.svg',
-        label: 'COMMUNITY HOSTS',
+        label: 'FAMILY HOSTS',
       },
       {
         icon: '/assets/journeys/india-january-2026/csr-impact-local-catering.svg',
-        label: 'ISLAND CATERING',
+        label: 'LOCAL CATERING',
       },
       {
         icon: '/assets/icones/Ico Gold BEE-16.svg',
@@ -361,7 +357,7 @@ const CSR_IMPACT_CARDS: CsrImpactCard[] = [
     category: 'societal',
     title: 'Cultural Ethic',
     image: '/assets/journeys/india-january-2026/csr-impact-ring.svg',
-    overlayText: '91%',
+    overlayText: '94%',
     ctaLabel: 'Discover',
     detailItems: [
       {
@@ -370,7 +366,7 @@ const CSR_IMPACT_CARDS: CsrImpactCard[] = [
       },
       {
         icon: '/assets/icones/Ico Gold BEE-10.svg',
-        label: 'TAGBANWA LESSONS',
+        label: 'FRENCH LESSONS',
       },
       {
         icon: '/assets/icones/Ico Gold BEE-16.svg',
@@ -385,8 +381,8 @@ const CSR_IMPACT_CARDS: CsrImpactCard[] = [
     image: '/assets/journeys/india-january-2026/csr-impact-local-sponsoring.svg',
     ctaLabel: 'Discover',
     detailBody: [
-      "In co-creation with the brand's team, we identify local actors to highlight for their craft, their cultural role, or their social value within the islands.",
-      'Resorts, surf communities, boat operators, makers, and food partners become visible through a shared activation strategy that benefits both the journey and the local ecosystem.',
+      "In co-creation with the brand's team, we identify local French actors to highlight for their craft, cultural role, ecological relevance, or social value within the journey.",
+      'Guesthouses, food houses, salt-marsh partners, floral growers, artisans, and mountain guides become visible through a shared activation strategy that benefits both the production and the territory.',
     ],
   },
   {
@@ -396,9 +392,9 @@ const CSR_IMPACT_CARDS: CsrImpactCard[] = [
     image: '/assets/journeys/india-january-2026/csr-impact-smile-foundation.svg',
     ctaLabel: 'Discover',
     detailBody: [
-      'A fully local artvertising publication rooted in island life. Created with local talents and makers, each image reflects lived culture rather than outside projection.',
-      'At its core is the place of Filipino women not as subjects, but as authors of the visual narrative.',
-      'By producing locally, value returns to its origin and representation belongs to those who inhabit the territory.',
+      'A fully local artvertising publication rooted in France and produced with local talents, makers, and voices rather than outside interpretation.',
+      'At its heart is the place of women in France, not as subjects framed from afar, but as authors of the visual and cultural narrative.',
+      'By producing locally, value returns to its origin and representation belongs to those who inhabit the territory every day.',
     ],
   },
 ];
@@ -596,7 +592,7 @@ function getCardFadeProfile(forwardOffset: number, isMobileViewport: boolean) {
   };
 }
 
-export function PhilippinesJourneyLayout({ journey }: { journey: JourneyShowcase }) {
+export function FranceJourneyLayout({ journey }: { journey: JourneyShowcase }) {
   useBodyScrollLock();
 
   const router = useRouter();
