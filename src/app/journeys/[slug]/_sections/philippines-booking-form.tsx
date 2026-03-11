@@ -2,17 +2,10 @@
 
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import {
-  ArrowRight,
-  CalendarDays,
-  Check,
-  HeartHandshake,
-  Mail,
-  Sparkles,
-  Users,
-  Waves,
-} from 'lucide-react';
+import { CalendarDays, Check, HeartHandshake, Mail, Sparkles, Users, Waves } from 'lucide-react';
 import { FormEvent, useMemo, useState } from 'react';
+
+import { SiteArrowIcon } from '@/components/icons/site-arrow-icon';
 
 const FOCUS_OPTIONS = [
   {
@@ -278,7 +271,7 @@ export function PhilippinesBookingForm() {
               className="inline-flex items-center gap-3 rounded-full border border-foreground/15 bg-foreground px-7 py-3 text-[11px] uppercase tracking-[0.4em] text-white shadow-[0_18px_45px_rgba(4,20,30,0.25)] transition hover:bg-foreground/90"
             >
               Envoyer la demande
-              <ArrowRight className="size-4" aria-hidden />
+              <SiteArrowIcon direction="right" className="size-4" />
             </Button>
             <span className="text-[11px] uppercase tracking-[0.34em] text-foreground/50">
               Completion formulaire : {completion}%

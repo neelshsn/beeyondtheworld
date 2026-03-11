@@ -36,10 +36,10 @@ export const mainNav = [
     iconSrc: '/assets/icones/Ico Gold BEE-06.svg',
   },
   {
-    label: 'Contact',
-    labelKey: 'navigation.contact',
+    label: 'Community',
+    labelKey: 'navigation.community',
     href: '/contact',
-    index: '12',
-    iconSrc: '/assets/icones/Ico Gold BEE-12.svg',
+    index: '13',
+    iconSrc: '/assets/icones/Ico Gold BEE-13.svg',
   },
 ] as const satisfies readonly MainNavItem[];

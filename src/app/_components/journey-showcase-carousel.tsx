@@ -2,11 +2,12 @@
 
 import { AnimatePresence, motion } from 'framer-motion';
 import type { Transition } from 'framer-motion';
-import { CalendarDays, ChevronLeft, ChevronRight, MapPin } from 'lucide-react';
+import { CalendarDays, MapPin } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
 
+import { SiteArrowIcon } from '@/components/icons/site-arrow-icon';
 import SplitText from '@/components/SplitText';
 import { Button } from '@/components/ui/button';
 import type { JourneyShowcase } from '@/data/showcases';
@@ -110,7 +111,6 @@ type CarouselArrowProps = {
 };
 
 function CarouselArrow({ direction, disabled, onClick }: CarouselArrowProps) {
-  const Icon = direction === 'prev' ? ChevronLeft : ChevronRight;
   return (
     <button
       type="button"
@@ -124,7 +124,12 @@ function CarouselArrow({ direction, disabled, onClick }: CarouselArrowProps) {
       }`}
     >
       <span className="absolute inset-0 rounded-full bg-white/30 opacity-0 blur-[22px] transition-opacity duration-300 group-hover:opacity-100" />
-      <Icon className="relative z-10 size-8 transition-transform duration-300 group-hover:translate-x-1" />
+      <SiteArrowIcon
+        direction={direction === 'prev' ? 'left' : 'right'}
+        className={`relative z-10 size-8 transition-transform duration-300 ${
+          direction === 'prev' ? 'group-hover:-translate-x-1' : 'group-hover:translate-x-1'
+        }`}
+      />
     </button>
   );
 }

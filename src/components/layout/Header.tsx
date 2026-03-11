@@ -1,6 +1,5 @@
 import type { CSSProperties } from 'react';
 
-import { HeaderAuthButton } from '@/components/layout/HeaderAuthButton';
 import { MainMenu } from '@/components/nav/MainMenu';
 
 const SAFE_AREA_STYLES: CSSProperties = {
@@ -15,9 +14,8 @@ export function Header() {
         className="flex justify-end px-6 py-4 sm:px-10 sm:py-6 lg:px-16"
         style={SAFE_AREA_STYLES}
       >
-        <div className="pointer-events-auto flex items-center gap-2 sm:gap-4">
+        <div className="pointer-events-auto flex items-center">
           <MainMenu />
-          <HeaderAuthButton />
         </div>
       </div>
     </div>

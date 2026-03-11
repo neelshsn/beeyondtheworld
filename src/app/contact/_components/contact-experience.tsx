@@ -3,16 +3,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import type { Variants } from 'framer-motion';
-import {
-  ArrowLeft,
-  Check,
-  ChevronDown,
-  ChevronRight,
-  Mail,
-  MessageCircle,
-  Phone,
-} from 'lucide-react';
+import { Check, Mail, MessageCircle, Phone } from 'lucide-react';
 
+import { SiteArrowIcon } from '@/components/icons/site-arrow-icon';
 import { GlowTitle, SmartVideo } from '@/components/primitives';
 import { GlassCard } from '@/components/primitives/glass-card';
 import SplitText from '@/components/SplitText';
@@ -865,9 +858,9 @@ export function ContactExperience({ journeys, campaigns }: ContactExperienceProp
                                 disabled={stepIndex === 0 || status === 'submitting'}
                                 className="group flex items-center gap-2 rounded-full border border-white/65 px-6 py-3 text-xs uppercase tracking-[0.4em] text-foreground/70 shadow-none transition-all hover:border-foreground/60 hover:text-foreground disabled:opacity-40"
                               >
-                                <ArrowLeft
+                                <SiteArrowIcon
+                                  direction="left"
                                   className="size-4 transition-transform duration-300 group-hover:-translate-x-1"
-                                  aria-hidden
                                 />
                                 Back
                               </Button>
@@ -901,9 +894,9 @@ export function ContactExperience({ journeys, campaigns }: ContactExperienceProp
                                 >
                                   <span className="flex items-center gap-3">
                                     Next step
-                                    <ChevronRight
+                                    <SiteArrowIcon
+                                      direction="right"
                                       className="size-4 transition-transform duration-300 group-hover:translate-x-1"
-                                      aria-hidden
                                     />
                                   </span>
                                   <span className="pointer-events-none absolute right-9 top-2 flex flex-col items-center opacity-0 transition-all duration-500 group-hover:translate-y-3 group-hover:opacity-100">
@@ -1123,7 +1116,10 @@ function FloatingSelect({ id, label, value, onChange, options, placeholder }: Fl
         >
           {label}
         </label>
-        <ChevronDown className="pointer-events-none absolute right-6 top-1/2 -translate-y-1/2 text-foreground/55" />
+        <SiteArrowIcon
+          direction="down"
+          className="pointer-events-none absolute right-6 top-1/2 size-4 -translate-y-1/2 text-foreground/55"
+        />
       </div>
       {placeholder ? (
         <p className="text-[11px] uppercase tracking-[0.35em] text-foreground/35">{placeholder}</p>

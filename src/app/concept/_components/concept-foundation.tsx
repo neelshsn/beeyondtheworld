@@ -2,6 +2,7 @@
 
 import { SmartVideo } from '@/components/primitives/smart-video';
 import { Button } from '@/components/ui/button';
+import { SiteArrowIcon } from '@/components/icons/site-arrow-icon';
 
 import { conceptNodes, type ConceptNode } from '@content/concept';
 
@@ -476,7 +477,7 @@ export function ConceptFoundation() {
             />
           </div>
 
-          <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-between px-3 sm:px-6">
+          <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-between px-6 sm:px-10 lg:px-14">
             <NavArrow
               direction="left"
               onClick={() => goToIndex(currentIndex - 1)}
@@ -603,7 +604,7 @@ function ConceptSlide({
               type="button"
               aria-expanded={isOpen}
               aria-controls={`concept-detail-${node.id}`}
-              className="group relative inline-flex items-center justify-center gap-4 overflow-hidden rounded-full border border-white/25 bg-white/10 px-12 py-4 font-display text-[11px] uppercase tracking-[0.5em] text-white transition-colors duration-300 [transition-timing-function:var(--bee-ease)] hover:border-white/60 hover:bg-white/15 focus-visible:ring-[#f6c452]/35"
+              className="group relative inline-flex items-center justify-center gap-4 overflow-hidden rounded-none border border-white/25 bg-white/10 px-12 py-4 font-display text-[11px] uppercase tracking-[0.5em] text-white transition-colors duration-300 [transition-timing-function:var(--bee-ease)] hover:border-white/60 hover:bg-white/15 focus-visible:ring-[#f6c452]/35"
               onClick={onToggle}
             >
               <span
@@ -638,7 +639,7 @@ function ConceptSlide({
               type="button"
               aria-expanded={isOpen}
               aria-controls={`concept-detail-${node.id}`}
-              className="group relative inline-flex items-center justify-center gap-4 overflow-hidden rounded-full border border-white/25 bg-white/10 px-12 py-4 font-display text-[11px] uppercase tracking-[0.5em] text-white transition-colors duration-300 [transition-timing-function:var(--bee-ease)] hover:border-white/60 hover:bg-white/15 focus-visible:ring-[#f6c452]/35"
+              className="group relative inline-flex items-center justify-center gap-4 overflow-hidden rounded-none border border-white/25 bg-white/10 px-12 py-4 font-display text-[11px] uppercase tracking-[0.5em] text-white transition-colors duration-300 [transition-timing-function:var(--bee-ease)] hover:border-white/60 hover:bg-white/15 focus-visible:ring-[#f6c452]/35"
               onClick={onToggle}
             >
               <span
@@ -711,21 +712,13 @@ function NavArrow({
       aria-label={direction === 'left' ? 'Previous concept' : 'Next concept'}
       onClick={onClick}
       disabled={disabled}
-      className="pointer-events-auto flex h-12 w-12 items-center justify-center rounded-full bg-black/35 text-white shadow-[0_20px_40px_rgba(0,0,0,0.35)] transition hover:bg-black/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 disabled:cursor-not-allowed disabled:opacity-35 sm:h-14 sm:w-14"
+      className="group pointer-events-auto flex h-12 w-12 items-center justify-center text-white transition hover:text-[#f4bb52] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 disabled:cursor-not-allowed disabled:opacity-35 sm:h-14 sm:w-14"
       style={{ transitionTimingFunction: 'var(--bee-ease)' }}
     >
-      <svg
-        aria-hidden
-        viewBox="0 0 24 24"
-        className="h-6 w-6"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        {direction === 'left' ? <path d="M15 18l-6-6 6-6" /> : <path d="M9 6l6 6-6 6" />}
-      </svg>
+      <SiteArrowIcon
+        direction={direction}
+        className="h-6 w-6 !scale-[5] transition-colors duration-300"
+      />
     </button>
   );
 }

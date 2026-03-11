@@ -4,7 +4,6 @@ import { useCallback, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
-  ArrowUpRight,
   CalendarDays,
   CheckCircle2,
   Clock3,
@@ -18,6 +17,7 @@ import {
 import type { CastingRecord } from '@/data/admin-dashboard';
 import { cn } from '@/lib/utils';
 
+import { SiteArrowIcon } from '@/components/icons/site-arrow-icon';
 import { GlowTitle } from '@/components/primitives';
 import { Button } from '@/components/ui/button';
 import {
@@ -81,9 +81,9 @@ const prospectStageFlow = [
 ] as const;
 
 const trendIcon = {
-  up: <ArrowUpRight className="size-3" aria-hidden />,
-  down: <ArrowUpRight className="size-3 rotate-180" aria-hidden />,
-  steady: <ArrowUpRight className="size-3 rotate-90" aria-hidden />,
+  up: <SiteArrowIcon direction="up-right" className="size-3" />,
+  down: <SiteArrowIcon direction="left" className="size-3" />,
+  steady: <SiteArrowIcon direction="up" className="size-3" />,
 };
 
 const glamEase = [0.16, 1, 0.3, 1] as const;
@@ -232,7 +232,7 @@ export default function AdminDashboardPage() {
                 href="#production-pipeline"
                 className="flex items-center gap-2 text-[11px] uppercase tracking-[0.4em]"
               >
-                Open production flow <ArrowUpRight className="size-4" aria-hidden />
+                Open production flow <SiteArrowIcon direction="up-right" className="size-4" />
               </Link>
             </Button>
             <Button
@@ -717,7 +717,7 @@ export default function AdminDashboardPage() {
                     className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-3 transition hover:border-slate-300 hover:bg-slate-50"
                   >
                     <span className="uppercase tracking-[0.35em]">{action.label}</span>
-                    <ArrowUpRight className="size-4" aria-hidden />
+                    <SiteArrowIcon direction="up-right" className="size-4" />
                   </Link>
                 </motion.div>
               ))}

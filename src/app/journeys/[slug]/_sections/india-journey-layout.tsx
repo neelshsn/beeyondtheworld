@@ -3,13 +3,13 @@
 import clsx from 'clsx';
 import useEmblaCarousel from 'embla-carousel-react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 
 import { useBodyScrollLock } from '@/app/concept/_hooks/use-body-scroll-lock';
 import { usePrefersReducedMotion } from '@/app/concept/_hooks/use-prefers-reduced-motion';
+import { SiteArrowIcon } from '@/components/icons/site-arrow-icon';
 import type { JourneyShowcase } from '@/data/showcases';
 import type { JourneySeason } from '@/types/journey';
 
@@ -33,7 +33,8 @@ type RenderedLoopingMobileSelectorItem = {
   renderKey: string;
 };
 type LocationSectionValue = 'locations' | 'csr-impact';
-type MobileMenuValue = 'locations' | 'csr-impact';
+type SectionMenuValue = LocationSectionValue | 'interested';
+type MobileMenuValue = SectionMenuValue;
 type IndiaLocationStory = {
   id: string;
   locationId: IndiaLocation['id'];
@@ -121,6 +122,13 @@ const INDIA_LOCATIONS: IndiaLocation[] = [
 
 const SECTION_OPTIONS = [
   {
+    label: 'Community',
+    value: 'interested' as const,
+    icon: '/assets/icones/Ico White BEE-13.svg',
+    hoverIcon: '/assets/icones/Ico Gold BEE-13.svg',
+    disabled: false,
+  },
+  {
     label: 'Locations',
     value: 'locations' as const,
     icon: '/assets/icones/Ico White BEE-14.svg',
@@ -138,6 +146,13 @@ const SECTION_OPTIONS = [
 
 const MOBILE_MENU_OPTIONS = [
   {
+    label: 'Community',
+    value: 'interested' as const,
+    icon: '/assets/icones/Ico White BEE-13.svg',
+    hoverIcon: '/assets/icones/Ico Gold BEE-13.svg',
+    disabled: false,
+  },
+  {
     label: 'Locations',
     value: 'locations' as const,
     icon: '/assets/icones/Ico White BEE-14.svg',
@@ -152,6 +167,8 @@ const MOBILE_MENU_OPTIONS = [
     disabled: false,
   },
 ];
+const heroJourneyButtonClass =
+  'group relative inline-flex items-center justify-center overflow-hidden rounded-none border border-white/25 bg-white/10 text-white transition-colors duration-300 [transition-timing-function:var(--bee-ease)] hover:border-white/60 hover:bg-white/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f6c452]/35';
 const CSR_CATEGORY_OPTIONS: {
   value: CsrImpactCategory;
   label: string;
@@ -393,11 +410,15 @@ const CSR_CATEGORY_START_INDEX: Record<CsrImpactCategory, number> = {
   societal: CSR_IMPACT_CARDS.findIndex((card) => card.category === 'societal'),
 };
 
+function getLocationBackgroundSource(location: IndiaLocation) {
+  return location.backgroundVideo ?? INDIA_BACKGROUND_VIDEO;
+}
+
 function resolvePreferredEntryLocationId(state: VideoContinuityState | null) {
   if (!state?.src) return null;
 
   const exactBackgroundMatch = INDIA_LOCATIONS.find(
-    (location) => location.backgroundVideo && location.backgroundVideo === state.src
+    (location) => getLocationBackgroundSource(location) === state.src
   );
   if (exactBackgroundMatch) {
     return exactBackgroundMatch.id;
@@ -412,6 +433,20 @@ function resolvePreferredEntryLocationId(state: VideoContinuityState | null) {
   }
 
   return null;
+}
+
+function readPreferredEntryLocationId(journeySlug: string) {
+  if (typeof window === 'undefined') return null;
+
+  try {
+    const rawState = window.sessionStorage.getItem(VIDEO_CONTINUITY_STORAGE_KEY);
+    if (!rawState) return null;
+    const state = JSON.parse(rawState) as VideoContinuityState;
+    if (state.slug !== journeySlug) return null;
+    return resolvePreferredEntryLocationId(state);
+  } catch {
+    return null;
+  }
 }
 
 function buildRenderedLocationSlides(data: IndiaLocation[]): RenderedLocationSlide[] {
@@ -453,6 +488,46 @@ function buildRenderedLoopingMobileSelectorItems(
       renderKey: `${data[sourceIndex].id}-${index}`,
     };
   });
+}
+
+type SeasonIconScale = 'hero' | 'lead' | 'trail';
+
+function getSeasonIconSizing(compact: boolean, scale: SeasonIconScale) {
+  if (compact) {
+    if (scale === 'hero') {
+      return {
+        gapClass: 'gap-[clamp(0.45rem,1.8vw,0.7rem)]',
+        itemClass: 'h-[clamp(1.45rem,6.9vw,2rem)] w-[clamp(1.45rem,6.9vw,2rem)]',
+      };
+    }
+    if (scale === 'lead') {
+      return {
+        gapClass: 'gap-[clamp(0.4rem,1.55vw,0.62rem)]',
+        itemClass: 'h-[clamp(1.28rem,6vw,1.78rem)] w-[clamp(1.28rem,6vw,1.78rem)]',
+      };
+    }
+    return {
+      gapClass: 'gap-[clamp(0.34rem,1.35vw,0.54rem)]',
+      itemClass: 'h-[clamp(1.1rem,5.2vw,1.52rem)] w-[clamp(1.1rem,5.2vw,1.52rem)]',
+    };
+  }
+
+  if (scale === 'hero') {
+    return {
+      gapClass: 'gap-[clamp(0.5rem,0.85vw,0.82rem)]',
+      itemClass: 'h-[clamp(1.85rem,2.75vw,2.8rem)] w-[clamp(1.85rem,2.75vw,2.8rem)]',
+    };
+  }
+  if (scale === 'lead') {
+    return {
+      gapClass: 'gap-[clamp(0.42rem,0.7vw,0.68rem)]',
+      itemClass: 'h-[clamp(1.58rem,2.2vw,2.28rem)] w-[clamp(1.58rem,2.2vw,2.28rem)]',
+    };
+  }
+  return {
+    gapClass: 'gap-[clamp(0.34rem,0.58vw,0.54rem)]',
+    itemClass: 'h-[clamp(1.32rem,1.7vw,1.88rem)] w-[clamp(1.32rem,1.7vw,1.88rem)]',
+  };
 }
 
 function getForwardOffset(index: number, activeIndex: number, total: number) {
@@ -527,8 +602,11 @@ export function IndiaJourneyLayout({ journey }: { journey: JourneyShowcase }) {
   const [isMobileViewport, setIsMobileViewport] = useState(false);
   const [useLiteEffects, setUseLiteEffects] = useState(false);
   const [activeSection, setActiveSection] = useState<LocationSectionValue>('locations');
-  const [mobileMenuIndex, setMobileMenuIndex] = useState(0);
-  const [activeCsrCategory, setActiveCsrCategory] = useState<CsrImpactCategory>('social');
+  const [mobileMenuIndex, setMobileMenuIndex] = useState(() => {
+    const locationIndex = MOBILE_MENU_OPTIONS.findIndex((option) => option.value === 'locations');
+    return locationIndex >= 0 ? locationIndex : 0;
+  });
+  const [activeCsrCategory, setActiveCsrCategory] = useState<CsrImpactCategory>('environment');
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -570,10 +648,11 @@ export function IndiaJourneyLayout({ journey }: { journey: JourneyShowcase }) {
     if (!uniqueCsrCardCount || !renderedCsrCards.length) return 0;
     return Math.floor(renderedCsrCards.length / uniqueCsrCardCount / 2) * uniqueCsrCardCount;
   }, [renderedCsrCards.length, uniqueCsrCardCount]);
-  const centeredCsrSocialStartIndex = centeredCsrStartIndex + CSR_CATEGORY_START_INDEX.social;
+  const centeredCsrEnvironmentStartIndex =
+    centeredCsrStartIndex + CSR_CATEGORY_START_INDEX.environment;
   const [preferredEntryLocationId, setPreferredEntryLocationId] = useState<
     IndiaLocation['id'] | null
-  >(null);
+  >(() => readPreferredEntryLocationId(journey.slug));
   const preferredEntrySourceIndex = useMemo(() => {
     if (!preferredEntryLocationId) return 0;
     const matchIndex = INDIA_LOCATIONS.findIndex(
@@ -603,14 +682,14 @@ export function IndiaJourneyLayout({ journey }: { journey: JourneyShowcase }) {
   });
 
   const rootRef = useRef<HTMLDivElement | null>(null);
-  const previousSelectedIndexRef = useRef(0);
+  const previousSelectedIndexRef = useRef(targetStartIndex);
   const isRecenteringRef = useRef(false);
   const pendingDirectionRef = useRef<1 | -1>(1);
   const previousCsrSelectedIndexRef = useRef(0);
   const isCsrRecenteringRef = useRef(false);
   const pendingCsrDirectionRef = useRef<1 | -1>(1);
   const pendingStoryLocationIdRef = useRef<IndiaLocation['id'] | null>(null);
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [selectedIndex, setSelectedIndex] = useState(targetStartIndex);
   const [csrSelectedIndex, setCsrSelectedIndex] = useState(0);
   const [activeCsrDetailId, setActiveCsrDetailId] = useState<string | null>(null);
   const [isDesktopClosingDetail, setIsDesktopClosingDetail] = useState(false);
@@ -784,14 +863,14 @@ export function IndiaJourneyLayout({ journey }: { journey: JourneyShowcase }) {
 
   useEffect(() => {
     if (!csrEmblaApi) return;
-    csrEmblaApi.reInit({ startIndex: centeredCsrSocialStartIndex });
+    csrEmblaApi.reInit({ startIndex: centeredCsrEnvironmentStartIndex });
     isCsrRecenteringRef.current = false;
     pendingCsrDirectionRef.current = 1;
-    csrEmblaApi.scrollTo(centeredCsrSocialStartIndex, true);
-    previousCsrSelectedIndexRef.current = centeredCsrSocialStartIndex;
-    setCsrSelectedIndex(centeredCsrSocialStartIndex);
+    csrEmblaApi.scrollTo(centeredCsrEnvironmentStartIndex, true);
+    previousCsrSelectedIndexRef.current = centeredCsrEnvironmentStartIndex;
+    setCsrSelectedIndex(centeredCsrEnvironmentStartIndex);
   }, [
-    centeredCsrSocialStartIndex,
+    centeredCsrEnvironmentStartIndex,
     csrEmblaApi,
     renderedCsrIdsSignature,
     renderedCsrCards.length,
@@ -883,6 +962,11 @@ export function IndiaJourneyLayout({ journey }: { journey: JourneyShowcase }) {
       return;
     }
 
+    if (activeMobileMenuOption.value === 'interested') {
+      router.push('/contact');
+      return;
+    }
+
     if (activeMobileMenuOption.value === 'locations') {
       setActiveSection('locations');
       setActiveCsrDetailId(null);
@@ -895,7 +979,7 @@ export function IndiaJourneyLayout({ journey }: { journey: JourneyShowcase }) {
     if (activeMobileMenuOption.value === 'csr-impact') {
       setActiveSection('csr-impact');
     }
-  }, [activeLocationStory, activeMobileMenuOption, closeLocationStory]);
+  }, [activeLocationStory, activeMobileMenuOption, closeLocationStory, router]);
 
   useEffect(() => {
     if (activeSection !== 'csr-impact' && activeCsrDetailId) {
@@ -1266,7 +1350,17 @@ export function IndiaJourneyLayout({ journey }: { journey: JourneyShowcase }) {
           </div>
           <div className="pointer-events-none absolute bottom-5 right-4 z-50 hidden sm:bottom-7 sm:right-6 md:right-10 md:block lg:bottom-10 lg:right-16 xl:right-20">
             <div className="pointer-events-auto">
-              <LocationSectionMenu value={activeSection} onSelect={setActiveSection} />
+              <LocationSectionMenu
+                value={activeSection}
+                onSelect={(nextValue) => {
+                  if (nextValue === 'interested') {
+                    router.push('/contact');
+                    return;
+                  }
+
+                  setActiveSection(nextValue);
+                }}
+              />
             </div>
           </div>
         </motion.div>
@@ -1282,7 +1376,7 @@ function LocationSectionMenu({
 }: {
   value: LocationSectionValue;
   compact?: boolean;
-  onSelect?: (value: LocationSectionValue) => void;
+  onSelect?: (value: SectionMenuValue) => void;
 }) {
   return (
     <div
@@ -1335,7 +1429,7 @@ function LocationSectionMenu({
             </div>
             <span
               className={clsx(
-                'font-display uppercase transition-colors duration-300',
+                'font-display uppercase transition-colors duration-300 [text-shadow:0_2px_0_rgba(0,0,0,0.3),0_8px_14px_rgba(0,0,0,0.24),0_16px_34px_rgba(0,0,0,0.24)]',
                 compact ? 'text-[0.7rem] tracking-[0.16em]' : 'text-[1rem] tracking-[0.14em]',
                 option.disabled
                   ? 'text-white/65'
@@ -1381,7 +1475,7 @@ function SectionHeadline({
     >
       <h1
         className={clsx(
-          'font-title uppercase tracking-normal text-white [text-shadow:0_24px_52px_rgba(0,0,0,0.35)]',
+          'font-title uppercase tracking-normal text-white [text-shadow:0_4px_0_rgba(0,0,0,0.36),0_12px_20px_rgba(0,0,0,0.28),0_24px_52px_rgba(0,0,0,0.38),0_40px_88px_rgba(0,0,0,0.3)]',
           compact
             ? 'text-[clamp(2.15rem,12vw,4.4rem)] leading-[0.82]'
             : sideAligned
@@ -1394,7 +1488,7 @@ function SectionHeadline({
       {subtitle ? (
         <p
           className={clsx(
-            'mt-1 uppercase text-white [text-shadow:0_0_18px_rgba(255,255,255,0.48)]',
+            'mt-1 uppercase text-white [text-shadow:0_2px_0_rgba(0,0,0,0.3),0_8px_14px_rgba(0,0,0,0.24),0_16px_34px_rgba(0,0,0,0.24)]',
             compact
               ? 'text-[0.5rem] tracking-[0.32em]'
               : 'text-[0.62rem] tracking-[0.34em] sm:text-[0.72rem]'
@@ -1456,8 +1550,8 @@ function CsrImpactCategoryCarousel({
                 className="group relative flex items-center justify-center focus-visible:outline-none"
                 animate={{
                   y: verticalOffset * step,
-                  scale: isActive ? 1 : compact ? 0.74 : 0.68,
-                  opacity: isActive ? 1 : 0.56,
+                  scale: isActive ? 1 : compact ? 0.82 : 0.78,
+                  opacity: isActive ? 1 : 0.6,
                 }}
                 transition={{ duration: 0.72, ease: [0.22, 1, 0.36, 1] }}
                 style={{ zIndex: 10 - Math.abs(verticalOffset) }}
@@ -1517,7 +1611,7 @@ function CsrImpactCategoryCarousel({
                         )}
                         style={{
                           filter:
-                            'drop-shadow(0 0 14px rgba(247,213,125,0.24)) drop-shadow(0 8px 18px rgba(52,29,8,0.24))',
+                            'drop-shadow(0 3px 0 rgba(0,0,0,0.28)) drop-shadow(0 10px 18px rgba(0,0,0,0.26)) drop-shadow(0 18px 32px rgba(0,0,0,0.18))',
                         }}
                       >
                         <textPath href={`#${arcPathId}`} startOffset="50%" textAnchor="middle">
@@ -1534,8 +1628,8 @@ function CsrImpactCategoryCarousel({
                           ? 'h-28 w-28'
                           : 'h-48 w-48'
                         : compact
-                          ? 'h-20 w-20'
-                          : 'h-28 w-28'
+                          ? 'h-24 w-24'
+                          : 'h-32 w-32'
                     )}
                   >
                     <Image
@@ -1550,8 +1644,8 @@ function CsrImpactCategoryCarousel({
                             ? 'h-[4.5rem] w-[4.5rem]'
                             : 'h-28 w-28'
                           : compact
-                            ? 'h-[2.75rem] w-[2.75rem]'
-                            : 'h-[3.5rem] w-[3.5rem]'
+                            ? 'h-[3.3rem] w-[3.3rem]'
+                            : 'h-[4.2rem] w-[4.2rem]'
                       )}
                       aria-hidden={!isActive}
                     />
@@ -1630,7 +1724,7 @@ function LocationHeadline({
         >
           <h1
             className={clsx(
-              'font-title uppercase tracking-normal text-white [text-shadow:0_24px_52px_rgba(0,0,0,0.35)]',
+              'font-title uppercase tracking-normal text-white [filter:drop-shadow(0_0_22px_rgba(255,244,224,0.34))_drop-shadow(0_0_42px_rgba(255,240,214,0.2))] [text-shadow:0_0_24px_rgba(255,248,232,0.44),0_0_54px_rgba(255,244,220,0.28),0_4px_0_rgba(0,0,0,0.38),0_10px_18px_rgba(0,0,0,0.28),0_24px_52px_rgba(0,0,0,0.4),0_40px_88px_rgba(0,0,0,0.34)]',
               compact
                 ? 'text-[clamp(2.15rem,12vw,4.4rem)] leading-[0.82]'
                 : sideAligned
@@ -1642,7 +1736,7 @@ function LocationHeadline({
           </h1>
           <p
             className={clsx(
-              'mt-1 uppercase text-white [text-shadow:0_0_18px_rgba(255,255,255,0.48)]',
+              'mt-1 uppercase text-white [filter:drop-shadow(0_0_12px_rgba(255,245,226,0.22))] [text-shadow:0_0_16px_rgba(255,250,238,0.42),0_0_30px_rgba(255,245,224,0.22),0_3px_0_rgba(0,0,0,0.34),0_10px_18px_rgba(0,0,0,0.24),0_14px_28px_rgba(0,0,0,0.3),0_22px_42px_rgba(0,0,0,0.22)]',
               compact
                 ? 'text-[0.5rem] tracking-[0.32em]'
                 : 'text-[0.62rem] tracking-[0.34em] sm:text-[0.72rem]'
@@ -1849,7 +1943,7 @@ function CsrImpactDetailPanel({ card }: { card: CsrImpactCard | null }) {
             {(card.detailBody ?? ['Content coming soon.']).map((paragraph) => (
               <p
                 key={paragraph}
-                className="max-w-[54ch] font-sans text-[13px] italic leading-[1.86] text-[#fffef8] [text-shadow:0_0_16px_rgba(255,237,210,0.48),0_1px_12px_rgba(59,36,18,0.45)] sm:text-[14px]"
+                className="max-w-[54ch] font-sans text-[13px] italic leading-[1.86] text-[#fffef8] [text-shadow:0_0_12px_rgba(255,237,210,0.28),0_10px_24px_rgba(0,0,0,0.24),0_18px_38px_rgba(59,36,18,0.24)] sm:text-[14px]"
               >
                 {paragraph}
               </p>
@@ -2144,9 +2238,13 @@ function CsrImpactMobileDetailPanel({
             <button
               type="button"
               onClick={onClose}
-              className="inline-flex items-center gap-2 border border-[#f3dfc4]/55 px-4 py-2 font-display text-[9px] uppercase tracking-[0.2em] text-[#fff4e3] transition hover:border-[#fff2de] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/55"
+              className={`${heroJourneyButtonClass} gap-2 px-4 py-2 font-display text-[9px] uppercase tracking-[0.2em]`}
             >
-              Back
+              <span
+                aria-hidden
+                className="pointer-events-none absolute inset-0 z-0 -translate-x-full bg-gradient-to-r from-transparent via-[#f6c452bf] to-transparent opacity-0 transition-transform duration-500 group-hover:translate-x-full group-hover:opacity-100"
+              />
+              <span className="relative z-10">Back</span>
             </button>
           </div>
         </div>
@@ -2213,7 +2311,7 @@ function CsrImpactCardPanel({
           <motion.p
             key={`${card.id}-title`}
             className={clsx(
-              'relative z-10 flex max-w-full items-start justify-center gap-2 whitespace-nowrap bg-[linear-gradient(135deg,#f3bc58_0%,#f7d57d_52%,#f3bc58_100%)] bg-clip-text text-transparent [filter:drop-shadow(0_0_14px_rgba(247,213,125,0.2))_drop-shadow(0_10px_20px_rgba(52,29,8,0.24))] [font-family:var(--font-cannia)]',
+              'relative z-10 flex max-w-full items-start justify-center gap-2 whitespace-nowrap bg-[linear-gradient(135deg,#f3bc58_0%,#f7d57d_52%,#f3bc58_100%)] bg-clip-text text-transparent [filter:drop-shadow(0_3px_0_rgba(0,0,0,0.3))_drop-shadow(0_10px_20px_rgba(0,0,0,0.24))_drop-shadow(0_20px_34px_rgba(0,0,0,0.16))] [font-family:var(--font-cannia)]',
               compact
                 ? 'text-[clamp(1.2rem,5vw,1.9rem)] leading-none'
                 : 'text-[clamp(1.7rem,2.5vw,2.65rem)] leading-none'
@@ -2297,10 +2395,14 @@ function CsrImpactCardPanel({
             onToggleDetail();
           }}
           className={clsx(
-            'relative z-10 mt-6 inline-flex items-center justify-center border border-[#f3dfc4]/55 px-4 py-2 font-display uppercase tracking-[0.2em] text-[#fff4e3] transition hover:border-[#fff2de] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/55',
+            `${heroJourneyButtonClass} z-10 mt-6 px-4 py-2 font-display uppercase tracking-[0.2em]`,
             compact ? 'text-[0.55rem]' : 'text-[0.62rem]'
           )}
         >
+          <span
+            aria-hidden
+            className="pointer-events-none absolute inset-0 z-0 -translate-x-full bg-gradient-to-r from-transparent via-[#f6c452bf] to-transparent opacity-0 transition-transform duration-500 group-hover:translate-x-full group-hover:opacity-100"
+          />
           <AnimatePresence mode="wait" initial={false}>
             <motion.span
               key={detailOpen ? 'back' : 'discover'}
@@ -2308,6 +2410,7 @@ function CsrImpactCardPanel({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
+              className="relative z-10"
             >
               {detailOpen ? 'Back' : card.ctaLabel}
             </motion.span>
@@ -2326,7 +2429,10 @@ function BackToJourneysButton({ onClick }: { onClick: () => void }) {
       className="group inline-flex items-center gap-2 text-white drop-shadow-[0_12px_28px_rgba(0,0,0,0.38)] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/45"
       aria-label="Back to all journeys"
     >
-      <ArrowLeft className="h-5 w-5 text-white/55 transition-all duration-300 group-hover:-translate-x-0.5 group-hover:text-[#f6c452]" />
+      <SiteArrowIcon
+        direction="left"
+        className="h-5 w-5 text-white/55 transition-all duration-300 group-hover:-translate-x-0.5 group-hover:text-[#f6c452]"
+      />
       <div className="relative h-8 w-8 shrink-0">
         <Image
           src="/assets/icones/Ico White BEE-12.svg"
@@ -2341,7 +2447,7 @@ function BackToJourneysButton({ onClick }: { onClick: () => void }) {
           className="object-contain opacity-0 transition-opacity duration-300 group-hover:opacity-100"
         />
       </div>
-      <span className="font-display text-[0.72rem] uppercase tracking-[0.16em] text-white transition-colors duration-300 group-hover:text-[#f6c452] sm:text-[0.8rem]">
+      <span className="font-display text-[0.72rem] uppercase tracking-[0.16em] text-white transition-colors duration-300 [text-shadow:0_2px_0_rgba(0,0,0,0.3),0_8px_14px_rgba(0,0,0,0.24),0_16px_34px_rgba(0,0,0,0.24)] group-hover:text-[#f6c452] sm:text-[0.8rem]">
         All Journeys
       </span>
     </button>
@@ -2382,7 +2488,8 @@ function LocationNavigation({
         )}
         aria-label="Previous location"
       >
-        <ArrowLeft
+        <SiteArrowIcon
+          direction="left"
           className={clsx(
             'transition-transform duration-300 group-hover:-translate-x-1',
             compact ? 'h-3.5 w-3.5' : 'h-4 w-4'
@@ -2408,7 +2515,7 @@ function LocationNavigation({
         />
         <span
           className={clsx(
-            'truncate font-display uppercase tracking-[0.14em] text-white [text-shadow:0_0_18px_rgba(255,255,255,0.35)]',
+            'truncate font-display uppercase tracking-[0.14em] text-white [text-shadow:0_2px_0_rgba(0,0,0,0.3),0_8px_14px_rgba(0,0,0,0.24),0_16px_34px_rgba(0,0,0,0.24)]',
             compact ? 'text-[0.7rem]' : 'text-[1.1rem] sm:text-[1.55rem]'
           )}
         >
@@ -2426,7 +2533,8 @@ function LocationNavigation({
         )}
         aria-label="Next location"
       >
-        <ArrowRight
+        <SiteArrowIcon
+          direction="right"
           className={clsx(
             'transition-transform duration-300 group-hover:translate-x-1',
             compact ? 'h-3.5 w-3.5' : 'h-4 w-4'
@@ -2456,7 +2564,10 @@ function MobileMenuCycler({
         className="group flex h-6 w-6 items-center justify-center text-white/45 transition hover:text-white/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/45"
         aria-label="Previous menu item"
       >
-        <ArrowLeft className="h-3.5 w-3.5 transition-transform duration-300 group-hover:-translate-x-1" />
+        <SiteArrowIcon
+          direction="left"
+          className="h-3.5 w-3.5 transition-transform duration-300 group-hover:-translate-x-1"
+        />
       </button>
 
       <button
@@ -2503,7 +2614,10 @@ function MobileMenuCycler({
         className="group flex h-6 w-6 items-center justify-center text-white/45 transition hover:text-white/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/45"
         aria-label="Next menu item"
       >
-        <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" />
+        <SiteArrowIcon
+          direction="right"
+          className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1"
+        />
       </button>
     </div>
   );
@@ -2525,6 +2639,8 @@ function LocationCard({
   isMobileViewport: boolean;
 }) {
   const fadeProfile = getCardFadeProfile(forwardOffset, isMobileViewport);
+  const seasonIconScale: SeasonIconScale =
+    forwardOffset === 0 ? 'hero' : forwardOffset === 1 ? 'lead' : 'trail';
 
   return (
     <motion.button
@@ -2597,7 +2713,11 @@ function LocationCard({
           }
         />
         <div className="absolute inset-x-0 bottom-4 flex justify-center">
-          <SeasonIconRow seasons={location.seasons} compact={isMobileViewport} />
+          <SeasonIconRow
+            seasons={location.seasons}
+            compact={isMobileViewport}
+            scale={seasonIconScale}
+          />
         </div>
       </div>
     </motion.button>
@@ -2607,18 +2727,22 @@ function LocationCard({
 function SeasonIconRow({
   seasons,
   compact = false,
+  scale = 'hero',
 }: {
   seasons: JourneySeason[];
   compact?: boolean;
+  scale?: SeasonIconScale;
 }) {
+  const sizing = getSeasonIconSizing(compact, scale);
+
   return (
-    <div className={clsx('flex items-center justify-center', compact ? 'gap-2.5' : 'gap-3')}>
+    <div className={clsx('flex items-center justify-center', sizing.gapClass)}>
       {seasons.map((season) => {
         const iconSet = JOURNEY_SEASON_ICONS[season];
         return (
           <div
             key={season}
-            className={clsx('group/season relative shrink-0', compact ? 'h-6 w-6' : 'h-7 w-7')}
+            className={clsx('group/season relative shrink-0', sizing.itemClass)}
             aria-label={iconSet.label}
           >
             <Image
@@ -2782,7 +2906,10 @@ function LocationStoryBand({
           onClick={onClose}
           className="group inline-flex items-center gap-2 px-1 py-1.5 font-display text-[10px] uppercase tracking-[0.18em] text-white/85 transition hover:text-[#d9a24b] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/55"
         >
-          <ArrowLeft className="h-5 w-5 transition-transform group-hover:-translate-x-0.5 group-hover:text-[#d9a24b]" />
+          <SiteArrowIcon
+            direction="left"
+            className="h-5 w-5 transition-transform group-hover:-translate-x-0.5 group-hover:text-[#d9a24b]"
+          />
           Back
         </button>
       </div>
@@ -2817,7 +2944,7 @@ function LocationStoryBand({
               />
               <p
                 className={clsx(
-                  'font-menu normal-case tracking-[-0.01em] text-[#fff9ef] [text-shadow:0_0_22px_rgba(255,238,214,0.62),0_0_46px_rgba(255,238,214,0.32)]',
+                  'font-menu normal-case tracking-[-0.01em] text-[#fff9ef] [text-shadow:0_0_18px_rgba(255,238,214,0.42),0_14px_34px_rgba(0,0,0,0.26),0_28px_62px_rgba(0,0,0,0.22)]',
                   compact
                     ? 'text-[clamp(2.2rem,11vw,3.8rem)] leading-[0.88]'
                     : 'text-[clamp(3rem,5.8vw,5.4rem)] leading-[0.84]'
@@ -2863,17 +2990,21 @@ function LocationStoryBand({
                 aria-hidden
                 className="pointer-events-none absolute -inset-x-4 -inset-y-3 -z-10 rounded-[32px] bg-[radial-gradient(circle,rgba(255,240,216,0.24)_0%,rgba(255,240,216,0)_76%)] blur-xl"
               />
-              <p className="font-sans text-[13px] italic leading-[1.86] text-[#fffef8] [text-shadow:0_0_16px_rgba(255,237,210,0.48),0_1px_12px_rgba(59,36,18,0.45)] sm:text-[14px]">
+              <p className="font-sans text-[13px] italic leading-[1.86] text-[#fffef8] [text-shadow:0_0_12px_rgba(255,237,210,0.28),0_10px_24px_rgba(0,0,0,0.24),0_18px_38px_rgba(59,36,18,0.24)] sm:text-[14px]">
                 {story.narrative}
               </p>
               <div className="flex justify-center pt-8">
                 <button
                   type="button"
                   onClick={onNext}
-                  className="inline-flex items-center gap-2 border border-[#f3dfc4]/55 px-4 py-2 font-display text-[9px] uppercase tracking-[0.2em] text-[#fff4e3] transition hover:border-[#fff2de] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/55"
+                  className={`${heroJourneyButtonClass} gap-2 px-4 py-2 font-display text-[9px] uppercase tracking-[0.2em]`}
                 >
-                  Discover {story.nextLocation}
-                  <ArrowRight className="h-4 w-4" />
+                  <span
+                    aria-hidden
+                    className="pointer-events-none absolute inset-0 z-0 -translate-x-full bg-gradient-to-r from-transparent via-[#f6c452bf] to-transparent opacity-0 transition-transform duration-500 group-hover:translate-x-full group-hover:opacity-100"
+                  />
+                  <span className="relative z-10">Discover {story.nextLocation}</span>
+                  <SiteArrowIcon direction="right" className="relative z-10 h-4 w-4" />
                 </button>
               </div>
             </article>

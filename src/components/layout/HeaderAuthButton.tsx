@@ -25,15 +25,19 @@ export function HeaderAuthButton({ className }: HeaderAuthButtonProps) {
 
   const isLoginRoute = pathname === '/login';
   const isJourneysRoute = pathname === '/journeys';
+  const isContactRoute = pathname === '/contact';
   const interactionClasses = isJourneysRoute
     ? 'focus-visible:ring-white/65 hover:!border-white/55 hover:!bg-white/10 hover:!text-white hover:shadow-[0_0_22px_rgba(255,255,255,0.5)]'
     : 'focus-visible:ring-[#f6c452]/60 hover:!border-[#f6c452]/55 hover:!bg-[#f6c4521a] hover:!text-white hover:shadow-[0_0_22px_rgba(246,196,82,0.6)]';
-  const iconSrc = isJourneysRoute
-    ? '/assets/icones/Ico White BEE-12.svg'
-    : '/assets/icones/Ico Gold BEE-12.svg';
-  const iconClass = isJourneysRoute
-    ? 'h-11 w-11 drop-shadow-[0_0_18px_rgba(255,255,255,0.52)] transition duration-200'
-    : 'h-11 w-11 drop-shadow-[0_0_18px_rgba(246,196,82,0.54)] transition duration-200';
+  const iconSrc =
+    isJourneysRoute || isContactRoute
+      ? '/assets/icones/Ico White BEE-12.svg'
+      : '/assets/icones/Ico Gold BEE-12.svg';
+  const hoverIconSrc = '/assets/icones/Ico Gold BEE-12.svg';
+  const iconClass =
+    isJourneysRoute || isContactRoute
+      ? 'h-11 w-11 drop-shadow-[0_0_18px_rgba(255,255,255,0.52)] transition duration-200'
+      : 'h-11 w-11 drop-shadow-[0_0_18px_rgba(246,196,82,0.54)] transition duration-200';
 
   const handleSignOut = React.useCallback(async () => {
     if (isSigningOut) return;
@@ -67,7 +71,27 @@ export function HeaderAuthButton({ className }: HeaderAuthButtonProps) {
         disabled={isSigningOut}
         className={cn(baseClasses, interactionClasses, className)}
       >
-        <Image src={iconSrc} alt="" width={44} height={44} className={iconClass} aria-hidden />
+        <span className="relative block h-11 w-11" aria-hidden>
+          <Image
+            src={iconSrc}
+            alt=""
+            width={44}
+            height={44}
+            className={cn(
+              iconClass,
+              'absolute inset-0 h-11 w-11 object-contain transition duration-200 group-hover:opacity-0'
+            )}
+            aria-hidden
+          />
+          <Image
+            src={hoverIconSrc}
+            alt=""
+            width={44}
+            height={44}
+            className="absolute inset-0 h-11 w-11 object-contain opacity-0 drop-shadow-[0_0_18px_rgba(246,196,82,0.54)] transition duration-200 group-hover:opacity-100"
+            aria-hidden
+          />
+        </span>
         <span className="sr-only">Log out</span>
       </Button>
     );
@@ -81,7 +105,27 @@ export function HeaderAuthButton({ className }: HeaderAuthButtonProps) {
       className={cn(baseClasses, interactionClasses, className)}
     >
       <Link href="/login" prefetch={!isLoginRoute}>
-        <Image src={iconSrc} alt="" width={44} height={44} className={iconClass} aria-hidden />
+        <span className="relative block h-11 w-11" aria-hidden>
+          <Image
+            src={iconSrc}
+            alt=""
+            width={44}
+            height={44}
+            className={cn(
+              iconClass,
+              'absolute inset-0 h-11 w-11 object-contain transition duration-200 group-hover:opacity-0'
+            )}
+            aria-hidden
+          />
+          <Image
+            src={hoverIconSrc}
+            alt=""
+            width={44}
+            height={44}
+            className="absolute inset-0 h-11 w-11 object-contain opacity-0 drop-shadow-[0_0_18px_rgba(246,196,82,0.54)] transition duration-200 group-hover:opacity-100"
+            aria-hidden
+          />
+        </span>
         <span className="sr-only">Sign in</span>
       </Link>
     </Button>

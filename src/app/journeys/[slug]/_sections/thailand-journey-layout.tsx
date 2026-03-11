@@ -72,8 +72,7 @@ type CsrImpactCard = {
 };
 type RenderedCsrImpactSlide = { card: CsrImpactCard; sourceIndex: number; renderKey: string };
 
-const INDIA_BACKGROUND_VIDEO =
-  '/assets/journeys/philippines-2026/philippines-all-journeys-thumbnail.png';
+const INDIA_BACKGROUND_VIDEO = '/assets/journeys/thailand-2026/thailand-all-journeys-thumbnail.png';
 const VIDEO_CONTINUITY_STORAGE_KEY = 'journey-background-video-state';
 const JOURNEY_SEASON_ICONS: Record<
   JourneySeason,
@@ -93,28 +92,28 @@ const JOURNEY_SEASON_ICONS: Record<
 
 const INDIA_LOCATIONS: IndiaLocation[] = [
   {
-    id: 'philippines-location-palawan',
-    title: 'Palawan',
-    region: 'Twin Lagoon',
-    image: '/assets/journeys/philippines-2026/philippines-location-palawan-thumbnail.jpg',
-    backgroundVideo: '/assets/journeys/philippines-2026/philippines-spring-summer-thumbnail.png',
-    seasons: ['spring-summer'],
+    id: 'thailand-location-khao-sok',
+    title: 'Khao Sok',
+    region: 'Rainforest Lake',
+    image: '/assets/journeys/thailand-2026/thailand-location-khao-sok-thumbnail.png',
+    backgroundVideo: '/assets/journeys/thailand-2026/thailand-location-khao-sok-background.png',
+    seasons: ['spring-summer', 'fall-winter'],
   },
   {
-    id: 'philippines-location-bukidnon',
-    title: 'Bukidnon',
-    region: 'Cloud Highlands',
-    image: '/assets/journeys/philippines-2026/philippines-location-bukidnon-thumbnail.png',
-    backgroundVideo: '/assets/journeys/philippines-2026/philippines-fall-winter-thumbnail.png',
+    id: 'thailand-location-bangkok',
+    title: 'Bangkok',
+    region: 'Golden Chinatown',
+    image: '/assets/journeys/thailand-2026/thailand-location-bangkok-thumbnail.png',
+    backgroundVideo: '/assets/journeys/thailand-2026/thailand-location-bangkok-background.png',
     seasons: ['fall-winter'],
   },
   {
-    id: 'philippines-location-siargao',
-    title: 'Siargao',
-    region: 'Surf & Lagoons',
-    image: '/assets/journeys/philippines-2026/philippines-location-siargao-thumbnail.png',
-    backgroundVideo: '/assets/journeys/philippines-2026/philippines-all-journeys-thumbnail.png',
-    seasons: ['spring-summer', 'fall-winter'],
+    id: 'thailand-location-koh-phi-phi',
+    title: 'Koh Phi Phi',
+    region: 'Turquoise Horizon',
+    image: '/assets/journeys/thailand-2026/thailand-location-koh-phi-phi-thumbnail.png',
+    backgroundVideo: '/assets/journeys/thailand-2026/thailand-location-koh-phi-phi-background.png',
+    seasons: ['spring-summer'],
   },
 ];
 
@@ -227,111 +226,108 @@ const CSR_CATEGORY_ARC_CONFIG: Record<
 
 const LOCATION_STORIES: IndiaLocationStory[] = [
   {
-    id: 'philippines-story-palawan',
-    locationId: 'philippines-location-palawan',
-    image: '/assets/journeys/philippines-2026/philippines-location-palawan-story.jpg',
-    leftTitle: ['Where', 'Paradise', 'Stays', 'Wild'],
+    id: 'thailand-story-khao-sok',
+    locationId: 'thailand-location-khao-sok',
+    image: '/assets/journeys/thailand-2026/thailand-location-khao-sok-story.jpg',
+    leftTitle: ['Echoes', 'of Khao', 'Sok Lake'],
     narrative:
-      'In Palawan, islands seem to float on translucent waters shimmering in endless shades of turquoise. Jungle-covered limestone cliffs drop into hidden lagoons where the water becomes so clear it almost disappears. Sandbanks appear and vanish with the tide, and boats drift silently between rock formations. Everything feels untouched - just wind, salt, and light. Palawan feels like reaching the edge of the world, in a landscape still free and wild.',
-    nextLocationId: 'philippines-location-bukidnon',
-    nextLocation: 'Bukidnon',
+      'In the heart of Khao Sok National Park, the emerald lake stretches between towering limestone karsts rising from the water like islands suspended in mist. The calm surface reflects jungle-covered cliffs, where tropical light shifts from soft milky blues at dawn to deep golden hues at sunset. Traditional boats drift silently, inviting exploration of hidden coves, secret caves, and lush shorelines. Here, time seems to float with nature, a peaceful, mysterious atmosphere where water, rock, and forest blend into an almost unreal landscape.',
+    nextLocationId: 'thailand-location-bangkok',
+    nextLocation: 'Bangkok',
   },
   {
-    id: 'philippines-story-bukidnon',
-    locationId: 'philippines-location-bukidnon',
-    image: '/assets/journeys/philippines-2026/philippines-location-bukidnon-story.jpg',
-    leftTitle: ['Where', 'Paradise', 'Stays', 'Wild'],
+    id: 'thailand-story-bangkok',
+    locationId: 'thailand-location-bangkok',
+    image: '/assets/journeys/thailand-2026/thailand-location-bangkok-story.jpg',
+    leftTitle: ['Endless', 'Evenings', 'Golden Noise'],
     narrative:
-      'In Bukidnon, the highlands roll beneath an endless green blanket, often swallowed by a sea of clouds at sunrise. Roads cut through fields, plantations, and soft hills bathed in crisp, gentle light. Everything feels calm and suspended, the air cooler, the sounds distant, the landscape stretching endlessly. Bukidnon reveals another side of the Philippines, inland, serene, and deeply natural.',
-    nextLocationId: 'philippines-location-siargao',
-    nextLocation: 'Siargao',
+      'In Bangkok, the city pulses between tradition and modern intensity. Streets glow beneath colorful neon signs, lined with Chinese shopfronts, buzzing tuk-tuks, and street markets scented with spices. Behind half-open metal shutters, small counters welcome locals and travelers around steaming dishes, while dense traffic moves in a constant choreography. In the distance, hills fade into a warm golden haze, a reminder that nature is never far away. Bangkok is a full immersion, a continuous, vibrant, and chaotic energy where every alley tells a new story.',
+    nextLocationId: 'thailand-location-koh-phi-phi',
+    nextLocation: 'Koh Phi Phi',
   },
   {
-    id: 'philippines-story-siargao',
-    locationId: 'philippines-location-siargao',
-    image: '/assets/journeys/philippines-2026/philippines-location-siargao-story.jpg',
-    leftTitle: ['Where', 'Paradise', 'Stays', 'Wild'],
+    id: 'thailand-story-koh-phi-phi',
+    locationId: 'thailand-location-koh-phi-phi',
+    image: '/assets/journeys/thailand-2026/thailand-location-koh-phi-phi-story.jpg',
+    leftTitle: ['Turquoise', 'Silence'],
     narrative:
-      'On Siargao, palm trees lean toward a shifting turquoise sea and days unfold slowly between surf and sun. Dirt roads lead to quiet beaches, tidal pools glimmer at low tide, and golden afternoons dissolve into soft pastel sunsets. Life follows the rhythm of the ocean: simple, warm, and unhurried, a place where you do not chase time, you drift with it.',
-    nextLocationId: 'philippines-location-palawan',
-    nextLocation: 'Palawan',
+      'On Koh Phi Phi, the sea reveals every shade of turquoise and emerald, framed by pale sandy beaches and dramatic limestone cliffs. Colorful longtail boats rest gently on crystal-clear water while palm trees cast soft shadows along the shore. At sunset, the sky ignites in hues of orange and pink, wrapping the islands in a peaceful, almost unreal atmosphere. Everything here invites contemplation, a luminous tropical escape between rock, sea, and endless horizon.',
+    nextLocationId: 'thailand-location-khao-sok',
+    nextLocation: 'Khao Sok',
   },
 ];
 const CSR_IMPACT_CARDS: CsrImpactCard[] = [
   {
     id: 'csr-impact-carbon-pool',
     category: 'environment',
-    title: '12,4t',
+    title: '14,8t',
     titleSuffix: 'CO2',
     image: '/assets/journeys/india-january-2026/csr-impact-leaf.svg',
     ctaLabel: 'Discover',
     detailBody: [
-      'CO2 avoided on this journey comes from pooling inter-island logistics instead of multiplying transfers for each production.',
-      'By sharing boats, accommodation windows, and local crews between different houses, the itinerary stays lighter and more coherent with the territory.',
-      'Impact is reduced upstream through design, not corrected after the fact.',
+      'CO2 avoided on this journey comes from pooling lake transfers, island logistics, and Bangkok production days instead of multiplying movements across separate shoots.',
+      'By synchronizing crews, accommodation windows, and local partners between Khao Sok, Bangkok, and Koh Phi Phi, the itinerary stays lighter and more intentional.',
+      'Impact is reduced upstream through route design, local sourcing, and shared execution rather than compensated afterward.',
     ],
   },
   {
-    id: 'csr-impact-coral-keepers',
+    id: 'csr-impact-rainforest-water-alliance',
     category: 'environment',
-    title: 'Coral Keepers',
+    title: 'Rainforest Water Alliance',
     image: '/assets/journeys/india-january-2026/csr-impact-navdama.svg',
     ctaLabel: 'Discover',
     detailBody: [
-      'Coral Keepers is the local reef stewardship network we align with for marine-sensitive productions in Palawan and Siargao.',
-      'Their work combines coastal education, reef restoration, and community monitoring so the production footprint remains compatible with fragile ecosystems.',
-      'This partnership helps crews understand the site before filming it, and contributes to preserving the lagoons and shorelines that make the journey possible.',
+      'Rainforest Water Alliance is the kind of local conservation partner we align with when working across lake, jungle, and coastal ecosystems in southern Thailand.',
+      'Its role is to protect watershed balance, educate crews on fragile habitats, and encourage low-impact access to karst lakes, shorelines, and tropical forest zones.',
+      'This keeps the visual narrative connected to the living territory instead of extracting from it.',
     ],
   },
   {
-    id: 'csr-impact-shared-sea-rate',
+    id: 'csr-impact-shared-route-rate',
     category: 'environment',
-    title: 'Shared Sea Rate',
+    title: 'Shared Route Rate',
     image: '/assets/journeys/india-january-2026/csr-impact-ring.svg',
-    overlayText: '72%',
+    overlayText: '76%',
     ctaLabel: 'Discover',
     detailBody: [
-      'A high shared sea rate means a large part of marine transport, lodging, and field production has been mutualized instead of duplicated.',
-      'We measure how many activities were avoided because resources were organized collectively across one common journey rather than as isolated productions.',
+      'A high shared route rate means that transport, lodging, field production, and location prep were mutualized across the journey instead of duplicated brand by brand.',
+      'We measure how many movements and isolated setups were avoided because the Thailand route was organized as one shared production ecosystem.',
     ],
   },
   {
-    id: 'csr-impact-island-artisans',
+    id: 'csr-impact-thai-craft-circle',
     category: 'social',
-    title: 'Island Artisans',
+    title: 'Thai Craft Circle',
     image: '/assets/journeys/india-january-2026/csr-impact-artisans-collective.svg',
     ctaLabel: 'Discover',
     detailItems: [
       {
         icon: '/assets/icones/Ico Gold BEE-08.svg',
-        label: 'SET DESIGN ARTIST',
-        handle: '@noraislandstudio',
-        href: 'https://www.instagram.com/noraislandstudio/',
+        label: 'SET DESIGN ARTISAN',
+        handle: 'FLOATING WOODWORK',
       },
       {
         icon: '/assets/journeys/india-january-2026/csr-impact-sound-design.svg',
-        label: 'SOUND DESIGN',
-        handle: '@wavesofmika',
-        href: 'https://www.instagram.com/wavesofmika/',
+        label: 'SOUND CURATION',
+        handle: 'FIELD RECORDING',
       },
       {
         icon: '/assets/icones/Ico Gold BEE-15.svg',
         label: 'MAKE-UP ARTIST',
-        handle: '@camillemanalo',
-        href: 'https://www.instagram.com/camillemanalo/',
+        handle: 'TROPICAL BEAUTY',
       },
     ],
   },
   {
-    id: 'csr-impact-seakind-foundation',
+    id: 'csr-impact-riverlight-foundation',
     category: 'social',
-    title: 'SeaKind Foundation',
+    title: 'Riverlight Foundation',
     image: '/assets/journeys/india-january-2026/csr-impact-smile-foundation.svg',
     ctaLabel: 'Discover',
     detailBody: [
-      'SeaKind Foundation supports coastal youth and island communities through education, health outreach, and livelihood programs connected to tourism and the sea.',
-      'Its teams help build long-term access to learning opportunities while strengthening local economies linked to responsible hospitality and marine stewardship.',
-      'The goal is simple: keep value, skills, and opportunity rooted in the communities that host the journey.',
+      'Riverlight Foundation supports under-resourced communities through creative education, youth programs, and hospitality-linked livelihood initiatives across southern Thailand.',
+      'Its work strengthens access to training, local employment, and cultural transmission in places where tourism and environmental pressure coexist.',
+      'The goal is to keep value, skills, and future opportunities anchored in the communities that host the journey.',
     ],
   },
   {
@@ -339,16 +335,16 @@ const CSR_IMPACT_CARDS: CsrImpactCard[] = [
     category: 'societal',
     title: 'Local Nature',
     image: '/assets/journeys/india-january-2026/csr-impact-ring.svg',
-    overlayText: '84%',
+    overlayText: '88%',
     ctaLabel: 'Discover',
     detailItems: [
       {
         icon: '/assets/journeys/india-january-2026/csr-impact-family-sustain.svg',
-        label: 'COMMUNITY HOSTS',
+        label: 'LAKE HOSTS',
       },
       {
         icon: '/assets/journeys/india-january-2026/csr-impact-local-catering.svg',
-        label: 'ISLAND CATERING',
+        label: 'LOCAL CATERING',
       },
       {
         icon: '/assets/icones/Ico Gold BEE-16.svg',
@@ -361,7 +357,7 @@ const CSR_IMPACT_CARDS: CsrImpactCard[] = [
     category: 'societal',
     title: 'Cultural Ethic',
     image: '/assets/journeys/india-january-2026/csr-impact-ring.svg',
-    overlayText: '91%',
+    overlayText: '93%',
     ctaLabel: 'Discover',
     detailItems: [
       {
@@ -370,7 +366,7 @@ const CSR_IMPACT_CARDS: CsrImpactCard[] = [
       },
       {
         icon: '/assets/icones/Ico Gold BEE-10.svg',
-        label: 'TAGBANWA LESSONS',
+        label: 'THAI LESSONS',
       },
       {
         icon: '/assets/icones/Ico Gold BEE-16.svg',
@@ -385,8 +381,8 @@ const CSR_IMPACT_CARDS: CsrImpactCard[] = [
     image: '/assets/journeys/india-january-2026/csr-impact-local-sponsoring.svg',
     ctaLabel: 'Discover',
     detailBody: [
-      "In co-creation with the brand's team, we identify local actors to highlight for their craft, their cultural role, or their social value within the islands.",
-      'Resorts, surf communities, boat operators, makers, and food partners become visible through a shared activation strategy that benefits both the journey and the local ecosystem.',
+      "In co-creation with the brand's team, we identify Thai actors to highlight for their craft, their cultural role, or their social value within the journey.",
+      'Eco-lodges, boat cooperatives, Chinatown food houses, textile makers, and local guides become visible through a cross-promotion strategy that benefits both the production and the territory.',
     ],
   },
   {
@@ -396,9 +392,9 @@ const CSR_IMPACT_CARDS: CsrImpactCard[] = [
     image: '/assets/journeys/india-january-2026/csr-impact-smile-foundation.svg',
     ctaLabel: 'Discover',
     detailBody: [
-      'A fully local artvertising publication rooted in island life. Created with local talents and makers, each image reflects lived culture rather than outside projection.',
-      'At its core is the place of Filipino women not as subjects, but as authors of the visual narrative.',
-      'By producing locally, value returns to its origin and representation belongs to those who inhabit the territory.',
+      'A fully local artvertising publication rooted in Thailand and produced with local talents, makers, and voices rather than external interpretation.',
+      'At its heart is the place of women in Thailand, not as subjects framed from outside, but as authors of the visual and cultural narrative.',
+      'By producing locally, value returns to its origin and representation belongs to those who live the territory every day.',
     ],
   },
 ];
@@ -596,7 +592,7 @@ function getCardFadeProfile(forwardOffset: number, isMobileViewport: boolean) {
   };
 }
 
-export function PhilippinesJourneyLayout({ journey }: { journey: JourneyShowcase }) {
+export function ThailandJourneyLayout({ journey }: { journey: JourneyShowcase }) {
   useBodyScrollLock();
 
   const router = useRouter();

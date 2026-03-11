@@ -3,17 +3,9 @@
 import { useMemo, useRef, useState, type ComponentType } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import {
-  Banknote,
-  CalendarDays,
-  ChevronLeft,
-  ChevronRight,
-  Compass,
-  Filter,
-  Globe,
-  MapPin,
-} from 'lucide-react';
+import { Banknote, CalendarDays, Compass, Filter, Globe, MapPin } from 'lucide-react';
 
+import { SiteArrowIcon } from '@/components/icons/site-arrow-icon';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import type { ClientJourney } from '@/types/client';
@@ -124,7 +116,7 @@ export function ClientJourneyDashboard({ journeys }: DashboardProps) {
               onClick={() => handleScroll(-1)}
               className="size-11 rounded-full border border-white/35 bg-white/15 text-white hover:bg-white/30"
             >
-              <ChevronLeft className="size-5" aria-hidden />
+              <SiteArrowIcon direction="left" className="size-5" />
             </Button>
             <Button
               type="button"
@@ -132,7 +124,7 @@ export function ClientJourneyDashboard({ journeys }: DashboardProps) {
               onClick={() => handleScroll(1)}
               className="size-11 rounded-full border border-white/35 bg-white/15 text-white hover:bg-white/30"
             >
-              <ChevronRight className="size-5" aria-hidden />
+              <SiteArrowIcon direction="right" className="size-5" />
             </Button>
           </div>
         </div>

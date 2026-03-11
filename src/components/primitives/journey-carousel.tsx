@@ -3,8 +3,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import { ArrowRight, Play } from 'lucide-react';
+import { Play } from 'lucide-react';
 
+import { SiteArrowIcon } from '@/components/icons/site-arrow-icon';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { GlassCard } from '@/components/primitives/glass-card';
@@ -96,7 +97,10 @@ export function JourneyCarousel({ items, className, onNavigate }: JourneyCarouse
                     onClick={() => onNavigate?.(item.slug)}
                   >
                     EXPLORE
-                    <ArrowRight className="size-4 transition-transform duration-300 group-hover/button:translate-x-1" />
+                    <SiteArrowIcon
+                      direction="right"
+                      className="size-4 transition-transform duration-300 group-hover/button:translate-x-1"
+                    />
                   </Button>
                 </div>
               </div>

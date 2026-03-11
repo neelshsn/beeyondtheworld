@@ -8,7 +8,6 @@ import {
   Calendar,
   Camera,
   Check,
-  ChevronDown,
   Clapperboard,
   Filter,
   Gem,
@@ -27,6 +26,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { useBodyScrollLock } from '@/app/concept/_hooks/use-body-scroll-lock';
 import { usePrefersReducedMotion } from '@/app/concept/_hooks/use-prefers-reduced-motion';
+import { SiteArrowIcon } from '@/components/icons/site-arrow-icon';
 import { campaigns } from '@/data/campaigns-carousel';
 import { SmartVideo } from '@/components/primitives/smart-video';
 import type { Campaign } from '@/types/campaign';
@@ -742,7 +742,7 @@ function FilterDropdown({
       >
         <Icon className="size-3.5" aria-hidden />
         <span>{label}</span>
-        <ChevronDown className={clsx('size-3 transition', open && '-scale-y-100')} aria-hidden />
+        <SiteArrowIcon direction={open ? 'up' : 'down'} className="size-3 transition" />
       </button>
 
       <AnimatePresence>

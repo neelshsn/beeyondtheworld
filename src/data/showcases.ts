@@ -42,90 +42,132 @@ export type CampaignShowcase = {
 
 const allJourneyShowcases: JourneyShowcase[] = [
   {
-    id: 'philippines',
-    slug: 'philippines',
-    title: 'Philippines Lagoon Editions',
-    headline: 'Resortwear dreamscapes across Palawan lagoons and Siargao palms.',
-    locale: 'Palawan & Siargao',
-    timeframe: 'October - November 2025',
+    id: 'thailand',
+    slug: 'thailand',
+    title: 'Thailand',
+    headline:
+      'A cinematic drift from rainforest karsts to neon streets and luminous island horizons.',
+    locale: 'Khao Sok, Bangkok & Koh Phi Phi',
+    timeframe: 'From 20th June to 5th October 2026',
     summary:
-      'A floating resortwear laboratory that sails through turquoise coves, coconut-lined sandbars, and reef sanctuaries. Maisons capture saturated sun stories while contributing to ocean regeneration.',
+      'A three-part Thailand journey unfolding between the misted karst lake of Khao Sok, the electric density of Bangkok, and the crystalline tropical stillness of Koh Phi Phi.',
     story: [
-      'Mornings open on powder sandbars where models glide barefoot in resortwear while Steadicam crews wade knee-deep in crystal water. The catamaran doubles as a moving wardrobe with palm-dried fabrics swaying above deck.',
-      'Afternoons anchor beneath coconut trees for collaborative dye baths with island artisans, before twilight swims trace bioluminescent threads around the collection for the hero film.',
+      'Khao Sok opens the journey with floating lake chapters, jungle silence, and limestone walls emerging from emerald water like sculpted islands.',
+      'Bangkok shifts the tempo into neon streets, market alleys, metal shutters, and a vibrant urban rhythm where tradition and intensity collide.',
+      'Koh Phi Phi closes the arc with longtail boats, translucent shallows, and sunset skies that dissolve the production into a luminous tropical horizon.',
     ],
     highlights: [
-      'Turquoise runway sequences with underwater tracking rigs',
-      'Coconut grove ateliers co-creating accessories with island makers',
-      'Night swim bioluminescence capture for the resortwear finale',
+      'Karst-lake storytelling between rainforest waterlines, hidden coves, and drifting boats',
+      'Bangkok night chapters shaped by neon density, street textures, and cinematic city energy',
+      'Island finales framed by turquoise water, limestone cliffs, and sunset-soft tropical light',
     ],
     logistics: [
-      'Catamaran base camp with 12 berths, floating closet, and modular glam stations',
-      'Impact-certified reef teams guiding citizen-science activations for crews',
-      'On-board post suite delivering daily selects and palette decks',
+      'Shared route design connecting inland lake, capital city, and island chapter with pooled local crews',
+      'Flexible art direction system moving from organic jungle atmospheres to structured urban density and coastal stillness',
+      'Editorial and motion delivery shaped for fashion, hospitality, beauty, and culture-led storytelling',
+    ],
+    hero: {
+      id: 'thailand-hero',
+      type: 'image',
+      src: '/assets/journeys/thailand-2026/thailand-all-journeys-thumbnail.png',
+      alt: 'Thailand journey background showing Khao Sok lake atmosphere',
+      aspectRatio: 'landscape',
+      caption: 'Khao Sok lake opening frame',
+      overlayLabel: 'Journey 03',
+    },
+    gallery: [
+      {
+        id: 'thailand-2026-gallery-01',
+        type: 'image',
+        src: '/assets/journeys/thailand-2026/thailand-location-khao-sok-thumbnail.png',
+        alt: 'Khao Sok journey thumbnail',
+        aspectRatio: 'landscape',
+        caption: 'Khao Sok',
+      },
+      {
+        id: 'thailand-2026-gallery-02',
+        type: 'image',
+        src: '/assets/journeys/thailand-2026/thailand-location-bangkok-thumbnail.png',
+        alt: 'Bangkok journey thumbnail',
+        aspectRatio: 'landscape',
+        caption: 'Bangkok',
+      },
+      {
+        id: 'thailand-2026-gallery-03',
+        type: 'image',
+        src: '/assets/journeys/thailand-2026/thailand-location-koh-phi-phi-thumbnail.png',
+        alt: 'Koh Phi Phi journey thumbnail',
+        aspectRatio: 'landscape',
+        caption: 'Koh Phi Phi',
+      },
+    ],
+    cta: {
+      label: 'Discuss Thailand',
+      href: 'mailto:hello@beeyondtheworld.com?subject=Thailand%20Journey',
+    },
+  },
+  {
+    id: 'philippines',
+    slug: 'philippines',
+    title: 'Philippines',
+    headline: 'Island chapters drifting from turquoise lagoons to cloud-high inland landscapes.',
+    locale: 'Palawan, Bukidnon & Siargao',
+    timeframe: 'From 20th June to 5th October 2026',
+    summary:
+      'A cinematic island journey unfolding between the translucent lagoons of Palawan, the cloud-wrapped highlands of Bukidnon, and the slow surf rhythm of Siargao.',
+    story: [
+      'Palawan opens the journey with hidden lagoons, transparent waters, and limestone walls that make every frame feel suspended between jungle and sea.',
+      'Bukidnon shifts the atmosphere inland, where cloud seas, soft plantations, and cooler air stretch the narrative into something slower, higher, and deeply natural.',
+      'Siargao closes the story with palms, surf roads, tidal pools, and pastel evenings that dissolve the production into the rhythm of the ocean.',
+    ],
+    highlights: [
+      'Turquoise lagoon storytelling across secret coves and limestone passages',
+      'Cloud-high inland chapters rooted in agriculture, calm light, and wide horizons',
+      'Ocean-led finales shaped by surf culture, island roads, and slow tropical sunsets',
+    ],
+    logistics: [
+      'Shared island logistics designed around light transfers, local crews, and pooled accommodation windows',
+      'Flexible art-direction system moving between marine, inland, and surf environments without breaking narrative continuity',
+      'Editorial and motion delivery shaped for campaigns, hospitality, fashion, and community storytelling',
     ],
     hero: {
       id: 'philippines-hero',
       type: 'image',
-      src: '/assets/journeys/philippines-lagoon-2025/philippines-lagoon-2025-gallery-01.png',
-      alt: 'Turquoise lagoon surrounded by limestone cliffs in Palawan',
+      src: '/assets/journeys/philippines-2026/philippines-all-journeys-thumbnail.png',
+      alt: 'Philippines island background for the 2026 journey',
       aspectRatio: 'landscape',
-      caption: 'Secret lagoon recce, Palawan',
+      caption: 'Island drift opening frame',
       overlayLabel: 'Journey 01',
     },
     gallery: [
       {
-        id: 'philippines-lagoon-2025-gallery-01',
+        id: 'philippines-2026-gallery-01',
         type: 'image',
-        src: '/assets/journeys/philippines-lagoon-2025/philippines-lagoon-2025-gallery-01.png',
-        alt: 'Turquoise lagoon surrounded by limestone cliffs in Palawan',
+        src: '/assets/journeys/philippines-2026/philippines-location-palawan-thumbnail.jpg',
+        alt: 'Palawan lagoon opening frame',
         aspectRatio: 'landscape',
-        caption: 'Secret lagoon recce, Palawan',
+        caption: 'Palawan',
       },
       {
-        id: 'philippines-lagoon-2025-gallery-03',
+        id: 'philippines-2026-gallery-02',
         type: 'image',
-        src: '/assets/journeys/philippines-lagoon-2025/philippines-lagoon-2025-gallery-03.png',
-        alt: 'Overwater villa shaded by tropical canopy',
+        src: '/assets/journeys/philippines-2026/philippines-location-bukidnon-thumbnail.png',
+        alt: 'Bukidnon highland chapter',
         aspectRatio: 'landscape',
-        caption: 'Floating atelier suite',
+        caption: 'Bukidnon',
       },
       {
-        id: 'philippines-lagoon-2025-gallery-04',
+        id: 'philippines-2026-gallery-03',
         type: 'image',
-        src: '/assets/journeys/philippines-lagoon-2025/philippines-lagoon-2025-gallery-04.png',
-        alt: 'Wooden sailboat cruising emerald waters at golden hour',
+        src: '/assets/journeys/philippines-2026/philippines-location-siargao-thumbnail.png',
+        alt: 'Siargao surf island chapter',
         aspectRatio: 'landscape',
-        caption: 'Sunset banca transfer',
-      },
-      {
-        id: 'philippines-lagoon-2025-gallery-07',
-        type: 'image',
-        src: '/assets/journeys/philippines-lagoon-2025/philippines-lagoon-2025-gallery-07.png',
-        alt: 'Jungle canopy amphitheatre overlooking the sea',
-        aspectRatio: 'landscape',
-        caption: 'Jungle cinema installation',
-      },
-      {
-        id: 'philippines-lagoon-2025-gallery-10',
-        type: 'image',
-        src: '/assets/journeys/philippines-lagoon-2025/philippines-lagoon-2025-gallery-10.png',
-        alt: 'Chef plating Filipino tasting menu on floating deck',
-        aspectRatio: 'landscape',
-        caption: 'Floating table experience',
-      },
-      {
-        id: 'philippines-lagoon-2025-gallery-12',
-        type: 'image',
-        src: '/assets/journeys/philippines-lagoon-2025/philippines-lagoon-2025-gallery-12.png',
-        alt: 'Diver filming coral reef with cinematic rig',
-        aspectRatio: 'landscape',
-        caption: 'Underwater story capture',
+        caption: 'Siargao',
       },
     ],
     cta: {
-      label: 'Download journey sheet',
-      href: '/assets/pdfs/Italy - toscane & venise.pdf',
+      label: 'Discuss Philippines',
+      href: 'mailto:hello@beeyondtheworld.com?subject=Philippines%20Journey',
     },
   },
   {
@@ -379,7 +421,7 @@ const allJourneyShowcases: JourneyShowcase[] = [
     title: 'India Palace Circuit',
     headline: 'Couture caravans weaving through Jaipur, Udaipur lakes, and Goan sunsets.',
     locale: 'Jaipur, Udaipur & Goa',
-    timeframe: 'January 2026',
+    timeframe: 'January 1st to October 2nd, 2026',
     summary:
       'A travelling palace narrative captures dawn pujas in Jaipur, mirrored lotus rides in Udaipur, and spice-scented Goa nights. Maison teams co-create with artisans to infuse each frame with royal craft and seaside ease.',
     story: [
@@ -518,7 +560,10 @@ const allJourneyShowcases: JourneyShowcase[] = [
 ];
 
 export const journeyShowcases: JourneyShowcase[] = allJourneyShowcases.filter(
-  (journey) => journey.slug === 'india-january-2026'
+  (journey) =>
+    journey.slug === 'india-january-2026' ||
+    journey.slug === 'philippines' ||
+    journey.slug === 'thailand'
 );
 
 export const campaignShowcases: CampaignShowcase[] = [

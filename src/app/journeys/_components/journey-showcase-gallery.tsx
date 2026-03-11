@@ -3,13 +3,13 @@
 import clsx from 'clsx';
 import useEmblaCarousel from 'embla-carousel-react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
 import Image from 'next/image';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { useBodyScrollLock } from '@/app/concept/_hooks/use-body-scroll-lock';
 import { usePrefersReducedMotion } from '@/app/concept/_hooks/use-prefers-reduced-motion';
+import { SiteArrowIcon } from '@/components/icons/site-arrow-icon';
 import { journeys } from '@/data/journeys-carousel';
 import type { Journey, JourneySeason } from '@/types/journey';
 
@@ -229,9 +229,9 @@ function getJourneyMediaForSeason(journey: Journey, season: SeasonFilterValue) {
 
 function filterJourneys(data: Journey[], season: SeasonFilterValue) {
   const filtered = data.filter((journey) => {
-    const isIndiaDualSeason = journey.slug === 'india-january-2026';
-    if (season === 'summer') return journey.season === 'spring-summer' || isIndiaDualSeason;
-    if (season === 'winter') return journey.season === 'fall-winter' || isIndiaDualSeason;
+    const seasonTags = journey.seasonTags ?? [journey.season];
+    if (season === 'summer') return seasonTags.includes('spring-summer');
+    if (season === 'winter') return seasonTags.includes('fall-winter');
     return true;
   });
 
@@ -439,12 +439,13 @@ export function JourneyShowcaseGallery() {
       if (typeof window !== 'undefined') {
         try {
           window.sessionStorage.setItem('journey-transition-target', journey.slug);
+          const activeMediaSrc = journeyMedia.backgroundVideo ?? journeyMedia.image;
           if (journeyMedia.backgroundVideo && backgroundVideoRef.current) {
             window.sessionStorage.setItem(
               VIDEO_CONTINUITY_STORAGE_KEY,
               JSON.stringify({
                 slug: journey.slug,
-                src: journeyMedia.backgroundVideo,
+                src: activeMediaSrc,
                 season:
                   season === 'summer'
                     ? 'spring-summer'
@@ -455,8 +456,21 @@ export function JourneyShowcaseGallery() {
                 capturedAt: Date.now(),
               })
             );
-          } else {
-            window.sessionStorage.removeItem(VIDEO_CONTINUITY_STORAGE_KEY);
+          } else if (activeMediaSrc) {
+            window.sessionStorage.setItem(
+              VIDEO_CONTINUITY_STORAGE_KEY,
+              JSON.stringify({
+                slug: journey.slug,
+                src: activeMediaSrc,
+                season:
+                  season === 'summer'
+                    ? 'spring-summer'
+                    : season === 'winter'
+                      ? 'fall-winter'
+                      : undefined,
+                capturedAt: Date.now(),
+              })
+            );
           }
         } catch {
           // Ignore storage failures and continue with navigation.
@@ -873,11 +887,14 @@ type SeasonElevatorProps = {
 function SeasonElevator({ value, direction, prefersReducedMotion, onCycle }: SeasonElevatorProps) {
   const option = getSeasonOption(value);
   const hoverIcon = option.hoverIcon ?? option.icon;
+  const [hoveredControl, setHoveredControl] = useState<'prev' | 'next' | 'center' | null>(null);
+  const highlightCenter =
+    hoveredControl === 'prev' || hoveredControl === 'next' || hoveredControl === 'center';
 
   return (
     <motion.div
       layout
-      className="group inline-flex items-center gap-2 text-white drop-shadow-[0_12px_28px_rgba(0,0,0,0.38)] sm:gap-3"
+      className="inline-flex items-center gap-2 text-white drop-shadow-[0_12px_28px_rgba(0,0,0,0.38)] sm:gap-3"
       transition={{
         layout: { duration: prefersReducedMotion ? 0.18 : 0.42, ease: [0.22, 1, 0.36, 1] },
       }}
@@ -886,10 +903,19 @@ function SeasonElevator({ value, direction, prefersReducedMotion, onCycle }: Sea
         layout="position"
         type="button"
         onClick={() => onCycle(-1)}
-        className="flex h-7 w-7 items-center justify-center text-white/45 transition hover:text-[#f6c452] hover:drop-shadow-[0_0_10px_rgba(246,196,82,0.42)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/45 group-hover:text-[#f6c452]"
+        onMouseEnter={() => setHoveredControl('prev')}
+        onMouseLeave={() => setHoveredControl((current) => (current === 'prev' ? null : current))}
+        onFocus={() => setHoveredControl('prev')}
+        onBlur={() => setHoveredControl((current) => (current === 'prev' ? null : current))}
+        className={clsx(
+          'flex h-6 w-6 items-center justify-center transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/45',
+          hoveredControl === 'prev'
+            ? 'text-[#f6c452] drop-shadow-[0_0_10px_rgba(246,196,82,0.42)]'
+            : 'text-white/45'
+        )}
         aria-label="Previous season"
       >
-        <ArrowLeft className="h-4 w-4" aria-hidden />
+        <SiteArrowIcon direction="left" className="h-3.5 w-3.5" />
       </motion.button>
 
       <motion.div layout className="relative flex min-w-0 items-center overflow-hidden">
@@ -909,16 +935,20 @@ function SeasonElevator({ value, direction, prefersReducedMotion, onCycle }: Sea
               ease: [0.22, 1, 0.36, 1],
               layout: { duration: prefersReducedMotion ? 0.18 : 0.42, ease: [0.22, 1, 0.36, 1] },
             }}
-            className="relative flex items-center gap-3 sm:gap-4"
+            onMouseEnter={() => setHoveredControl('center')}
+            onMouseLeave={() =>
+              setHoveredControl((current) => (current === 'center' ? null : current))
+            }
+            className="group/season relative flex items-center gap-2.5 sm:gap-3"
           >
-            <div className="relative h-10 w-10 shrink-0 sm:h-11 sm:w-11">
+            <div className="relative h-8 w-8 shrink-0 sm:h-9 sm:w-9">
               <Image
                 src={option.icon}
                 alt=""
                 fill
                 className={clsx(
                   'object-contain transition-opacity duration-300',
-                  option.hoverIcon ? 'opacity-100 group-hover:opacity-0' : 'opacity-100'
+                  option.hoverIcon && highlightCenter ? 'opacity-0' : 'opacity-100'
                 )}
                 priority
               />
@@ -927,15 +957,18 @@ function SeasonElevator({ value, direction, prefersReducedMotion, onCycle }: Sea
                   src={hoverIcon}
                   alt=""
                   fill
-                  className="object-contain opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                  className={clsx(
+                    'object-contain transition-opacity duration-300',
+                    highlightCenter ? 'opacity-100' : 'opacity-0'
+                  )}
                 />
               ) : null}
             </div>
 
             <span
               className={clsx(
-                'whitespace-nowrap font-display text-[1.1rem] uppercase tracking-[0.14em] text-white transition-colors duration-300 [text-shadow:0_0_18px_rgba(255,255,255,0.35)] sm:text-[1.55rem]',
-                'group-hover:text-[#f6c452]'
+                'whitespace-nowrap font-display text-[0.92rem] uppercase tracking-[0.12em] transition-colors duration-300 [text-shadow:0_0_12px_rgba(255,255,255,0.34),0_12px_28px_rgba(0,0,0,0.34),0_24px_56px_rgba(0,0,0,0.22)] sm:text-[1.24rem]',
+                highlightCenter ? 'text-[#f6c452]' : 'text-white'
               )}
             >
               {option.label}
@@ -948,10 +981,19 @@ function SeasonElevator({ value, direction, prefersReducedMotion, onCycle }: Sea
         layout="position"
         type="button"
         onClick={() => onCycle(1)}
-        className="flex h-7 w-7 items-center justify-center text-white/45 transition hover:text-[#f6c452] hover:drop-shadow-[0_0_10px_rgba(246,196,82,0.42)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/45 group-hover:text-[#f6c452]"
+        onMouseEnter={() => setHoveredControl('next')}
+        onMouseLeave={() => setHoveredControl((current) => (current === 'next' ? null : current))}
+        onFocus={() => setHoveredControl('next')}
+        onBlur={() => setHoveredControl((current) => (current === 'next' ? null : current))}
+        className={clsx(
+          'flex h-6 w-6 items-center justify-center transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/45',
+          hoveredControl === 'next'
+            ? 'text-[#f6c452] drop-shadow-[0_0_10px_rgba(246,196,82,0.42)]'
+            : 'text-white/45'
+        )}
         aria-label="Next season"
       >
-        <ArrowRight className="h-4 w-4" aria-hidden />
+        <SiteArrowIcon direction="right" className="h-3.5 w-3.5" />
       </motion.button>
     </motion.div>
   );
@@ -990,7 +1032,7 @@ function JourneyHeadline({
         >
           <h2
             className={clsx(
-              'font-title uppercase tracking-normal text-white [text-shadow:0_24px_52px_rgba(0,0,0,0.35)]',
+              'font-title uppercase tracking-normal text-white [text-shadow:0_4px_0_rgba(0,0,0,0.36),0_12px_20px_rgba(0,0,0,0.28),0_24px_52px_rgba(0,0,0,0.38),0_40px_88px_rgba(0,0,0,0.3)]',
               compact
                 ? 'text-[clamp(2.15rem,12vw,4.4rem)] leading-[0.82]'
                 : sideAligned
@@ -1002,7 +1044,7 @@ function JourneyHeadline({
           </h2>
           <p
             className={clsx(
-              'mt-0 uppercase tracking-[0.38em] text-white [text-shadow:0_0_18px_rgba(255,255,255,0.48)]',
+              'mt-0 uppercase tracking-[0.38em] text-white [text-shadow:0_2px_0_rgba(0,0,0,0.3),0_8px_14px_rgba(0,0,0,0.24),0_16px_34px_rgba(0,0,0,0.24)]',
               compact ? 'text-[0.56rem]' : 'text-[0.68rem] sm:text-[0.78rem]'
             )}
           >
@@ -1064,7 +1106,7 @@ function JourneyNavigation({
         />
         <span
           className={clsx(
-            'truncate font-display uppercase tracking-[0.14em] text-white [text-shadow:0_0_18px_rgba(255,255,255,0.35)]',
+            'truncate font-display uppercase tracking-[0.14em] text-white [text-shadow:0_0_10px_rgba(255,255,255,0.32),0_12px_28px_rgba(0,0,0,0.34),0_24px_52px_rgba(0,0,0,0.2)]',
             compact ? 'text-[0.7rem]' : 'text-[1.1rem] sm:text-[1.55rem]'
           )}
         >
@@ -1119,8 +1161,6 @@ function JourneyNavButton({
   onClick,
   compact = false,
 }: JourneyNavButtonProps) {
-  const Icon = direction === 'prev' ? ArrowLeft : ArrowRight;
-
   return (
     <button
       type="button"
@@ -1133,7 +1173,8 @@ function JourneyNavButton({
       )}
       aria-label={direction === 'prev' ? 'Previous journey' : 'Next journey'}
     >
-      <Icon
+      <SiteArrowIcon
+        direction={direction === 'prev' ? 'left' : 'right'}
         className={clsx(
           'transition-transform duration-300',
           direction === 'prev' ? 'group-hover:-translate-x-1' : 'group-hover:translate-x-1',
@@ -1157,6 +1198,46 @@ type JourneyCardProps = {
   onAction: () => void;
 };
 
+type SeasonIconScale = 'hero' | 'lead' | 'trail';
+
+function getSeasonIconSizing(compact: boolean, scale: SeasonIconScale) {
+  if (compact) {
+    if (scale === 'hero') {
+      return {
+        gapClass: 'gap-[clamp(0.45rem,1.8vw,0.7rem)]',
+        itemClass: 'h-[clamp(1.45rem,6.9vw,2rem)] w-[clamp(1.45rem,6.9vw,2rem)]',
+      };
+    }
+    if (scale === 'lead') {
+      return {
+        gapClass: 'gap-[clamp(0.4rem,1.55vw,0.62rem)]',
+        itemClass: 'h-[clamp(1.28rem,6vw,1.78rem)] w-[clamp(1.28rem,6vw,1.78rem)]',
+      };
+    }
+    return {
+      gapClass: 'gap-[clamp(0.34rem,1.35vw,0.54rem)]',
+      itemClass: 'h-[clamp(1.1rem,5.2vw,1.52rem)] w-[clamp(1.1rem,5.2vw,1.52rem)]',
+    };
+  }
+
+  if (scale === 'hero') {
+    return {
+      gapClass: 'gap-[clamp(0.5rem,0.85vw,0.82rem)]',
+      itemClass: 'h-[clamp(1.85rem,2.75vw,2.8rem)] w-[clamp(1.85rem,2.75vw,2.8rem)]',
+    };
+  }
+  if (scale === 'lead') {
+    return {
+      gapClass: 'gap-[clamp(0.42rem,0.7vw,0.68rem)]',
+      itemClass: 'h-[clamp(1.58rem,2.2vw,2.28rem)] w-[clamp(1.58rem,2.2vw,2.28rem)]',
+    };
+  }
+  return {
+    gapClass: 'gap-[clamp(0.34rem,0.58vw,0.54rem)]',
+    itemClass: 'h-[clamp(1.32rem,1.7vw,1.88rem)] w-[clamp(1.32rem,1.7vw,1.88rem)]',
+  };
+}
+
 function JourneyCard({
   journey,
   season,
@@ -1173,6 +1254,8 @@ function JourneyCard({
   const seasonTags =
     journey.seasonTags && journey.seasonTags.length > 0 ? journey.seasonTags : [journey.season];
   const displayMedia = getJourneyMediaForSeason(journey, season);
+  const seasonIconScale: SeasonIconScale =
+    forwardOffset === 0 ? 'hero' : forwardOffset === 1 ? 'lead' : 'trail';
 
   return (
     <motion.button
@@ -1283,6 +1366,7 @@ function JourneyCard({
           <SeasonIconRow
             seasons={seasonTags}
             compact={isMobileViewport}
+            scale={seasonIconScale}
             activeFilter={season}
             onSelect={onSeasonSelect}
           />
@@ -1295,16 +1379,20 @@ function JourneyCard({
 function SeasonIconRow({
   seasons,
   compact = false,
+  scale = 'hero',
   activeFilter,
   onSelect,
 }: {
   seasons: JourneySeason[];
   compact?: boolean;
+  scale?: SeasonIconScale;
   activeFilter?: SeasonFilterValue;
   onSelect?: (season: JourneySeason) => void;
 }) {
+  const sizing = getSeasonIconSizing(compact, scale);
+
   return (
-    <div className={clsx('flex items-center justify-center', compact ? 'gap-2.5' : 'gap-3')}>
+    <div className={clsx('flex items-center justify-center', sizing.gapClass)}>
       {seasons.map((season) => {
         const iconSet = JOURNEY_SEASON_ICONS[season];
         const isSelected =
@@ -1316,7 +1404,7 @@ function SeasonIconRow({
         return (
           <span
             key={season}
-            className={clsx('group/season relative shrink-0', compact ? 'h-6 w-6' : 'h-7 w-7')}
+            className={clsx('group/season relative shrink-0', sizing.itemClass)}
             aria-label={iconSet.label}
             role={onSelect ? 'button' : undefined}
             tabIndex={onSelect ? 0 : undefined}

@@ -12,6 +12,7 @@ import { journeyShowcases } from '@/data/showcases';
 
 import { IndiaJourneyLayout } from './_sections/india-journey-layout';
 import { PhilippinesJourneyLayout } from './_sections/philippines-journey-layout';
+import { ThailandJourneyLayout } from './_sections/thailand-journey-layout';
 
 type JourneyPageProps = {
   params: Promise<{ slug: string }>;
@@ -31,6 +32,27 @@ export async function generateMetadata({ params }: JourneyPageProps): Promise<Me
     };
   }
 
+  if (slug === 'india-january-2026') {
+    return {
+      title: 'India - January 1st to October 2nd, 2026',
+      description: journey.summary,
+    };
+  }
+
+  if (slug === 'philippines') {
+    return {
+      title: 'Philippines - From 20th June to 5th October 2026',
+      description: journey.summary,
+    };
+  }
+
+  if (slug === 'thailand') {
+    return {
+      title: 'Thailand - From 20th June to 5th October 2026',
+      description: journey.summary,
+    };
+  }
+
   return {
     title: `${journey.title} - Beeyondtheworld`,
     description: journey.summary,
@@ -43,6 +65,10 @@ export default async function JourneyPage({ params }: JourneyPageProps) {
 
   if (slug === 'philippines') {
     return <PhilippinesJourneyLayout journey={journey} />;
+  }
+
+  if (slug === 'thailand') {
+    return <ThailandJourneyLayout journey={journey} />;
   }
 
   if (slug === 'india-january-2026') {

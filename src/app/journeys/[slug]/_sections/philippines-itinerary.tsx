@@ -1,9 +1,11 @@
 ﻿'use client';
 
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { ChevronRight, MapPin, Navigation2, Waves } from 'lucide-react';
+import { MapPin, Navigation2, Waves } from 'lucide-react';
 import Image from 'next/image';
 import { useMemo, useState } from 'react';
+
+import { SiteArrowIcon } from '@/components/icons/site-arrow-icon';
 
 export type PhilippinesItinerarySegment = {
   id: string;
@@ -53,9 +55,9 @@ export function PhilippinesItinerary({ segments }: PhilippinesItineraryProps) {
                 />
                 {segment.days}
               </span>
-              <ChevronRight
+              <SiteArrowIcon
+                direction="right"
                 className="size-4 text-white/50 transition-transform group-hover:translate-x-1 group-hover:text-white"
-                aria-hidden
               />
               {isActive ? (
                 <motion.span

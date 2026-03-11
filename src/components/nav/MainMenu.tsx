@@ -19,6 +19,7 @@ const triggerBaseClasses =
 export function MainMenu() {
   const pathname = usePathname();
   const isJourneysRoute = pathname === '/journeys';
+  const isContactRoute = pathname === '/contact';
   const [open, setOpen] = React.useState(false);
   const [hasMounted, setHasMounted] = React.useState(false);
   const lastPathnameRef = React.useRef(pathname);
@@ -51,23 +52,33 @@ export function MainMenu() {
               : 'hover:!border-[#f6c452]/55 hover:!bg-[#f6c4521a] hover:!text-white hover:shadow-[0_0_22px_rgba(246,196,82,0.6)] focus-visible:ring-[#f6c452]/60'
           )}
         >
-          <Image
-            src={
-              isJourneysRoute
-                ? '/assets/icones/Ico White BEE-05.svg'
-                : '/assets/icones/Ico Gold BEE-05.svg'
-            }
-            alt=""
-            width={40}
-            height={40}
-            className={cn(
-              'h-11 w-11 transition duration-200',
-              isJourneysRoute
-                ? 'drop-shadow-[0_0_18px_rgba(255,255,255,0.52)]'
-                : 'drop-shadow-[0_0_18px_rgba(246,196,82,0.54)]'
-            )}
-            aria-hidden
-          />
+          <span className="relative block h-11 w-11" aria-hidden>
+            <Image
+              src={
+                isJourneysRoute || isContactRoute
+                  ? '/assets/icones/Ico White BEE-05.svg'
+                  : '/assets/icones/Ico Gold BEE-05.svg'
+              }
+              alt=""
+              width={40}
+              height={40}
+              className={cn(
+                'absolute inset-0 h-11 w-11 object-contain transition duration-200 group-hover:opacity-0',
+                isJourneysRoute || isContactRoute
+                  ? 'drop-shadow-[0_0_18px_rgba(255,255,255,0.52)]'
+                  : 'drop-shadow-[0_0_18px_rgba(246,196,82,0.54)]'
+              )}
+              aria-hidden
+            />
+            <Image
+              src="/assets/icones/Ico Gold BEE-05.svg"
+              alt=""
+              width={40}
+              height={40}
+              className="absolute inset-0 h-11 w-11 object-contain opacity-0 drop-shadow-[0_0_18px_rgba(246,196,82,0.54)] transition duration-200 group-hover:opacity-100"
+              aria-hidden
+            />
+          </span>
           <span className="sr-only">Menu</span>
         </Button>
       </SheetTrigger>

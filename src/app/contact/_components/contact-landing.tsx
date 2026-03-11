@@ -15,6 +15,7 @@ type StepDefinition =
       kind: 'choice';
       options: string[];
       columns?: 2 | 3;
+      allowMultiple?: boolean;
     }
   | {
       id: string;
@@ -33,6 +34,8 @@ type StepDefinition =
       helper: string;
       kind: 'date';
     };
+
+type StepAnswer = string | string[] | Record<string, string>;
 
 const CONTACT_AUDIENCE_ROWS = [
   {
@@ -155,9 +158,11 @@ const AUDIENCE_STEPS: Record<AudienceKey, StepDefinition[]> = {
     {
       id: 'visual-positioning',
       title: 'What visual territory speaks to you most?',
-      helper: 'We use this to imagine the right destination and creative direction.',
+      helper:
+        'We use this to imagine the right destination and creative direction. You can choose multiple options.',
       kind: 'choice',
       columns: 3,
+      allowMultiple: true,
       options: ['NATURE', 'CITY', 'SEA', 'DESERT', 'HOTEL', 'STUDIO', 'MOUNTAIN'],
     },
     {
@@ -181,9 +186,10 @@ const AUDIENCE_STEPS: Record<AudienceKey, StepDefinition[]> = {
     {
       id: 'speciality',
       title: 'What is your speciality?',
-      helper: 'Choose the area you want us to build around.',
+      helper: 'Choose the area you want us to build around. You can choose multiple options.',
       kind: 'choice',
       columns: 3,
+      allowMultiple: true,
       options: [
         'PR',
         'MARKETING',
@@ -261,8 +267,10 @@ const AUDIENCE_STEPS: Record<AudienceKey, StepDefinition[]> = {
     {
       id: 'formats',
       title: 'What kind of collaborations are you looking for?',
-      helper: 'Pick the format that feels closest to your ambition.',
+      helper:
+        'Pick the format that feels closest to your ambition. You can choose multiple options.',
       kind: 'choice',
+      allowMultiple: true,
       options: [
         'CAMPAIGNS',
         'SOCIAL CONTENT',
@@ -275,8 +283,9 @@ const AUDIENCE_STEPS: Record<AudienceKey, StepDefinition[]> = {
     {
       id: 'visual-territory',
       title: 'Which visual territory attracts you most?',
-      helper: 'We use this to orient destinations and storylines.',
+      helper: 'We use this to orient destinations and storylines. You can choose multiple options.',
       kind: 'choice',
+      allowMultiple: true,
       options: ['SEA', 'DESERT', 'NATURE', 'CITY', 'HERITAGE', 'WELLNESS'],
     },
     {
@@ -333,8 +342,10 @@ const AUDIENCE_STEPS: Record<AudienceKey, StepDefinition[]> = {
     {
       id: 'project-type',
       title: 'What projects are you looking for?',
-      helper: 'We will prioritize these opportunities in the call.',
+      helper:
+        'We will prioritize these opportunities in the call. You can choose multiple options.',
       kind: 'choice',
+      allowMultiple: true,
       options: ['CAMPAIGNS', 'EDITORIAL', 'EVENTS', 'CONTENT TRIPS', 'AMBASSADORSHIPS'],
     },
     {
@@ -355,9 +366,11 @@ const AUDIENCE_STEPS: Record<AudienceKey, StepDefinition[]> = {
     {
       id: 'focus',
       title: 'What is your main area of impact?',
-      helper: 'Select the focus that defines your organization best.',
+      helper:
+        'Select the focus that defines your organization best. You can choose multiple options.',
       kind: 'choice',
       columns: 3,
+      allowMultiple: true,
       options: [
         'EDUCATION',
         'SOCIAL',
@@ -449,8 +462,9 @@ const AUDIENCE_STEPS: Record<AudienceKey, StepDefinition[]> = {
     {
       id: 'coverage',
       title: 'What topics are you most interested in?',
-      helper: 'Select the editorial angles you are looking for.',
+      helper: 'Select the editorial angles you are looking for. You can choose multiple options.',
       kind: 'choice',
+      allowMultiple: true,
       options: ['FASHION', 'TRAVEL', 'BEAUTY', 'SUSTAINABILITY', 'CULTURE', 'HOSPITALITY'],
     },
     {
@@ -470,12 +484,16 @@ const AUDIENCE_STEPS: Record<AudienceKey, StepDefinition[]> = {
 };
 
 const stageEase = [0.22, 1, 0.36, 1] as const;
+const heroButtonClass =
+  'group relative inline-flex items-center justify-center overflow-hidden rounded-none border border-white/25 bg-white/10 text-white transition-colors duration-300 [transition-timing-function:var(--bee-ease)] hover:border-white/60 hover:bg-white/15 focus-visible:ring-[#f6c452]/35';
+const audiencePanelMask = 'linear-gradient(to right, transparent 0px, black 132px, black 100%)';
+const stepperPanelMask = 'linear-gradient(to right, transparent 0px, black 132px, black 100%)';
 
 export function ContactLanding() {
   const [stage, setStage] = useState<ContactStage>('entry');
   const [selectedAudience, setSelectedAudience] = useState<AudienceKey | null>(null);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
-  const [answers, setAnswers] = useState<Record<string, string | Record<string, string>>>({});
+  const [answers, setAnswers] = useState<Record<string, StepAnswer>>({});
 
   const currentSteps = useMemo(
     () => (selectedAudience ? AUDIENCE_STEPS[selectedAudience] : []),
@@ -484,11 +502,25 @@ export function ContactLanding() {
   const currentStep = currentSteps[currentStepIndex] ?? null;
   const progress = currentSteps.length > 1 ? currentStepIndex / (currentSteps.length - 1) : 0;
 
-  const setChoiceAnswer = (stepId: string, value: string) => {
-    setAnswers((current) => ({
-      ...current,
-      [stepId]: value,
-    }));
+  const setChoiceAnswer = (step: Extract<StepDefinition, { kind: 'choice' }>, value: string) => {
+    setAnswers((current) => {
+      if (step.allowMultiple) {
+        const previous = Array.isArray(current[step.id]) ? (current[step.id] as string[]) : [];
+        const next = previous.includes(value)
+          ? previous.filter((entry) => entry !== value)
+          : [...previous, value];
+
+        return {
+          ...current,
+          [step.id]: next,
+        };
+      }
+
+      return {
+        ...current,
+        [step.id]: value,
+      };
+    });
   };
 
   const setFieldAnswer = (stepId: string, fieldId: string, value: string) => {
@@ -516,6 +548,10 @@ export function ContactLanding() {
       return;
     }
 
+    if (!isCurrentStepComplete) {
+      return;
+    }
+
     if (currentStepIndex < currentSteps.length - 1) {
       setCurrentStepIndex((value) => value + 1);
     }
@@ -529,6 +565,36 @@ export function ContactLanding() {
 
     setStage('audience');
   };
+
+  const isCurrentStepComplete = useMemo(() => {
+    if (!currentStep) return false;
+
+    const answer = answers[currentStep.id];
+
+    if (currentStep.kind === 'choice') {
+      if (currentStep.allowMultiple) {
+        return Array.isArray(answer) && answer.length > 0;
+      }
+
+      return typeof answer === 'string' && answer.trim().length > 0;
+    }
+
+    if (currentStep.kind === 'fields') {
+      if (!answer || typeof answer !== 'object' || Array.isArray(answer)) return false;
+
+      return currentStep.fields.every((field) => {
+        const value = answer[field.id];
+        return typeof value === 'string' && value.trim().length > 0;
+      });
+    }
+
+    if (!answer || typeof answer !== 'object' || Array.isArray(answer)) return false;
+
+    return ['date', 'time', 'whatsapp'].every((fieldId) => {
+      const value = answer[fieldId];
+      return typeof value === 'string' && value.trim().length > 0;
+    });
+  }, [answers, currentStep]);
 
   return (
     <main className="relative h-[100svh] overflow-hidden bg-[#d8ccb8] text-white">
@@ -580,9 +646,13 @@ export function ContactLanding() {
               <button
                 type="button"
                 onClick={() => setStage('audience')}
-                className="hover:bg-white/8 mt-6 inline-flex min-w-[220px] items-center justify-center border border-white/80 bg-transparent px-7 py-3 text-center text-[0.62rem] uppercase tracking-[0.35em] text-white transition duration-300 [font-family:var(--font-adam)] [text-shadow:0_0_14px_rgba(255,255,255,0.32),0_0_28px_rgba(255,255,255,0.12)] hover:border-white sm:mt-7 sm:min-w-[260px] sm:text-[0.7rem]"
+                className={`${heroButtonClass} mt-6 min-w-[220px] px-7 py-3 text-center text-[0.62rem] uppercase tracking-[0.35em] [font-family:var(--font-adam)] [text-shadow:0_0_14px_rgba(255,255,255,0.32),0_0_28px_rgba(255,255,255,0.12)] sm:mt-7 sm:min-w-[260px] sm:text-[0.7rem]`}
               >
-                BEGIN THE JOURNEY
+                <span
+                  aria-hidden
+                  className="pointer-events-none absolute inset-0 z-0 -translate-x-full bg-gradient-to-r from-transparent via-[#f6c452bf] to-transparent opacity-0 transition-transform duration-500 group-hover:translate-x-full group-hover:opacity-100"
+                />
+                <span className="relative z-10">BEGIN THE JOURNEY</span>
               </button>
             </motion.div>
           </motion.section>
@@ -604,45 +674,41 @@ export function ContactLanding() {
                 transition={{ duration: 0.95, ease: stageEase }}
                 className="hidden min-h-0 items-center justify-center px-5 py-8 sm:px-8 sm:py-10 lg:flex lg:justify-start lg:px-10 lg:py-12"
               >
-                <div className="flex h-full w-full max-w-[34rem] flex-col justify-start pt-[7svh] text-center lg:text-left">
-                  <p className="text-white/82 mb-[14svh] text-[0.68rem] uppercase tracking-[0.34em] [font-family:var(--font-adam)] [text-shadow:0_0_12px_rgba(255,255,255,0.3),0_0_22px_rgba(255,255,255,0.12)]">
-                    WELCOME TO THE HIVE
-                  </p>
-                  <div className="space-y-1">
-                    <h2 className="text-[clamp(3.6rem,10vw,7.6rem)] uppercase leading-[0.84] tracking-[0.02em] text-white [font-family:var(--font-cannia)] [text-shadow:0_0_22px_rgba(255,255,255,0.42),0_0_44px_rgba(255,255,255,0.18)]">
-                      CREATE
-                    </h2>
-                    <p className="text-white/94 text-[clamp(1.2rem,3vw,2.1rem)] lowercase italic leading-none tracking-[0.01em] [font-family:var(--font-cannia)] [text-shadow:0_0_18px_rgba(255,255,255,0.32),0_0_34px_rgba(255,255,255,0.12)]">
-                      beeyondthehorizons
-                    </p>
-                  </div>
-                </div>
+                <div className="h-full w-full" />
               </motion.div>
 
               <motion.div
                 initial={{ opacity: 0, x: 42, y: 18, filter: 'blur(14px)' }}
                 animate={{ opacity: 1, x: 0, y: 0, filter: 'blur(0px)' }}
                 transition={{ duration: 1.05, delay: 0.08, ease: stageEase }}
-                className="lg:border-white/18 relative flex min-h-0 items-stretch justify-center overflow-hidden lg:border-l"
+                className="relative flex min-h-0 items-stretch justify-center overflow-hidden"
               >
-                <Image
-                  src="/assets/contact/contact-you-are.jpg"
-                  alt="You are background"
-                  fill
-                  priority
-                  quality={100}
-                  unoptimized
-                  className="object-cover object-center"
-                  sizes="(min-width: 1024px) 50vw, 100vw"
-                />
-                <div className="relative z-10 flex h-full w-full flex-col px-5 py-8 sm:px-8 sm:py-10 lg:px-10 lg:py-12">
-                  <div className="pt-[7svh] text-center lg:pl-[7%] lg:pt-[22svh] lg:text-center">
-                    <h2 className="text-[clamp(3.25rem,8vw,6.8rem)] uppercase leading-[0.88] tracking-[0.02em] text-white [font-family:var(--font-cannia)] [text-shadow:0_0_22px_rgba(255,255,255,0.42),0_0_44px_rgba(255,255,255,0.18)]">
-                      YOU ARE
-                    </h2>
+                <div
+                  className="relative z-10 flex h-full w-full flex-col overflow-hidden border border-[rgba(255,244,227,0.18)] bg-[linear-gradient(180deg,rgba(8,8,8,0.32)_0%,rgba(12,12,12,0.24)_34%,rgba(16,16,16,0.2)_100%)] px-5 py-8 shadow-[inset_0_1px_0_rgba(255,255,255,0.12),inset_0_-1px_0_rgba(255,255,255,0.04),0_24px_80px_rgba(0,0,0,0.34)] backdrop-blur-[34px] sm:px-8 sm:py-10 lg:px-10 lg:py-12"
+                  style={{
+                    WebkitMaskImage: audiencePanelMask,
+                    maskImage: audiencePanelMask,
+                  }}
+                >
+                  <span
+                    aria-hidden
+                    className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_14%,rgba(255,255,255,0.14)_0%,rgba(255,255,255,0.05)_18%,rgba(255,255,255,0)_42%),linear-gradient(135deg,rgba(255,255,255,0.08)_0%,rgba(255,255,255,0)_36%)]"
+                  />
+                  <div className="pt-[7svh] text-center lg:pl-[7%] lg:pt-[18svh] lg:text-center">
+                    <p className="text-white/82 text-[0.68rem] uppercase tracking-[0.34em] [font-family:var(--font-adam)] [text-shadow:0_0_12px_rgba(255,255,255,0.3),0_0_22px_rgba(255,255,255,0.12)]">
+                      WELCOME TO THE HIVE
+                    </p>
+                    <div className="mt-4 space-y-1">
+                      <h2 className="text-[clamp(3.25rem,8vw,6.8rem)] uppercase leading-[0.88] tracking-[0.02em] text-white [font-family:var(--font-cannia)] [text-shadow:0_0_22px_rgba(255,255,255,0.42),0_0_44px_rgba(255,255,255,0.18)]">
+                        CREATE
+                      </h2>
+                      <p className="text-white/94 text-[clamp(0.62rem,1.15vw,0.84rem)] uppercase leading-none tracking-[0.28em] [font-family:var(--font-adam)] [text-shadow:0_0_18px_rgba(255,255,255,0.32),0_0_34px_rgba(255,255,255,0.12)]">
+                        BEEYOND THE HORIZONS
+                      </p>
+                    </div>
                   </div>
 
-                  <div className="mt-[16svh] flex flex-1 items-start justify-center lg:mt-[14svh] lg:flex-none lg:justify-center">
+                  <div className="mt-[14svh] flex flex-1 items-start justify-center lg:mt-[12svh] lg:flex-none lg:justify-center">
                     <div className="w-full max-w-[38rem] space-y-6 sm:space-y-7">
                       {CONTACT_AUDIENCE_ROWS.map((row, index) => (
                         <motion.div
@@ -654,10 +720,10 @@ export function ContactLanding() {
                             delay: 0.12 + index * 0.08,
                             ease: stageEase,
                           }}
-                          className="grid grid-cols-[3.6rem_minmax(0,1fr)] items-center gap-4 sm:grid-cols-[4.2rem_minmax(0,1fr)] sm:gap-5"
+                          className="relative flex items-center justify-center"
                         >
-                          <div className="flex justify-center lg:justify-start">
-                            <div className="relative h-10 w-10 sm:h-12 sm:w-12">
+                          <div className="absolute left-0 top-1/2 flex -translate-y-1/2 justify-center">
+                            <div className="relative h-12 w-12 sm:h-14 sm:w-14">
                               <Image
                                 src={
                                   selectedAudience === row.left || selectedAudience === row.right
@@ -671,13 +737,13 @@ export function ContactLanding() {
                             </div>
                           </div>
 
-                          <div className="grid grid-cols-2 gap-x-10 gap-y-4">
+                          <div className="grid w-full max-w-[24rem] grid-cols-2 gap-x-10 gap-y-4 sm:max-w-[26rem]">
                             {[row.left, row.right].map((label) => (
                               <button
                                 key={label}
                                 type="button"
                                 onClick={() => setSelectedAudience(label as AudienceKey)}
-                                className={`group inline-flex w-fit justify-start border-b pb-1 text-left text-[0.98rem] uppercase tracking-[0.28em] transition duration-300 [font-family:var(--font-adam)] [text-shadow:0_0_12px_rgba(255,255,255,0.28),0_0_24px_rgba(255,255,255,0.1)] sm:text-[1.08rem] ${
+                                className={`group inline-flex w-fit justify-self-center border-b pb-1 text-center text-[0.98rem] uppercase tracking-[0.28em] transition duration-300 [font-family:var(--font-adam)] [text-shadow:0_0_12px_rgba(255,255,255,0.28),0_0_24px_rgba(255,255,255,0.1)] sm:text-[1.08rem] ${
                                   selectedAudience === label
                                     ? 'border-[#f4bb52] text-[#f4bb52] [text-shadow:0_0_16px_rgba(244,187,82,0.5),0_0_30px_rgba(244,187,82,0.18)]'
                                     : 'text-white/88 border-transparent hover:border-[#f4bb52]/80 hover:text-[#f4bb52] hover:[text-shadow:0_0_16px_rgba(244,187,82,0.4),0_0_30px_rgba(244,187,82,0.14)]'
@@ -704,9 +770,13 @@ export function ContactLanding() {
                         <button
                           type="button"
                           onClick={confirmAudience}
-                          className="bg-white/8 hover:bg-white/14 inline-flex min-w-[180px] items-center justify-center border border-white/80 px-6 py-3 text-center text-[0.62rem] uppercase tracking-[0.34em] text-white transition duration-300 [font-family:var(--font-adam)] [text-shadow:0_0_14px_rgba(255,255,255,0.32),0_0_28px_rgba(255,255,255,0.12)] sm:min-w-[220px] sm:text-[0.7rem]"
+                          className={`${heroButtonClass} min-w-[180px] px-6 py-3 text-center text-[0.62rem] uppercase tracking-[0.34em] [font-family:var(--font-adam)] [text-shadow:0_0_14px_rgba(255,255,255,0.32),0_0_28px_rgba(255,255,255,0.12)] sm:min-w-[220px] sm:text-[0.7rem]`}
                         >
-                          CONFIRM
+                          <span
+                            aria-hidden
+                            className="pointer-events-none absolute inset-0 z-0 -translate-x-full bg-gradient-to-r from-transparent via-[#f6c452bf] to-transparent opacity-0 transition-transform duration-500 group-hover:translate-x-full group-hover:opacity-100"
+                          />
+                          <span className="relative z-10">CONFIRM</span>
                         </button>
                       </motion.div>
                     ) : null}
@@ -733,22 +803,19 @@ export function ContactLanding() {
                 transition={{ duration: 0.8, ease: stageEase }}
                 className="hidden h-full flex-col justify-between px-10 py-12 lg:flex"
               >
-                <div className="space-y-5 pt-[12svh]">
+                <div className="hidden space-y-5 pt-[12svh]">
                   <p className="text-white/82 text-[0.68rem] uppercase tracking-[0.34em] [font-family:var(--font-adam)] [text-shadow:0_0_12px_rgba(255,255,255,0.3),0_0_22px_rgba(255,255,255,0.12)]">
                     {AUDIENCE_INTROS[selectedAudience].eyebrow}
                   </p>
                   <h2 className="text-[clamp(3.6rem,8vw,6.6rem)] uppercase leading-[0.88] tracking-[0.02em] text-white [font-family:var(--font-cannia)] [text-shadow:0_0_22px_rgba(255,255,255,0.42),0_0_44px_rgba(255,255,255,0.18)]">
                     {AUDIENCE_INTROS[selectedAudience].title}
                   </h2>
-                  <p className="text-white/78 max-w-[28rem] text-[1rem] leading-relaxed [text-shadow:0_0_10px_rgba(255,255,255,0.18)]">
-                    {AUDIENCE_INTROS[selectedAudience].body}
-                  </p>
                 </div>
 
                 <button
                   type="button"
                   onClick={() => setStage('audience')}
-                  className="text-white/82 inline-flex w-fit items-center gap-3 text-[0.68rem] uppercase tracking-[0.28em] transition duration-300 [font-family:var(--font-adam)] [text-shadow:0_0_12px_rgba(255,255,255,0.28),0_0_24px_rgba(255,255,255,0.1)] hover:text-white"
+                  className="text-white/82 inline-flex hidden w-fit items-center gap-3 text-[0.68rem] uppercase tracking-[0.28em] transition duration-300 [font-family:var(--font-adam)] [text-shadow:0_0_12px_rgba(255,255,255,0.28),0_0_24px_rgba(255,255,255,0.1)] hover:text-white"
                 >
                   <span className="text-lg leading-none">←</span>
                   Change Profile
@@ -761,19 +828,20 @@ export function ContactLanding() {
                 transition={{ duration: 0.9, ease: stageEase }}
                 className="relative flex h-full min-h-0 flex-col overflow-hidden"
               >
-                <Image
-                  src="/assets/contact/contact-stepper.jpg"
-                  alt="Questionnaire background"
-                  fill
-                  priority
-                  quality={100}
-                  unoptimized
-                  className="object-cover object-center"
-                  sizes="(min-width: 1024px) 55vw, 100vw"
-                />
-                <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(18,13,9,0.16)_0%,rgba(18,13,9,0.12)_28%,rgba(18,13,9,0.34)_100%)]" />
-
-                <div className="relative z-10 flex h-full min-h-0 flex-col px-5 py-8 sm:px-8 sm:py-10 lg:px-12 lg:py-10">
+                <motion.div
+                  className="relative z-10 flex h-full min-h-0 w-full flex-col overflow-hidden border border-[rgba(255,244,227,0.18)] bg-[linear-gradient(180deg,rgba(8,8,8,0.32)_0%,rgba(12,12,12,0.24)_34%,rgba(16,16,16,0.2)_100%)] px-5 py-8 shadow-[inset_0_1px_0_rgba(255,255,255,0.12),inset_0_-1px_0_rgba(255,255,255,0.04),0_24px_80px_rgba(0,0,0,0.34)] backdrop-blur-[34px] sm:px-8 sm:py-10 lg:px-12 lg:py-10"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.75, ease: stageEase }}
+                  style={{
+                    WebkitMaskImage: stepperPanelMask,
+                    maskImage: stepperPanelMask,
+                  }}
+                >
+                  <span
+                    aria-hidden
+                    className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_14%,rgba(255,255,255,0.14)_0%,rgba(255,255,255,0.05)_18%,rgba(255,255,255,0)_42%),linear-gradient(135deg,rgba(255,255,255,0.08)_0%,rgba(255,255,255,0)_36%)]"
+                  />
                   <div className="mx-auto w-full max-w-[44rem] pt-4 lg:pt-8">
                     <div className="mb-5 text-center lg:hidden">
                       <p className="text-white/82 text-[0.62rem] uppercase tracking-[0.34em] [font-family:var(--font-adam)]">
@@ -808,16 +876,10 @@ export function ContactLanding() {
                         />
                       </motion.div>
                     </div>
-
-                    <div className="mt-4 text-center">
-                      <p className="text-white/72 text-[0.62rem] uppercase tracking-[0.32em] [font-family:var(--font-adam)] [text-shadow:0_0_10px_rgba(255,255,255,0.18)]">
-                        Step {currentStepIndex + 1} of {currentSteps.length}
-                      </p>
-                    </div>
                   </div>
 
                   <div className="flex min-h-0 flex-1 items-center justify-center py-6 lg:py-8">
-                    <div className="border-white/18 w-full max-w-[44rem] rounded-[2rem] border bg-[rgba(20,14,10,0.18)] px-5 py-6 backdrop-blur-[10px] sm:px-8 sm:py-8 lg:px-10 lg:py-10">
+                    <div className="w-full max-w-[44rem] px-5 py-6 sm:px-8 sm:py-8 lg:px-10 lg:py-10">
                       <AnimatePresence mode="wait" initial={false}>
                         <motion.div
                           key={currentStep.id}
@@ -843,20 +905,27 @@ export function ContactLanding() {
                                   : 'grid-cols-1 sm:grid-cols-2'
                               }`}
                             >
-                              {currentStep.options.map((option) => (
-                                <button
-                                  key={option}
-                                  type="button"
-                                  onClick={() => setChoiceAnswer(currentStep.id, option)}
-                                  className={`min-h-[4.25rem] rounded-[1.4rem] border px-4 py-4 text-center text-[0.74rem] uppercase tracking-[0.24em] transition duration-300 [font-family:var(--font-adam)] sm:text-[0.82rem] ${
-                                    answers[currentStep.id] === option
-                                      ? 'border-[#f4bb52] bg-[rgba(244,187,82,0.14)] text-[#f4bb52] [box-shadow:0_0_28px_rgba(244,187,82,0.16)]'
-                                      : 'border-white/16 bg-white/6 hover:border-white/42 text-white/90 hover:bg-white/10'
-                                  }`}
-                                >
-                                  {option}
-                                </button>
-                              ))}
+                              {currentStep.options.map((option) => {
+                                const isSelected = currentStep.allowMultiple
+                                  ? Array.isArray(answers[currentStep.id]) &&
+                                    (answers[currentStep.id] as string[]).includes(option)
+                                  : answers[currentStep.id] === option;
+
+                                return (
+                                  <button
+                                    key={option}
+                                    type="button"
+                                    onClick={() => setChoiceAnswer(currentStep, option)}
+                                    className={`min-h-[4.25rem] rounded-none border px-4 py-4 text-center text-[0.74rem] uppercase tracking-[0.24em] transition duration-300 [font-family:var(--font-adam)] sm:text-[0.82rem] ${
+                                      isSelected
+                                        ? 'border-[#f4bb52] bg-[rgba(244,187,82,0.12)] text-white [box-shadow:0_0_28px_rgba(244,187,82,0.14)]'
+                                        : 'text-white/92 border-transparent bg-[rgba(244,187,82,0.09)] hover:border-[rgba(255,244,227,0.14)] hover:bg-[rgba(244,187,82,0.13)]'
+                                    }`}
+                                  >
+                                    {option}
+                                  </button>
+                                );
+                              })}
                             </div>
                           ) : null}
 
@@ -877,7 +946,7 @@ export function ContactLanding() {
                                       setFieldAnswer(currentStep.id, field.id, event.target.value)
                                     }
                                     placeholder={field.placeholder}
-                                    className="border-white/18 bg-white/8 h-14 rounded-[1.1rem] border px-4 text-sm text-white outline-none transition duration-300 placeholder:text-white/45 focus:border-[#f4bb52] focus:bg-white/10"
+                                    className="placeholder:text-white/42 h-14 rounded-[1.1rem] border border-[rgba(255,244,227,0.12)] bg-[rgba(18,12,9,0.16)] px-4 text-sm text-white outline-none transition duration-300 focus:border-[#f4bb52] focus:bg-[rgba(18,12,9,0.22)]"
                                   />
                                 </label>
                               ))}
@@ -892,11 +961,50 @@ export function ContactLanding() {
                                 </span>
                                 <input
                                   type="date"
-                                  value={(answers[currentStep.id] as string | undefined) ?? ''}
-                                  onChange={(event) =>
-                                    setChoiceAnswer(currentStep.id, event.target.value)
+                                  value={
+                                    ((answers[currentStep.id] as
+                                      | Record<string, string>
+                                      | undefined) ?? {})['date'] ?? ''
                                   }
-                                  className="border-white/18 bg-white/8 h-16 rounded-[1.2rem] border px-5 text-center text-base text-white outline-none transition duration-300 focus:border-[#f4bb52] focus:bg-white/10"
+                                  onChange={(event) =>
+                                    setFieldAnswer(currentStep.id, 'date', event.target.value)
+                                  }
+                                  className="h-16 rounded-[1.2rem] border border-[rgba(255,244,227,0.12)] bg-[rgba(18,12,9,0.16)] px-5 text-center text-base text-white outline-none transition duration-300 focus:border-[#f4bb52] focus:bg-[rgba(18,12,9,0.22)]"
+                                />
+                              </label>
+                              <label className="mt-4 flex flex-col gap-3">
+                                <span className="text-center text-[0.62rem] uppercase tracking-[0.26em] text-white/70 [font-family:var(--font-adam)]">
+                                  Availability Time
+                                </span>
+                                <input
+                                  type="time"
+                                  value={
+                                    ((answers[currentStep.id] as
+                                      | Record<string, string>
+                                      | undefined) ?? {})['time'] ?? ''
+                                  }
+                                  onChange={(event) =>
+                                    setFieldAnswer(currentStep.id, 'time', event.target.value)
+                                  }
+                                  className="h-16 rounded-[1.2rem] border border-[rgba(255,244,227,0.12)] bg-[rgba(18,12,9,0.16)] px-5 text-center text-base text-white outline-none transition duration-300 focus:border-[#f4bb52] focus:bg-[rgba(18,12,9,0.22)]"
+                                />
+                              </label>
+                              <label className="mt-4 flex flex-col gap-3">
+                                <span className="text-center text-[0.62rem] uppercase tracking-[0.26em] text-white/70 [font-family:var(--font-adam)]">
+                                  WhatsApp Number
+                                </span>
+                                <input
+                                  type="tel"
+                                  value={
+                                    ((answers[currentStep.id] as
+                                      | Record<string, string>
+                                      | undefined) ?? {})['whatsapp'] ?? ''
+                                  }
+                                  onChange={(event) =>
+                                    setFieldAnswer(currentStep.id, 'whatsapp', event.target.value)
+                                  }
+                                  placeholder="+33 6 12 34 56 78"
+                                  className="placeholder:text-white/42 h-16 rounded-[1.2rem] border border-[rgba(255,244,227,0.12)] bg-[rgba(18,12,9,0.16)] px-5 text-center text-base text-white outline-none transition duration-300 focus:border-[#f4bb52] focus:bg-[rgba(18,12,9,0.22)]"
                                 />
                               </label>
                             </div>
@@ -910,20 +1018,34 @@ export function ContactLanding() {
                     <button
                       type="button"
                       onClick={goToPreviousStep}
-                      className="border-white/28 bg-white/6 hover:bg-white/12 inline-flex min-w-[132px] items-center justify-center border px-5 py-3 text-[0.66rem] uppercase tracking-[0.3em] text-white transition duration-300 [font-family:var(--font-adam)]"
+                      className={`${heroButtonClass} min-w-[132px] px-5 py-3 text-[0.66rem] uppercase tracking-[0.3em] [font-family:var(--font-adam)]`}
                     >
-                      Back
+                      <span
+                        aria-hidden
+                        className="pointer-events-none absolute inset-0 z-0 -translate-x-full bg-gradient-to-r from-transparent via-[#f6c452bf] to-transparent opacity-0 transition-transform duration-500 group-hover:translate-x-full group-hover:opacity-100"
+                      />
+                      <span className="relative z-10">Back</span>
                     </button>
                     <button
                       type="button"
                       onClick={goToNextStep}
-                      disabled={currentStepIndex === currentSteps.length - 1}
-                      className="inline-flex min-w-[152px] items-center justify-center border border-[#f4bb52] bg-[rgba(244,187,82,0.14)] px-5 py-3 text-[0.66rem] uppercase tracking-[0.3em] text-[#f4bb52] transition duration-300 [font-family:var(--font-adam)] hover:bg-[rgba(244,187,82,0.2)] disabled:cursor-not-allowed disabled:opacity-45"
+                      disabled={
+                        currentStepIndex === currentSteps.length - 1 || !isCurrentStepComplete
+                      }
+                      className={`${heroButtonClass} min-w-[152px] px-5 py-3 text-[0.66rem] uppercase tracking-[0.3em] [font-family:var(--font-adam)] disabled:cursor-not-allowed disabled:opacity-45`}
                     >
-                      {currentStepIndex === currentSteps.length - 1 ? 'Meeting Ready' : 'Continue'}
+                      <span
+                        aria-hidden
+                        className="pointer-events-none absolute inset-0 z-0 -translate-x-full bg-gradient-to-r from-transparent via-[#f6c452bf] to-transparent opacity-0 transition-transform duration-500 group-hover:translate-x-full group-hover:opacity-100"
+                      />
+                      <span className="relative z-10">
+                        {currentStepIndex === currentSteps.length - 1
+                          ? 'Meeting Ready'
+                          : 'Continue'}
+                      </span>
                     </button>
                   </div>
-                </div>
+                </motion.div>
               </motion.div>
             </div>
           </motion.section>

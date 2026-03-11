@@ -174,7 +174,6 @@ export default function HomePageContent({
   const manifestoLines = useMemo(
     () => [
       'we believe in innovation that reveals new horizons where our eyes once perceived only boundaries.',
-      'we believe that less you talk, more you are.',
       "it's all about dreams, perceptions and worldwide communities.",
       'we shape a collaborative ecosystem where each brand maintains its uniqueness while collectively contributing to a better world.',
       'we dream, we create, we are beeyond the world.',
