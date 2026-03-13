@@ -3,277 +3,258 @@
 import clsx from 'clsx';
 import useEmblaCarousel from 'embla-carousel-react';
 import { AnimatePresence, motion } from 'framer-motion';
-import {
-  Brush,
-  Calendar,
-  Camera,
-  Check,
-  Clapperboard,
-  Filter,
-  Gem,
-  Globe,
-  PenSquare,
-  Search,
-  Tag,
-  UserCircle,
-  Users,
-  X,
-} from 'lucide-react';
 import Image from 'next/image';
-import { useRouter, useSearchParams } from 'next/navigation';
-import type { ReadonlyURLSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { useBodyScrollLock } from '@/app/concept/_hooks/use-body-scroll-lock';
 import { usePrefersReducedMotion } from '@/app/concept/_hooks/use-prefers-reduced-motion';
 import { SiteArrowIcon } from '@/components/icons/site-arrow-icon';
 import { campaigns } from '@/data/campaigns-carousel';
-import { SmartVideo } from '@/components/primitives/smart-video';
 import type { Campaign } from '@/types/campaign';
 
-const REVEAL_TRANSITION = { duration: 0.6, ease: [0.33, 1, 0.68, 1] } as const;
+type SeasonFilterValue = 'all' | 'summer' | 'winter';
 
-const VIDEO_SOURCES = [
-  { src: '/assets/concept/sustainable.mp4', type: 'video/mp4' },
-  { src: '/assets/concept/sustainable.webm', type: 'video/webm' },
+type SeasonOption = {
+  label: string;
+  value: SeasonFilterValue;
+  icon: string;
+  hoverIcon?: string;
+  season?: Campaign['season'];
+};
+
+type RenderedCampaignSlide = {
+  campaign: Campaign;
+  sourceIndex: number;
+  renderKey: string;
+};
+
+const SEASON_OPTIONS: SeasonOption[] = [
+  {
+    label: 'All Campaigns',
+    value: 'all',
+    icon: '/assets/icones/Ico White BEE-02.svg',
+    hoverIcon: '/assets/icones/Ico Gold BEE-02.svg',
+  },
+  {
+    label: 'Spring Summer',
+    value: 'summer',
+    season: 'spring-summer',
+    icon: '/assets/icones/Ico White BEE-14.svg',
+    hoverIcon: '/assets/icones/Ico Gold BEE-14.svg',
+  },
+  {
+    label: 'Fall Winter',
+    value: 'winter',
+    season: 'fall-winter',
+    icon: '/assets/icones/Ico White BEE-01.svg',
+    hoverIcon: '/assets/icones/Ico Gold BEE-01.svg',
+  },
 ];
 
-const VIDEO_POSTER = '/assets/concept/sustainable-poster.png';
-
-type IconComponent = typeof Brush;
-
-type ArrayFilterKey =
-  | 'shootYears'
-  | 'countries'
-  | 'brands'
-  | 'brandTypes'
-  | 'artDirectors'
-  | 'talents'
-  | 'dops'
-  | 'productionTeam'
-  | 'models'
-  | 'makeupArtists';
-
-type FiltersState = {
-  shootYears: string[];
-  countries: string[];
-  brands: string[];
-  brandTypes: string[];
-  artDirectors: string[];
-  talents: string[];
-  dops: string[];
-  productionTeam: string[];
-  models: string[];
-  makeupArtists: string[];
-  search: string;
+const CAMPAIGN_SEASON_ICONS: Record<Campaign['season'], { icon: string; label: string }> = {
+  'spring-summer': {
+    icon: '/assets/icones/Ico White BEE-14.svg',
+    label: 'Spring Summer',
+  },
+  'fall-winter': {
+    icon: '/assets/icones/Ico White BEE-01.svg',
+    label: 'Fall Winter',
+  },
 };
 
-type FilterDropdownOption = {
-  value: string;
-  label: string;
-  icon?: IconComponent;
+const MONTH_INDEX: Record<string, number> = {
+  january: 1,
+  february: 2,
+  march: 3,
+  april: 4,
+  may: 5,
+  june: 6,
+  july: 7,
+  august: 8,
+  september: 9,
+  october: 10,
+  november: 11,
+  december: 12,
 };
 
-type FilterDefinition = {
-  key: ArrayFilterKey;
-  label: string;
-  icon: IconComponent;
-  options: FilterDropdownOption[];
-};
+const CAMPAIGN_TRANSITION_FADE_MS = 980;
 
-const sortAlpha = (a: string, b: string) => a.localeCompare(b);
-const sortNumericDesc = (a: string, b: string) => Number(b) - Number(a);
-
-function createOptions(values: string[], sortFn: (a: string, b: string) => number = sortAlpha) {
-  return Array.from(
-    new Set(values.map((value) => value.trim()).filter((value) => value.length > 0))
-  )
-    .sort(sortFn)
-    .map((value) => ({ value, label: value }));
+function parseSeasonFilter(value: string | null): SeasonFilterValue {
+  if (value === 'summer') return 'summer';
+  if (value === 'winter') return 'winter';
+  return 'all';
 }
 
-const SHOOT_YEAR_OPTIONS = createOptions(
-  campaigns.map((campaign) => String(campaign.shootYear)),
-  sortNumericDesc
-);
-const COUNTRY_OPTIONS = createOptions(campaigns.map((campaign) => campaign.country));
-const BRAND_OPTIONS = createOptions(campaigns.map((campaign) => campaign.client));
-const BRAND_TYPE_OPTIONS = createOptions(campaigns.map((campaign) => campaign.brandType));
-const ART_DIRECTOR_OPTIONS = createOptions(campaigns.map((campaign) => campaign.artDirector));
-const TALENT_OPTIONS = createOptions(campaigns.map((campaign) => campaign.talent));
-const DOP_OPTIONS = createOptions(campaigns.map((campaign) => campaign.dop));
-const PRODUCTION_TEAM_OPTIONS = createOptions(
-  campaigns.flatMap((campaign) => campaign.productionTeam)
-);
-const MODEL_OPTIONS = createOptions(campaigns.flatMap((campaign) => campaign.models));
-const MAKEUP_ARTIST_OPTIONS = createOptions(
-  campaigns.flatMap((campaign) => campaign.makeupArtists)
-);
+function getSeasonOption(value: SeasonFilterValue) {
+  return SEASON_OPTIONS.find((option) => option.value === value) ?? SEASON_OPTIONS[0];
+}
 
-const FILTER_DEFINITIONS: FilterDefinition[] = [
-  { key: 'shootYears', label: 'Year', icon: Calendar, options: SHOOT_YEAR_OPTIONS },
-  { key: 'countries', label: 'Country', icon: Globe, options: COUNTRY_OPTIONS },
-  { key: 'brands', label: 'Brand', icon: Gem, options: BRAND_OPTIONS },
-  { key: 'brandTypes', label: 'Brand Type', icon: Tag, options: BRAND_TYPE_OPTIONS },
-  { key: 'artDirectors', label: 'DA', icon: PenSquare, options: ART_DIRECTOR_OPTIONS },
-  { key: 'talents', label: 'Talent', icon: Camera, options: TALENT_OPTIONS },
-  { key: 'dops', label: 'DOP', icon: Clapperboard, options: DOP_OPTIONS },
-  { key: 'productionTeam', label: 'Production', icon: Users, options: PRODUCTION_TEAM_OPTIONS },
-  { key: 'models', label: 'Models', icon: UserCircle, options: MODEL_OPTIONS },
-  { key: 'makeupArtists', label: 'MUA', icon: Brush, options: MAKEUP_ARTIST_OPTIONS },
-];
+function getSeasonIndex(value: SeasonFilterValue) {
+  return SEASON_OPTIONS.findIndex((option) => option.value === value);
+}
 
-function createEmptyFilters(): FiltersState {
+function getSeasonDirection(from: SeasonFilterValue, to: SeasonFilterValue) {
+  const fromIndex = getSeasonIndex(from);
+  const toIndex = getSeasonIndex(to);
+  return toIndex > fromIndex ? 1 : -1;
+}
+
+function getForwardOffset(index: number, activeIndex: number, total: number) {
+  if (total <= 0) return 0;
+  return (index - activeIndex + total) % total;
+}
+
+function getDesktopSlideBasisClass(forwardOffset: number) {
+  if (forwardOffset === 0) {
+    return 'md:flex-[0_0_calc((100%-(var(--journey-gap)*3))*0.4)]';
+  }
+  if (forwardOffset === 1) {
+    return 'md:flex-[0_0_calc((100%-(var(--journey-gap)*3))*0.27)]';
+  }
+  if (forwardOffset === 2) {
+    return 'md:flex-[0_0_calc((100%-(var(--journey-gap)*3))*0.23)]';
+  }
+  return 'md:flex-[0_0_calc((100%-(var(--journey-gap)*3))*0.18)]';
+}
+
+function getCardFadeProfile(
+  forwardOffset: number,
+  isMobileViewport: boolean,
+  useLiteEffects: boolean
+) {
+  if (isMobileViewport) {
+    return {
+      opacity: forwardOffset === 0 ? 1 : 0.86,
+      y: 0,
+      scale: forwardOffset === 0 ? 1 : 0.985,
+      imageScale: forwardOffset === 0 ? 1.02 : 1.05,
+      imageFilter:
+        forwardOffset === 0 ? 'saturate(1) brightness(1)' : 'saturate(0.9) brightness(0.9)',
+      overlayOpacity: forwardOffset === 0 ? 0.14 : 0.26,
+      hoverBoost: 0.018,
+    };
+  }
+
+  if (forwardOffset === 0) {
+    return {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      imageScale: 1.015,
+      imageFilter: 'saturate(1) brightness(1)',
+      overlayOpacity: 0.12,
+      hoverBoost: useLiteEffects ? 0.008 : 0.012,
+    };
+  }
+
+  if (forwardOffset === 1) {
+    return {
+      opacity: 0.88,
+      y: 5,
+      scale: 0.996,
+      imageScale: 1.03,
+      imageFilter: 'saturate(0.94) brightness(0.97)',
+      overlayOpacity: 0.16,
+      hoverBoost: useLiteEffects ? 0.006 : 0.01,
+    };
+  }
+
+  if (forwardOffset === 2) {
+    return {
+      opacity: 0.74,
+      y: 9,
+      scale: 0.989,
+      imageScale: 1.045,
+      imageFilter: 'saturate(0.9) brightness(0.95)',
+      overlayOpacity: 0.2,
+      hoverBoost: useLiteEffects ? 0.004 : 0.008,
+    };
+  }
+
   return {
-    shootYears: [],
-    countries: [],
-    brands: [],
-    brandTypes: [],
-    artDirectors: [],
-    talents: [],
-    dops: [],
-    productionTeam: [],
-    models: [],
-    makeupArtists: [],
-    search: '',
+    opacity: 0.6,
+    y: 12,
+    scale: 0.984,
+    imageScale: 1.055,
+    imageFilter: 'saturate(0.86) brightness(0.91)',
+    overlayOpacity: 0.24,
+    hoverBoost: useLiteEffects ? 0.003 : 0.006,
   };
 }
 
-const FILTER_KEYS = FILTER_DEFINITIONS.map((definition) => definition.key);
+function getCampaignChronologyKey(dateValue: string) {
+  const normalized = dateValue
+    .toLowerCase()
+    .replaceAll('â€“', '-')
+    .replaceAll('–', '-')
+    .replaceAll('—', '-');
 
-function sanitizeQueryValues(values: string[]) {
-  return values.map((value) => value.trim()).filter((value) => value.length > 0);
+  const yearMatches = Array.from(normalized.matchAll(/\b(20\d{2})\b/g)).map((match) =>
+    Number(match[1])
+  );
+  const year = yearMatches.length > 0 ? Math.min(...yearMatches) : 9999;
+
+  const monthMatches = Array.from(
+    normalized.matchAll(
+      /\b(january|february|march|april|may|june|july|august|september|october|november|december)\b/g
+    )
+  )
+    .map((match) => MONTH_INDEX[match[1]])
+    .filter((month): month is number => typeof month === 'number');
+  const month = monthMatches.length > 0 ? Math.min(...monthMatches) : 1;
+
+  return year * 100 + month;
 }
 
-function createFiltersFromSearchParams(searchParams: ReadonlyURLSearchParams | null): FiltersState {
-  const base = createEmptyFilters();
-
-  if (!searchParams) {
-    return base;
-  }
-
-  for (const definition of FILTER_DEFINITIONS) {
-    const combined = sanitizeQueryValues(searchParams.getAll(definition.key));
-
-    if (definition.key === 'countries') {
-      combined.push(...sanitizeQueryValues(searchParams.getAll('country')));
-    }
-
-    if (combined.length > 0) {
-      base[definition.key] = Array.from(new Set(combined));
-    }
-  }
-
-  const searchValue = searchParams.get('search');
-  if (typeof searchValue === 'string' && searchValue.trim().length > 0) {
-    base.search = searchValue;
-  }
-
-  return base;
+function getCampaignMediaForSeason(campaign: Campaign) {
+  return {
+    image: campaign.image,
+    backgroundVideo: campaign.backgroundVideo,
+    variantKey: `${campaign.id}-${campaign.image}-${campaign.backgroundVideo ?? 'none'}`,
+  };
 }
 
-function filtersAreEqual(a: FiltersState, b: FiltersState) {
-  if (a.search !== b.search) {
-    return false;
-  }
-
-  for (const key of FILTER_KEYS) {
-    const aValues = [...a[key]].sort();
-    const bValues = [...b[key]].sort();
-
-    if (aValues.length !== bValues.length) {
-      return false;
-    }
-
-    for (let index = 0; index < aValues.length; index += 1) {
-      if (aValues[index] !== bValues[index]) {
-        return false;
-      }
-    }
-  }
-
-  return true;
-}
-
-function filterCampaigns(data: Campaign[], filters: FiltersState) {
-  const searchTerm = filters.search.trim().toLowerCase();
-
-  return data.filter((campaign) => {
-    if (filters.shootYears.length > 0 && !filters.shootYears.includes(String(campaign.shootYear))) {
-      return false;
-    }
-
-    if (filters.countries.length > 0 && !filters.countries.includes(campaign.country)) {
-      return false;
-    }
-
-    if (filters.brands.length > 0 && !filters.brands.includes(campaign.client)) {
-      return false;
-    }
-
-    if (filters.brandTypes.length > 0 && !filters.brandTypes.includes(campaign.brandType)) {
-      return false;
-    }
-
-    if (filters.artDirectors.length > 0 && !filters.artDirectors.includes(campaign.artDirector)) {
-      return false;
-    }
-
-    if (filters.talents.length > 0 && !filters.talents.includes(campaign.talent)) {
-      return false;
-    }
-
-    if (filters.dops.length > 0 && !filters.dops.includes(campaign.dop)) {
-      return false;
-    }
-
-    if (
-      filters.productionTeam.length > 0 &&
-      !filters.productionTeam.some((value) => campaign.productionTeam.includes(value))
-    ) {
-      return false;
-    }
-
-    if (
-      filters.models.length > 0 &&
-      !filters.models.some((value) => campaign.models.includes(value))
-    ) {
-      return false;
-    }
-
-    if (
-      filters.makeupArtists.length > 0 &&
-      !filters.makeupArtists.some((value) => campaign.makeupArtists.includes(value))
-    ) {
-      return false;
-    }
-
-    if (searchTerm) {
-      const haystack = [
-        campaign.title,
-        campaign.client,
-        campaign.destination,
-        campaign.country,
-        campaign.brandType,
-        campaign.artDirector,
-        campaign.talent,
-        campaign.dop,
-        campaign.productionTeam.join(' '),
-        campaign.models.join(' '),
-        campaign.makeupArtists.join(' '),
-        String(campaign.shootYear),
-        campaign.releaseWindow,
-      ]
-        .join(' ')
-        .toLowerCase();
-
-      if (!haystack.includes(searchTerm)) {
-        return false;
-      }
-    }
-
+function filterCampaigns(data: Campaign[], season: SeasonFilterValue) {
+  const filtered = data.filter((campaign) => {
+    const seasonTags = campaign.seasonTags ?? [campaign.season];
+    if (season === 'summer') return seasonTags.includes('spring-summer');
+    if (season === 'winter') return seasonTags.includes('fall-winter');
     return true;
   });
+
+  return filtered.sort((a, b) => {
+    const chronologyDiff = getCampaignChronologyKey(a.date) - getCampaignChronologyKey(b.date);
+    if (chronologyDiff !== 0) {
+      return chronologyDiff;
+    }
+    return a.title.localeCompare(b.title);
+  });
+}
+
+function buildRenderedCampaignSlides(data: Campaign[]): RenderedCampaignSlide[] {
+  if (!data.length) return [];
+
+  // Build several cycles so we can keep re-centering the viewport and
+  // preserve an effectively infinite loop for every filter state.
+  const repeatCycles = Math.max(7, Math.ceil(18 / data.length));
+  const targetCount = data.length * repeatCycles;
+
+  return Array.from({ length: targetCount }, (_, index) => {
+    const sourceIndex = index % data.length;
+    const campaign = data[sourceIndex];
+
+    return {
+      campaign,
+      sourceIndex,
+      renderKey: `${campaign.id}-${index}`,
+    };
+  });
+}
+
+function extractCountry(location: string) {
+  const parts = location.split(',');
+  return parts[parts.length - 1]?.trim() || location;
 }
 
 export function CampaignShowcaseGallery() {
@@ -281,68 +262,176 @@ export function CampaignShowcaseGallery() {
 
   const prefersReducedMotion = usePrefersReducedMotion();
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const [filters, setFilters] = useState<FiltersState>(() =>
-    createFiltersFromSearchParams(searchParams)
+  const [season, setSeason] = useState<SeasonFilterValue>(() =>
+    parseSeasonFilter(searchParams?.get('season') ?? null)
   );
-  const [areFiltersOpen, setAreFiltersOpen] = useState(false);
+  const [seasonDirection, setSeasonDirection] = useState(1);
+  const [isMobileViewport, setIsMobileViewport] = useState(false);
+  const [useLiteEffects, setUseLiteEffects] = useState(false);
 
   useEffect(() => {
-    const next = createFiltersFromSearchParams(searchParams);
-    setFilters((previous) => (filtersAreEqual(previous, next) ? previous : next));
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const mobileQuery = window.matchMedia('(max-width: 767px)');
+    const liteQuery = window.matchMedia('(max-width: 1200px)');
+    const nav = window.navigator as Navigator & { deviceMemory?: number };
+    const lowCpu = typeof nav.hardwareConcurrency === 'number' && nav.hardwareConcurrency <= 4;
+    const lowMemory = typeof nav.deviceMemory === 'number' && nav.deviceMemory <= 4;
+
+    const onChange = () => {
+      setIsMobileViewport(mobileQuery.matches);
+      setUseLiteEffects(liteQuery.matches || lowCpu || lowMemory);
+    };
+
+    onChange();
+    mobileQuery.addEventListener('change', onChange);
+    liteQuery.addEventListener('change', onChange);
+    return () => {
+      mobileQuery.removeEventListener('change', onChange);
+      liteQuery.removeEventListener('change', onChange);
+    };
+  }, []);
+
+  useEffect(() => {
+    const nextSeason = parseSeasonFilter(searchParams?.get('season') ?? null);
+    setSeason((previous) => {
+      if (previous === nextSeason) {
+        return previous;
+      }
+      setIsSeasonSwitching(true);
+      setSeasonDirection(getSeasonDirection(previous, nextSeason));
+      return nextSeason;
+    });
   }, [searchParams]);
 
-  const filteredCampaigns = useMemo(() => filterCampaigns(campaigns, filters), [filters]);
-  const filteredIdsSignature = useMemo(
-    () => filteredCampaigns.map((campaign) => campaign.id).join('|'),
-    [filteredCampaigns]
+  const applySeason = useCallback(
+    (nextSeason: SeasonFilterValue, direction: number) => {
+      setSeasonDirection(direction);
+      setIsSeasonSwitching(true);
+      setSeason(nextSeason);
+
+      const params = new URLSearchParams(searchParams.toString());
+      if (nextSeason === 'all') {
+        params.delete('season');
+      } else {
+        params.set('season', nextSeason);
+      }
+
+      const query = params.toString();
+      router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
+    },
+    [pathname, router, searchParams]
   );
-  const initialIndex = useMemo(() => {
-    if (!filteredCampaigns.length) {
+
+  const filteredJourneys = useMemo(() => filterCampaigns(campaigns, season), [season]);
+  const renderedJourneys = useMemo(
+    () => buildRenderedCampaignSlides(filteredJourneys),
+    [filteredJourneys]
+  );
+  const renderedIdsSignature = useMemo(
+    () => renderedJourneys.map((journey) => journey.renderKey).join('|'),
+    [renderedJourneys]
+  );
+
+  const uniqueJourneyCount = filteredJourneys.length;
+  const centeredStartIndex = useMemo(() => {
+    if (!uniqueJourneyCount || !renderedJourneys.length) {
       return 0;
     }
-    return Math.floor(filteredCampaigns.length / 2);
-  }, [filteredCampaigns.length]);
 
-  const [emblaRef, emblaApi] = useEmblaCarousel({
-    align: 'center',
-    loop: filteredCampaigns.length > 1,
-    skipSnaps: false,
-  });
+    const cycleCount = Math.max(1, Math.floor(renderedJourneys.length / uniqueJourneyCount));
+    const centeredCycle = Math.max(0, Math.floor(cycleCount / 2));
+    return centeredCycle * uniqueJourneyCount;
+  }, [renderedJourneys.length, uniqueJourneyCount]);
+
+  const emblaOptions = useMemo(
+    () => ({
+      align: 'center' as const,
+      loop: false,
+      containScroll: false as const,
+      duration: 30,
+      skipSnaps: false,
+      dragFree: false,
+      breakpoints: {
+        '(min-width: 768px)': {
+          align: 'start' as const,
+        },
+      },
+    }),
+    []
+  );
+
+  const [emblaRef, emblaApi] = useEmblaCarousel(emblaOptions);
 
   const rootRef = useRef<HTMLDivElement | null>(null);
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [canScrollPrev, setCanScrollPrev] = useState(false);
+  const [canScrollNext, setCanScrollNext] = useState(false);
+  const [backgroundDirection, setBackgroundDirection] = useState<1 | -1>(1);
+  const [isJourneyTransitioning, setIsJourneyTransitioning] = useState(false);
+  const [isSeasonSwitching, setIsSeasonSwitching] = useState(false);
+  const backgroundVideoRef = useRef<HTMLVideoElement | null>(null);
+  const previousSelectedIndexRef = useRef(0);
+  const isRecenteringRef = useRef(false);
+  const pendingDirectionRef = useRef<1 | -1>(1);
+  const journeyTransitionTimeoutRef = useRef<number | null>(null);
 
-  const handleCampaignPress = useCallback(
-    (campaign: Campaign) => {
-      router.push(`/campaigns/${campaign.slug}`);
+  const safeLength = renderedJourneys.length;
+  const displayIndex = safeLength ? Math.min(selectedIndex, safeLength - 1) : 0;
+  const activeRenderedJourney = safeLength ? renderedJourneys[displayIndex] : null;
+  const currentJourney = activeRenderedJourney?.campaign ?? null;
+  const currentJourneyMedia = currentJourney ? getCampaignMediaForSeason(currentJourney) : null;
+
+  useEffect(() => {
+    if (!isSeasonSwitching) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setIsSeasonSwitching(false);
+    }, 320);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [isSeasonSwitching, renderedIdsSignature]);
+
+  useEffect(() => {
+    return () => {
+      if (journeyTransitionTimeoutRef.current !== null) {
+        window.clearTimeout(journeyTransitionTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const navigateToJourney = useCallback(
+    (journey: Campaign) => {
+      if (isJourneyTransitioning) {
+        return;
+      }
+
+      const destination = `/campaigns/${journey.slug}`;
+      setIsJourneyTransitioning(true);
+      if (prefersReducedMotion) {
+        router.push(destination);
+        return;
+      }
+
+      if (journeyTransitionTimeoutRef.current !== null) {
+        window.clearTimeout(journeyTransitionTimeoutRef.current);
+      }
+
+      journeyTransitionTimeoutRef.current = window.setTimeout(() => {
+        router.push(destination);
+      }, CAMPAIGN_TRANSITION_FADE_MS);
     },
-    [router]
+    [isJourneyTransitioning, prefersReducedMotion, router]
   );
-
-  const handleSearchChange = useCallback((value: string) => {
-    setFilters((previous) => ({ ...previous, search: value }));
-  }, []);
-
-  const toggleFiltersVisibility = useCallback(() => {
-    setAreFiltersOpen((previous) => !previous);
-  }, []);
-
-  const toggleFilterValue = useCallback((key: ArrayFilterKey, value: string) => {
-    setFilters((previous) => {
-      const currentValues = previous[key] as string[];
-      const hasValue = currentValues.includes(value);
-      const nextValues = hasValue
-        ? currentValues.filter((item) => item !== value)
-        : [...currentValues, value];
-      return { ...previous, [key]: nextValues };
-    });
-  }, []);
-
-  const clearAllFilters = useCallback(() => {
-    setFilters(createEmptyFilters());
-  }, []);
 
   useEffect(() => {
     if (!emblaApi) {
@@ -350,7 +439,49 @@ export function CampaignShowcaseGallery() {
     }
 
     const onSelect = () => {
-      setSelectedIndex(emblaApi.selectedScrollSnap());
+      const nextIndex = emblaApi.selectedScrollSnap();
+      const previousIndex = previousSelectedIndexRef.current;
+
+      if (isRecenteringRef.current) {
+        isRecenteringRef.current = false;
+        previousSelectedIndexRef.current = nextIndex;
+        setSelectedIndex(nextIndex);
+        setBackgroundDirection(pendingDirectionRef.current);
+        setCanScrollPrev(uniqueJourneyCount > 1);
+        setCanScrollNext(uniqueJourneyCount > 1);
+        return;
+      }
+
+      const rawDirection =
+        nextIndex === previousIndex
+          ? pendingDirectionRef.current
+          : nextIndex > previousIndex
+            ? 1
+            : -1;
+
+      if (
+        uniqueJourneyCount > 1 &&
+        renderedJourneys.length > uniqueJourneyCount * 2 &&
+        (nextIndex < uniqueJourneyCount ||
+          nextIndex >= renderedJourneys.length - uniqueJourneyCount)
+      ) {
+        const sourceIndex = renderedJourneys[nextIndex]?.sourceIndex ?? 0;
+        const targetIndex = centeredStartIndex + sourceIndex;
+
+        if (targetIndex !== nextIndex) {
+          pendingDirectionRef.current = rawDirection;
+          isRecenteringRef.current = true;
+          emblaApi.scrollTo(targetIndex, true);
+          return;
+        }
+      }
+
+      pendingDirectionRef.current = rawDirection;
+      previousSelectedIndexRef.current = nextIndex;
+      setSelectedIndex(nextIndex);
+      setBackgroundDirection(rawDirection);
+      setCanScrollPrev(uniqueJourneyCount > 1);
+      setCanScrollNext(uniqueJourneyCount > 1);
     };
 
     emblaApi.on('select', onSelect);
@@ -361,54 +492,27 @@ export function CampaignShowcaseGallery() {
       emblaApi.off('select', onSelect);
       emblaApi.off('reInit', onSelect);
     };
-  }, [emblaApi]);
+  }, [centeredStartIndex, emblaApi, renderedJourneys, uniqueJourneyCount]);
 
   useEffect(() => {
     if (!emblaApi) {
       return;
     }
 
-    const targetIndex =
-      filteredCampaigns.length > 0 ? Math.min(initialIndex, filteredCampaigns.length - 1) : 0;
-
     emblaApi.reInit({
-      align: 'center',
-      loop: filteredCampaigns.length > 1,
-      skipSnaps: false,
-      startIndex: targetIndex,
+      ...emblaOptions,
+      startIndex: centeredStartIndex,
     });
 
-    emblaApi.scrollTo(targetIndex, true);
-    setSelectedIndex(targetIndex);
-  }, [emblaApi, filteredCampaigns.length, filteredIdsSignature, initialIndex]);
-
-  useEffect(() => {
-    const node = rootRef.current;
-    if (!node || !emblaApi) {
-      return;
-    }
-
-    const handleWheel = (event: WheelEvent) => {
-      const primaryDelta =
-        Math.abs(event.deltaY) > Math.abs(event.deltaX) ? event.deltaY : event.deltaX;
-      if (primaryDelta === 0) {
-        return;
-      }
-
-      event.preventDefault();
-
-      if (primaryDelta > 0) {
-        emblaApi.scrollNext();
-      } else {
-        emblaApi.scrollPrev();
-      }
-    };
-
-    node.addEventListener('wheel', handleWheel, { passive: false });
-    return () => {
-      node.removeEventListener('wheel', handleWheel);
-    };
-  }, [emblaApi]);
+    isRecenteringRef.current = false;
+    pendingDirectionRef.current = 1;
+    emblaApi.scrollTo(centeredStartIndex, true);
+    previousSelectedIndexRef.current = centeredStartIndex;
+    setSelectedIndex(centeredStartIndex);
+    setBackgroundDirection(1);
+    setCanScrollPrev(uniqueJourneyCount > 1);
+    setCanScrollNext(uniqueJourneyCount > 1);
+  }, [centeredStartIndex, emblaApi, emblaOptions, renderedIdsSignature, uniqueJourneyCount]);
 
   useEffect(() => {
     const node = rootRef.current;
@@ -417,14 +521,14 @@ export function CampaignShowcaseGallery() {
     }
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (!filteredCampaigns.length || event.key !== 'Enter') {
+      if (!renderedJourneys.length || event.key !== 'Enter') {
         return;
       }
 
       event.preventDefault();
-      const current = filteredCampaigns[emblaApi.selectedScrollSnap()];
+      const current = renderedJourneys[emblaApi.selectedScrollSnap()]?.campaign;
       if (current) {
-        handleCampaignPress(current);
+        navigateToJourney(current);
       }
     };
 
@@ -432,7 +536,7 @@ export function CampaignShowcaseGallery() {
     return () => {
       node.removeEventListener('keydown', handleKeyDown);
     };
-  }, [emblaApi, filteredCampaigns, handleCampaignPress]);
+  }, [emblaApi, navigateToJourney, renderedJourneys]);
 
   useEffect(() => {
     if (!emblaApi) {
@@ -440,24 +544,20 @@ export function CampaignShowcaseGallery() {
     }
 
     const handleWindowKeyDown = (event: KeyboardEvent) => {
-      if (!filteredCampaigns.length) {
-        return;
-      }
-
-      const target = event.target as HTMLElement | null;
-      if (
-        target &&
-        (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)
-      ) {
+      if (safeLength < 2) {
         return;
       }
 
       if (event.key === 'ArrowRight') {
         event.preventDefault();
-        emblaApi.scrollNext();
+        if (emblaApi.canScrollNext()) {
+          emblaApi.scrollNext();
+        }
       } else if (event.key === 'ArrowLeft') {
         event.preventDefault();
-        emblaApi.scrollPrev();
+        if (emblaApi.canScrollPrev()) {
+          emblaApi.scrollPrev();
+        }
       }
     };
 
@@ -465,488 +565,928 @@ export function CampaignShowcaseGallery() {
     return () => {
       window.removeEventListener('keydown', handleWindowKeyDown);
     };
-  }, [emblaApi, filteredCampaigns.length]);
+  }, [emblaApi, safeLength]);
 
-  const activeTags = useMemo(() => {
-    const tags: { key: string; label: string; onRemove: () => void }[] = [];
+  const currentSeasonIndex = getSeasonIndex(season);
 
-    FILTER_DEFINITIONS.forEach((definition) => {
-      const selectedValues = filters[definition.key] as string[];
-      if (!selectedValues.length) {
+  const handleSeasonCycle = useCallback(
+    (direction: 1 | -1) => {
+      const nextIndex =
+        (currentSeasonIndex + direction + SEASON_OPTIONS.length) % SEASON_OPTIONS.length;
+      const nextSeason = SEASON_OPTIONS[nextIndex]?.value ?? 'all';
+      applySeason(nextSeason, direction);
+    },
+    [applySeason, currentSeasonIndex]
+  );
+
+  const handleCardAction = useCallback(
+    (journey: Campaign, index: number) => {
+      if (!emblaApi) {
+        navigateToJourney(journey);
         return;
       }
 
-      selectedValues.forEach((value) => {
-        const optionLabel =
-          definition.options.find((option) => option.value === value)?.label ?? value;
-        tags.push({
-          key: `${definition.key}-${value}`,
-          label: `${definition.label}: ${optionLabel}`,
-          onRemove: () => toggleFilterValue(definition.key, value),
-        });
-      });
-    });
+      const activeIndex = emblaApi.selectedScrollSnap();
+      if (index !== activeIndex) {
+        emblaApi.scrollTo(index);
+        return;
+      }
 
-    if (filters.search.trim()) {
-      tags.push({
-        key: 'search',
-        label: `Search: ${filters.search.trim()}`,
-        onRemove: () => handleSearchChange(''),
-      });
+      navigateToJourney(journey);
+    },
+    [emblaApi, navigateToJourney]
+  );
+
+  const scrollPrev = useCallback(() => {
+    if (!emblaApi || safeLength < 2) {
+      return;
+    }
+    if (emblaApi.canScrollPrev()) {
+      emblaApi.scrollPrev();
+    }
+  }, [emblaApi, safeLength]);
+
+  const scrollNext = useCallback(() => {
+    if (!emblaApi || safeLength < 2) {
+      return;
+    }
+    if (emblaApi.canScrollNext()) {
+      emblaApi.scrollNext();
+    }
+  }, [emblaApi, safeLength]);
+
+  useEffect(() => {
+    const node = rootRef.current;
+    if (!node || !emblaApi) {
+      return;
     }
 
-    return tags;
-  }, [filters, handleSearchChange, toggleFilterValue]);
+    let wheelAccumulator = 0;
 
-  const activeTagCount = activeTags.length;
+    const handleWheel = (event: WheelEvent) => {
+      if (safeLength < 2) {
+        return;
+      }
 
-  const safeLength = filteredCampaigns.length;
-  const displayIndex = safeLength ? Math.min(selectedIndex, safeLength - 1) : 0;
-  const progressValue = safeLength > 0 ? ((displayIndex + 1) / safeLength) * 100 : 0;
-  const progressLabel = safeLength
-    ? `${String(displayIndex + 1).padStart(2, '0')} / ${String(safeLength).padStart(2, '0')}`
-    : '00 / 00';
-  const currentCampaign = safeLength ? filteredCampaigns[displayIndex] : null;
+      const primaryDelta =
+        Math.abs(event.deltaY) > Math.abs(event.deltaX) ? event.deltaY : event.deltaX;
+      if (!primaryDelta) {
+        return;
+      }
+
+      event.preventDefault();
+      wheelAccumulator += primaryDelta;
+
+      if (Math.abs(wheelAccumulator) < 30) {
+        return;
+      }
+
+      if (wheelAccumulator > 0) {
+        scrollNext();
+      } else {
+        scrollPrev();
+      }
+
+      wheelAccumulator = 0;
+    };
+
+    node.addEventListener('wheel', handleWheel, { passive: false });
+    return () => {
+      node.removeEventListener('wheel', handleWheel);
+    };
+  }, [emblaApi, safeLength, scrollNext, scrollPrev]);
 
   return (
     <section
       ref={rootRef}
-      className="relative flex min-h-screen flex-col overflow-hidden bg-black text-white"
+      className="relative flex min-h-[100svh] flex-col overflow-hidden bg-black text-white"
       tabIndex={0}
-      aria-label="Campaign carousel section"
+      aria-label="Campaign carousel"
     >
+      <BackgroundImage
+        activeJourney={currentJourney}
+        activeJourneyKey={
+          currentJourneyMedia?.variantKey ?? currentJourney?.id ?? 'campaign-background'
+        }
+        activeJourneyImage={currentJourneyMedia?.image ?? currentJourney?.image ?? null}
+        activeJourneyVideo={currentJourneyMedia?.backgroundVideo ?? currentJourney?.backgroundVideo}
+        prefersReducedMotion={prefersReducedMotion}
+        direction={backgroundDirection}
+        season={season}
+        useLiteEffects={useLiteEffects}
+        videoRef={backgroundVideoRef}
+      />
+
       <div
-        className="pointer-events-none absolute inset-x-0 top-0 z-30 h-1 overflow-hidden rounded-full bg-white/10"
-        role="progressbar"
-        aria-valuemin={0}
-        aria-valuemax={Math.max(1, safeLength)}
-        aria-valuenow={safeLength ? displayIndex + 1 : 0}
-        aria-valuetext={safeLength ? `${displayIndex + 1} of ${safeLength}` : '0 of 0'}
+        className={clsx(
+          'ease-[cubic-bezier(0.22,1,0.36,1)] relative z-20 flex min-h-[100svh] flex-col transition-opacity',
+          prefersReducedMotion ? 'duration-150' : 'duration-[980ms]',
+          isJourneyTransitioning ? 'pointer-events-none opacity-0' : 'opacity-100'
+        )}
       >
-        <div
-          aria-hidden
-          className="h-full w-full origin-left bg-gradient-to-r from-[#f6c452] via-[#f0a87a] to-[#f7d799]"
-          style={{
-            transform: `scaleX(${Math.max(0, Math.min(100, progressValue)) / 100})`,
-            transformOrigin: 'left center',
-            transition: 'transform 600ms var(--bee-ease)',
-          }}
-        />
-      </div>
-      <BackgroundVideo prefersReducedMotion={prefersReducedMotion} />
-
-      <div className="relative z-10 flex min-h-screen flex-col">
-        <div className="sticky top-0 z-20 flex flex-col gap-5 px-6 pb-6 pt-10 backdrop-blur lg:px-12">
-          <div className="flex flex-wrap items-center gap-6">
-            <div className="flex flex-col gap-2">
-              <span className="text-xs uppercase tracking-[0.32em] text-white/60">
-                Campaign Library
-              </span>
-              <h1 className="font-title text-2xl uppercase tracking-[0em] sm:text-3xl">
-                Previous Work
-              </h1>
-            </div>
+        <div className="pointer-events-none absolute left-4 top-5 z-30 sm:left-6 sm:top-7 md:hidden lg:left-10 lg:top-8">
+          <div className="pointer-events-auto">
+            <SeasonElevator
+              value={season}
+              direction={seasonDirection}
+              prefersReducedMotion={prefersReducedMotion}
+              onCycle={handleSeasonCycle}
+            />
           </div>
-
-          <AnimatePresence initial={false}>
-            {areFiltersOpen ? (
-              <motion.div
-                key="campaign-filters"
-                id="campaign-filters-panel"
-                initial={{ opacity: 0, y: -8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.25, ease: 'easeOut' }}
-              >
-                <FilterToolbar
-                  filters={filters}
-                  definitions={FILTER_DEFINITIONS}
-                  onToggle={toggleFilterValue}
-                  onSearchChange={handleSearchChange}
-                />
-              </motion.div>
-            ) : null}
-          </AnimatePresence>
-
-          {activeTagCount > 0 ? (
-            <div className="flex flex-wrap gap-2">
-              {activeTags.map((tag) => (
-                <button
-                  key={tag.key}
-                  type="button"
-                  onClick={tag.onRemove}
-                  className="group inline-flex items-center gap-1 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[0.68rem] uppercase tracking-[0.28em] text-white/80 transition hover:border-white/40 hover:bg-white/20"
-                >
-                  <span>{tag.label}</span>
-                  <X className="size-3 transition group-hover:rotate-90" aria-hidden />
-                </button>
-              ))}
-              {activeTagCount > 1 ? (
-                <button
-                  type="button"
-                  onClick={clearAllFilters}
-                  className="inline-flex items-center gap-1 rounded-full border border-white/20 px-3 py-1 text-[0.68rem] uppercase tracking-[0.28em] text-white/70 transition hover:border-white/50 hover:text-white"
-                >
-                  Clear all
-                </button>
-              ) : null}
-            </div>
-          ) : null}
         </div>
 
-        <div className="relative flex flex-1 flex-col">
-          <div className="relative mx-auto flex w-full max-w-[1400px] flex-1 flex-col px-4 pb-24 pt-16 sm:px-6 lg:px-12">
+        <div className="relative flex flex-1 items-center justify-end">
+          <div className="w-full px-2 pb-2 pt-20 sm:px-6 sm:pb-4 sm:pt-24 md:ml-auto md:w-[75%] md:pb-0 md:pl-10 md:pr-6 md:pt-0 lg:py-10 lg:pl-16 lg:pr-10 xl:pl-20">
             {safeLength ? (
-              <div className="embla" ref={emblaRef}>
+              <div
+                className="overflow-visible pb-8 sm:pb-10 md:overflow-hidden md:pb-0"
+                ref={emblaRef}
+              >
                 <motion.div
-                  key={filteredIdsSignature}
-                  className="embla__container -mx-4 flex touch-pan-x"
-                  initial={prefersReducedMotion ? undefined : { opacity: 0.6, scale: 0.98 }}
-                  animate={prefersReducedMotion ? undefined : { opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.45, ease: [0.33, 1, 0.68, 1] }}
+                  key={renderedIdsSignature}
+                  className="embla__container flex touch-pan-x items-center gap-3 sm:gap-4 md:ml-0 md:gap-[var(--journey-gap)] md:[--journey-gap:clamp(14px,1.7vw,28px)]"
+                  initial={prefersReducedMotion ? undefined : { opacity: 0 }}
+                  animate={prefersReducedMotion ? undefined : { opacity: 1 }}
+                  transition={{ duration: 1.08, ease: [0.22, 1, 0.36, 1] }}
                 >
-                  {filteredCampaigns.map((campaign, index) => (
-                    <motion.div
-                      key={campaign.id}
-                      className="embla__slide flex-[0_0_85%] px-4 sm:flex-[0_0_70%] md:flex-[0_0_50%] xl:flex-[0_0_33.333%]"
-                      initial={prefersReducedMotion ? false : { opacity: 0, y: 32 }}
-                      animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
-                      transition={{
-                        duration: 0.7,
-                        ease: [0.33, 1, 0.68, 1],
-                        delay: Math.min(index * 0.05, 0.3),
-                      }}
-                    >
-                      <CampaignCard
-                        campaign={campaign}
-                        isActive={Boolean(currentCampaign && currentCampaign.id === campaign.id)}
-                        prefersReducedMotion={prefersReducedMotion}
-                        onSelect={handleCampaignPress}
-                        index={index}
-                      />
-                    </motion.div>
-                  ))}
+                  {renderedJourneys.map((slide, index) => {
+                    const forwardOffset = getForwardOffset(
+                      index,
+                      displayIndex,
+                      renderedJourneys.length
+                    );
+
+                    return (
+                      <motion.div
+                        key={slide.renderKey}
+                        layout={!isSeasonSwitching}
+                        className={clsx(
+                          'embla__slide flex flex-[0_0_74%] items-center sm:flex-[0_0_60%]',
+                          getDesktopSlideBasisClass(forwardOffset)
+                        )}
+                        initial={prefersReducedMotion ? false : { opacity: 0 }}
+                        animate={prefersReducedMotion ? undefined : { opacity: 1 }}
+                        transition={{
+                          duration: 0.92,
+                          ease: [0.22, 1, 0.36, 1],
+                          delay: Math.min(index * 0.07, 0.42),
+                          layout: isSeasonSwitching
+                            ? undefined
+                            : {
+                                duration: useLiteEffects ? 0.46 : 0.7,
+                                ease: [0.22, 1, 0.36, 1],
+                              },
+                        }}
+                      >
+                        <JourneyCard
+                          journey={slide.campaign}
+                          isActive={activeRenderedJourney?.renderKey === slide.renderKey}
+                          forwardOffset={forwardOffset}
+                          onAction={() => handleCardAction(slide.campaign, index)}
+                          prefersReducedMotion={prefersReducedMotion}
+                          isMobileViewport={isMobileViewport}
+                          useLiteEffects={useLiteEffects}
+                          disableLayoutAnimation={isSeasonSwitching}
+                        />
+                      </motion.div>
+                    );
+                  })}
                 </motion.div>
               </div>
             ) : (
-              <div className="flex flex-1 items-center justify-center text-xs uppercase tracking-[0.32em] text-white/60">
-                No campaigns match the selected filters.
+              <div className="flex min-h-[46vh] items-center justify-center border border-white/20 bg-black/20 text-[0.7rem] uppercase tracking-[0.3em] text-white/70">
+                No campaigns for this season.
               </div>
             )}
-          </div>
 
-          {safeLength > 0 ? (
-            <div className="absolute inset-x-0 bottom-10 flex justify-center">
-              <div className="pointer-events-auto flex items-center gap-4 rounded-full border border-white/15 bg-black/50 px-6 py-3 backdrop-blur">
-                <span className="text-xs uppercase tracking-[0.32em] text-white/70">
-                  {progressLabel}
-                </span>
-                <button
-                  type="button"
-                  onClick={toggleFiltersVisibility}
-                  aria-expanded={areFiltersOpen}
-                  aria-controls="campaign-filters-panel"
-                  className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-black/40 px-3 py-1 text-xs uppercase tracking-[0.28em] text-white/70 transition hover:border-white/30 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
-                >
-                  <Filter className="size-4" aria-hidden />
-                  <span>{areFiltersOpen ? 'Hide filters' : 'Filters'}</span>
-                </button>
-              </div>
+            <div className="pointer-events-none relative z-40 mt-8 flex flex-col items-center gap-3 pb-5 md:hidden">
+              <JourneyHeadline currentJourney={currentJourney} compact centered />
+              <JourneyNavigation
+                canScrollPrev={canScrollPrev}
+                canScrollNext={canScrollNext}
+                onPrev={scrollPrev}
+                onNext={scrollNext}
+                compact
+                centered
+              />
             </div>
-          ) : null}
+          </div>
+        </div>
+
+        <div className="pointer-events-none absolute left-6 top-1/2 z-40 hidden -translate-y-1/2 md:block lg:left-10 xl:left-14">
+          <JourneyHeadline currentJourney={currentJourney} sideAligned />
+        </div>
+
+        <div className="pointer-events-none absolute bottom-5 right-4 z-30 hidden sm:bottom-7 sm:right-6 md:right-10 md:block lg:bottom-10 lg:right-16 xl:right-20">
+          <JourneyDesktopControls
+            season={season}
+            seasonDirection={seasonDirection}
+            prefersReducedMotion={prefersReducedMotion}
+            onSeasonCycle={handleSeasonCycle}
+          />
         </div>
       </div>
     </section>
   );
 }
 
-type FilterToolbarProps = {
-  filters: FiltersState;
-  definitions: FilterDefinition[];
-  onToggle: (key: ArrayFilterKey, value: string) => void;
-  onSearchChange: (value: string) => void;
+type SeasonElevatorProps = {
+  value: SeasonFilterValue;
+  direction: number;
+  prefersReducedMotion: boolean;
+  onCycle: (direction: 1 | -1) => void;
 };
 
-function FilterToolbar({ filters, definitions, onToggle, onSearchChange }: FilterToolbarProps) {
-  return (
-    <div className="flex w-full flex-wrap items-center justify-between gap-3 rounded-xl bg-black/40 px-4 py-2 text-xs uppercase tracking-[0.24em] backdrop-blur-md">
-      <div className="flex flex-1 flex-wrap items-center gap-3">
-        {definitions
-          .filter((definition) => definition.options.length > 0)
-          .map((definition) => (
-            <FilterDropdown
-              key={definition.key}
-              label={definition.label}
-              icon={definition.icon}
-              options={definition.options}
-              selectedValues={filters[definition.key] as string[]}
-              onToggle={(value) => onToggle(definition.key, value)}
-            />
-          ))}
-      </div>
-      <SearchInput value={filters.search} onChange={onSearchChange} />
-    </div>
-  );
-}
-
-type FilterDropdownProps = {
-  label: string;
-  icon: IconComponent;
-  options: FilterDropdownOption[];
-  selectedValues: string[];
-  onToggle: (value: string) => void;
-};
-
-function FilterDropdown({
-  label,
-  icon: Icon,
-  options,
-  selectedValues,
-  onToggle,
-}: FilterDropdownProps) {
-  const [open, setOpen] = useState(false);
-  const containerRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    if (!open) {
-      return;
-    }
-
-    const handleClickOutside = (event: MouseEvent) => {
-      if (!containerRef.current?.contains(event.target as Node)) {
-        setOpen(false);
-      }
-    };
-
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        setOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    document.addEventListener('keydown', handleEscape);
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('keydown', handleEscape);
-    };
-  }, [open]);
+function SeasonElevator({ value, direction, prefersReducedMotion, onCycle }: SeasonElevatorProps) {
+  const option = getSeasonOption(value);
+  const hoverIcon = option.hoverIcon ?? option.icon;
+  const [hoveredControl, setHoveredControl] = useState<'prev' | 'next' | 'center' | null>(null);
+  const highlightCenter =
+    hoveredControl === 'prev' || hoveredControl === 'next' || hoveredControl === 'center';
 
   return (
-    <div ref={containerRef} className="relative">
-      <button
+    <motion.div
+      layout
+      className="inline-flex items-center gap-2 text-white drop-shadow-[0_12px_28px_rgba(0,0,0,0.38)] sm:gap-3"
+      transition={{
+        layout: { duration: prefersReducedMotion ? 0.18 : 0.42, ease: [0.22, 1, 0.36, 1] },
+      }}
+    >
+      <motion.button
+        layout="position"
         type="button"
-        onClick={() => setOpen((previous) => !previous)}
-        className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-black/40 px-3 py-1 text-sm uppercase tracking-[0.28em] text-white/70 transition hover:border-white/30 hover:text-white"
+        onClick={() => onCycle(-1)}
+        onMouseEnter={() => setHoveredControl('prev')}
+        onMouseLeave={() => setHoveredControl((current) => (current === 'prev' ? null : current))}
+        onFocus={() => setHoveredControl('prev')}
+        onBlur={() => setHoveredControl((current) => (current === 'prev' ? null : current))}
+        className={clsx(
+          'flex h-6 w-6 items-center justify-center transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/45',
+          hoveredControl === 'prev'
+            ? 'text-[#f6c452] drop-shadow-[0_0_10px_rgba(246,196,82,0.42)]'
+            : 'text-white/45'
+        )}
+        aria-label="Previous season"
       >
-        <Icon className="size-3.5" aria-hidden />
-        <span>{label}</span>
-        <SiteArrowIcon direction={open ? 'up' : 'down'} className="size-3 transition" />
-      </button>
+        <SiteArrowIcon direction="left" className="h-3.5 w-3.5" />
+      </motion.button>
 
-      <AnimatePresence>
-        {open ? (
+      <motion.div layout className="relative flex min-w-0 items-center overflow-hidden">
+        <AnimatePresence initial={false} mode="popLayout">
           <motion.div
-            initial={{ opacity: 0, y: -6 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -4 }}
-            transition={{ duration: 0.18, ease: 'easeOut' }}
-            className="absolute left-0 right-auto z-40 mt-2 min-w-[220px] rounded-2xl border border-white/10 bg-black/80 p-3 text-left shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur"
+            key={value}
+            layout
+            initial={
+              prefersReducedMotion ? { opacity: 0 } : { opacity: 0, x: direction > 0 ? 28 : -28 }
+            }
+            animate={{ opacity: 1, x: 0 }}
+            exit={
+              prefersReducedMotion ? { opacity: 0 } : { opacity: 0, x: direction > 0 ? -28 : 28 }
+            }
+            transition={{
+              duration: prefersReducedMotion ? 0.2 : 0.42,
+              ease: [0.22, 1, 0.36, 1],
+              layout: { duration: prefersReducedMotion ? 0.18 : 0.42, ease: [0.22, 1, 0.36, 1] },
+            }}
+            onMouseEnter={() => setHoveredControl('center')}
+            onMouseLeave={() =>
+              setHoveredControl((current) => (current === 'center' ? null : current))
+            }
+            className="group/season relative flex items-center gap-2.5 sm:gap-3"
           >
-            {options.map((option) => {
-              const isActive = selectedValues.includes(option.value);
-              const OptionIcon = option.icon ?? Icon;
-              return (
-                <button
-                  key={option.value}
-                  type="button"
-                  onClick={() => onToggle(option.value)}
+            <div className="relative h-8 w-8 shrink-0 sm:h-9 sm:w-9">
+              <Image
+                src={option.icon}
+                alt=""
+                fill
+                className={clsx(
+                  'object-contain transition-opacity duration-300',
+                  option.hoverIcon && highlightCenter ? 'opacity-0' : 'opacity-100'
+                )}
+                priority
+              />
+              {hoverIcon ? (
+                <Image
+                  src={hoverIcon}
+                  alt=""
+                  fill
                   className={clsx(
-                    'flex w-full items-center justify-between gap-3 rounded-xl px-3 py-2 text-sm uppercase tracking-[0.24em] transition',
-                    isActive
-                      ? 'bg-white/15 text-white'
-                      : 'text-white/70 hover:bg-white/10 hover:text-white'
+                    'object-contain transition-opacity duration-300',
+                    highlightCenter ? 'opacity-100' : 'opacity-0'
                   )}
-                >
-                  <span className="flex items-center gap-3">
-                    <OptionIcon className="size-4" aria-hidden />
-                    {option.label}
-                  </span>
-                  {isActive ? <Check className="size-4" aria-hidden /> : null}
-                </button>
-              );
-            })}
+                />
+              ) : null}
+            </div>
+
+            <span
+              className={clsx(
+                'whitespace-nowrap font-display text-[0.92rem] uppercase tracking-[0.12em] transition-colors duration-300 [text-shadow:0_0_12px_rgba(255,255,255,0.34),0_12px_28px_rgba(0,0,0,0.34),0_24px_56px_rgba(0,0,0,0.22)] sm:text-[1.24rem]',
+                highlightCenter ? 'text-[#f6c452]' : 'text-white'
+              )}
+            >
+              {option.label}
+            </span>
           </motion.div>
-        ) : null}
-      </AnimatePresence>
-    </div>
+        </AnimatePresence>
+      </motion.div>
+
+      <motion.button
+        layout="position"
+        type="button"
+        onClick={() => onCycle(1)}
+        onMouseEnter={() => setHoveredControl('next')}
+        onMouseLeave={() => setHoveredControl((current) => (current === 'next' ? null : current))}
+        onFocus={() => setHoveredControl('next')}
+        onBlur={() => setHoveredControl((current) => (current === 'next' ? null : current))}
+        className={clsx(
+          'flex h-6 w-6 items-center justify-center transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/45',
+          hoveredControl === 'next'
+            ? 'text-[#f6c452] drop-shadow-[0_0_10px_rgba(246,196,82,0.42)]'
+            : 'text-white/45'
+        )}
+        aria-label="Next season"
+      >
+        <SiteArrowIcon direction="right" className="h-3.5 w-3.5" />
+      </motion.button>
+    </motion.div>
   );
 }
 
-type SearchInputProps = {
-  value: string;
-  onChange: (value: string) => void;
+type JourneyHeadlineProps = {
+  currentJourney: Campaign | null;
+  compact?: boolean;
+  centered?: boolean;
+  sideAligned?: boolean;
 };
 
-function SearchInput({ value, onChange }: SearchInputProps) {
+function JourneyHeadline({
+  currentJourney,
+  compact = false,
+  centered = false,
+  sideAligned = false,
+}: JourneyHeadlineProps) {
+  const country = currentJourney ? currentJourney.client : '';
+  const destination = currentJourney ? extractCountry(currentJourney.location) : '';
+
   return (
-    <div className="border-white/12 flex items-center gap-2 rounded-full border bg-black/40 px-3 py-1 backdrop-blur">
-      <Search className="size-4 text-white/60" aria-hidden />
-      <input
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        type="search"
-        placeholder="Search campaigns"
-        className="w-[160px] bg-transparent text-sm uppercase tracking-[0.28em] text-white placeholder:text-white/40 focus:outline-none sm:w-[220px]"
+    <AnimatePresence mode="wait">
+      {currentJourney ? (
+        <motion.div
+          key={currentJourney.id}
+          initial={{ y: 10 }}
+          animate={{ y: 0 }}
+          exit={{ y: -12 }}
+          transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+          className={clsx(
+            'relative z-10',
+            compact ? 'max-w-[80vw]' : 'max-w-[62vw]',
+            sideAligned && !compact && 'max-w-[28vw] xl:max-w-[24vw]',
+            centered && 'text-center'
+          )}
+        >
+          <h2
+            className={clsx(
+              'font-title uppercase tracking-normal text-white [text-shadow:0_4px_0_rgba(0,0,0,0.36),0_12px_20px_rgba(0,0,0,0.28),0_24px_52px_rgba(0,0,0,0.38),0_40px_88px_rgba(0,0,0,0.3)]',
+              compact
+                ? 'text-[clamp(2.15rem,12vw,4.4rem)] leading-[0.82]'
+                : sideAligned
+                  ? 'text-[clamp(3.2rem,7vw,7.4rem)] leading-[0.82]'
+                  : 'text-[clamp(3.4rem,11vw,10.2rem)] leading-[0.8]'
+            )}
+          >
+            {country}
+          </h2>
+          <p
+            className={clsx(
+              'mt-0 uppercase tracking-[0.38em] text-white [text-shadow:0_2px_0_rgba(0,0,0,0.3),0_8px_14px_rgba(0,0,0,0.24),0_16px_34px_rgba(0,0,0,0.24)]',
+              compact ? 'text-[0.56rem]' : 'text-[0.68rem] sm:text-[0.78rem]'
+            )}
+          >
+            {destination}
+          </p>
+          <p
+            className={clsx(
+              'text-white/84 mt-2 uppercase tracking-[0.38em] [text-shadow:0_2px_0_rgba(0,0,0,0.3),0_8px_14px_rgba(0,0,0,0.24),0_16px_34px_rgba(0,0,0,0.24)]',
+              compact ? 'text-[0.48rem]' : 'text-[0.6rem] sm:text-[0.68rem]'
+            )}
+          >
+            {currentJourney.date}
+          </p>
+        </motion.div>
+      ) : null}
+    </AnimatePresence>
+  );
+}
+
+type JourneyNavigationProps = {
+  canScrollPrev: boolean;
+  canScrollNext: boolean;
+  onPrev: () => void;
+  onNext: () => void;
+  compact?: boolean;
+  centered?: boolean;
+};
+
+function JourneyNavigation({
+  canScrollPrev,
+  canScrollNext,
+  onPrev,
+  onNext,
+  compact = false,
+  centered = false,
+}: JourneyNavigationProps) {
+  return (
+    <div
+      className={clsx(
+        'pointer-events-auto flex items-center text-white',
+        compact ? 'gap-2' : 'gap-3 sm:gap-4',
+        centered && 'justify-center'
+      )}
+    >
+      <JourneyNavButton
+        direction="prev"
+        disabled={!canScrollPrev}
+        onClick={onPrev}
+        compact={compact}
+      />
+      <div
+        className={clsx(
+          'relative flex min-w-0 items-center overflow-hidden',
+          compact ? 'gap-1.5' : 'gap-3'
+        )}
+      >
+        <Image
+          src="/assets/icones/Ico White BEE-12.svg"
+          alt=""
+          width={42}
+          height={42}
+          className={clsx(
+            'shrink-0 drop-shadow-[0_0_20px_rgba(255,255,255,0.42)]',
+            compact ? 'h-7 w-7' : 'h-10 w-10 sm:h-11 sm:w-11'
+          )}
+          priority
+        />
+        <span
+          className={clsx(
+            'truncate font-display uppercase tracking-[0.14em] text-white [text-shadow:0_0_10px_rgba(255,255,255,0.32),0_12px_28px_rgba(0,0,0,0.34),0_24px_52px_rgba(0,0,0,0.2)]',
+            compact ? 'text-[0.7rem]' : 'text-[1.1rem] sm:text-[1.55rem]'
+          )}
+        >
+          Next Campaign
+        </span>
+      </div>
+      <JourneyNavButton
+        direction="next"
+        disabled={!canScrollNext}
+        onClick={onNext}
+        compact={compact}
       />
     </div>
   );
 }
 
-type CampaignCardProps = {
-  campaign: Campaign;
-  isActive: boolean;
+type JourneyDesktopControlsProps = {
+  season: SeasonFilterValue;
+  seasonDirection: number;
   prefersReducedMotion: boolean;
-  onSelect: (campaign: Campaign) => void;
-  index: number;
+  onSeasonCycle: (direction: 1 | -1) => void;
 };
 
-function CampaignCard({
-  campaign,
-  isActive,
+function JourneyDesktopControls({
+  season,
+  seasonDirection,
   prefersReducedMotion,
-  onSelect,
-  index,
-}: CampaignCardProps) {
-  const [isRevealed, setIsRevealed] = useState(false);
+  onSeasonCycle,
+}: JourneyDesktopControlsProps) {
+  return (
+    <div className="pointer-events-auto flex items-center text-white">
+      <SeasonElevator
+        value={season}
+        direction={seasonDirection}
+        prefersReducedMotion={prefersReducedMotion}
+        onCycle={onSeasonCycle}
+      />
+    </div>
+  );
+}
 
-  const handleReveal = (state: boolean) => {
-    setIsRevealed(state);
-  };
+type JourneyNavButtonProps = {
+  direction: 'prev' | 'next';
+  disabled: boolean;
+  onClick: () => void;
+  compact?: boolean;
+};
 
-  const showVideo = Boolean(campaign.cardVideo && !prefersReducedMotion);
-  const poster = campaign.cardPoster ?? campaign.cover;
-  const isPriority = index === 0;
+function JourneyNavButton({
+  direction,
+  disabled,
+  onClick,
+  compact = false,
+}: JourneyNavButtonProps) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      className={clsx(
+        'group flex items-center justify-center transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/45',
+        compact ? 'h-6 w-6' : 'h-7 w-7',
+        disabled ? 'cursor-not-allowed text-white/20' : 'text-white/45 hover:text-white/80'
+      )}
+      aria-label={direction === 'prev' ? 'Previous campaign' : 'Next campaign'}
+    >
+      <SiteArrowIcon
+        direction={direction === 'prev' ? 'left' : 'right'}
+        className={clsx(
+          'transition-transform duration-300',
+          direction === 'prev' ? 'group-hover:-translate-x-1' : 'group-hover:translate-x-1',
+          compact ? 'h-3.5 w-3.5' : 'h-4 w-4'
+        )}
+      />
+    </button>
+  );
+}
+
+type JourneyCardProps = {
+  journey: Campaign;
+  isActive: boolean;
+  forwardOffset: number;
+  prefersReducedMotion: boolean;
+  isMobileViewport: boolean;
+  useLiteEffects: boolean;
+  disableLayoutAnimation?: boolean;
+  onAction: () => void;
+};
+
+function JourneyCard({
+  journey,
+  isActive,
+  forwardOffset,
+  prefersReducedMotion,
+  isMobileViewport,
+  useLiteEffects,
+  disableLayoutAnimation = false,
+  onAction,
+}: JourneyCardProps) {
+  const fadeProfile = getCardFadeProfile(forwardOffset, isMobileViewport, useLiteEffects);
+  const displayMedia = getCampaignMediaForSeason(journey);
 
   return (
     <motion.button
       type="button"
+      onClick={onAction}
+      layout={!disableLayoutAnimation}
       className={clsx(
-        'group relative w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70',
+        'group relative w-full overflow-visible focus:outline-none focus-visible:ring-2 focus-visible:ring-[#f5d49b] focus-visible:ring-offset-0',
         prefersReducedMotion
           ? 'transition-none'
-          : 'transition-transform [transition-duration:680ms] [transition-timing-function:cubic-bezier(0.33,1,0.68,1)]'
+          : 'ease-[cubic-bezier(0.22,1,0.36,1)] transition-transform duration-700'
       )}
-      onMouseEnter={() => handleReveal(true)}
-      onMouseLeave={() => handleReveal(false)}
-      onFocus={() => handleReveal(true)}
-      onBlur={() => handleReveal(false)}
-      onClick={() => onSelect(campaign)}
-      aria-label={`Campaign: ${campaign.client}, ${campaign.releaseWindow}`}
       animate={
         prefersReducedMotion
           ? undefined
-          : { scale: isActive ? 1 : 0.92, opacity: isActive ? 1 : 0.7 }
+          : {
+              opacity: fadeProfile.opacity,
+              scale: fadeProfile.scale,
+              y: fadeProfile.y,
+            }
       }
-      whileHover={prefersReducedMotion ? undefined : { scale: 1.05, y: -12 }}
-      transition={prefersReducedMotion ? undefined : { duration: 0.55, ease: [0.33, 1, 0.68, 1] }}
+      whileHover={
+        prefersReducedMotion || useLiteEffects
+          ? undefined
+          : {
+              opacity: Math.min(fadeProfile.opacity + 0.08, 1),
+              scale: fadeProfile.scale + fadeProfile.hoverBoost,
+              y: Math.max(fadeProfile.y - 4, -4),
+            }
+      }
+      transition={
+        prefersReducedMotion
+          ? undefined
+          : {
+              duration: useLiteEffects ? 0.42 : 0.7,
+              ease: [0.22, 1, 0.36, 1],
+              layout: disableLayoutAnimation
+                ? undefined
+                : { duration: useLiteEffects ? 0.46 : 0.7, ease: [0.22, 1, 0.36, 1] },
+            }
+      }
+      aria-label={`Campaign: ${journey.title}, ${journey.date}`}
+      style={{ transformOrigin: isMobileViewport ? 'center center' : 'left center' }}
     >
-      <div className="relative aspect-[2/3] w-full overflow-hidden border border-white/15 bg-white/5 shadow-[0_32px_90px_rgba(0,0,0,0.55)]">
-        {showVideo ? (
-          <SmartVideo
-            wrapperClassName="absolute inset-0"
-            className="h-full w-full object-cover"
-            src={campaign.cardVideo}
-            poster={poster}
-            fallbackImage={poster}
-            autoPlay
-            muted
-            loop
-            playsInline
-            aria-hidden
-          />
-        ) : (
-          <Image
-            src={poster}
-            alt={campaign.coverAlt}
-            fill
-            sizes="(min-width: 1280px) 28vw, (min-width: 768px) 45vw, 80vw"
-            className="object-cover"
-            priority={isPriority}
-          />
+      <div
+        className={clsx(
+          'relative aspect-[3/4] w-full overflow-hidden',
+          useLiteEffects
+            ? 'shadow-[0_18px_42px_-24px_rgba(0,0,0,0.72)]'
+            : 'shadow-[0_30px_75px_-24px_rgba(0,0,0,0.78)]'
         )}
+      >
         <motion.div
-          className="absolute inset-0 bg-gradient-to-b from-transparent via-black/25 to-black/75"
-          animate={isRevealed ? { opacity: 1 } : { opacity: 0 }}
-          transition={prefersReducedMotion ? undefined : REVEAL_TRANSITION}
+          className="absolute inset-0"
+          animate={
+            prefersReducedMotion
+              ? undefined
+              : {
+                  scale: fadeProfile.imageScale,
+                  filter: fadeProfile.imageFilter,
+                }
+          }
+          whileHover={
+            prefersReducedMotion || useLiteEffects
+              ? undefined
+              : {
+                  scale: fadeProfile.imageScale + 0.025,
+                  filter: 'saturate(1.02) brightness(1.01)',
+                }
+          }
+          transition={
+            prefersReducedMotion
+              ? undefined
+              : { duration: useLiteEffects ? 0.45 : 0.8, ease: [0.22, 1, 0.36, 1] }
+          }
+        >
+          <AnimatePresence initial={false} mode="wait">
+            <motion.div
+              key={displayMedia.variantKey}
+              className="absolute inset-0"
+              initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, rotateY: -90 }}
+              animate={{ opacity: 1, rotateY: 0 }}
+              exit={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, rotateY: 90 }}
+              transition={{ duration: prefersReducedMotion ? 0.2 : 0.52, ease: [0.22, 1, 0.36, 1] }}
+              style={{ transformStyle: 'preserve-3d' }}
+            >
+              <Image
+                src={displayMedia.image}
+                alt={journey.title}
+                fill
+                quality={100}
+                sizes="(min-width: 1536px) 27vw, (min-width: 1280px) 32vw, (min-width: 1024px) 34vw, (min-width: 640px) 52vw, 78vw"
+                className="object-cover"
+                priority={isActive}
+              />
+            </motion.div>
+          </AnimatePresence>
+        </motion.div>
+        <motion.div
+          className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/15 to-black/10"
+          animate={
+            prefersReducedMotion ? undefined : { opacity: fadeProfile.overlayOpacity + 0.08 }
+          }
+          transition={
+            prefersReducedMotion
+              ? undefined
+              : { duration: useLiteEffects ? 0.38 : 0.62, ease: [0.22, 1, 0.36, 1] }
+          }
         />
         <motion.div
           className="pointer-events-none absolute inset-x-0 top-0 flex justify-center px-6 pt-6"
           initial={false}
-          animate={isRevealed ? { y: 0, opacity: 1 } : { y: '-45%', opacity: 0 }}
-          transition={prefersReducedMotion ? undefined : REVEAL_TRANSITION}
+          animate={isActive ? { y: 0, opacity: 1 } : { y: '-40%', opacity: 0 }}
+          whileHover={prefersReducedMotion ? undefined : { y: 0, opacity: 1 }}
+          transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
         >
           <span className="relative flex h-16 w-full max-w-[220px] items-center justify-center">
             <Image
-              src={campaign.logo.src}
-              alt={campaign.logo.alt}
+              src={journey.logo.src}
+              alt={journey.logo.alt}
               fill
               sizes="220px"
               className="object-contain"
-              priority={isPriority}
             />
           </span>
         </motion.div>
-        <motion.div
-          className="pointer-events-none absolute inset-x-0 bottom-[30%] flex justify-center px-6 text-center"
-          initial={false}
-          animate={isRevealed ? { y: 0, opacity: 1 } : { y: '45%', opacity: 0 }}
-          transition={prefersReducedMotion ? undefined : REVEAL_TRANSITION}
-        >
-          <p className="max-w-[80%] text-sm leading-relaxed text-white/85">{campaign.highlight}</p>
-        </motion.div>
-        <motion.div
-          className="pointer-events-none absolute inset-x-0 bottom-0 flex flex-col items-center gap-2 px-6 pb-8 text-[0.65rem] uppercase tracking-[0.38em] text-white"
-          initial={false}
-          animate={isRevealed ? { y: 0, opacity: 1 } : { y: '45%', opacity: 0 }}
-          transition={prefersReducedMotion ? undefined : REVEAL_TRANSITION}
-        >
-          <span>{campaign.releaseWindow}</span>
-          <span className="text-white/75">{campaign.destination}</span>
-        </motion.div>
+        <div className="absolute inset-x-0 bottom-0 flex items-center justify-center px-6 pb-7">
+          <SeasonIconRow
+            seasons={journey.seasonTags ?? [journey.season]}
+            compact={isMobileViewport}
+          />
+        </div>
       </div>
     </motion.button>
   );
 }
 
-type BackgroundVideoProps = {
+function SeasonIconRow({
+  seasons,
+  compact = false,
+}: {
+  seasons: Campaign['season'][];
+  compact?: boolean;
+}) {
+  return (
+    <div className={clsx('flex items-center justify-center gap-3', compact && 'gap-2')}>
+      {seasons.map((season) => {
+        const iconSet = CAMPAIGN_SEASON_ICONS[season];
+        return (
+          <span
+            key={season}
+            className={clsx(
+              'relative block shrink-0',
+              compact ? 'h-[1.5rem] w-[1.5rem]' : 'h-[1.9rem] w-[1.9rem]'
+            )}
+            aria-label={iconSet.label}
+          >
+            <Image
+              src={iconSet.icon}
+              alt=""
+              fill
+              className="object-contain [filter:drop-shadow(0_0.16em_0.04em_rgba(0,0,0,0.88))_drop-shadow(0_0.05em_0.16em_rgba(0,0,0,0.45))]"
+            />
+          </span>
+        );
+      })}
+    </div>
+  );
+}
+
+type BackgroundImageProps = {
+  activeJourney: Campaign | null;
+  activeJourneyKey: string;
+  activeJourneyImage: string | null;
+  activeJourneyVideo?: string;
   prefersReducedMotion: boolean;
+  direction: 1 | -1;
+  season: SeasonFilterValue;
+  useLiteEffects: boolean;
+  videoRef: { current: HTMLVideoElement | null };
 };
 
-function BackgroundVideo({ prefersReducedMotion }: BackgroundVideoProps) {
+function BackgroundImage({
+  activeJourney,
+  activeJourneyKey,
+  activeJourneyImage,
+  activeJourneyVideo,
+  prefersReducedMotion,
+  direction,
+  season,
+  useLiteEffects,
+  videoRef,
+}: BackgroundImageProps) {
+  const backgroundDuration = prefersReducedMotion ? 0.2 : useLiteEffects ? 0.72 : 0.98;
+  const seamPeakOpacity = useLiteEffects ? 0.34 : 0.5;
+  const seamShift = direction > 0 ? 42 : -42;
+  const seasonOverlayClass = clsx(
+    'absolute inset-[-18%] blur-[64px]',
+    season === 'summer' &&
+      'bg-[radial-gradient(60%_48%_at_18%_18%,rgba(214,191,134,0.28),rgba(214,191,134,0)_70%),radial-gradient(56%_46%_at_82%_84%,rgba(196,142,110,0.24),rgba(196,142,110,0)_72%)]',
+    season === 'winter' &&
+      'bg-[radial-gradient(60%_48%_at_18%_18%,rgba(132,160,178,0.28),rgba(132,160,178,0)_70%),radial-gradient(56%_46%_at_82%_84%,rgba(177,195,206,0.22),rgba(177,195,206,0)_72%)]',
+    season === 'all' &&
+      'bg-[radial-gradient(58%_46%_at_18%_20%,rgba(203,190,158,0.22),rgba(203,190,158,0)_70%),radial-gradient(56%_44%_at_82%_84%,rgba(171,181,192,0.18),rgba(171,181,192,0)_72%)]'
+  );
+
+  const seasonVeilClass = clsx(
+    'absolute inset-[-10%] blur-[54px]',
+    season === 'summer' &&
+      'bg-[radial-gradient(50%_36%_at_50%_50%,rgba(205,175,120,0.16),rgba(205,175,120,0)_78%)]',
+    season === 'winter' &&
+      'bg-[radial-gradient(50%_36%_at_50%_50%,rgba(166,191,210,0.18),rgba(166,191,210,0)_78%)]',
+    season === 'all' &&
+      'bg-[radial-gradient(50%_36%_at_50%_50%,rgba(196,202,212,0.14),rgba(196,202,212,0)_78%)]'
+  );
+
   return (
     <div className="pointer-events-none absolute inset-0" aria-hidden>
-      <div className="relative h-full w-full bg-black">
-        {prefersReducedMotion ? (
-          <Image src={VIDEO_POSTER} alt="" fill priority sizes="100vw" className="object-cover" />
-        ) : (
-          <SmartVideo
-            wrapperClassName="absolute inset-0"
-            className="h-full w-full object-cover"
-            sources={VIDEO_SOURCES}
-            poster={VIDEO_POSTER}
-            fallbackImage={VIDEO_POSTER}
-            autoPlay
-            muted
-            loop
-            playsInline
-            priority
-            aria-hidden
+      {!prefersReducedMotion ? (
+        <AnimatePresence initial={false} mode="wait">
+          <motion.div
+            key={`season-breath-${season}`}
+            className={seasonOverlayClass}
+            initial={{ opacity: 0 }}
+            animate={
+              useLiteEffects
+                ? { opacity: [0.2, 0.34, 0.24, 0.3, 0.2] }
+                : {
+                    opacity: [0.22, 0.44, 0.28, 0.4, 0.22],
+                    scale: [0.98, 1.05, 1, 1.04, 0.98],
+                  }
+            }
+            exit={{ opacity: 0 }}
+            transition={{
+              opacity: {
+                duration: useLiteEffects ? 0.45 : 0.7,
+                ease: [0.22, 1, 0.36, 1],
+                repeat: useLiteEffects ? Infinity : undefined,
+              },
+              scale: useLiteEffects
+                ? undefined
+                : { duration: 13.5, repeat: Infinity, ease: 'easeInOut' },
+            }}
+            style={{ willChange: 'transform, opacity' }}
           />
-        )}
-        <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/60 to-black/30" />
+        </AnimatePresence>
+      ) : (
+        <div className={seasonOverlayClass} style={{ opacity: 0.32 }} />
+      )}
+
+      {!prefersReducedMotion ? (
+        <motion.div
+          className={seasonVeilClass}
+          animate={
+            useLiteEffects
+              ? { opacity: [0.14, 0.24, 0.18, 0.22, 0.14] }
+              : {
+                  opacity: [0.16, 0.3, 0.2, 0.28, 0.16],
+                  scale: [0.96, 1.04, 0.99, 1.02, 0.96],
+                }
+          }
+          transition={{
+            duration: useLiteEffects ? 8.2 : 10.8,
+            repeat: Infinity,
+            ease: 'easeInOut',
+          }}
+          style={{ willChange: 'transform, opacity' }}
+        />
+      ) : (
+        <div className={seasonVeilClass} style={{ opacity: 0.2 }} />
+      )}
+
+      <div className="absolute inset-0">
+        <AnimatePresence initial={false} mode="sync">
+          {activeJourney && activeJourneyImage ? (
+            <motion.div
+              key={activeJourneyKey}
+              className="absolute inset-0 overflow-hidden"
+              initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={prefersReducedMotion ? { opacity: 1 } : { opacity: 0 }}
+              transition={{ duration: backgroundDuration, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <motion.div
+                className="absolute inset-[-10%]"
+                initial={
+                  prefersReducedMotion
+                    ? { scale: 1.01, x: 0 }
+                    : { scale: 1.05, x: direction > 0 ? 18 : -18 }
+                }
+                animate={{ scale: 1.01, x: 0 }}
+                exit={
+                  prefersReducedMotion
+                    ? { scale: 1.01, x: 0 }
+                    : { scale: 1.04, x: direction > 0 ? -12 : 12 }
+                }
+                transition={{ duration: backgroundDuration, ease: [0.22, 1, 0.36, 1] }}
+                style={{ willChange: 'transform, opacity' }}
+              >
+                <Image
+                  src={activeJourneyImage}
+                  alt=""
+                  fill
+                  quality={100}
+                  sizes="100vw"
+                  className={clsx('object-cover', activeJourneyVideo && 'opacity-0')}
+                  priority
+                />
+                {activeJourneyVideo ? (
+                  <video
+                    ref={videoRef}
+                    key={activeJourneyVideo}
+                    src={activeJourneyVideo}
+                    poster={activeJourneyImage}
+                    className="absolute inset-0 h-full w-full object-cover"
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    preload="auto"
+                  />
+                ) : null}
+              </motion.div>
+            </motion.div>
+          ) : null}
+        </AnimatePresence>
       </div>
+
+      <div className="absolute inset-0 overflow-hidden">
+        <AnimatePresence initial={false} mode="sync">
+          {activeJourney && !prefersReducedMotion ? (
+            <motion.div
+              key={`seam-${activeJourneyKey}`}
+              className="absolute inset-0"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: backgroundDuration, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <motion.div
+                className="absolute inset-y-[-8%] left-1/2 z-10 w-[46vw] -translate-x-1/2 bg-[linear-gradient(90deg,rgba(255,255,255,0)_0%,rgba(255,255,255,0.05)_18%,rgba(255,255,255,0.2)_50%,rgba(255,255,255,0.05)_82%,rgba(255,255,255,0)_100%)] mix-blend-screen blur-[28px]"
+                initial={{ opacity: 0, x: seamShift }}
+                animate={{ opacity: [0, seamPeakOpacity, 0], x: [seamShift, 0, -seamShift * 0.4] }}
+                exit={{ opacity: 0 }}
+                transition={{
+                  duration: backgroundDuration,
+                  ease: [0.22, 1, 0.36, 1],
+                  times: [0, 0.45, 1],
+                }}
+              />
+            </motion.div>
+          ) : null}
+        </AnimatePresence>
+      </div>
+
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_70%,rgba(214,167,112,0.26)_0%,rgba(214,167,112,0)_44%),radial-gradient(circle_at_86%_24%,rgba(214,225,236,0.12)_0%,rgba(214,225,236,0)_42%)]" />
+      <div className="absolute inset-0 bg-[linear-gradient(110deg,rgba(18,12,10,0.62)_0%,rgba(25,18,19,0.44)_38%,rgba(8,8,10,0.58)_100%)]" />
     </div>
   );
 }

@@ -1,8 +1,16 @@
-﻿export type Campaign = {
+import type { JourneySeason } from '@/types/journey';
+
+export type Campaign = {
   id: string;
   slug: string;
   title: string;
   client: string;
+  season: JourneySeason;
+  seasonTags?: JourneySeason[];
+  date: string;
+  location: string;
+  image: string;
+  backgroundVideo?: string;
   destination: string;
   country: string;
   shootYear: number;

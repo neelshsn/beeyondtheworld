@@ -62,6 +62,12 @@ const RELEASE_WINDOW_BY_ID: Record<string, string> = {
   'craie-maroc': 'Spring 2025',
 };
 
+const SEASON_BY_ID: Record<string, Campaign['season']> = {
+  'maradji-ibiza': 'spring-summer',
+  'almaaz-kenya': 'fall-winter',
+  'craie-maroc': 'spring-summer',
+};
+
 const LOGO_BY_ID: Record<string, { src: string; alt: string }> = {
   'maradji-ibiza': { src: '/assets/brands/maradji.svg', alt: 'Maradji logo' },
   'almaaz-kenya': { src: '/assets/brands/almaaz.png', alt: 'Almaaz logo' },
@@ -82,9 +88,36 @@ function resolveCoverAsset(showcase: CampaignShowcase) {
   return { src: coverSrc, alt: showcase.hero.alt };
 }
 
+function resolveThumbnailPhoto(showcase: CampaignShowcase, fallback: { src: string; alt: string }) {
+  const stills = showcase.gallery.filter((media) => media.type === 'image');
+  const rankedStills = [...stills].sort((left, right) => {
+    const leftScore =
+      (left.aspectRatio === 'portrait' ? 100 : 0) +
+      (left.src.includes('-carousel-') ? 10 : 0) +
+      (left.src.includes('-cover') ? 5 : 0);
+    const rightScore =
+      (right.aspectRatio === 'portrait' ? 100 : 0) +
+      (right.src.includes('-carousel-') ? 10 : 0) +
+      (right.src.includes('-cover') ? 5 : 0);
+
+    return rightScore - leftScore;
+  });
+  const preferredStill = rankedStills[0];
+
+  if (!preferredStill) {
+    return fallback;
+  }
+
+  return {
+    src: preferredStill.src,
+    alt: preferredStill.alt,
+  };
+}
+
 export const campaigns: Campaign[] = campaignShowcases.map((showcase) => {
   const client = extractClientFromTitle(showcase.title);
   const cover = resolveCoverAsset(showcase);
+  const thumbnail = resolveThumbnailPhoto(showcase, cover);
   const primaryVideo = showcase.hero.type === 'video' ? showcase.hero.src : undefined;
   const fallbackVideo = showcase.gallery.find((media) => media.type === 'video')?.src;
   const cardVideo = primaryVideo ?? fallbackVideo;
@@ -97,6 +130,12 @@ export const campaigns: Campaign[] = campaignShowcases.map((showcase) => {
     slug: showcase.slug,
     title: showcase.title,
     client,
+    season: SEASON_BY_ID[showcase.id] ?? 'spring-summer',
+    seasonTags: [SEASON_BY_ID[showcase.id] ?? 'spring-summer'],
+    date: RELEASE_WINDOW_BY_ID[showcase.id] ?? 'To be announced',
+    location: showcase.destination,
+    image: thumbnail.src,
+    backgroundVideo: cardVideo,
     destination: showcase.destination,
     country: COUNTRY_BY_ID[showcase.id] ?? showcase.destination,
     shootYear: SHOOT_YEAR_BY_ID[showcase.id] ?? new Date().getFullYear(),
@@ -114,6 +153,6 @@ export const campaigns: Campaign[] = campaignShowcases.map((showcase) => {
     cardPoster,
     logo,
     cover: cover.src,
-    coverAlt: cover.alt,
+    coverAlt: thumbnail.alt,
   } satisfies Campaign;
 });
