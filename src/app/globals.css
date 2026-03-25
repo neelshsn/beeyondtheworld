@@ -117,6 +117,24 @@
     min-height: 100vh;
   }
 
+  /* ── Home full-screen stacked panels ── */
+  .home-panel-stack {
+    position: relative;
+    height: 100svh;
+    overflow: hidden;
+  }
+
+  .home-panel-stack > [data-panel] {
+    position: absolute;
+    inset: 0;
+    will-change: clip-path, visibility;
+  }
+
+  .home-snap-panel {
+    height: 100%;
+    width: 100%;
+  }
+
   .scroll-cue {
     @apply font-display text-xs uppercase tracking-[0.5em] text-foreground/60;
     letter-spacing: 0.6em;
