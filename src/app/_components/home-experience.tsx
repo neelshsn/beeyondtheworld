@@ -6,8 +6,10 @@ import { useCallback, useEffect, useRef } from 'react';
 import { HomeHeroPanel } from './home-hero-panel';
 import { HomeCreativePanel } from './home-creative-panel';
 import { HomeManifestoPanel } from './home-manifesto-panel';
+import { HomeConceptPanel } from './home-concept-panel';
+import { HomeCategoriesPanel } from './home-categories-panel';
 
-const PANEL_COUNT = 3;
+const PANEL_COUNT = 5;
 
 /** Staggered fade-in for all [data-animate-text] inside a panel */
 function animateTextIn(panel: HTMLElement, delay = 0) {
@@ -52,8 +54,12 @@ export default function HomeExperience({ coCreateHref }: HomeExperienceProps) {
       const next = panelEls[index];
       if (!next) return;
 
-      const leftCol = next.querySelector<HTMLElement>('[data-manifesto-left]');
-      const rightCol = next.querySelector<HTMLElement>('[data-manifesto-right]');
+      const leftCol =
+        next.querySelector<HTMLElement>('[data-manifesto-left]') ??
+        next.querySelector<HTMLElement>('[data-categories-left]');
+      const rightCol =
+        next.querySelector<HTMLElement>('[data-manifesto-right]') ??
+        next.querySelector<HTMLElement>('[data-categories-right]');
 
       /* Hide text of outgoing panel */
       const outgoing = panelEls[activeRef.current];
@@ -135,8 +141,12 @@ export default function HomeExperience({ coCreateHref }: HomeExperienceProps) {
       const current = panelEls[activeRef.current];
       if (!current) return;
 
-      const leftCol = current.querySelector<HTMLElement>('[data-manifesto-left]');
-      const rightCol = current.querySelector<HTMLElement>('[data-manifesto-right]');
+      const leftCol =
+        current.querySelector<HTMLElement>('[data-manifesto-left]') ??
+        current.querySelector<HTMLElement>('[data-categories-left]');
+      const rightCol =
+        current.querySelector<HTMLElement>('[data-manifesto-right]') ??
+        current.querySelector<HTMLElement>('[data-categories-right]');
 
       /* Hide text of outgoing panel */
       animateTextOut(current);
@@ -281,6 +291,12 @@ export default function HomeExperience({ coCreateHref }: HomeExperienceProps) {
       </div>
       <div data-panel style={{ zIndex: 3 }}>
         <HomeManifestoPanel />
+      </div>
+      <div data-panel style={{ zIndex: 4 }}>
+        <HomeConceptPanel />
+      </div>
+      <div data-panel style={{ zIndex: 5 }}>
+        <HomeCategoriesPanel />
       </div>
     </div>
   );
