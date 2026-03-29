@@ -8,8 +8,11 @@ import { HomeCreativePanel } from './home-creative-panel';
 import { HomeManifestoPanel } from './home-manifesto-panel';
 import { HomeConceptPanel } from './home-concept-panel';
 import { HomeCategoriesPanel } from './home-categories-panel';
+import { HomeJourneysPanel } from './home-journeys-panel';
+import { HomeConceptReprisePanel } from './home-concept-reprise-panel';
+import { HomeFooter } from './home-footer';
 
-const PANEL_COUNT = 5;
+const PANEL_COUNT = 7;
 
 /** Staggered fade-in for all [data-animate-text] inside a panel */
 function animateTextIn(panel: HTMLElement, delay = 0) {
@@ -35,6 +38,7 @@ type HomeExperienceProps = {
 };
 
 export default function HomeExperience({ coCreateHref }: HomeExperienceProps) {
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const activeRef = useRef(0);
   const isAnimatingRef = useRef(false);
@@ -56,10 +60,12 @@ export default function HomeExperience({ coCreateHref }: HomeExperienceProps) {
 
       const leftCol =
         next.querySelector<HTMLElement>('[data-manifesto-left]') ??
-        next.querySelector<HTMLElement>('[data-categories-left]');
+        next.querySelector<HTMLElement>('[data-categories-left]') ??
+        next.querySelector<HTMLElement>('[data-reprise-left]');
       const rightCol =
         next.querySelector<HTMLElement>('[data-manifesto-right]') ??
-        next.querySelector<HTMLElement>('[data-categories-right]');
+        next.querySelector<HTMLElement>('[data-categories-right]') ??
+        next.querySelector<HTMLElement>('[data-reprise-right]');
 
       /* Hide text of outgoing panel */
       const outgoing = panelEls[activeRef.current];
@@ -143,10 +149,12 @@ export default function HomeExperience({ coCreateHref }: HomeExperienceProps) {
 
       const leftCol =
         current.querySelector<HTMLElement>('[data-manifesto-left]') ??
-        current.querySelector<HTMLElement>('[data-categories-left]');
+        current.querySelector<HTMLElement>('[data-categories-left]') ??
+        current.querySelector<HTMLElement>('[data-reprise-left]');
       const rightCol =
         current.querySelector<HTMLElement>('[data-manifesto-right]') ??
-        current.querySelector<HTMLElement>('[data-categories-right]');
+        current.querySelector<HTMLElement>('[data-categories-right]') ??
+        current.querySelector<HTMLElement>('[data-reprise-right]');
 
       /* Hide text of outgoing panel */
       animateTextOut(current);
@@ -235,13 +243,33 @@ export default function HomeExperience({ coCreateHref }: HomeExperienceProps) {
 
       accumulatedDelta += e.deltaY;
 
-      if (accumulatedDelta > THRESHOLD) {
-        accumulatedDelta = 0;
-        goTo(activeRef.current + 1);
-      } else if (accumulatedDelta < -THRESHOLD) {
-        accumulatedDelta = 0;
-        goTo(activeRef.current - 1);
+      if (Math.abs(accumulatedDelta) < THRESHOLD) return;
+
+      const direction = accumulatedDelta > 0 ? 1 : -1;
+      accumulatedDelta = 0;
+
+      // Check if active panel wants to handle scroll internally (e.g. journeys horizontal scroll)
+      const currentPanel = panelEls[activeRef.current];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const journeyWheel = (currentPanel as any)?.__journeyWheel as
+        | ((delta: number) => boolean)
+        | undefined;
+
+      if (journeyWheel) {
+        const consumed = journeyWheel(direction * 100);
+        if (consumed) return;
       }
+
+      // If on the last panel and scrolling forward, scroll to footer
+      if (direction === 1 && activeRef.current === PANEL_COUNT - 1) {
+        const footer = wrapperRef.current?.querySelector<HTMLElement>('[data-footer]');
+        if (footer) {
+          footer.scrollIntoView({ behavior: 'smooth' });
+        }
+        return;
+      }
+
+      goTo(activeRef.current + direction);
     };
 
     const onTouchStart = (e: TouchEvent) => {
@@ -268,36 +296,46 @@ export default function HomeExperience({ coCreateHref }: HomeExperienceProps) {
       }
     };
 
-    container.addEventListener('wheel', onWheel, { passive: false });
-    container.addEventListener('touchstart', onTouchStart, { passive: true });
-    container.addEventListener('touchend', onTouchEnd, { passive: true });
+    const wrapper = wrapperRef.current ?? container;
+    wrapper.addEventListener('wheel', onWheel, { passive: false });
+    wrapper.addEventListener('touchstart', onTouchStart, { passive: true });
+    wrapper.addEventListener('touchend', onTouchEnd, { passive: true });
     window.addEventListener('keydown', onKeyDown);
 
     return () => {
-      container.removeEventListener('wheel', onWheel);
-      container.removeEventListener('touchstart', onTouchStart);
-      container.removeEventListener('touchend', onTouchEnd);
+      wrapper.removeEventListener('wheel', onWheel);
+      wrapper.removeEventListener('touchstart', onTouchStart);
+      wrapper.removeEventListener('touchend', onTouchEnd);
       window.removeEventListener('keydown', onKeyDown);
     };
   }, [goTo]);
 
   return (
-    <div ref={containerRef} className="home-panel-stack">
-      <div data-panel style={{ zIndex: 1 }}>
-        <HomeHeroPanel />
+    <div ref={wrapperRef}>
+      <div ref={containerRef} className="home-panel-stack">
+        <div data-panel style={{ zIndex: 1 }}>
+          <HomeHeroPanel />
+        </div>
+        <div data-panel style={{ zIndex: 2 }}>
+          <HomeCreativePanel coCreateHref={coCreateHref} />
+        </div>
+        <div data-panel style={{ zIndex: 3 }}>
+          <HomeManifestoPanel />
+        </div>
+        <div data-panel style={{ zIndex: 4 }}>
+          <HomeConceptPanel />
+        </div>
+        <div data-panel style={{ zIndex: 5 }}>
+          <HomeCategoriesPanel />
+        </div>
+        <div data-panel style={{ zIndex: 6 }}>
+          <HomeJourneysPanel />
+        </div>
+        <div data-panel style={{ zIndex: 7 }}>
+          <HomeConceptReprisePanel />
+        </div>
       </div>
-      <div data-panel style={{ zIndex: 2 }}>
-        <HomeCreativePanel coCreateHref={coCreateHref} />
-      </div>
-      <div data-panel style={{ zIndex: 3 }}>
-        <HomeManifestoPanel />
-      </div>
-      <div data-panel style={{ zIndex: 4 }}>
-        <HomeConceptPanel />
-      </div>
-      <div data-panel style={{ zIndex: 5 }}>
-        <HomeCategoriesPanel />
-      </div>
+      <HomeFooter />
     </div>
   );
 }
