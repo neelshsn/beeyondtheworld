@@ -8,3 +8,4 @@ export * from './pdf-download';
 export * from './asset-placeholder';
 export * from './media-lightbox';
 export * from './smart-video';
+export * from './ripple-cursor';
