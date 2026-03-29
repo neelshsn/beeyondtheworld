@@ -29,9 +29,9 @@ export function HomeConceptPanel() {
       <div className="relative flex h-full items-center justify-center px-8">
         <p
           data-animate-text
-          className="max-w-lg text-center font-script text-[clamp(1.2rem,2.2vw,2rem)] lowercase leading-[1.7] tracking-[0.02em] text-white/90"
+          className="max-w-[90vw] text-center font-script text-[clamp(1.6rem,3vw,3rem)] lowercase leading-[1.5] tracking-[0.02em] text-white/90 lg:whitespace-nowrap"
         >
-          Dream-sustained by design, luminous in delivery
+          Visual tales that support a sustainable worldwide development
         </p>
       </div>
 

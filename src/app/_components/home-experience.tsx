@@ -5,14 +5,13 @@ import { useCallback, useEffect, useRef } from 'react';
 
 import { HomeHeroPanel } from './home-hero-panel';
 import { HomeCreativePanel } from './home-creative-panel';
-import { HomeManifestoPanel } from './home-manifesto-panel';
+import { HomeJourneysPanel } from './home-journeys-panel';
 import { HomeConceptPanel } from './home-concept-panel';
 import { HomeCategoriesPanel } from './home-categories-panel';
-import { HomeJourneysPanel } from './home-journeys-panel';
-import { HomeConceptReprisePanel } from './home-concept-reprise-panel';
+import { HomeManifestoPanel } from './home-manifesto-panel';
 import { HomeFooter } from './home-footer';
 
-const PANEL_COUNT = 8;
+const PANEL_COUNT = 7;
 
 /** Staggered fade-in for all [data-animate-text] inside a panel */
 function animateTextIn(panel: HTMLElement, delay = 0) {
@@ -54,165 +53,43 @@ export default function HomeExperience({ coCreateHref }: HomeExperienceProps) {
     const panelEls = container.querySelectorAll<HTMLElement>('[data-panel]');
 
     if (direction === 1) {
+      /* ── Forward: wipe next panel bottom → top ── */
       const next = panelEls[index];
       if (!next) return;
 
-      const leftCol =
-        next.querySelector<HTMLElement>('[data-manifesto-left]') ??
-        next.querySelector<HTMLElement>('[data-categories-left]') ??
-        next.querySelector<HTMLElement>('[data-reprise-left]');
-      const rightCol =
-        next.querySelector<HTMLElement>('[data-manifesto-right]') ??
-        next.querySelector<HTMLElement>('[data-categories-right]') ??
-        next.querySelector<HTMLElement>('[data-reprise-right]');
-
-      /* Hide text of outgoing panel */
       const outgoing = panelEls[activeRef.current];
       if (outgoing) animateTextOut(outgoing);
 
-      if (leftCol && rightCol) {
-        /*
-         * Panel 2 → 3 choreography:
-         * 1. Fade out Panel 2 text+buttons (bg stays visible)
-         * 2. Wipe-reveal left beige column (left→right) over Panel 2 bg
-         * 3. Wipe-reveal right video column (left→right)
-         * 4. Fade-in manifesto text on left
-         */
-        const textEls = next.querySelectorAll<HTMLElement>('[data-animate-text]');
-        gsap.set(next, { visibility: 'visible' });
-        gsap.set(leftCol, { clipPath: 'inset(0 100% 0 0)' });
-        gsap.set(rightCol, { clipPath: 'inset(100% 0 0 0)' });
-        gsap.set(textEls, { opacity: 0, y: 28 });
-
-        const tl = gsap.timeline({
-          onComplete: () => {
-            activeRef.current = index;
-            isAnimatingRef.current = false;
-          },
-        });
-
-        /* Step 1: fade out Panel 2 text+buttons */
-        /* Already handled by animateTextOut(outgoing) above */
-
-        /* Step 2: wipe left beige column left→right */
-        tl.to(
-          leftCol,
-          {
-            clipPath: 'inset(0 0% 0 0)',
-            duration: 1.6,
-            ease: 'power2.inOut',
-          },
-          0.6
-        );
-
-        /* Step 3: wipe right video column bottom→top */
-        tl.to(
-          rightCol,
-          {
-            clipPath: 'inset(0% 0 0 0)',
-            duration: 1.6,
-            ease: 'power2.inOut',
-          },
-          1.4
-        );
-
-        /* Step 4: fade-in manifesto text on left */
-        tl.to(
-          textEls,
-          {
-            opacity: 1,
-            y: 0,
-            duration: 1,
-            ease: 'power2.out',
-            stagger: 0.15,
-          },
-          2.6
-        );
-      } else {
-        /* Panel 2: wipe from bottom to top */
-        gsap.set(next, { clipPath: 'inset(100% 0 0 0)', visibility: 'visible' });
-        gsap.to(next, {
-          clipPath: 'inset(0% 0 0 0)',
-          duration: 1,
-          ease: 'power3.inOut',
-          onComplete: () => {
-            animateTextIn(next, 0.1);
-            activeRef.current = index;
-            isAnimatingRef.current = false;
-          },
-        });
-      }
+      gsap.set(next, { clipPath: 'inset(100% 0 0 0)', visibility: 'visible' });
+      gsap.to(next, {
+        clipPath: 'inset(0% 0 0 0)',
+        duration: 1,
+        ease: 'power3.inOut',
+        onComplete: () => {
+          animateTextIn(next, 0.1);
+          activeRef.current = index;
+          isAnimatingRef.current = false;
+        },
+      });
     } else {
+      /* ── Backward: wipe current panel top → bottom to reveal previous ── */
       const current = panelEls[activeRef.current];
       if (!current) return;
 
-      const leftCol =
-        current.querySelector<HTMLElement>('[data-manifesto-left]') ??
-        current.querySelector<HTMLElement>('[data-categories-left]') ??
-        current.querySelector<HTMLElement>('[data-reprise-left]');
-      const rightCol =
-        current.querySelector<HTMLElement>('[data-manifesto-right]') ??
-        current.querySelector<HTMLElement>('[data-categories-right]') ??
-        current.querySelector<HTMLElement>('[data-reprise-right]');
-
-      /* Hide text of outgoing panel */
+      const incoming = panelEls[index];
       animateTextOut(current);
 
-      const incoming = panelEls[index];
-
-      if (leftCol && rightCol) {
-        /*
-         * Panel 3 → 2 reverse choreography:
-         * 1. Fade out manifesto text
-         * 2. Wipe-hide right video column (right→left)
-         * 3. Wipe-hide left beige column (right→left), revealing Panel 2 bg
-         * 4. Fade-in Panel 2 text+buttons
-         */
-        const tl = gsap.timeline({
-          onComplete: () => {
-            gsap.set(current, { visibility: 'hidden' });
-            if (incoming) animateTextIn(incoming, 0.1);
-            activeRef.current = index;
-            isAnimatingRef.current = false;
-          },
-        });
-
-        /* Step 1: fade out manifesto text (already called animateTextOut above) */
-
-        /* Step 2: wipe-hide right video column top→bottom */
-        tl.to(
-          rightCol,
-          {
-            clipPath: 'inset(100% 0 0 0)',
-            duration: 1.4,
-            ease: 'power2.inOut',
-          },
-          0.5
-        );
-
-        /* Step 3: wipe-hide left beige column right→left */
-        tl.to(
-          leftCol,
-          {
-            clipPath: 'inset(0 100% 0 0)',
-            duration: 1.4,
-            ease: 'power2.inOut',
-          },
-          1.2
-        );
-      } else {
-        gsap.to(current, {
-          clipPath: 'inset(100% 0 0 0)',
-          duration: 1,
-          ease: 'power3.inOut',
-          onComplete: () => {
-            gsap.set(current, { visibility: 'hidden' });
-            if (incoming) animateTextIn(incoming, 0.1);
-            activeRef.current = index;
-            isAnimatingRef.current = false;
-          },
-        });
-      }
+      gsap.to(current, {
+        clipPath: 'inset(100% 0 0 0)',
+        duration: 1,
+        ease: 'power3.inOut',
+        onComplete: () => {
+          gsap.set(current, { visibility: 'hidden' });
+          if (incoming) animateTextIn(incoming, 0.1);
+          activeRef.current = index;
+          isAnimatingRef.current = false;
+        },
+      });
     }
   }, []);
 
@@ -246,18 +123,6 @@ export default function HomeExperience({ coCreateHref }: HomeExperienceProps) {
 
       const direction = accumulatedDelta > 0 ? 1 : -1;
       accumulatedDelta = 0;
-
-      // Check if active panel wants to handle scroll internally (e.g. journeys horizontal scroll)
-      const currentPanel = panelEls[activeRef.current];
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const journeyWheel = (currentPanel as any)?.__journeyWheel as
-        | ((delta: number) => boolean)
-        | undefined;
-
-      if (journeyWheel) {
-        const consumed = journeyWheel(direction * 100);
-        if (consumed) return;
-      }
 
       goTo(activeRef.current + direction);
     };
@@ -301,28 +166,38 @@ export default function HomeExperience({ coCreateHref }: HomeExperienceProps) {
 
   return (
     <div ref={containerRef} className="home-panel-stack">
+      {/* Panel 1: Hero */}
       <div data-panel style={{ zIndex: 1 }}>
         <HomeHeroPanel />
       </div>
+
+      {/* Panel 2: Creative Visuals Production */}
       <div data-panel style={{ zIndex: 2 }}>
         <HomeCreativePanel coCreateHref={coCreateHref} />
       </div>
+
+      {/* Panel 3: Manifesto — full-screen video */}
       <div data-panel style={{ zIndex: 3 }}>
         <HomeManifestoPanel />
       </div>
+
+      {/* Panel 4: Journeys — Spring/Summer & Fall/Winter */}
       <div data-panel style={{ zIndex: 4 }}>
-        <HomeConceptPanel />
+        <HomeJourneysPanel />
       </div>
+
+      {/* Panel 5: Triptique (Categories) */}
       <div data-panel style={{ zIndex: 5 }}>
         <HomeCategoriesPanel />
       </div>
+
+      {/* Panel 6: Concept */}
       <div data-panel style={{ zIndex: 6 }}>
-        <HomeJourneysPanel />
+        <HomeConceptPanel />
       </div>
+
+      {/* Panel 7: Footer */}
       <div data-panel style={{ zIndex: 7 }}>
-        <HomeConceptReprisePanel />
-      </div>
-      <div data-panel style={{ zIndex: 8 }}>
         <HomeFooter />
       </div>
     </div>

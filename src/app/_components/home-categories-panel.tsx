@@ -12,7 +12,14 @@ const CATEGORY_IMAGES: Record<Category, string> = {
   honey: '/assets/campaigns/almaaz-kenya/almaaz-kenya-gallery-01.jpg',
 };
 
-const DEFAULT_IMAGE = '/assets/campaigns/almaaz-kenya/almaaz-kenya-gallery-09.jpg';
+const DEFAULT_IMAGE = '/assets/campaigns/almaaz-kenya/almaaz-kenya-gallery-01.jpg';
+
+/** bees & honey → image LEFT, flowers → image RIGHT */
+const IMAGE_SIDE: Record<Category, 'left' | 'right'> = {
+  bees: 'left',
+  flowers: 'right',
+  honey: 'left',
+};
 
 const CATEGORY_ICONS: Record<Category, { white: string; gold: string; label: string }> = {
   bees: {
@@ -114,60 +121,170 @@ const CATEGORY_CONTENT: Record<Category, { subtitle: React.ReactNode; body: Reac
 export function HomeCategoriesPanel() {
   const [active, setActive] = useState<Category | null>(null);
   const [hoveredIcon, setHoveredIcon] = useState<Category | null>(null);
-  const imageContainerRef = useRef<HTMLDivElement>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
-  const currentImageRef = useRef<string>(DEFAULT_IMAGE);
+  const sectionRef = useRef<HTMLElement>(null);
+  const isAnimatingRef = useRef(false);
 
   const switchCategory = useCallback(
     (cat: Category) => {
-      if (cat === active) return;
+      if (cat === active || isAnimatingRef.current) return;
+      isAnimatingRef.current = true;
 
-      /* Animate content fade out then in */
-      const contentEl = contentRef.current;
-      if (contentEl) {
-        gsap.to(contentEl, {
-          opacity: 0,
-          y: 12,
-          duration: 0.35,
-          ease: 'power2.in',
+      const section = sectionRef.current;
+      if (!section) return;
+
+      const twoColEl = section.querySelector<HTMLElement>('[data-two-col]');
+      const imageColEl = section.querySelector<HTMLElement>('[data-cat-image]');
+      const textColEl = section.querySelector<HTMLElement>('[data-cat-text]');
+      const iconsEl = section.querySelector<HTMLElement>('[data-icons-overlay]');
+
+      if (!twoColEl || !imageColEl || !textColEl) return;
+
+      const side = IMAGE_SIDE[cat];
+
+      if (active === null) {
+        /* --- First click: single-column → two-column reveal --- */
+        setActive(cat);
+
+        // Configure column order based on image side
+        twoColEl.style.direction = side === 'left' ? 'ltr' : 'rtl';
+
+        // Show the two-column layout
+        gsap.set(twoColEl, { visibility: 'visible' });
+        gsap.set(imageColEl, { clipPath: 'inset(100% 0 0 0)' });
+        gsap.set(textColEl, { clipPath: 'inset(0 0 100% 0)' });
+
+        // Hide icons overlay
+        if (iconsEl) {
+          gsap.to(iconsEl, { opacity: 0, duration: 0.4, ease: 'power2.in' });
+        }
+
+        // Fade out content elements initially
+        const textEls = textColEl.querySelectorAll<HTMLElement>('[data-animate-text]');
+        gsap.set(textEls, { opacity: 0, y: 28 });
+
+        const tl = gsap.timeline({
           onComplete: () => {
-            setActive(cat);
-            gsap.fromTo(
-              contentEl,
-              { opacity: 0, y: 20 },
-              { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }
-            );
+            isAnimatingRef.current = false;
           },
         });
+
+        // Image column wipes bottom→top
+        tl.to(
+          imageColEl,
+          {
+            clipPath: 'inset(0% 0 0 0)',
+            duration: 1.4,
+            ease: 'power2.inOut',
+          },
+          0.3
+        );
+
+        // Text column wipes top→bottom
+        tl.to(
+          textColEl,
+          {
+            clipPath: 'inset(0 0 0% 0)',
+            duration: 1.4,
+            ease: 'power2.inOut',
+          },
+          0.6
+        );
+
+        // Fade in text
+        tl.to(
+          textEls,
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.7,
+            ease: 'power2.out',
+            stagger: 0.12,
+          },
+          1.6
+        );
       } else {
-        setActive(cat);
+        /* --- Category switching: inverse wipe both columns --- */
+        const prevSide = IMAGE_SIDE[active];
+        const needsFlip = prevSide !== side;
+
+        const tl = gsap.timeline({
+          onComplete: () => {
+            isAnimatingRef.current = false;
+          },
+        });
+
+        // Step 1: Wipe out both columns simultaneously in opposite directions
+        tl.to(
+          imageColEl,
+          {
+            clipPath: 'inset(100% 0 0 0)',
+            duration: 0.9,
+            ease: 'power2.inOut',
+          },
+          0
+        );
+
+        tl.to(
+          textColEl,
+          {
+            clipPath: 'inset(0 0 100% 0)',
+            duration: 0.9,
+            ease: 'power2.inOut',
+          },
+          0
+        );
+
+        // Step 2: Mid-transition — update state and column order
+        tl.call(
+          () => {
+            setActive(cat);
+            if (needsFlip) {
+              twoColEl.style.direction = side === 'left' ? 'ltr' : 'rtl';
+            }
+            const textEls = textColEl.querySelectorAll<HTMLElement>('[data-animate-text]');
+            gsap.set(textEls, { opacity: 0, y: 28 });
+          },
+          [],
+          0.95
+        );
+
+        // Step 3: Wipe in both columns in opposite directions
+        tl.to(
+          imageColEl,
+          {
+            clipPath: 'inset(0% 0 0 0)',
+            duration: 1.2,
+            ease: 'power2.inOut',
+          },
+          1.0
+        );
+
+        tl.to(
+          textColEl,
+          {
+            clipPath: 'inset(0 0 0% 0)',
+            duration: 1.2,
+            ease: 'power2.inOut',
+          },
+          1.1
+        );
+
+        // Step 4: Fade in text
+        tl.call(
+          () => {
+            const textEls = textColEl.querySelectorAll<HTMLElement>('[data-animate-text]');
+            gsap.to(textEls, {
+              opacity: 1,
+              y: 0,
+              duration: 0.7,
+              ease: 'power2.out',
+              stagger: 0.12,
+            });
+          },
+          [],
+          1.8
+        );
       }
-
-      /* Animate left image wipe */
-      const container = imageContainerRef.current;
-      if (!container) return;
-
-      const newSrc = CATEGORY_IMAGES[cat];
-      if (newSrc === currentImageRef.current) return;
-
-      // Create a new image layer on top, wipe it in bottom→top
-      const overlay = document.createElement('div');
-      overlay.style.cssText = 'position:absolute;inset:0;clip-path:inset(100% 0 0 0);z-index:2;';
-      overlay.innerHTML = `<img src="${newSrc}" alt="" style="width:100%;height:100%;object-fit:cover;" />`;
-      container.appendChild(overlay);
-
-      gsap.to(overlay, {
-        clipPath: 'inset(0% 0 0 0)',
-        duration: 1,
-        ease: 'power2.inOut',
-        onComplete: () => {
-          currentImageRef.current = newSrc;
-          const overlays = container.querySelectorAll('div[style*="z-index:2"]');
-          overlays.forEach((el, i) => {
-            if (i < overlays.length - 1) el.remove();
-          });
-        },
-      });
     },
     [active]
   );
@@ -175,71 +292,97 @@ export function HomeCategoriesPanel() {
   const currentImage = active ? CATEGORY_IMAGES[active] : DEFAULT_IMAGE;
 
   return (
-    <section className="home-snap-panel relative overflow-hidden">
-      <div className="relative grid h-full grid-cols-1 lg:grid-cols-2">
-        {/* Left column — Category image */}
+    <section ref={sectionRef} className="home-snap-panel relative overflow-hidden">
+      {/* ── Default state: full-screen image + icon overlay ── */}
+      <div className="absolute inset-0">
+        <Image src={DEFAULT_IMAGE} alt="" fill sizes="100vw" className="object-cover" priority />
+      </div>
+
+      {/* Icons overlay — vertical column, right-centered */}
+      <div
+        data-icons-overlay
+        className="absolute right-8 top-1/2 z-30 flex -translate-y-1/2 flex-col items-center gap-8 sm:right-12 lg:right-20"
+      >
+        {(Object.keys(CATEGORY_ICONS) as Category[]).map((cat) => {
+          const icon = CATEGORY_ICONS[cat];
+          const isHovered = hoveredIcon === cat;
+          const isActive = active === cat;
+
+          return (
+            <button
+              key={cat}
+              onClick={() => switchCategory(cat)}
+              onMouseEnter={() => setHoveredIcon(cat)}
+              onMouseLeave={() => setHoveredIcon(null)}
+              className="relative h-12 w-12 transition-transform duration-300 hover:scale-110 lg:h-14 lg:w-14"
+              aria-label={icon.label}
+            >
+              <Image
+                src={isHovered || isActive ? icon.gold : icon.white}
+                alt=""
+                fill
+                sizes="56px"
+                className="object-contain transition-opacity duration-300"
+              />
+            </button>
+          );
+        })}
+      </div>
+
+      {/* ── Two-column layout (hidden until first category click) ── */}
+      <div
+        data-two-col
+        className="absolute inset-0 z-20 grid grid-cols-1 lg:grid-cols-2"
+        style={{ visibility: 'hidden' }}
+      >
+        {/* Image column */}
         <div
-          data-categories-left
-          ref={imageContainerRef}
+          data-cat-image
           className="relative min-h-[50vh] lg:min-h-0"
+          style={{ direction: 'ltr' }}
         >
-          <Image src={currentImage} alt="" fill sizes="50vw" className="object-cover" priority />
+          <Image src={currentImage} alt="" fill sizes="50vw" className="object-cover object-top" />
         </div>
 
-        {/* Right column — Beige with icons + content */}
+        {/* Text column */}
         <div
-          data-categories-right
-          className="relative flex flex-col bg-[#efe3d1] px-8 py-12 sm:px-12 lg:px-16 lg:py-16"
+          data-cat-text
+          className="relative flex flex-col items-center justify-center bg-[#efe3d1] px-8 py-12 sm:px-12 lg:px-16 lg:py-16"
+          style={{ direction: 'ltr' }}
         >
-          {/* Top-right icon menu */}
-          <div className="flex items-center justify-end gap-6">
+          {/* Icons inside two-col view — same vertical column, right-side */}
+          <div className="absolute right-6 top-1/2 z-10 flex -translate-y-1/2 flex-col items-center gap-8 sm:right-8 lg:right-12">
             {(Object.keys(CATEGORY_ICONS) as Category[]).map((cat) => {
               const icon = CATEGORY_ICONS[cat];
               const isActive = active === cat;
               const isHovered = hoveredIcon === cat;
 
               return (
-                <div
+                <button
                   key={cat}
-                  className="relative flex items-center gap-3"
+                  onClick={() => switchCategory(cat)}
                   onMouseEnter={() => setHoveredIcon(cat)}
                   onMouseLeave={() => setHoveredIcon(null)}
+                  className="relative h-10 w-10 transition-transform duration-300 hover:scale-110"
+                  aria-label={icon.label}
                 >
-                  {/* Title — appears on hover */}
-                  <span
-                    className={`font-display text-[10px] uppercase tracking-[0.3em] transition-opacity duration-300 ${
-                      isHovered || isActive ? 'opacity-100' : 'opacity-0'
-                    } ${isActive ? 'text-[#edb450]' : 'text-[#1b130e]/60'}`}
-                  >
-                    {icon.label}
-                  </span>
-
-                  <button
-                    onClick={() => switchCategory(cat)}
-                    className="relative h-10 w-10 transition-transform duration-300 hover:scale-110"
-                    aria-label={icon.label}
-                  >
-                    <Image
-                      src={isActive ? icon.gold : icon.white}
-                      alt=""
-                      fill
-                      sizes="40px"
-                      className={`object-contain transition-opacity duration-300 ${
-                        !isActive ? 'opacity-40 brightness-0' : ''
-                      }`}
-                    />
-                  </button>
-                </div>
+                  <Image
+                    src={isActive || isHovered ? icon.gold : icon.white}
+                    alt=""
+                    fill
+                    sizes="40px"
+                    className={`object-contain transition-opacity duration-300 ${
+                      !isActive && !isHovered ? 'opacity-40 brightness-0' : ''
+                    }`}
+                  />
+                </button>
               );
             })}
           </div>
 
           {/* Category content — centered */}
-          <div
-            ref={contentRef}
-            className="flex flex-1 flex-col items-center justify-center px-4 lg:px-8"
-          >
-            {active ? (
+          <div className="flex max-w-md flex-col items-center justify-center px-4 lg:px-8">
+            {active && (
               <>
                 <h2
                   data-animate-text
@@ -254,13 +397,6 @@ export function HomeCategoriesPanel() {
                   {CATEGORY_CONTENT[active].body}
                 </div>
               </>
-            ) : (
-              <p
-                data-animate-text
-                className="text-center font-script text-[clamp(1rem,1.6vw,1.4rem)] lowercase leading-[1.7] text-[#1b130e]/50"
-              >
-                Select a category to explore
-              </p>
             )}
           </div>
         </div>
