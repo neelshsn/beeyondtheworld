@@ -8,7 +8,7 @@ export function HomeFooter() {
   return (
     <footer
       data-footer
-      className="relative flex h-[50vh] flex-col items-center justify-between bg-[#efe3d1] px-8 py-12 sm:px-12 lg:px-20"
+      className="home-snap-panel relative flex flex-col items-center justify-between bg-[#efe3d1] px-8 py-12 sm:px-12 lg:px-20"
     >
       {/* Centered icon */}
       <div className="flex flex-1 items-center justify-center">

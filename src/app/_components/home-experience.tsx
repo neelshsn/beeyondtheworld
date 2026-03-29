@@ -12,7 +12,7 @@ import { HomeJourneysPanel } from './home-journeys-panel';
 import { HomeConceptReprisePanel } from './home-concept-reprise-panel';
 import { HomeFooter } from './home-footer';
 
-const PANEL_COUNT = 7;
+const PANEL_COUNT = 8;
 
 /** Staggered fade-in for all [data-animate-text] inside a panel */
 function animateTextIn(panel: HTMLElement, delay = 0) {
@@ -38,7 +38,6 @@ type HomeExperienceProps = {
 };
 
 export default function HomeExperience({ coCreateHref }: HomeExperienceProps) {
-  const wrapperRef = useRef<HTMLDivElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const activeRef = useRef(0);
   const isAnimatingRef = useRef(false);
@@ -260,15 +259,6 @@ export default function HomeExperience({ coCreateHref }: HomeExperienceProps) {
         if (consumed) return;
       }
 
-      // If on the last panel and scrolling forward, scroll to footer
-      if (direction === 1 && activeRef.current === PANEL_COUNT - 1) {
-        const footer = wrapperRef.current?.querySelector<HTMLElement>('[data-footer]');
-        if (footer) {
-          footer.scrollIntoView({ behavior: 'smooth' });
-        }
-        return;
-      }
-
       goTo(activeRef.current + direction);
     };
 
@@ -296,46 +286,45 @@ export default function HomeExperience({ coCreateHref }: HomeExperienceProps) {
       }
     };
 
-    const wrapper = wrapperRef.current ?? container;
-    wrapper.addEventListener('wheel', onWheel, { passive: false });
-    wrapper.addEventListener('touchstart', onTouchStart, { passive: true });
-    wrapper.addEventListener('touchend', onTouchEnd, { passive: true });
+    container.addEventListener('wheel', onWheel, { passive: false });
+    container.addEventListener('touchstart', onTouchStart, { passive: true });
+    container.addEventListener('touchend', onTouchEnd, { passive: true });
     window.addEventListener('keydown', onKeyDown);
 
     return () => {
-      wrapper.removeEventListener('wheel', onWheel);
-      wrapper.removeEventListener('touchstart', onTouchStart);
-      wrapper.removeEventListener('touchend', onTouchEnd);
+      container.removeEventListener('wheel', onWheel);
+      container.removeEventListener('touchstart', onTouchStart);
+      container.removeEventListener('touchend', onTouchEnd);
       window.removeEventListener('keydown', onKeyDown);
     };
   }, [goTo]);
 
   return (
-    <div ref={wrapperRef}>
-      <div ref={containerRef} className="home-panel-stack">
-        <div data-panel style={{ zIndex: 1 }}>
-          <HomeHeroPanel />
-        </div>
-        <div data-panel style={{ zIndex: 2 }}>
-          <HomeCreativePanel coCreateHref={coCreateHref} />
-        </div>
-        <div data-panel style={{ zIndex: 3 }}>
-          <HomeManifestoPanel />
-        </div>
-        <div data-panel style={{ zIndex: 4 }}>
-          <HomeConceptPanel />
-        </div>
-        <div data-panel style={{ zIndex: 5 }}>
-          <HomeCategoriesPanel />
-        </div>
-        <div data-panel style={{ zIndex: 6 }}>
-          <HomeJourneysPanel />
-        </div>
-        <div data-panel style={{ zIndex: 7 }}>
-          <HomeConceptReprisePanel />
-        </div>
+    <div ref={containerRef} className="home-panel-stack">
+      <div data-panel style={{ zIndex: 1 }}>
+        <HomeHeroPanel />
       </div>
-      <HomeFooter />
+      <div data-panel style={{ zIndex: 2 }}>
+        <HomeCreativePanel coCreateHref={coCreateHref} />
+      </div>
+      <div data-panel style={{ zIndex: 3 }}>
+        <HomeManifestoPanel />
+      </div>
+      <div data-panel style={{ zIndex: 4 }}>
+        <HomeConceptPanel />
+      </div>
+      <div data-panel style={{ zIndex: 5 }}>
+        <HomeCategoriesPanel />
+      </div>
+      <div data-panel style={{ zIndex: 6 }}>
+        <HomeJourneysPanel />
+      </div>
+      <div data-panel style={{ zIndex: 7 }}>
+        <HomeConceptReprisePanel />
+      </div>
+      <div data-panel style={{ zIndex: 8 }}>
+        <HomeFooter />
+      </div>
     </div>
   );
 }
