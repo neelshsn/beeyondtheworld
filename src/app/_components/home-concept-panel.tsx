@@ -29,31 +29,27 @@ export function HomeConceptPanel() {
       <div className="relative flex h-full items-center justify-center px-8">
         <p
           data-animate-text
-          className="max-w-[90vw] text-center font-script text-[clamp(1.6rem,3vw,3rem)] lowercase leading-[1.5] tracking-[0.02em] text-white/90 lg:whitespace-nowrap"
+          className="handwriting-reveal max-w-[90vw] text-center font-script text-[clamp(1.6rem,3vw,3rem)] lowercase leading-[1.5] tracking-[0.02em] text-white/90 lg:whitespace-nowrap"
         >
           Visual tales that support a sustainable worldwide development
         </p>
       </div>
 
-      {/* Bottom-right: Concept title */}
-      <div className="absolute bottom-12 right-8 sm:bottom-16 sm:right-12 lg:bottom-20 lg:right-20">
+      {/* Bottom-left: Concept title + Discover CTA below */}
+      <div className="absolute bottom-12 left-8 flex flex-col items-start gap-4 sm:bottom-16 sm:left-12 lg:bottom-20 lg:left-20">
         <h2
           data-animate-text
-          className="font-menu text-[clamp(2.4rem,7vw,8rem)] uppercase leading-[0.9] tracking-[0.02em] text-white"
+          className="text-glow font-menu text-[clamp(2.4rem,7vw,8rem)] uppercase leading-[0.9] tracking-[0.02em] text-white"
         >
           Concept
         </h2>
-      </div>
-
-      {/* Bottom-left: CTA */}
-      <div className="absolute bottom-12 left-8 sm:bottom-16 sm:left-12 lg:bottom-20 lg:left-20">
         <Link
           href="/concept"
           data-animate-text
-          className="group relative inline-flex items-center justify-center overflow-hidden rounded-none border border-white/25 bg-white/10 px-8 py-2.5 font-display text-[9px] uppercase tracking-[0.45em] text-white transition-colors duration-300 [transition-timing-function:var(--bee-ease)] hover:border-white/60 hover:bg-white/15"
+          className="group relative inline-flex flex-col items-start font-display text-[9px] uppercase tracking-[0.45em] text-white"
         >
-          <span className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-[#f6c452bf] to-transparent opacity-0 transition-transform duration-500 group-hover:translate-x-full group-hover:opacity-100" />
-          Discover
+          <span>Discover</span>
+          <span className="mt-1.5 h-px w-full origin-left scale-x-0 bg-gradient-to-r from-[rgba(249,215,162,0.18)] via-[rgba(244,199,122,0.75)] to-[rgba(255,240,225,0.95)] transition-transform duration-300 ease-out group-hover:scale-x-100" />
         </Link>
       </div>
     </section>

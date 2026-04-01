@@ -53,43 +53,103 @@ export default function HomeExperience({ coCreateHref }: HomeExperienceProps) {
     const panelEls = container.querySelectorAll<HTMLElement>('[data-panel]');
 
     if (direction === 1) {
-      /* ── Forward: wipe next panel bottom → top ── */
+      /* ── Forward ── */
       const next = panelEls[index];
       if (!next) return;
 
       const outgoing = panelEls[activeRef.current];
       if (outgoing) animateTextOut(outgoing);
 
-      gsap.set(next, { clipPath: 'inset(100% 0 0 0)', visibility: 'visible' });
-      gsap.to(next, {
-        clipPath: 'inset(0% 0 0 0)',
-        duration: 1,
-        ease: 'power3.inOut',
-        onComplete: () => {
-          animateTextIn(next, 0.1);
-          activeRef.current = index;
-          isAnimatingRef.current = false;
-        },
-      });
+      const hasDualSweep = next.querySelector('[data-dual-sweep]');
+
+      if (hasDualSweep) {
+        /* Dual-sweep reveal: left column top→bottom, right column bottom→top */
+        const leftCol = next.querySelector<HTMLElement>('[data-col-left]');
+        const rightCol = next.querySelector<HTMLElement>('[data-col-right]');
+
+        gsap.set(next, { clipPath: 'inset(0% 0 0 0)', visibility: 'visible' });
+
+        if (leftCol && rightCol) {
+          gsap.set(leftCol, { clipPath: 'inset(0 0 100% 0)' });
+          gsap.set(rightCol, { clipPath: 'inset(100% 0 0 0)' });
+
+          gsap.to(leftCol, {
+            clipPath: 'inset(0 0 0% 0)',
+            duration: 1.4,
+            ease: 'power3.inOut',
+          });
+          gsap.to(rightCol, {
+            clipPath: 'inset(0% 0 0 0)',
+            duration: 1.4,
+            ease: 'power3.inOut',
+            delay: 0.1,
+            onComplete: () => {
+              animateTextIn(next, 0.1);
+              activeRef.current = index;
+              isAnimatingRef.current = false;
+            },
+          });
+        }
+      } else {
+        /* Default: wipe next panel bottom → top */
+        gsap.set(next, { clipPath: 'inset(100% 0 0 0)', visibility: 'visible' });
+        gsap.to(next, {
+          clipPath: 'inset(0% 0 0 0)',
+          duration: 1,
+          ease: 'power3.inOut',
+          onComplete: () => {
+            animateTextIn(next, 0.1);
+            activeRef.current = index;
+            isAnimatingRef.current = false;
+          },
+        });
+      }
     } else {
-      /* ── Backward: wipe current panel top → bottom to reveal previous ── */
+      /* ── Backward ── */
       const current = panelEls[activeRef.current];
       if (!current) return;
 
       const incoming = panelEls[index];
+      const hasDualSweep = current.querySelector('[data-dual-sweep]');
+
       animateTextOut(current);
 
-      gsap.to(current, {
-        clipPath: 'inset(100% 0 0 0)',
-        duration: 1,
-        ease: 'power3.inOut',
-        onComplete: () => {
-          gsap.set(current, { visibility: 'hidden' });
-          if (incoming) animateTextIn(incoming, 0.1);
-          activeRef.current = index;
-          isAnimatingRef.current = false;
-        },
-      });
+      if (hasDualSweep) {
+        /* Dual-sweep exit: reverse the columns */
+        const leftCol = current.querySelector<HTMLElement>('[data-col-left]');
+        const rightCol = current.querySelector<HTMLElement>('[data-col-right]');
+
+        if (leftCol && rightCol) {
+          gsap.to(leftCol, {
+            clipPath: 'inset(0 0 100% 0)',
+            duration: 1,
+            ease: 'power3.inOut',
+          });
+          gsap.to(rightCol, {
+            clipPath: 'inset(100% 0 0 0)',
+            duration: 1,
+            ease: 'power3.inOut',
+            onComplete: () => {
+              gsap.set(current, { visibility: 'hidden' });
+              if (incoming) animateTextIn(incoming, 0.1);
+              activeRef.current = index;
+              isAnimatingRef.current = false;
+            },
+          });
+        }
+      } else {
+        gsap.to(current, {
+          clipPath: 'inset(100% 0 0 0)',
+          duration: 1,
+          ease: 'power3.inOut',
+          onComplete: () => {
+            gsap.set(current, { visibility: 'hidden' });
+            if (incoming) animateTextIn(incoming, 0.1);
+            activeRef.current = index;
+            isAnimatingRef.current = false;
+          },
+        });
+      }
     }
   }, []);
 

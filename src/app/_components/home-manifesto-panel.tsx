@@ -2,7 +2,7 @@
 
 import { SmartVideo } from '@/components/primitives';
 
-const MANIFESTO_VIDEO = '/assets/campaigns/maradji-ibiza/maradji-ibiza-story-02.mp4';
+const MANIFESTO_VIDEO = '/assets/home/innovation-back.mp4';
 
 export function HomeManifestoPanel() {
   return (

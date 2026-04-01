@@ -31,7 +31,7 @@ export function HomeHeroPanel() {
           {/* Main title — Cannia uppercase */}
           <h1
             data-animate-text
-            className="font-menu text-[clamp(1.4rem,3.6vw,3.2rem)] uppercase leading-[1.18] tracking-[0.06em] text-white"
+            className="text-glow font-menu text-[clamp(1.4rem,3.6vw,3.2rem)] uppercase leading-[1.18] tracking-[0.06em] text-white"
           >
             Co-journeys pioneering approach for a sustainable transition in fashion advertising
           </h1>
