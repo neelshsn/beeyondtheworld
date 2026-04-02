@@ -13,8 +13,9 @@ export function HomeJourneysPanel() {
 
   return (
     <section ref={sectionRef} data-dual-sweep className="home-snap-panel relative overflow-hidden">
-      <div className="relative grid h-full grid-cols-2">
-        {/* Left column — Spring/Summer */}
+      {/* Desktop: 2 columns side by side | Mobile: 2 rows stacked */}
+      <div className="relative grid h-full grid-cols-1 grid-rows-2 lg:grid-cols-2 lg:grid-rows-1">
+        {/* Top row (mobile) / Left column (desktop) — Spring/Summer */}
         <Link
           href="/journeys?season=spring-summer"
           data-col-left
@@ -26,7 +27,7 @@ export function HomeJourneysPanel() {
             src={LEFT_IMAGE}
             alt="Spring Summer"
             fill
-            sizes="50vw"
+            sizes="(min-width: 1024px) 50vw, 100vw"
             className="object-cover object-[center_20%]"
           />
 
@@ -55,7 +56,7 @@ export function HomeJourneysPanel() {
           </div>
         </Link>
 
-        {/* Right column — Fall/Winter */}
+        {/* Bottom row (mobile) / Right column (desktop) — Fall/Winter */}
         <Link
           href="/journeys?season=fall-winter"
           data-col-right
@@ -67,7 +68,8 @@ export function HomeJourneysPanel() {
             src={RIGHT_IMAGE}
             alt="Fall Winter"
             fill
-            sizes="50vw"
+            unoptimized
+            sizes="(min-width: 1024px) 50vw, 100vw"
             className="object-cover object-[center_20%]"
           />
 

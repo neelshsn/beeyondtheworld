@@ -16,8 +16,15 @@ const CATEGORY_IMAGES: Record<Category, string> = {
 
 const DEFAULT_IMAGE = '/assets/campaigns/almaaz-kenya/almaaz-kenya-gallery-01.jpg';
 
-/** bees & honey → image LEFT (menu RIGHT of text), flowers → image RIGHT (menu LEFT of text) */
+/** Desktop: bees & honey → image LEFT, flowers → image RIGHT */
 const IMAGE_SIDE: Record<Category, 'left' | 'right'> = {
+  bees: 'left',
+  flowers: 'right',
+  honey: 'left',
+};
+
+/** Mobile icons position: bees & honey → LEFT, flowers → RIGHT */
+const MOBILE_ICONS_SIDE: Record<Category, 'left' | 'right'> = {
   bees: 'left',
   flowers: 'right',
   honey: 'left',
@@ -126,6 +133,9 @@ export function HomeCategoriesPanel() {
   const sectionRef = useRef<HTMLElement>(null);
   const isAnimatingRef = useRef(false);
 
+  // Track whether user has reached the last category (must visit all before advancing)
+  const reachedEndRef = useRef(false);
+
   // Scroll-based navigation: cycle through categories on scroll within this panel
   useEffect(() => {
     const section = sectionRef.current;
@@ -135,13 +145,20 @@ export function HomeCategoriesPanel() {
     const THRESHOLD = 80;
 
     const onWheel = (e: WheelEvent) => {
-      // Only intercept if this panel is the active panel (visible)
-      if (isAnimatingRef.current) return;
+      // Always block while animating — never let events leak to parent
+      if (isAnimatingRef.current) {
+        e.stopPropagation();
+        return;
+      }
 
       const currentIdx = active === null ? -1 : CATEGORIES.indexOf(active);
 
       accumulatedDelta += e.deltaY;
-      if (Math.abs(accumulatedDelta) < THRESHOLD) return;
+      if (Math.abs(accumulatedDelta) < THRESHOLD) {
+        // Still accumulating — block parent from acting on partial scroll
+        e.stopPropagation();
+        return;
+      }
 
       const direction = accumulatedDelta > 0 ? 1 : -1;
       accumulatedDelta = 0;
@@ -152,8 +169,15 @@ export function HomeCategoriesPanel() {
         if (nextIdx < CATEGORIES.length) {
           e.stopPropagation();
           switchCategory(CATEGORIES[nextIdx]!);
+          // Mark when we reach the last category
+          if (nextIdx === CATEGORIES.length - 1) {
+            reachedEndRef.current = true;
+          }
+        } else if (!reachedEndRef.current) {
+          // Haven't visited last category yet — block advancement
+          e.stopPropagation();
         }
-        // If at end, let parent handle the scroll to go to next panel
+        // If reachedEnd AND at last category, let parent handle → advance to next panel
       } else {
         // Scrolling up → previous category
         if (currentIdx > 0) {
@@ -163,13 +187,60 @@ export function HomeCategoriesPanel() {
           // Go back to default state
           e.stopPropagation();
           resetToDefault();
+          reachedEndRef.current = false;
         }
         // If at default state, let parent handle scroll to previous panel
       }
     };
 
+    let touchStartY = 0;
+
+    const onTouchStart = (e: TouchEvent) => {
+      touchStartY = e.touches[0]?.clientY ?? 0;
+    };
+
+    const onTouchEnd = (e: TouchEvent) => {
+      if (isAnimatingRef.current) {
+        e.stopPropagation();
+        return;
+      }
+
+      const deltaY = touchStartY - (e.changedTouches[0]?.clientY ?? 0);
+      if (Math.abs(deltaY) < 40) return;
+
+      const currentIdx = active === null ? -1 : CATEGORIES.indexOf(active);
+      const direction = deltaY > 0 ? 1 : -1;
+
+      if (direction === 1) {
+        const nextIdx = currentIdx + 1;
+        if (nextIdx < CATEGORIES.length) {
+          e.stopPropagation();
+          switchCategory(CATEGORIES[nextIdx]!);
+          if (nextIdx === CATEGORIES.length - 1) reachedEndRef.current = true;
+        } else if (!reachedEndRef.current) {
+          e.stopPropagation();
+        }
+      } else {
+        if (currentIdx > 0) {
+          e.stopPropagation();
+          switchCategory(CATEGORIES[currentIdx - 1]!);
+        } else if (currentIdx === 0) {
+          e.stopPropagation();
+          resetToDefault();
+          reachedEndRef.current = false;
+        }
+      }
+    };
+
     section.addEventListener('wheel', onWheel, { passive: false });
-    return () => section.removeEventListener('wheel', onWheel);
+    section.addEventListener('touchstart', onTouchStart, { passive: true });
+    section.addEventListener('touchend', onTouchEnd, { passive: false });
+    return () => {
+      section.removeEventListener('wheel', onWheel);
+      section.removeEventListener('touchstart', onTouchStart);
+      section.removeEventListener('touchend', onTouchEnd);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- switchCategory/resetToDefault change with active
   }, [active]);
 
   const resetToDefault = useCallback(() => {
@@ -312,8 +383,9 @@ export function HomeCategoriesPanel() {
 
   const currentImage = active ? CATEGORY_IMAGES[active] : DEFAULT_IMAGE;
 
-  // For flowers: menu is on the LEFT side of text. For others: menu on the RIGHT.
-  const menuSide = active ? (IMAGE_SIDE[active] === 'right' ? 'left' : 'right') : 'right';
+  // Desktop: menu opposite to image side. Mobile: explicit per category.
+  const desktopMenuSide = active ? (IMAGE_SIDE[active] === 'right' ? 'left' : 'right') : 'right';
+  const mobileIconsSide = active ? MOBILE_ICONS_SIDE[active] : 'left';
 
   return (
     <section ref={sectionRef} className="home-snap-panel relative overflow-hidden">
@@ -354,16 +426,16 @@ export function HomeCategoriesPanel() {
         })}
       </div>
 
-      {/* ── Two-column layout (hidden until first category activation) ── */}
+      {/* ── Two-row (mobile) / Two-column (desktop) layout — hidden until first category ── */}
       <div
         data-two-col
-        className="absolute inset-0 z-20 grid grid-cols-1 lg:grid-cols-2"
+        className="absolute inset-0 z-20 grid grid-rows-2 lg:grid-cols-2 lg:grid-rows-1"
         style={{ visibility: 'hidden' }}
       >
-        {/* Image column */}
+        {/* Image: bottom on mobile (order-2), column on desktop (order-1) */}
         <div
           data-cat-image
-          className="relative h-[38vh] lg:h-auto lg:min-h-0"
+          className="relative order-2 min-h-0 lg:order-1"
           style={{ direction: 'ltr' }}
         >
           <Image
@@ -375,17 +447,19 @@ export function HomeCategoriesPanel() {
           />
         </div>
 
-        {/* Text column */}
+        {/* Text: top on mobile (order-1), column on desktop (order-2) */}
         <div
           data-cat-text
-          className="relative flex flex-col items-center justify-center bg-[#efe3d1] px-6 py-6 sm:px-12 sm:py-12 lg:px-16 lg:py-16"
+          className="relative order-1 flex flex-col items-center justify-center bg-[#efe3d1] px-6 py-6 sm:px-12 sm:py-12 lg:order-2 lg:px-16 lg:py-16"
           style={{ direction: 'ltr' }}
         >
-          {/* Icons — horizontal row on mobile, vertical column on desktop */}
+          {/* Icons — vertical column positioned left/right on mobile, absolute on desktop */}
           <div
-            className={`z-10 flex items-center gap-4 lg:absolute lg:top-1/2 lg:-translate-y-1/2 lg:flex-col lg:gap-8 ${
-              menuSide === 'left' ? 'lg:left-6 xl:left-12' : 'lg:right-6 xl:right-12'
-            } mb-4 lg:mb-0`}
+            className={`absolute top-1/2 z-10 flex -translate-y-1/2 flex-col items-center gap-5 lg:gap-8 ${
+              mobileIconsSide === 'left' ? 'left-3 sm:left-5' : 'right-3 sm:right-5'
+            } ${
+              desktopMenuSide === 'left' ? 'lg:left-6 xl:left-12' : 'lg:right-6 xl:right-12'
+            }`}
           >
             {CATEGORIES.map((cat) => {
               const icon = CATEGORY_ICONS[cat];
@@ -397,7 +471,7 @@ export function HomeCategoriesPanel() {
                   key={cat}
                   onMouseEnter={() => setHoveredIcon(cat)}
                   onMouseLeave={() => setHoveredIcon(null)}
-                  className="relative h-8 w-8 rounded-full transition-transform duration-300 [box-shadow:0_0_18px_rgba(244,187,82,0.12),0_0_36px_rgba(244,187,82,0.06)] hover:scale-110 hover:[box-shadow:0_0_24px_rgba(244,187,82,0.25),0_0_48px_rgba(244,187,82,0.12)] lg:h-10 lg:w-10"
+                  className="relative h-10 w-10 rounded-full transition-transform duration-300 [box-shadow:0_0_18px_rgba(244,187,82,0.12),0_0_36px_rgba(244,187,82,0.06)] hover:scale-110 hover:[box-shadow:0_0_24px_rgba(244,187,82,0.25),0_0_48px_rgba(244,187,82,0.12)] sm:h-11 sm:w-11 lg:h-10 lg:w-10"
                   aria-label={icon.label}
                 >
                   <Image
