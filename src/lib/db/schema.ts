@@ -52,7 +52,25 @@ export const locations = pgTable('locations', {
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
 
+/** Comptes éditeurs du dashboard (auth 100 % Neon, indépendante de Supabase). */
+export const adminUsers = pgTable('admin_users', {
+  id: serial('id').primaryKey(),
+  email: text('email').notNull().unique(),
+  passwordHash: text('password_hash').notNull(),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+});
+
+export const adminSessions = pgTable('admin_sessions', {
+  token: text('token').primaryKey(),
+  adminUserId: integer('admin_user_id')
+    .notNull()
+    .references(() => adminUsers.id, { onDelete: 'cascade' }),
+  expiresAt: timestamp('expires_at').notNull(),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+});
+
 export type JourneyRow = typeof journeys.$inferSelect;
 export type NewJourneyRow = typeof journeys.$inferInsert;
 export type LocationRow = typeof locations.$inferSelect;
 export type NewLocationRow = typeof locations.$inferInsert;
+export type AdminUserRow = typeof adminUsers.$inferSelect;

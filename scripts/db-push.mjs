@@ -66,6 +66,18 @@ const statements = [
     updated_at timestamp NOT NULL DEFAULT now()
   )`,
   `CREATE INDEX IF NOT EXISTS locations_journey_id_idx ON locations(journey_id)`,
+  `CREATE TABLE IF NOT EXISTS admin_users (
+    id serial PRIMARY KEY,
+    email text NOT NULL UNIQUE,
+    password_hash text NOT NULL,
+    created_at timestamp NOT NULL DEFAULT now()
+  )`,
+  `CREATE TABLE IF NOT EXISTS admin_sessions (
+    token text PRIMARY KEY,
+    admin_user_id integer NOT NULL REFERENCES admin_users(id) ON DELETE CASCADE,
+    expires_at timestamp NOT NULL,
+    created_at timestamp NOT NULL DEFAULT now()
+  )`,
 ];
 
 for (const statement of statements) {

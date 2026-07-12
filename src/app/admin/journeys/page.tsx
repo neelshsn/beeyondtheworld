@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 
+import { AdminAuthGate } from './_components/admin-auth-gate';
 import { JourneysManager } from './_components/journeys-manager';
 
 export const metadata: Metadata = {
@@ -9,5 +10,9 @@ export const metadata: Metadata = {
 };
 
 export default function AdminJourneysPage() {
-  return <JourneysManager />;
+  return (
+    <AdminAuthGate>
+      <JourneysManager />
+    </AdminAuthGate>
+  );
 }
