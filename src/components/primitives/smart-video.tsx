@@ -51,7 +51,8 @@ export const SmartVideo = forwardRef<HTMLVideoElement, SmartVideoProps>(function
   const shouldRenderVideo = !hasError && (priority || isInView);
   const resolvedAutoPlay = autoPlay && !prefersReducedMotion;
   const posterOrFallback = poster ?? fallbackImage;
-  const preloadStrategy = prefersReducedData ? 'metadata' : resolvedAutoPlay ? 'auto' : 'metadata';
+  // T-049-B — seules les vidéos prioritaires (hero) préchargent tout ; les autres attendent d'être visibles.
+  const preloadStrategy = !prefersReducedData && priority ? 'auto' : 'metadata';
   const inlineSource = !sources && typeof src === 'string' ? src : undefined;
 
   useEffect(() => {
@@ -79,6 +80,38 @@ export const SmartVideo = forwardRef<HTMLVideoElement, SmartVideoProps>(function
 
     return () => observer.disconnect();
   }, [priority, isInView]);
+
+  // T-049-B — ne jouer que les vidéos visibles : pause hors viewport, reprise au retour.
+  useEffect(() => {
+    if (!shouldRenderVideo || !resolvedAutoPlay) {
+      return;
+    }
+
+    const node = wrapperRef.current;
+    const video = videoRef.current;
+    if (!node || !video || typeof IntersectionObserver === 'undefined') {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (!entry) {
+          return;
+        }
+        if (entry.isIntersecting) {
+          video.play().catch(() => {});
+        } else {
+          video.pause();
+        }
+      },
+      { rootMargin: '120px', threshold: 0.01 }
+    );
+
+    observer.observe(node);
+
+    return () => observer.disconnect();
+  }, [shouldRenderVideo, resolvedAutoPlay]);
 
   return (
     <div ref={wrapperRef} className={cn('relative', wrapperClassName)}>

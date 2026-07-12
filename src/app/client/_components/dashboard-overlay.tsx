@@ -2,12 +2,11 @@
 
 import { useCallback, useEffect } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
 import { AnimatePresence, motion } from 'framer-motion';
 import { X } from 'lucide-react';
 
+import { BeeButton } from '@/components/primitives/bee-button';
 import { SmartVideo } from '@/components/primitives/smart-video';
-import { Button } from '@/components/ui/button';
 
 import type { DashboardAction, DashboardCardData } from './client-dashboard.types';
 
@@ -114,45 +113,44 @@ export function DashboardOverlay({ card, onClose, onAction }: DashboardOverlayPr
                       ))}
                     </dl>
                   ) : null}
-                  <div className="flex flex-wrap gap-3">
+                  <div className="flex flex-wrap items-start gap-x-10 gap-y-5">
                     {card.actions?.map((action, index) => {
                       const tone = action.tone ?? (index === 0 ? 'primary' : 'secondary');
-                      const buttonClass =
-                        tone === 'primary'
-                          ? 'rounded-full border border-white/25 bg-white/85 px-7 py-3 font-display text-[11px] uppercase tracking-[0.4em] text-black hover:bg-white'
-                          : tone === 'ghost'
-                            ? 'rounded-full border border-white/25 bg-transparent px-7 py-3 font-display text-[11px] uppercase tracking-[0.4em] text-white hover:bg-white/10'
-                            : 'rounded-full border border-white/25 bg-white/12 px-7 py-3 font-display text-[11px] uppercase tracking-[0.4em] text-white hover:bg-white/18';
+                      const isPrimary = tone === 'primary';
+                      const toneClass = isPrimary
+                        ? 'text-white transition-colors'
+                        : 'text-white/70 transition-colors hover:text-white';
 
                       if (action.href) {
                         return (
-                          <Button
-                            asChild
+                          <BeeButton
                             key={`${card.id}-action-${action.label}`}
-                            className={buttonClass}
+                            href={action.href}
+                            size="md"
+                            active={isPrimary}
+                            className={toneClass}
                           >
-                            <Link href={action.href}>{action.label}</Link>
-                          </Button>
+                            {action.label}
+                          </BeeButton>
                         );
                       }
 
                       return (
-                        <Button
+                        <BeeButton
                           key={`${card.id}-action-${action.label}`}
                           onClick={() => handleActionClick(action, card)}
-                          className={buttonClass}
+                          size="md"
+                          active={isPrimary}
+                          className={toneClass}
                         >
                           {action.label}
-                        </Button>
+                        </BeeButton>
                       );
                     })}
                     {!card.actions?.length && card.href ? (
-                      <Button
-                        asChild
-                        className="rounded-full border border-white/25 bg-white/85 px-7 py-3 font-display text-[11px] uppercase tracking-[0.4em] text-black hover:bg-white"
-                      >
-                        <Link href={card.href}>Open experience</Link>
-                      </Button>
+                      <BeeButton href={card.href} size="md" active>
+                        Open experience
+                      </BeeButton>
                     ) : null}
                   </div>
                 </div>

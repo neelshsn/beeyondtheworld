@@ -76,21 +76,19 @@ export function MenuLinks({ isOpen, onNavigate }: MenuLinksProps) {
                         : 'hover:text-[rgba(255,243,231,0.98)]'
                     )}
                   >
-                    <span className="mt-[0.35em] text-xs text-[rgba(244,199,122,0.78)] md:text-sm">
-                      <span className="inline-flex h-10 w-10 items-center justify-center p-[3px] md:h-11 md:w-11">
-                        <Image
-                          src={item.iconSrc}
-                          alt=""
-                          width={36}
-                          height={36}
-                          className="h-8 w-8 drop-shadow-[0_4px_14px_rgba(0,0,0,0.32)] md:h-9 md:w-9"
-                          aria-hidden
-                        />
-                        <span className="sr-only">{item.index}</span>
-                      </span>
+                    <span className="flex h-[0.95em] shrink-0 items-center text-[clamp(30px,2vw,36px)] leading-[0.95]">
+                      <Image
+                        src={item.iconSrc}
+                        alt=""
+                        width={36}
+                        height={36}
+                        className="h-8 w-8 drop-shadow-[0_4px_14px_rgba(0,0,0,0.32)] md:h-9 md:w-9"
+                        aria-hidden
+                      />
+                      <span className="sr-only">{item.index}</span>
                     </span>
                     <span className="relative flex w-full flex-col">
-                      <span className="font-menu text-[clamp(32px,5vw,72px)] font-semibold uppercase leading-[0.95] tracking-[0em]">
+                      <span className="font-menu text-[clamp(30px,2vw,36px)] font-semibold uppercase leading-[0.95] tracking-[0em]">
                         {item.label}
                       </span>
                       <span

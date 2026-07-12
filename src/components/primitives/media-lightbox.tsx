@@ -6,6 +6,7 @@ import Image from 'next/image';
 
 import type { ShowcaseMedia } from '@/data/showcases';
 import { cn } from '@/lib/utils';
+import { BeeButton } from '@/components/primitives/bee-button';
 import { SmartVideo } from '@/components/primitives/smart-video';
 
 interface ShowcaseMediaGalleryProps {
@@ -120,13 +121,13 @@ export function ShowcaseMediaGallery({ items, columns = 3, className }: Showcase
               transition={{ duration: 0.3, ease: 'easeOut' }}
               onClick={(event) => event.stopPropagation()}
             >
-              <button
-                type="button"
+              <BeeButton
                 onClick={close}
-                className="absolute right-6 top-6 z-10 rounded-full border border-white/40 bg-black/50 px-4 py-2 text-xs uppercase tracking-[0.4em] text-white transition hover:bg-white/30"
+                aria-label="Close media preview"
+                className="absolute right-6 top-6 z-10 drop-shadow-[0_2px_10px_rgba(0,0,0,0.65)]"
               >
                 Close
-              </button>
+              </BeeButton>
               <div className="relative w-full overflow-hidden rounded-[40px] border border-white/20 bg-black/80">
                 <div
                   className={cn(

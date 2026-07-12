@@ -6,20 +6,19 @@ const LEGAL_TEXT = `Visual representations of the property, layout plans, and ot
 
 export function HomeFooter() {
   return (
+    /* T-008 : bloc final compact — plus de panel pleine hauteur, paddings resserrés */
     <footer
       data-footer
-      className="home-snap-panel relative flex flex-col items-center justify-between bg-[#efe3d1] px-8 py-12 sm:px-12 lg:px-20"
+      className="relative flex flex-col items-center gap-6 bg-[#efe3d1] px-8 py-10 sm:px-12 lg:px-20"
     >
       {/* Centered icon */}
-      <div className="flex flex-1 items-center justify-center">
-        <Image
-          src={ICON_GOLD}
-          alt="Beeyondtheworld"
-          width={120}
-          height={120}
-          className="h-20 w-20 lg:h-28 lg:w-28"
-        />
-      </div>
+      <Image
+        src={ICON_GOLD}
+        alt="Beeyondtheworld"
+        width={120}
+        height={120}
+        className="h-14 w-14 lg:h-16 lg:w-16"
+      />
 
       {/* Legal text */}
       <p className="max-w-4xl text-center font-display text-[7px] uppercase leading-[2] tracking-[0.12em] text-[#1b130e]/40 sm:text-[8px]">

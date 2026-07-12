@@ -4,16 +4,23 @@ import Image from 'next/image';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useMemo, useState } from 'react';
 
+import { BeeButton } from '@/components/primitives/bee-button';
+
 type ContactStage = 'entry' | 'audience' | 'form';
-type AudienceKey = 'BRANDS' | 'AGENCIES' | 'CREATORS' | 'TALENTS' | 'NJOS' | 'MEDIAS';
+type AudienceKey = 'BRANDS' | 'AGENCIES' | 'NJOS' | 'MEDIAS';
+
+type ChoiceOption = {
+  label: string;
+  icon?: string;
+};
 
 type StepDefinition =
   | {
       id: string;
       title: string;
-      helper: string;
+      helper?: string;
       kind: 'choice';
-      options: string[];
+      options: ChoiceOption[];
       columns?: 2 | 3;
       allowMultiple?: boolean;
     }
@@ -37,23 +44,14 @@ type StepDefinition =
 
 type StepAnswer = string | string[] | Record<string, string>;
 
-const CONTACT_AUDIENCE_ROWS = [
-  {
-    icon: '/assets/icones/Ico White BEE-13.svg',
-    left: 'BRANDS',
-    right: 'AGENCIES',
-  },
-  {
-    icon: '/assets/icones/Ico White BEE-14.svg',
-    left: 'CREATORS',
-    right: 'TALENTS',
-  },
-  {
-    icon: '/assets/icones/Ico White BEE-06.svg',
-    left: 'NJOS',
-    right: 'MEDIAS',
-  },
-] as const;
+const ICONO_BASE = '/assets/icones/icono';
+
+const CONTACT_AUDIENCES: Array<{ key: AudienceKey; icon: string }> = [
+  { key: 'BRANDS', icon: `${ICONO_BASE}/ecosystem/brands.svg` },
+  { key: 'AGENCIES', icon: `${ICONO_BASE}/ecosystem/agencies.svg` },
+  { key: 'NJOS', icon: `${ICONO_BASE}/ecosystem/njos.svg` },
+  { key: 'MEDIAS', icon: `${ICONO_BASE}/ecosystem/distribution.svg` },
+];
 
 const AUDIENCE_INTROS: Record<AudienceKey, { eyebrow: string; title: string; body: string }> = {
   BRANDS: {
@@ -65,16 +63,6 @@ const AUDIENCE_INTROS: Record<AudienceKey, { eyebrow: string; title: string; bod
     eyebrow: 'PROFILE SELECTED',
     title: 'Agencies',
     body: 'We map your speciality, scope and rhythm so the meeting starts with the right project frame.',
-  },
-  CREATORS: {
-    eyebrow: 'PROFILE SELECTED',
-    title: 'Creators',
-    body: 'Tell us your craft, availability and creative direction to curate the best journey with you.',
-  },
-  TALENTS: {
-    eyebrow: 'PROFILE SELECTED',
-    title: 'Talents',
-    body: 'We prepare the right productions, destinations and team chemistry around your talent profile.',
   },
   NJOS: {
     eyebrow: 'PROFILE SELECTED',
@@ -88,89 +76,50 @@ const AUDIENCE_INTROS: Record<AudienceKey, { eyebrow: string; title: string; bod
   },
 };
 
+const SIGNATURE_WORLDS_STEP: StepDefinition = {
+  id: 'visual-territory',
+  title: 'Shape your signature worlds',
+  kind: 'choice',
+  columns: 3,
+  allowMultiple: true,
+  options: [
+    { label: 'DESERT REVERIES', icon: `${ICONO_BASE}/landscape/desert-reveries.svg` },
+    { label: 'OCEAN & SEA WONDERS', icon: `${ICONO_BASE}/landscape/ocean-sea-wonders.svg` },
+    { label: 'HERITAGE CITIES', icon: `${ICONO_BASE}/landscape/heritage-cities.svg` },
+    { label: 'HIGHLAND REALMS', icon: `${ICONO_BASE}/landscape/highland-realms.svg` },
+    { label: 'SLOW LIVING STORIES', icon: `${ICONO_BASE}/landscape/slow-living-stories.svg` },
+  ],
+};
+
+const MEETING_STEP: StepDefinition = {
+  id: 'meeting-date',
+  title: 'Meet the bees',
+  helper: 'Pick the date that works best for your first call.',
+  kind: 'date',
+};
+
 const AUDIENCE_STEPS: Record<AudienceKey, StepDefinition[]> = {
   BRANDS: [
     {
       id: 'category',
-      title: 'Select your category',
+      title: 'Select your essence',
       helper: 'Choose the universe that best reflects your brand.',
       kind: 'choice',
       columns: 3,
       options: [
-        'SWIMWEAR',
-        'APPAREL',
-        'SHOES',
-        'ACCESSORIES',
-        'OPTICAL',
-        'COSMETICS',
-        'PERFUME',
-        'JEWELRY',
-        'OTHERS',
+        { label: 'SWIMWEAR', icon: `${ICONO_BASE}/brands/swimwear.svg` },
+        { label: 'APPAREL', icon: `${ICONO_BASE}/brands/apparel.svg` },
+        { label: 'SHOES' },
+        { label: 'ACCESSORIES', icon: `${ICONO_BASE}/brands/access.svg` },
+        { label: 'OPTICAL', icon: `${ICONO_BASE}/brands/eyewear.svg` },
+        { label: 'COSMETICS', icon: `${ICONO_BASE}/brands/makeup-cosmetic.svg` },
+        { label: 'PERFUME', icon: `${ICONO_BASE}/brands/perfume.svg` },
+        { label: 'JEWELRY' },
+        { label: 'OTHERS' },
       ],
     },
-    {
-      id: 'brand-core',
-      title: 'Tell us about your brand',
-      helper: 'We need the essentials to position the collaboration correctly.',
-      kind: 'fields',
-      fields: [
-        { id: 'brand-name', label: 'Brand Name', placeholder: 'Maison Example' },
-        { id: 'brand-location', label: 'Location', placeholder: 'Paris, France' },
-        { id: 'market-target', label: 'Market Target', placeholder: 'Europe / GCC / US...' },
-      ],
-    },
-    {
-      id: 'positioning',
-      title: 'What is your positioning?',
-      helper: 'Select the market space your brand is evolving in.',
-      kind: 'choice',
-      options: ['RESORT', 'MIDDLE MARKET', 'HIGH & LUXURY'],
-    },
-    {
-      id: 'role',
-      title: 'What is your role?',
-      helper: 'This helps us adapt the conversation to your decision level.',
-      kind: 'choice',
-      columns: 3,
-      options: [
-        'ASSISTANT',
-        'MARKETING DIRECTOR',
-        'COMMUNICATION LEAD',
-        'FOUNDER',
-        'PR AGENCY',
-        'STUDIO MANAGER',
-      ],
-    },
-    {
-      id: 'budget',
-      title: 'What is your seasonal budget range?',
-      helper: 'A broad range is enough at this stage.',
-      kind: 'choice',
-      options: ['6K - 10K', '10K - 20K', '20K - 35K', '35K - 50K', '50K+'],
-    },
-    {
-      id: 'collections',
-      title: 'How many collections do you shoot per season?',
-      helper: 'Choose the closest rhythm.',
-      kind: 'choice',
-      options: ['1', '2', '3', '4+'],
-    },
-    {
-      id: 'visual-positioning',
-      title: 'What visual territory speaks to you most?',
-      helper:
-        'We use this to imagine the right destination and creative direction. You can choose multiple options.',
-      kind: 'choice',
-      columns: 3,
-      allowMultiple: true,
-      options: ['NATURE', 'CITY', 'SEA', 'DESERT', 'HOTEL', 'STUDIO', 'MOUNTAIN'],
-    },
-    {
-      id: 'meeting-date',
-      title: 'Select a meeting date',
-      helper: 'Pick the date that works best for your first call.',
-      kind: 'date',
-    },
+    SIGNATURE_WORLDS_STEP,
+    MEETING_STEP,
   ],
   AGENCIES: [
     {
@@ -183,206 +132,10 @@ const AUDIENCE_STEPS: Record<AudienceKey, StepDefinition[]> = {
         { id: 'agency-location', label: 'Location', placeholder: 'London, UK' },
       ],
     },
-    {
-      id: 'speciality',
-      title: 'What is your speciality?',
-      helper: 'Choose the area you want us to build around. You can choose multiple options.',
-      kind: 'choice',
-      columns: 3,
-      allowMultiple: true,
-      options: [
-        'PR',
-        'MARKETING',
-        'PRODUCTION',
-        'CASTING',
-        'SOCIAL MEDIA',
-        'CREATIVE DIRECTION',
-        'EVENTS',
-        'BRAND STRATEGY',
-        'OTHERS',
-      ],
-    },
-    {
-      id: 'clients',
-      title: 'What kind of clients do you mostly serve?',
-      helper: 'This helps us calibrate the right destinations and logistics.',
-      kind: 'choice',
-      options: ['LUXURY', 'RESORT', 'CONTEMPORARY', 'BEAUTY', 'LIFESTYLE', 'HOSPITALITY'],
-    },
-    {
-      id: 'collab-role',
-      title: 'How do you want to collaborate with us?',
-      helper: 'Select the role you expect from Hive.',
-      kind: 'choice',
-      options: ['LEAD PARTNER', 'LOCAL FIXER', 'PRODUCTION SUPPORT', 'COMMUNICATION SUPPORT'],
-    },
-    {
-      id: 'budget',
-      title: 'Typical seasonal project budget',
-      helper: 'A range is enough to prepare the conversation.',
-      kind: 'choice',
-      options: ['6K - 15K', '15K - 30K', '30K - 50K', '50K+'],
-    },
-    {
-      id: 'meeting-date',
-      title: 'Select a meeting date',
-      helper: 'Pick the date that works best for your first call.',
-      kind: 'date',
-    },
-  ],
-  CREATORS: [
-    {
-      id: 'craft',
-      title: 'What is your main craft?',
-      helper: 'Choose the creative identity you want to lead with.',
-      kind: 'choice',
-      columns: 3,
-      options: [
-        'PHOTOGRAPHY',
-        'FILMMAKING',
-        'CONTENT CREATION',
-        'STYLING',
-        'ART DIRECTION',
-        'SET DESIGN',
-        'MUSIC CURATION',
-        'PRODUCTION',
-        'OTHERS',
-      ],
-    },
-    {
-      id: 'creator-core',
-      title: 'Tell us about yourself',
-      helper: 'A few details help us imagine the best journey with you.',
-      kind: 'fields',
-      fields: [
-        { id: 'creator-name', label: 'Name', placeholder: 'Your Name' },
-        { id: 'creator-location', label: 'Location', placeholder: 'Lisbon, Portugal' },
-        {
-          id: 'creator-platform',
-          label: 'Primary Platform',
-          placeholder: 'Instagram / TikTok / Portfolio',
-        },
-      ],
-    },
-    {
-      id: 'formats',
-      title: 'What kind of collaborations are you looking for?',
-      helper:
-        'Pick the format that feels closest to your ambition. You can choose multiple options.',
-      kind: 'choice',
-      allowMultiple: true,
-      options: [
-        'CAMPAIGNS',
-        'SOCIAL CONTENT',
-        'EDITORIALS',
-        'EVENTS',
-        'RETREATS',
-        'AMBASSADORSHIPS',
-      ],
-    },
-    {
-      id: 'visual-territory',
-      title: 'Which visual territory attracts you most?',
-      helper: 'We use this to orient destinations and storylines. You can choose multiple options.',
-      kind: 'choice',
-      allowMultiple: true,
-      options: ['SEA', 'DESERT', 'NATURE', 'CITY', 'HERITAGE', 'WELLNESS'],
-    },
-    {
-      id: 'availability',
-      title: 'When are you most available?',
-      helper: 'Select the quarter that feels the most realistic.',
-      kind: 'choice',
-      options: ['Q1', 'Q2', 'Q3', 'Q4', 'FLEXIBLE'],
-    },
-    {
-      id: 'meeting-date',
-      title: 'Select a meeting date',
-      helper: 'Pick the date that works best for your first call.',
-      kind: 'date',
-    },
-  ],
-  TALENTS: [
-    {
-      id: 'profile',
-      title: 'What kind of talent are you?',
-      helper: 'Choose the profile that represents you best.',
-      kind: 'choice',
-      columns: 3,
-      options: [
-        'MODEL',
-        'ACTOR',
-        'DANCER',
-        'MUSICIAN',
-        'HOST',
-        'ATHLETE',
-        'WELLNESS',
-        'FACE',
-        'OTHERS',
-      ],
-    },
-    {
-      id: 'talent-core',
-      title: 'Tell us about yourself',
-      helper: 'These details help us match you with the right projects.',
-      kind: 'fields',
-      fields: [
-        { id: 'talent-name', label: 'Name', placeholder: 'Your Name' },
-        { id: 'talent-location', label: 'Location', placeholder: 'Milan, Italy' },
-        { id: 'talent-agency', label: 'Agency / Manager', placeholder: 'Optional' },
-      ],
-    },
-    {
-      id: 'positioning',
-      title: 'What universe do you belong to most?',
-      helper: 'Choose the territory you feel closest to.',
-      kind: 'choice',
-      options: ['FASHION', 'BEAUTY', 'LIFESTYLE', 'WELLNESS', 'TRAVEL', 'LUXURY'],
-    },
-    {
-      id: 'project-type',
-      title: 'What projects are you looking for?',
-      helper:
-        'We will prioritize these opportunities in the call. You can choose multiple options.',
-      kind: 'choice',
-      allowMultiple: true,
-      options: ['CAMPAIGNS', 'EDITORIAL', 'EVENTS', 'CONTENT TRIPS', 'AMBASSADORSHIPS'],
-    },
-    {
-      id: 'availability',
-      title: 'When are you most available?',
-      helper: 'Choose the timing that is easiest for you.',
-      kind: 'choice',
-      options: ['IMMEDIATE', 'NEXT MONTH', 'NEXT SEASON', 'FLEXIBLE'],
-    },
-    {
-      id: 'meeting-date',
-      title: 'Select a meeting date',
-      helper: 'Pick the date that works best for your first call.',
-      kind: 'date',
-    },
+    SIGNATURE_WORLDS_STEP,
+    MEETING_STEP,
   ],
   NJOS: [
-    {
-      id: 'focus',
-      title: 'What is your main area of impact?',
-      helper:
-        'Select the focus that defines your organization best. You can choose multiple options.',
-      kind: 'choice',
-      columns: 3,
-      allowMultiple: true,
-      options: [
-        'EDUCATION',
-        'SOCIAL',
-        'ENVIRONMENT',
-        'SOCIETAL',
-        'WOMEN EMPOWERMENT',
-        'HEALTH',
-        'CRAFT',
-        'AGRICULTURE',
-        'YOUTH',
-      ],
-    },
     {
       id: 'ngo-core',
       title: 'Tell us about your organization',
@@ -399,51 +152,23 @@ const AUDIENCE_STEPS: Record<AudienceKey, StepDefinition[]> = {
       ],
     },
     {
-      id: 'needs',
-      title: 'What kind of partnership are you looking for?',
-      helper: 'Select the format that would create the most impact.',
-      kind: 'choice',
-      options: [
-        'FUNDING',
-        'VISIBILITY',
-        'FIELD ACTIVATION',
-        'EDUCATION PROGRAM',
-        'DOCUMENTARY SUPPORT',
-      ],
-    },
-    {
-      id: 'scale',
-      title: 'What scale are you operating at?',
-      helper: 'This helps us understand timeline and scope.',
-      kind: 'choice',
-      options: ['LOCAL PILOT', 'REGIONAL', 'NATIONAL', 'MULTI-REGION', 'LONG-TERM PROGRAM'],
-    },
-    {
-      id: 'meeting-date',
-      title: 'Select a meeting date',
-      helper: 'Pick the date that works best for your first call.',
-      kind: 'date',
-    },
-  ],
-  MEDIAS: [
-    {
-      id: 'media-type',
-      title: 'What kind of media are you?',
-      helper: 'Select the format that best describes your platform.',
+      id: 'focus',
+      title: 'What is your main area of impact?',
+      helper:
+        'Select the focus that defines your organization best. You can choose multiple options.',
       kind: 'choice',
       columns: 3,
+      allowMultiple: true,
       options: [
-        'PRINT',
-        'DIGITAL',
-        'TV',
-        'PODCAST',
-        'NEWSLETTER',
-        'SOCIAL',
-        'EDITORIAL',
-        'LUXURY',
-        'OTHERS',
+        { label: 'ENVIRONMENT', icon: `${ICONO_BASE}/association/njos.svg` },
+        { label: 'SOCIAL', icon: `${ICONO_BASE}/association/social.svg` },
+        { label: 'SOCIETAL', icon: `${ICONO_BASE}/association/support.svg` },
       ],
     },
+    SIGNATURE_WORLDS_STEP,
+    MEETING_STEP,
+  ],
+  MEDIAS: [
     {
       id: 'media-core',
       title: 'Tell us about your media',
@@ -459,27 +184,8 @@ const AUDIENCE_STEPS: Record<AudienceKey, StepDefinition[]> = {
         },
       ],
     },
-    {
-      id: 'coverage',
-      title: 'What topics are you most interested in?',
-      helper: 'Select the editorial angles you are looking for. You can choose multiple options.',
-      kind: 'choice',
-      allowMultiple: true,
-      options: ['FASHION', 'TRAVEL', 'BEAUTY', 'SUSTAINABILITY', 'CULTURE', 'HOSPITALITY'],
-    },
-    {
-      id: 'format',
-      title: 'What collaboration format do you prefer?',
-      helper: 'We will prepare the conversation around this.',
-      kind: 'choice',
-      options: ['FEATURES', 'INTERVIEWS', 'SPONSORED CONTENT', 'LIVE COVERAGE', 'PARTNERSHIPS'],
-    },
-    {
-      id: 'meeting-date',
-      title: 'Select a meeting date',
-      helper: 'Pick the date that works best for your first call.',
-      kind: 'date',
-    },
+    SIGNATURE_WORLDS_STEP,
+    MEETING_STEP,
   ],
 };
 
@@ -607,7 +313,6 @@ export function ContactLanding() {
         preload="auto"
       >
         <source src="/assets/contact/contact-hero-v2.mp4" type="video/mp4" />
-        <source src="/assets/contact/contact-hero.mov" type="video/quicktime" />
       </video>
 
       <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(10,10,10,0.08)_0%,rgba(10,10,10,0.06)_36%,rgba(10,10,10,0.28)_100%)]" />
@@ -643,17 +348,14 @@ export function ContactLanding() {
                 </h1>
               </div>
 
-              <button
-                type="button"
+              <BeeButton
                 onClick={() => setStage('audience')}
-                className={`${heroButtonClass} mt-6 min-w-[220px] px-7 py-3 text-center text-[0.62rem] uppercase tracking-[0.35em] [font-family:var(--font-adam)] [text-shadow:0_0_14px_rgba(255,255,255,0.32),0_0_28px_rgba(255,255,255,0.12)] sm:mt-7 sm:min-w-[260px] sm:text-[0.7rem]`}
+                size="md"
+                align="center"
+                className="mt-6 [text-shadow:0_0_14px_rgba(255,255,255,0.32),0_0_28px_rgba(255,255,255,0.12)] sm:mt-7"
               >
-                <span
-                  aria-hidden
-                  className="pointer-events-none absolute inset-0 z-0 -translate-x-full bg-gradient-to-r from-transparent via-[#f6c452bf] to-transparent opacity-0 transition-transform duration-500 group-hover:translate-x-full group-hover:opacity-100"
-                />
-                <span className="relative z-10">BEGIN THE JOURNEY</span>
-              </button>
+                BEGIN THE JOURNEY
+              </BeeButton>
             </motion.div>
           </motion.section>
         ) : null}
@@ -709,52 +411,52 @@ export function ContactLanding() {
                   </div>
 
                   <div className="mt-[14svh] flex flex-1 items-start justify-center lg:mt-[12svh] lg:flex-none lg:justify-center">
-                    <div className="w-full max-w-[38rem] space-y-6 sm:space-y-7">
-                      {CONTACT_AUDIENCE_ROWS.map((row, index) => (
-                        <motion.div
-                          key={row.left}
-                          initial={{ opacity: 0, y: 24 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{
-                            duration: 0.82,
-                            delay: 0.12 + index * 0.08,
-                            ease: stageEase,
-                          }}
-                          className="relative flex items-center justify-center"
-                        >
-                          <div className="absolute left-0 top-1/2 flex -translate-y-1/2 justify-center">
-                            <div className="relative h-12 w-12 sm:h-14 sm:w-14">
-                              <Image
-                                src={
-                                  selectedAudience === row.left || selectedAudience === row.right
-                                    ? row.icon.replace('Ico White', 'Ico Gold')
-                                    : row.icon
-                                }
-                                alt=""
-                                fill
-                                className="object-contain opacity-95"
-                              />
-                            </div>
-                          </div>
+                    <div className="grid w-full max-w-[38rem] grid-cols-2 gap-x-8 gap-y-9 sm:grid-cols-4 sm:gap-x-6">
+                      {CONTACT_AUDIENCES.map((audience, index) => {
+                        const isSelected = selectedAudience === audience.key;
 
-                          <div className="grid w-full max-w-[24rem] grid-cols-2 gap-x-10 gap-y-4 sm:max-w-[26rem]">
-                            {[row.left, row.right].map((label) => (
-                              <button
-                                key={label}
-                                type="button"
-                                onClick={() => setSelectedAudience(label as AudienceKey)}
-                                className={`group inline-flex w-fit justify-self-center border-b pb-1 text-center text-[0.98rem] uppercase tracking-[0.28em] transition duration-300 [font-family:var(--font-adam)] [text-shadow:0_0_12px_rgba(255,255,255,0.28),0_0_24px_rgba(255,255,255,0.1)] sm:text-[1.08rem] ${
-                                  selectedAudience === label
+                        return (
+                          <motion.div
+                            key={audience.key}
+                            initial={{ opacity: 0, y: 24 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{
+                              duration: 0.82,
+                              delay: 0.12 + index * 0.08,
+                              ease: stageEase,
+                            }}
+                            className="flex justify-center"
+                          >
+                            <button
+                              type="button"
+                              onClick={() => setSelectedAudience(audience.key)}
+                              className="group flex flex-col items-center gap-4"
+                            >
+                              <span className="relative h-12 w-12 sm:h-14 sm:w-14">
+                                <Image
+                                  src={audience.icon}
+                                  alt=""
+                                  fill
+                                  className={`object-contain transition duration-300 ${
+                                    isSelected
+                                      ? 'scale-105 opacity-100'
+                                      : 'opacity-85 group-hover:scale-105 group-hover:opacity-100'
+                                  }`}
+                                />
+                              </span>
+                              <span
+                                className={`border-b pb-1 text-center text-[0.9rem] uppercase tracking-[0.28em] transition duration-300 [font-family:var(--font-adam)] sm:text-[0.98rem] ${
+                                  isSelected
                                     ? 'border-[#f4bb52] text-[#f4bb52] [text-shadow:0_0_16px_rgba(244,187,82,0.5),0_0_30px_rgba(244,187,82,0.18)]'
-                                    : 'text-white/88 border-transparent hover:border-[#f4bb52]/80 hover:text-[#f4bb52] hover:[text-shadow:0_0_16px_rgba(244,187,82,0.4),0_0_30px_rgba(244,187,82,0.14)]'
+                                    : 'text-white/88 border-transparent [text-shadow:0_0_12px_rgba(255,255,255,0.28),0_0_24px_rgba(255,255,255,0.1)] group-hover:border-[#f4bb52]/80 group-hover:text-[#f4bb52] group-hover:[text-shadow:0_0_16px_rgba(244,187,82,0.4),0_0_30px_rgba(244,187,82,0.14)]'
                                 }`}
                               >
-                                {label}
-                              </button>
-                            ))}
-                          </div>
-                        </motion.div>
-                      ))}
+                                {audience.key}
+                              </span>
+                            </button>
+                          </motion.div>
+                        );
+                      })}
                     </div>
                   </div>
 
@@ -892,9 +594,11 @@ export function ContactLanding() {
                             <h3 className="text-[clamp(2rem,5vw,3.25rem)] uppercase leading-[0.92] tracking-[0.02em] text-white [font-family:var(--font-cannia)] [text-shadow:0_0_18px_rgba(255,255,255,0.3),0_0_34px_rgba(255,255,255,0.12)]">
                               {currentStep.title}
                             </h3>
-                            <p className="text-white/72 mx-auto mt-3 max-w-[34rem] text-sm uppercase tracking-[0.22em] [font-family:var(--font-adam)] [text-shadow:0_0_10px_rgba(255,255,255,0.18)]">
-                              {currentStep.helper}
-                            </p>
+                            {currentStep.helper ? (
+                              <p className="text-white/72 mx-auto mt-3 max-w-[34rem] text-sm uppercase tracking-[0.22em] [font-family:var(--font-adam)] [text-shadow:0_0_10px_rgba(255,255,255,0.18)]">
+                                {currentStep.helper}
+                              </p>
+                            ) : null}
                           </div>
 
                           {currentStep.kind === 'choice' ? (
@@ -908,21 +612,35 @@ export function ContactLanding() {
                               {currentStep.options.map((option) => {
                                 const isSelected = currentStep.allowMultiple
                                   ? Array.isArray(answers[currentStep.id]) &&
-                                    (answers[currentStep.id] as string[]).includes(option)
-                                  : answers[currentStep.id] === option;
+                                    (answers[currentStep.id] as string[]).includes(option.label)
+                                  : answers[currentStep.id] === option.label;
 
                                 return (
                                   <button
-                                    key={option}
+                                    key={option.label}
                                     type="button"
-                                    onClick={() => setChoiceAnswer(currentStep, option)}
-                                    className={`min-h-[4.25rem] rounded-none border px-4 py-4 text-center text-[0.74rem] uppercase tracking-[0.24em] transition duration-300 [font-family:var(--font-adam)] sm:text-[0.82rem] ${
+                                    onClick={() => setChoiceAnswer(currentStep, option.label)}
+                                    className={`group flex min-h-[4.25rem] flex-col items-center justify-center gap-3 rounded-none border px-4 py-4 text-center text-[0.74rem] uppercase tracking-[0.24em] transition duration-300 [font-family:var(--font-adam)] sm:text-[0.82rem] ${
                                       isSelected
-                                        ? 'border-[#f4bb52] bg-[rgba(244,187,82,0.12)] text-white [box-shadow:0_0_28px_rgba(244,187,82,0.14)]'
+                                        ? 'border-[#f4bb52] bg-[rgba(244,187,82,0.12)] text-white'
                                         : 'text-white/92 border-transparent bg-[rgba(244,187,82,0.09)] hover:border-[rgba(255,244,227,0.14)] hover:bg-[rgba(244,187,82,0.13)]'
                                     }`}
                                   >
-                                    {option}
+                                    {option.icon ? (
+                                      <span className="relative h-10 w-10 sm:h-11 sm:w-11">
+                                        <Image
+                                          src={option.icon}
+                                          alt=""
+                                          fill
+                                          className={`object-contain transition duration-300 ${
+                                            isSelected
+                                              ? 'scale-105 opacity-100'
+                                              : 'opacity-85 group-hover:scale-105 group-hover:opacity-100'
+                                          }`}
+                                        />
+                                      </span>
+                                    ) : null}
+                                    <span>{option.label}</span>
                                   </button>
                                 );
                               })}
@@ -946,7 +664,7 @@ export function ContactLanding() {
                                       setFieldAnswer(currentStep.id, field.id, event.target.value)
                                     }
                                     placeholder={field.placeholder}
-                                    className="placeholder:text-white/42 h-14 rounded-[1.1rem] border border-[rgba(255,244,227,0.12)] bg-[rgba(18,12,9,0.16)] px-4 text-sm text-white outline-none transition duration-300 focus:border-[#f4bb52] focus:bg-[rgba(18,12,9,0.22)]"
+                                    className="placeholder:text-white/42 h-14 rounded-none border border-[rgba(255,244,227,0.12)] bg-[rgba(18,12,9,0.16)] px-4 text-sm text-white outline-none transition duration-300 focus:border-[#f4bb52] focus:bg-[rgba(18,12,9,0.22)]"
                                   />
                                 </label>
                               ))}
@@ -969,7 +687,7 @@ export function ContactLanding() {
                                   onChange={(event) =>
                                     setFieldAnswer(currentStep.id, 'date', event.target.value)
                                   }
-                                  className="h-16 rounded-[1.2rem] border border-[rgba(255,244,227,0.12)] bg-[rgba(18,12,9,0.16)] px-5 text-center text-base text-white outline-none transition duration-300 focus:border-[#f4bb52] focus:bg-[rgba(18,12,9,0.22)]"
+                                  className="h-16 rounded-none border border-[rgba(255,244,227,0.12)] bg-[rgba(18,12,9,0.16)] px-5 text-center text-base text-white outline-none transition duration-300 focus:border-[#f4bb52] focus:bg-[rgba(18,12,9,0.22)]"
                                 />
                               </label>
                               <label className="mt-4 flex flex-col gap-3">
@@ -986,7 +704,7 @@ export function ContactLanding() {
                                   onChange={(event) =>
                                     setFieldAnswer(currentStep.id, 'time', event.target.value)
                                   }
-                                  className="h-16 rounded-[1.2rem] border border-[rgba(255,244,227,0.12)] bg-[rgba(18,12,9,0.16)] px-5 text-center text-base text-white outline-none transition duration-300 focus:border-[#f4bb52] focus:bg-[rgba(18,12,9,0.22)]"
+                                  className="h-16 rounded-none border border-[rgba(255,244,227,0.12)] bg-[rgba(18,12,9,0.16)] px-5 text-center text-base text-white outline-none transition duration-300 focus:border-[#f4bb52] focus:bg-[rgba(18,12,9,0.22)]"
                                 />
                               </label>
                               <label className="mt-4 flex flex-col gap-3">
@@ -1004,7 +722,7 @@ export function ContactLanding() {
                                     setFieldAnswer(currentStep.id, 'whatsapp', event.target.value)
                                   }
                                   placeholder="+33 6 12 34 56 78"
-                                  className="placeholder:text-white/42 h-16 rounded-[1.2rem] border border-[rgba(255,244,227,0.12)] bg-[rgba(18,12,9,0.16)] px-5 text-center text-base text-white outline-none transition duration-300 focus:border-[#f4bb52] focus:bg-[rgba(18,12,9,0.22)]"
+                                  className="placeholder:text-white/42 h-16 rounded-none border border-[rgba(255,244,227,0.12)] bg-[rgba(18,12,9,0.16)] px-5 text-center text-base text-white outline-none transition duration-300 focus:border-[#f4bb52] focus:bg-[rgba(18,12,9,0.22)]"
                                 />
                               </label>
                             </div>

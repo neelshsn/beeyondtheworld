@@ -229,6 +229,17 @@ export default function AdminDashboardPage() {
               className="border border-slate-200 bg-white/80 px-6 py-3 text-slate-900 shadow-sm transition hover:bg-white"
             >
               <Link
+                href="/admin/journeys"
+                className="flex items-center gap-2 text-[11px] uppercase tracking-[0.4em]"
+              >
+                Journeys CMS <SiteArrowIcon direction="up-right" className="size-4" />
+              </Link>
+            </Button>
+            <Button
+              asChild
+              className="border border-slate-200 bg-white/80 px-6 py-3 text-slate-900 shadow-sm transition hover:bg-white"
+            >
+              <Link
                 href="#production-pipeline"
                 className="flex items-center gap-2 text-[11px] uppercase tracking-[0.4em]"
               >

@@ -1,7 +1,6 @@
 'use client';
 
 import { SmartVideo } from '@/components/primitives/smart-video';
-import { Button } from '@/components/ui/button';
 import { SiteArrowIcon } from '@/components/icons/site-arrow-icon';
 
 import { conceptNodes, type ConceptNode } from '@content/concept';
@@ -261,7 +260,15 @@ export function ConceptFoundation() {
 
       const snapIndex = Math.round(container.scrollLeft / width);
 
-      goToIndex(snapIndex, { smooth: !prefersReducedMotion });
+      // Preserve the open panel when the pointer is released/cancelled on the
+      // same node (e.g. a vertical scroll gesture inside the detail panel on
+      // mobile fires `pointercancel` and must not close the panel).
+      const openAtRelease = useConceptInteractionStore.getState().openIndex;
+
+      goToIndex(snapIndex, {
+        smooth: !prefersReducedMotion,
+        preserveOpen: openAtRelease !== null && openAtRelease === snapIndex,
+      });
     };
 
     container.addEventListener('pointerdown', handlePointerDown);
@@ -477,16 +484,16 @@ export function ConceptFoundation() {
             />
           </div>
 
-          <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-between px-6 sm:px-10 lg:px-14">
+          <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-between px-4 sm:px-10 lg:px-14">
             <NavArrow
               direction="left"
               onClick={() => goToIndex(currentIndex - 1)}
-              disabled={currentIndex <= 0}
+              hidden={currentIndex <= 0}
             />
             <NavArrow
               direction="right"
               onClick={() => goToIndex(currentIndex + 1)}
-              disabled={currentIndex >= totalNodes - 1}
+              hidden={currentIndex >= totalNodes - 1}
             />
           </div>
 
@@ -498,7 +505,7 @@ export function ConceptFoundation() {
             {conceptNodes.map((node, index) => (
               <section
                 key={node.id}
-                className="relative flex h-full w-screen flex-shrink-0 snap-center items-center justify-center px-6 py-10 sm:px-12 md:px-16"
+                className="relative flex h-full w-screen flex-shrink-0 snap-center items-center justify-center px-5 py-10 sm:px-12 md:px-16"
                 aria-hidden={index !== currentIndex}
               >
                 <div
@@ -537,8 +544,6 @@ function ConceptSlide({
   onToggle: () => void;
   onFocus: () => void;
 }) {
-  const fadeDistance = prefersReducedMotion ? 0 : 18;
-
   const sharedTransition = useMemo<Transition>(
     () => ({
       duration: prefersReducedMotion ? 0 : 0.65,
@@ -548,110 +553,134 @@ function ConceptSlide({
   );
 
   return (
-    <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-col items-center gap-9 text-center sm:gap-12">
-      <motion.div
-        className="relative flex flex-col items-center"
-        animate={
-          prefersReducedMotion
-            ? { y: 0, scale: 1, filter: 'drop-shadow(0 16px 42px rgba(0,0,0,0.32))' }
-            : {
-                y: isOpen ? -18 : 0,
-                scale: isOpen ? 0.95 : 1,
-                filter: isOpen
-                  ? 'drop-shadow(0 26px 60px rgba(0,0,0,0.55))'
-                  : 'drop-shadow(0 18px 42px rgba(0,0,0,0.35))',
-              }
-        }
-        transition={sharedTransition}
-      >
-        <Icono
-          node={node}
-          isActive={isCurrent}
-          isExpanded={isOpen}
-          onSelect={onToggle}
-          onFocus={onFocus}
-        />
+    <div
+      className={`relative z-10 mx-auto flex w-full max-w-6xl flex-col items-center gap-9 text-center sm:gap-12 ${
+        isOpen
+          ? 'max-sm:max-h-full max-sm:overflow-y-auto max-sm:overscroll-y-contain max-sm:pt-6'
+          : ''
+      }`}
+    >
+      <motion.div layout transition={sharedTransition} className="flex flex-col items-center">
+        <motion.div
+          className="relative flex flex-col items-center"
+          animate={
+            prefersReducedMotion
+              ? { y: 0, scale: 1, filter: 'drop-shadow(0 16px 42px rgba(0,0,0,0.32))' }
+              : {
+                  y: isOpen ? -18 : 0,
+                  scale: isOpen ? 0.95 : 1,
+                  filter: isOpen
+                    ? 'drop-shadow(0 26px 60px rgba(0,0,0,0.55))'
+                    : 'drop-shadow(0 18px 42px rgba(0,0,0,0.35))',
+                }
+          }
+          transition={sharedTransition}
+        >
+          <Icono
+            node={node}
+            isActive={isCurrent}
+            isExpanded={isOpen}
+            onSelect={onToggle}
+            onFocus={onFocus}
+          />
+        </motion.div>
       </motion.div>
 
-      <AnimatePresence mode="wait" initial={false}>
-        {!isOpen ? (
-          <motion.div
-            key="concept-collapsed"
-            initial={{ opacity: 0, y: fadeDistance }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -fadeDistance }}
-            transition={sharedTransition}
-            className="flex max-w-4xl flex-col items-center gap-6 text-center sm:gap-8"
-          >
-            <h2
-              className="font-title text-4xl uppercase leading-[1.05] tracking-[0em] text-white sm:text-5xl md:text-6xl"
-              style={{
-                textShadow:
-                  '0 0 22px rgba(255,255,255,0.95), 0 0 48px rgba(255,255,255,0.55), 0 14px 38px rgba(0,0,0,0.6)',
-              }}
+      <div className="relative grid w-full justify-items-center">
+        <AnimatePresence initial={false}>
+          {!isOpen ? (
+            <motion.div
+              key="concept-collapsed"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0, pointerEvents: 'none' }}
+              transition={sharedTransition}
+              className="col-start-1 row-start-1 flex max-w-4xl flex-col items-center gap-6 text-center sm:gap-8"
             >
-              {node.title}
-            </h2>
+              <h2
+                className="font-title text-3xl uppercase leading-[1.05] tracking-[0em] text-white sm:text-5xl md:text-6xl"
+                style={{
+                  textShadow:
+                    '0 0 22px rgba(255,255,255,0.95), 0 0 48px rgba(255,255,255,0.55), 0 14px 38px rgba(0,0,0,0.6)',
+                }}
+              >
+                {node.title}
+              </h2>
 
-            <p
-              className="max-w-3xl whitespace-pre-line text-sm uppercase tracking-[0.24em] text-white/80 sm:text-base"
-              style={{ textShadow: '0 12px 32px rgba(0,0,0,0.55)' }}
-            >
-              {node.description}
-            </p>
+              <p
+                className="max-w-3xl whitespace-pre-line text-[13px] uppercase tracking-[0.2em] text-white/80 sm:text-base sm:tracking-[0.24em]"
+                style={{ textShadow: '0 12px 32px rgba(0,0,0,0.55)' }}
+              >
+                {node.description}
+              </p>
 
-            <Button
-              type="button"
-              aria-expanded={isOpen}
-              aria-controls={`concept-detail-${node.id}`}
-              className="group relative inline-flex items-center justify-center gap-4 overflow-hidden rounded-none border border-white/25 bg-white/10 px-12 py-4 font-display text-[11px] uppercase tracking-[0.5em] text-white transition-colors duration-300 [transition-timing-function:var(--bee-ease)] hover:border-white/60 hover:bg-white/15 focus-visible:ring-[#f6c452]/35"
-              onClick={onToggle}
-            >
-              <span
-                aria-hidden
-                className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-[#f6c452bf] to-transparent opacity-0 transition-transform duration-500 group-hover:translate-x-full group-hover:opacity-100"
+              <ConceptActionButton
+                label="Discover"
+                isOpen={isOpen}
+                controlsId={`concept-detail-${node.id}`}
+                onClick={onToggle}
               />
-              <span className="relative">Discover</span>
-            </Button>
-          </motion.div>
-        ) : (
-          <motion.div
-            key="concept-expanded"
-            initial={{ opacity: 0, y: fadeDistance }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -fadeDistance }}
-            transition={sharedTransition}
-            className="flex w-full flex-col items-center gap-8 text-center sm:gap-10"
-          >
-            <h3
-              className="font-title text-4xl normal-case leading-[1.05] text-white sm:text-5xl md:text-6xl"
-              style={{
-                textShadow:
-                  '0 0 22px rgba(255,255,255,0.95), 0 0 48px rgba(255,255,255,0.55), 0 14px 38px rgba(0,0,0,0.6)',
-              }}
+            </motion.div>
+          ) : (
+            <motion.div
+              key="concept-expanded"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0, pointerEvents: 'none' }}
+              transition={sharedTransition}
+              className="col-start-1 row-start-1 flex w-full flex-col items-center gap-8 text-center sm:gap-10"
             >
-              {node.openTitle}
-            </h3>
+              <h3
+                className="font-title text-3xl normal-case leading-[1.05] text-white sm:text-5xl md:text-6xl"
+                style={{
+                  textShadow:
+                    '0 0 22px rgba(255,255,255,0.95), 0 0 48px rgba(255,255,255,0.55), 0 14px 38px rgba(0,0,0,0.6)',
+                }}
+              >
+                {node.openTitle}
+              </h3>
 
-            <ConceptDetailsPanel node={node} />
+              <ConceptDetailsPanel node={node} />
 
-            <Button
-              type="button"
-              aria-expanded={isOpen}
-              aria-controls={`concept-detail-${node.id}`}
-              className="group relative inline-flex items-center justify-center gap-4 overflow-hidden rounded-none border border-white/25 bg-white/10 px-12 py-4 font-display text-[11px] uppercase tracking-[0.5em] text-white transition-colors duration-300 [transition-timing-function:var(--bee-ease)] hover:border-white/60 hover:bg-white/15 focus-visible:ring-[#f6c452]/35"
-              onClick={onToggle}
-            >
-              <span
-                aria-hidden
-                className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-[#f6c452bf] to-transparent opacity-0 transition-transform duration-500 group-hover:translate-x-full group-hover:opacity-100"
+              <ConceptActionButton
+                label="Close"
+                isOpen={isOpen}
+                controlsId={`concept-detail-${node.id}`}
+                onClick={onToggle}
               />
-              <span className="relative">Close</span>
-            </Button>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </div>
+  );
+}
+
+function ConceptActionButton({
+  label,
+  isOpen,
+  controlsId,
+  onClick,
+}: {
+  label: string;
+  isOpen: boolean;
+  controlsId: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      aria-expanded={isOpen}
+      aria-controls={controlsId}
+      onClick={onClick}
+      className="group relative inline-flex flex-col items-center px-2 py-2 font-display text-[9px] uppercase tracking-[0.45em] text-white transition-opacity duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f6c452]/35 sm:text-[11px] sm:tracking-[0.5em]"
+    >
+      <span>{label}</span>
+      <span
+        aria-hidden
+        className="mt-1.5 h-px w-full origin-left scale-x-0 bg-gradient-to-r from-[rgba(249,215,162,0.18)] via-[rgba(244,199,122,0.75)] to-[rgba(255,240,225,0.95)] transition-transform duration-300 ease-out group-hover:scale-x-100"
+      />
+    </button>
   );
 }
 
@@ -678,13 +707,13 @@ function ConceptDetailsPanel({ node }: { node: ConceptNode }) {
             className="flex flex-col items-center gap-5 text-center"
             style={{ transitionDelay: `${detailIndex * 90}ms` }}
           >
-            <span className="bg-white/12 inline-flex h-20 w-20 items-center justify-center rounded-full shadow-[0_0_52px_rgba(246,196,82,0.45)]">
+            <span className="bg-white/12 inline-flex h-16 w-16 items-center justify-center rounded-full shadow-[0_0_52px_rgba(246,196,82,0.45)] sm:h-20 sm:w-20">
               <Image
                 src={detail.icon}
                 alt=""
                 width={68}
                 height={68}
-                className="h-14 w-14 object-contain drop-shadow-[0_0_24px_rgba(246,196,82,0.85)] sm:h-16 sm:w-16"
+                className="h-11 w-11 object-contain drop-shadow-[0_0_24px_rgba(246,196,82,0.85)] sm:h-16 sm:w-16"
                 aria-hidden
               />
             </span>
@@ -699,20 +728,24 @@ function ConceptDetailsPanel({ node }: { node: ConceptNode }) {
 
 function NavArrow({
   direction,
-  disabled,
+  hidden,
   onClick,
 }: {
   direction: 'left' | 'right';
-  disabled?: boolean;
+  hidden?: boolean;
   onClick: () => void;
 }) {
   return (
     <button
       type="button"
       aria-label={direction === 'left' ? 'Previous concept' : 'Next concept'}
+      aria-hidden={hidden || undefined}
+      tabIndex={hidden ? -1 : undefined}
       onClick={onClick}
-      disabled={disabled}
-      className="group pointer-events-auto flex h-12 w-12 items-center justify-center text-white transition hover:text-[#f4bb52] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 disabled:cursor-not-allowed disabled:opacity-35 sm:h-14 sm:w-14"
+      disabled={hidden}
+      className={`group pointer-events-auto flex h-12 w-12 items-center justify-center text-white transition hover:text-[#f4bb52] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 sm:h-14 sm:w-14 ${
+        hidden ? 'invisible' : ''
+      }`}
       style={{ transitionTimingFunction: 'var(--bee-ease)' }}
     >
       <SiteArrowIcon

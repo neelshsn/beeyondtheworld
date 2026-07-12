@@ -22,6 +22,8 @@ export interface SplitTextProps {
   tag?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p' | 'span';
   textAlign?: React.CSSProperties['textAlign'];
   onLetterAnimationComplete?: () => void;
+  /** T-003 : opt-out de l'animation d'entrée — texte rendu statique et visible (défaut true) */
+  animated?: boolean;
 }
 
 const SplitText: React.FC<SplitTextProps> = ({
@@ -39,6 +41,7 @@ const SplitText: React.FC<SplitTextProps> = ({
   textAlign = 'center',
   style: styleProp,
   onLetterAnimationComplete,
+  animated = true,
 }) => {
   const ref = useRef<HTMLParagraphElement>(null);
   const animationCompletedRef = useRef(false);
@@ -56,6 +59,8 @@ const SplitText: React.FC<SplitTextProps> = ({
 
   useGSAP(
     () => {
+      /* T-003 : pas de split ni de tween d'entrée quand animated=false */
+      if (!animated) return;
       if (!ref.current || !text || !fontsLoaded) return;
       const el = ref.current as HTMLElement & {
         _rbsplitInstance?: GSAPSplitText;
@@ -148,6 +153,7 @@ const SplitText: React.FC<SplitTextProps> = ({
         rootMargin,
         fontsLoaded,
         onLetterAnimationComplete,
+        animated,
       ],
       scope: ref,
     }

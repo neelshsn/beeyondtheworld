@@ -11,12 +11,25 @@ import { HomeCategoriesPanel } from './home-categories-panel';
 import { HomeManifestoPanel } from './home-manifesto-panel';
 import { HomeFooter } from './home-footer';
 
-const PANEL_COUNT = 7;
+/* T-006 : réactiver en passant à true (ré-affiche le triptyque « We are bees / the world
+   as flowers / the honey of advertising » et sa scroll interception interne) */
+const SHOW_CATEGORIES_PANEL = false;
+
+const PANEL_COUNT = SHOW_CATEGORIES_PANEL ? 7 : 6;
 const MOBILE_BP = '(max-width: 1023px)';
+
+/* T-003 : animations d'entrée/sortie des textes de la home désactivées temporairement
+   (refonte à venir). Repasser à true pour restaurer les fades/slides d'apparition. */
+const TEXT_ENTRY_ANIMATIONS_ENABLED = false;
 
 /** Staggered fade-in for all [data-animate-text] inside a panel */
 function animateTextIn(panel: HTMLElement, delay = 0) {
   const els = panel.querySelectorAll<HTMLElement>('[data-animate-text]');
+  if (!TEXT_ENTRY_ANIMATIONS_ENABLED) {
+    /* T-003 : textes rendus statiques et pleinement visibles */
+    gsap.set(els, { opacity: 1, y: 0 });
+    return;
+  }
   gsap.set(els, { opacity: 0, y: 28 });
   gsap.to(els, {
     opacity: 1,
@@ -29,6 +42,7 @@ function animateTextIn(panel: HTMLElement, delay = 0) {
 }
 
 function animateTextOut(panel: HTMLElement) {
+  if (!TEXT_ENTRY_ANIMATIONS_ENABLED) return; /* T-003 : textes statiques, pas de fade-out */
   const els = panel.querySelectorAll<HTMLElement>('[data-animate-text]');
   gsap.to(els, { opacity: 0, y: -16, duration: 0.6, ease: 'power2.in', stagger: 0.06 });
 }
@@ -39,17 +53,17 @@ function getDualSweepClips() {
   if (isMobile) {
     // Mobile: top row sweeps left→right, bottom row sweeps right→left
     return {
-      leftHidden: 'inset(0 0 0 100%)',   // top row hidden on left side
-      leftVisible: 'inset(0 0 0 0%)',    // reveals left→right
-      rightHidden: 'inset(0 100% 0 0)',  // bottom row hidden on right side
-      rightVisible: 'inset(0 0% 0 0)',   // reveals right→left
+      leftHidden: 'inset(0 0 0 100%)', // top row hidden on left side
+      leftVisible: 'inset(0 0 0 0%)', // reveals left→right
+      rightHidden: 'inset(0 100% 0 0)', // bottom row hidden on right side
+      rightVisible: 'inset(0 0% 0 0)', // reveals right→left
     };
   }
   // Desktop: vertical sweeps in opposite directions
   return {
-    leftHidden: 'inset(0 0 100% 0)',    // hidden below
+    leftHidden: 'inset(0 0 100% 0)', // hidden below
     leftVisible: 'inset(0 0 0% 0)',
-    rightHidden: 'inset(100% 0 0 0)',   // hidden above
+    rightHidden: 'inset(100% 0 0 0)', // hidden above
     rightVisible: 'inset(0% 0 0 0)',
   };
 }
@@ -123,6 +137,18 @@ export default function HomeExperience({ coCreateHref }: HomeExperienceProps) {
       const outgoingHasDualSweep = outgoing?.querySelector('[data-dual-sweep]');
       const nextHasDualSweep = next.querySelector('[data-dual-sweep]');
 
+      /* T-005 : masquer les panels périmés sous la pile — leur vidéo de fond
+         réapparaissait un instant pendant le sweep de sortie du panel Journeys */
+      panelEls.forEach((el, i) => {
+        if (i !== activeRef.current && i !== index) {
+          gsap.set(el, { visibility: 'hidden' });
+        }
+      });
+
+      /* T-008 : le footer compact ne couvre pas l'écran — garder le panel
+         précédent visible derrière lui */
+      const nextIsCompact = Boolean(next.querySelector('[data-footer]'));
+
       /* Always animate text out on the outgoing panel */
       if (outgoing) animateTextOut(outgoing);
 
@@ -172,6 +198,9 @@ export default function HomeExperience({ coCreateHref }: HomeExperienceProps) {
       } else if (nextHasDualSweep) {
         /* ── Dual-sweep reveal for the incoming panel ── */
         revealDualSweep(next, () => {
+          /* T-005 : une fois le panel suivant en place, masquer le sortant
+             pour que sa vidéo ne puisse plus transparaître */
+          if (outgoing && !nextIsCompact) gsap.set(outgoing, { visibility: 'hidden' });
           animateTextIn(next, 0.1);
           activeRef.current = index;
           isAnimatingRef.current = false;
@@ -179,6 +208,8 @@ export default function HomeExperience({ coCreateHref }: HomeExperienceProps) {
       } else {
         /* ── Default: wipe next panel bottom → top ── */
         revealDefault(next, () => {
+          /* T-005 : idem — le panel sortant est caché une fois recouvert */
+          if (outgoing && !nextIsCompact) gsap.set(outgoing, { visibility: 'hidden' });
           animateTextIn(next, 0.1);
           activeRef.current = index;
           isAnimatingRef.current = false;
@@ -191,6 +222,12 @@ export default function HomeExperience({ coCreateHref }: HomeExperienceProps) {
 
       const incoming = panelEls[index];
       const hasDualSweep = current.querySelector('[data-dual-sweep]');
+
+      /* T-005 : le panel entrant a pu être masqué à la fin d'une transition
+         aller — le ré-afficher pleinement avant de retirer le panel courant */
+      if (incoming) {
+        gsap.set(incoming, { visibility: 'visible', clipPath: 'inset(0% 0 0 0)' });
+      }
 
       /* Always animate text out on the current panel */
       animateTextOut(current);
@@ -307,7 +344,11 @@ export default function HomeExperience({ coCreateHref }: HomeExperienceProps) {
   }, [goTo]);
 
   return (
-    <div ref={containerRef} className="home-panel-stack">
+    /* T-005 : fond sombre derrière la pile — le sweep de sortie du panel Journeys
+       révèle désormais ce fond au lieu de la vidéo du panel précédent.
+       T-009 : h-[100dvh] suit le viewport dynamique mobile (barre d'URL) pour que
+       le fond beige du layout n'apparaisse plus en bande sous les panels. */
+    <div ref={containerRef} className="home-panel-stack h-[100dvh] bg-[#040301]">
       {/* Panel 1: Hero */}
       <div data-panel style={{ zIndex: 1 }}>
         <HomeHeroPanel />
@@ -328,18 +369,23 @@ export default function HomeExperience({ coCreateHref }: HomeExperienceProps) {
         <HomeJourneysPanel />
       </div>
 
-      {/* Panel 5: Triptique (Categories) */}
-      <div data-panel style={{ zIndex: 5 }}>
-        <HomeCategoriesPanel />
-      </div>
+      {/* Panel 5: Triptique (Categories) — T-006 : archivé derrière SHOW_CATEGORIES_PANEL.
+          Sa scroll interception interne disparaît avec lui : le scroll passe
+          directement au panel Concept. */}
+      {SHOW_CATEGORIES_PANEL ? (
+        <div data-panel style={{ zIndex: 5 }}>
+          <HomeCategoriesPanel />
+        </div>
+      ) : null}
 
       {/* Panel 6: Concept */}
       <div data-panel style={{ zIndex: 6 }}>
         <HomeConceptPanel />
       </div>
 
-      {/* Panel 7: Footer */}
-      <div data-panel style={{ zIndex: 7 }}>
+      {/* Panel 7: Footer — T-008 : bloc compact ancré en bas (hauteur auto,
+          hors « snap » plein écran) qui s'enchaîne sur le panel Concept resté visible */}
+      <div data-panel style={{ zIndex: 7, top: 'auto', height: 'auto' }}>
         <HomeFooter />
       </div>
     </div>

@@ -1,25 +1,18 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { X } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import * as React from 'react';
 
 import { MenuLinks } from '@/components/nav/MenuLinks';
-import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Sheet, SheetClose, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { socialLinks } from '@/config/socials';
 import { cn } from '@/lib/utils';
 
-const triggerBaseClasses =
-  'relative flex h-14 w-14 items-center justify-center rounded-full border border-transparent bg-transparent text-white transition duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent';
-
 export function MainMenu() {
   const pathname = usePathname();
-  const isJourneysRoute = pathname === '/journeys';
-  const isContactRoute = pathname === '/contact';
   const [open, setOpen] = React.useState(false);
   const [hasMounted, setHasMounted] = React.useState(false);
   const lastPathnameRef = React.useRef(pathname);
@@ -42,45 +35,20 @@ export function MainMenu() {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button
-          variant="ghost"
+        <button
+          type="button"
           aria-label="Open menu"
-          className={cn(
-            triggerBaseClasses,
-            isJourneysRoute
-              ? 'hover:!border-white/55 hover:!bg-white/10 hover:!text-white hover:shadow-[0_0_22px_rgba(255,255,255,0.5)] focus-visible:ring-white/65'
-              : 'hover:!border-[#f6c452]/55 hover:!bg-[#f6c4521a] hover:!text-white hover:shadow-[0_0_22px_rgba(246,196,82,0.6)] focus-visible:ring-[#f6c452]/60'
-          )}
+          className="group inline-flex min-h-[44px] flex-col items-start justify-center focus-visible:outline-none"
         >
-          <span className="relative block h-11 w-11" aria-hidden>
-            <Image
-              src={
-                isJourneysRoute || isContactRoute
-                  ? '/assets/icones/Ico White BEE-05.svg'
-                  : '/assets/icones/Ico Gold BEE-05.svg'
-              }
-              alt=""
-              width={40}
-              height={40}
-              className={cn(
-                'absolute inset-0 h-11 w-11 object-contain transition duration-200 group-hover:opacity-0',
-                isJourneysRoute || isContactRoute
-                  ? 'drop-shadow-[0_0_18px_rgba(255,255,255,0.52)]'
-                  : 'drop-shadow-[0_0_18px_rgba(246,196,82,0.54)]'
-              )}
-              aria-hidden
-            />
-            <Image
-              src="/assets/icones/Ico Gold BEE-05.svg"
-              alt=""
-              width={40}
-              height={40}
-              className="absolute inset-0 h-11 w-11 object-contain opacity-0 drop-shadow-[0_0_18px_rgba(246,196,82,0.54)] transition duration-200 group-hover:opacity-100"
-              aria-hidden
-            />
+          <span className="inline-flex items-center gap-2 font-display text-[10px] uppercase tracking-[0.4em] text-white">
+            <Menu className="size-4" aria-hidden />
+            <span>Menu</span>
           </span>
-          <span className="sr-only">Menu</span>
-        </Button>
+          <span
+            aria-hidden
+            className="mt-1.5 h-px w-full origin-left scale-x-0 bg-gradient-to-r from-[rgba(249,215,162,0.18)] via-[rgba(244,199,122,0.75)] to-[rgba(255,240,225,0.95)] transition-transform duration-300 ease-out group-hover:scale-x-100 group-focus-visible:scale-x-100"
+          />
+        </button>
       </SheetTrigger>
       {hasMounted ? (
         <SheetContent
@@ -150,7 +118,7 @@ export function MainMenu() {
                         label: '',
                         meta: '',
                         title: '',
-                        image: '/assets/campaigns/craie-suisse/Swiss3.png',
+                        image: '/assets/campaigns/craie-suisse/swiss3.jpg',
                         layout: 'landscape',
                         cta: 'CSR LABEL',
                       }}
@@ -234,7 +202,7 @@ function MenuQuickLink({
         <div className="absolute inset-0 bg-gradient-to-t from-[rgba(9,6,4,0.92)] via-black/35 to-transparent transition duration-500 group-hover:from-[rgba(26,18,13,0.95)] group-hover:via-black/45" />
         <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent opacity-0 transition duration-500 group-hover:opacity-40" />
       </div>
-      <div className="relative z-10 flex h-full w-full flex-col gap-6 p-6 sm:p-8">
+      <div className="relative z-10 flex min-h-[inherit] w-full flex-col gap-6 self-stretch p-6 sm:p-8">
         {hasHeader ? (
           <div className="flex items-center justify-between text-[10px] uppercase tracking-[0.32em] text-white/70">
             <span className="pr-4">{tile.label}</span>
@@ -246,7 +214,7 @@ function MenuQuickLink({
             {displayTitle}
           </h3>
         </div>
-        <div className="flex items-center justify-center gap-2 font-display text-[11px] uppercase tracking-[0.5em] text-white">
+        <div className="mt-auto flex items-center justify-center gap-2 font-display text-[10px] uppercase tracking-[0.4em] text-white">
           <span className="leading-none">{ctaLabel}</span>
         </div>
       </div>

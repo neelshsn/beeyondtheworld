@@ -40,6 +40,8 @@ interface GlowTitleProps {
   className?: string;
   glowTone?: GlowTone;
   revealOnce?: boolean;
+  /** T-003 : opt-out de l'animation d'entrée — rendu statique et visible (défaut true) */
+  animated?: boolean;
 }
 
 export function GlowTitle({
@@ -50,6 +52,7 @@ export function GlowTitle({
   className,
   glowTone = 'honey',
   revealOnce = true,
+  animated = true,
 }: GlowTitleProps) {
   const alignment = {
     left: 'items-start text-left',
@@ -60,9 +63,14 @@ export function GlowTitle({
   return (
     <motion.div
       className={cn('relative mx-auto flex w-full max-w-4xl flex-col gap-4', alignment, className)}
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: revealOnce, amount: 0.55 }}
+      {...(animated
+        ? {
+            initial: 'hidden' as const,
+            whileInView: 'visible' as const,
+            viewport: { once: revealOnce, amount: 0.55 },
+          }
+        : /* T-003 : pas de variants propagés — contenu pleinement visible */
+          { initial: false as const })}
     >
       {eyebrow ? (
         <span
@@ -75,7 +83,7 @@ export function GlowTitle({
         </span>
       ) : null}
       <motion.h2
-        variants={highlightVariants}
+        variants={animated ? highlightVariants : undefined}
         className={cn(
           'relative font-title text-4xl uppercase leading-[1.1] text-foreground sm:text-5xl md:text-6xl',
           '[text-wrap:balance]'
@@ -97,7 +105,7 @@ export function GlowTitle({
       </motion.h2>
       {description ? (
         <motion.p
-          variants={descriptionVariants}
+          variants={animated ? descriptionVariants : undefined}
           className="max-w-2xl text-base text-foreground/70 sm:text-lg"
         >
           {description}

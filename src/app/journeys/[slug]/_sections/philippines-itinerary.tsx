@@ -5,7 +5,7 @@ import { MapPin, Navigation2, Waves } from 'lucide-react';
 import Image from 'next/image';
 import { useMemo, useState } from 'react';
 
-import { SiteArrowIcon } from '@/components/icons/site-arrow-icon';
+import { BeeButton } from '@/components/primitives/bee-button';
 
 export type PhilippinesItinerarySegment = {
   id: string;
@@ -38,35 +38,28 @@ export function PhilippinesItinerary({ segments }: PhilippinesItineraryProps) {
 
   return (
     <div className="flex flex-col gap-10">
-      <div className="flex flex-wrap gap-3">
+      <div className="flex flex-wrap gap-x-10 gap-y-5">
         {segments.map((segment) => {
           const isActive = segment.id === activeSegment.id;
           return (
-            <button
+            <BeeButton
               key={segment.id}
-              type="button"
               onClick={() => setActiveId(segment.id)}
-              className="group relative flex min-w-[220px] flex-1 items-center justify-between gap-3 rounded-full border border-white/20 bg-white/5 px-6 py-3 text-left text-xs uppercase tracking-[0.36em] text-white/70 transition hover:border-white/45 hover:bg-white/10"
-            >
-              <span className="flex items-center gap-3">
+              active={isActive}
+              icon={
                 <MapPin
                   className="size-4 text-white/60 transition group-hover:text-white"
                   aria-hidden
                 />
-                {segment.days}
-              </span>
-              <SiteArrowIcon
-                direction="right"
-                className="size-4 text-white/50 transition-transform group-hover:translate-x-1 group-hover:text-white"
-              />
-              {isActive ? (
-                <motion.span
-                  layoutId="philippines-itinerary-pill"
-                  transition={shouldReduceMotion ? undefined : CARD_TRANSITION}
-                  className="absolute inset-0 rounded-full bg-white/15"
-                />
-              ) : null}
-            </button>
+              }
+              className={
+                isActive
+                  ? 'text-white transition-colors'
+                  : 'text-white/70 transition-colors hover:text-white'
+              }
+            >
+              {segment.days}
+            </BeeButton>
           );
         })}
       </div>

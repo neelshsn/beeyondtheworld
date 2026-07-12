@@ -1,12 +1,11 @@
 import Image from 'next/image';
-import Link from 'next/link';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { CalendarDays, Compass, MapPin, Quote, Sparkles, Waypoints } from 'lucide-react';
 
 import { GlowTitle, ShowcaseMediaGallery } from '@/components/primitives';
+import { BeeButton } from '@/components/primitives/bee-button';
 import SplitText from '@/components/SplitText';
-import { Button } from '@/components/ui/button';
 import type { JourneyShowcase } from '@/data/showcases';
 import { journeyShowcases } from '@/data/showcases';
 
@@ -191,12 +190,9 @@ function DefaultJourneyLayout({ journey }: { journey: JourneyShowcase }) {
                 {journey.hero.caption ?? 'Immersive journey field note'}
               </p>
               {journey.cta ? (
-                <Button
-                  asChild
-                  className="mt-2 inline-flex items-center justify-center gap-3 rounded-full border border-white/30 bg-white/15 px-6 py-3 text-[11px] uppercase tracking-[0.4em] text-white hover:bg-white/25"
-                >
-                  <Link href={journey.cta.href}>{journey.cta.label}</Link>
-                </Button>
+                <BeeButton href={journey.cta.href} size="md" className="mt-2">
+                  {journey.cta.label}
+                </BeeButton>
               ) : null}
             </div>
           </div>
@@ -280,12 +276,9 @@ function DefaultJourneyLayout({ journey }: { journey: JourneyShowcase }) {
         />
         <ShowcaseMediaGallery items={journey.gallery} />
         <div className="flex justify-center">
-          <Button
-            asChild
-            className="rounded-full border border-foreground/30 bg-foreground px-10 py-4 text-[11px] uppercase tracking-[0.42em] text-white hover:bg-foreground/90"
-          >
-            <Link href="/contact">Composer cette journey</Link>
-          </Button>
+          <BeeButton href="/contact" align="center" size="md" className="text-foreground">
+            Composer cette journey
+          </BeeButton>
         </div>
       </section>
     </main>

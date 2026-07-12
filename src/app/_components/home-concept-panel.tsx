@@ -25,13 +25,16 @@ export function HomeConceptPanel() {
       {/* Dark overlay for legibility */}
       <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(4,3,1,0.18)_0%,rgba(4,3,1,0.08)_40%,rgba(4,3,1,0.35)_70%,rgba(4,3,1,0.65)_100%)]" />
 
-      {/* Center text */}
+      {/* Center text — T-003 : classe « handwriting-reveal » retirée (animation
+          d'écriture à l'entrée) ; la remettre devant « max-w-[90vw] » pour réactiver */}
       <div className="relative flex h-full items-center justify-center px-8">
         <p
           data-animate-text
-          className="handwriting-reveal max-w-[90vw] text-center font-script text-[clamp(1.6rem,3vw,3rem)] lowercase leading-[1.5] tracking-[0.02em] text-white/90 lg:whitespace-nowrap"
+          className="max-w-[90vw] text-center font-script text-[clamp(1.6rem,3vw,3rem)] lowercase leading-[1.5] tracking-[0.02em] text-white/90 lg:whitespace-nowrap"
         >
-          Visual tales that support a sustainable worldwide development
+          {/* T-014 : retour à la ligne mobile entre « sustainable » et « worldwide » */}
+          Visual tales that support a sustainable
+          <br className="lg:hidden" /> worldwide development
         </p>
       </div>
 

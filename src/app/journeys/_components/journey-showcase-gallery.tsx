@@ -9,8 +9,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { useBodyScrollLock } from '@/app/concept/_hooks/use-body-scroll-lock';
 import { usePrefersReducedMotion } from '@/app/concept/_hooks/use-prefers-reduced-motion';
-import { SiteArrowIcon } from '@/components/icons/site-arrow-icon';
-import { journeys } from '@/data/journeys-carousel';
+import { BeeButton } from '@/components/primitives/bee-button';
+import { journeys as staticJourneys } from '@/data/journeys-carousel';
+import { getSustainableImpactPdf } from '@/data/sustainable-impact';
 import type { Journey, JourneySeason } from '@/types/journey';
 
 type SeasonFilterValue = 'all' | 'summer' | 'winter';
@@ -19,7 +20,6 @@ type SeasonOption = {
   label: string;
   value: SeasonFilterValue;
   icon: string;
-  hoverIcon?: string;
   season?: JourneySeason;
 };
 
@@ -33,24 +33,25 @@ const SEASON_OPTIONS: SeasonOption[] = [
   {
     label: 'All Journeys',
     value: 'all',
-    icon: '/assets/icones/Ico White BEE-02.svg',
-    hoverIcon: '/assets/icones/Ico Gold BEE-02.svg',
+    icon: '/assets/icones/Ico Gold BEE-02.svg',
   },
   {
     label: 'Spring Summer',
     value: 'summer',
     season: 'spring-summer',
-    icon: '/assets/icones/Ico White BEE-14.svg',
-    hoverIcon: '/assets/icones/Ico Gold BEE-14.svg',
+    icon: '/assets/icones/icono/saisons/flowers.svg',
   },
   {
     label: 'Fall Winter',
     value: 'winter',
     season: 'fall-winter',
-    icon: '/assets/icones/Ico White BEE-01.svg',
-    hoverIcon: '/assets/icones/Ico Gold BEE-01.svg',
+    icon: '/assets/icones/icono/saisons/winter.svg',
   },
 ];
+
+const SEASON_MENU_OPTIONS = SEASON_OPTIONS.filter(
+  (option): option is SeasonOption & { value: 'summer' | 'winter' } => option.value !== 'all'
+);
 
 const MONTH_INDEX: Record<string, number> = {
   january: 1,
@@ -67,18 +68,13 @@ const MONTH_INDEX: Record<string, number> = {
   december: 12,
 };
 
-const JOURNEY_SEASON_ICONS: Record<
-  JourneySeason,
-  { icon: string; hoverIcon: string; label: string }
-> = {
+const JOURNEY_SEASON_ICONS: Record<JourneySeason, { icon: string; label: string }> = {
   'spring-summer': {
-    icon: '/assets/icones/Ico White BEE-14.svg',
-    hoverIcon: '/assets/icones/Ico Gold BEE-14.svg',
+    icon: '/assets/icones/icono/saisons/flowers.svg',
     label: 'Spring Summer',
   },
   'fall-winter': {
-    icon: '/assets/icones/Ico White BEE-01.svg',
-    hoverIcon: '/assets/icones/Ico Gold BEE-01.svg',
+    icon: '/assets/icones/icono/saisons/winter.svg',
     label: 'Fall Winter',
   },
 };
@@ -92,20 +88,6 @@ function parseSeasonFilter(value: string | null): SeasonFilterValue {
   if (value === 'summer') return 'summer';
   if (value === 'winter') return 'winter';
   return 'all';
-}
-
-function getSeasonOption(value: SeasonFilterValue) {
-  return SEASON_OPTIONS.find((option) => option.value === value) ?? SEASON_OPTIONS[0];
-}
-
-function getSeasonIndex(value: SeasonFilterValue) {
-  return SEASON_OPTIONS.findIndex((option) => option.value === value);
-}
-
-function getSeasonDirection(from: SeasonFilterValue, to: SeasonFilterValue) {
-  const fromIndex = getSeasonIndex(from);
-  const toIndex = getSeasonIndex(to);
-  return toIndex > fromIndex ? 1 : -1;
 }
 
 function getForwardOffset(index: number, activeIndex: number, total: number) {
@@ -135,7 +117,7 @@ function getCardFadeProfile(
     return {
       opacity: forwardOffset === 0 ? 1 : 0.86,
       y: 0,
-      scale: forwardOffset === 0 ? 1 : 0.985,
+      scale: forwardOffset === 0 ? 1 : 0.92,
       imageScale: forwardOffset === 0 ? 1.02 : 1.05,
       imageFilter:
         forwardOffset === 0 ? 'saturate(1) brightness(1)' : 'saturate(0.9) brightness(0.9)',
@@ -269,7 +251,38 @@ function extractCountry(location: string) {
   return parts[parts.length - 1]?.trim() || location;
 }
 
-export function JourneyShowcaseGallery() {
+/**
+ * T-023 — Découpe la date du voyage en deux lignes « From … » / « To … ».
+ * Si la date contient « to », on sépare départ/retour ; sinon on affiche
+ * uniquement « From <date> ».
+ */
+function parseJourneyDateRange(dateValue: string): { from: string; to: string | null } {
+  const normalized = dateValue
+    .replaceAll('â€“', '-')
+    .replaceAll('–', '-')
+    .replaceAll('—', '-')
+    .replace(/^\s*from\s+/i, '')
+    .trim();
+
+  const parts = normalized.split(/\s+to\s+/i);
+  if (parts.length >= 2) {
+    return {
+      from: parts[0].trim(),
+      to: parts.slice(1).join(' to ').trim(),
+    };
+  }
+
+  return { from: normalized, to: null };
+}
+
+type JourneyShowcaseGalleryProps = {
+  /** T-050 — voyages servis par le CMS (fallback : contenu statique). */
+  journeys?: Journey[];
+};
+
+export function JourneyShowcaseGallery({
+  journeys = staticJourneys,
+}: JourneyShowcaseGalleryProps = {}) {
   useBodyScrollLock();
 
   const prefersReducedMotion = usePrefersReducedMotion();
@@ -280,7 +293,6 @@ export function JourneyShowcaseGallery() {
   const [season, setSeason] = useState<SeasonFilterValue>(() =>
     parseSeasonFilter(searchParams?.get('season') ?? null)
   );
-  const [seasonDirection, setSeasonDirection] = useState(1);
   const [isMobileViewport, setIsMobileViewport] = useState(false);
   const [useLiteEffects, setUseLiteEffects] = useState(false);
 
@@ -316,14 +328,12 @@ export function JourneyShowcaseGallery() {
         return previous;
       }
       setIsSeasonSwitching(true);
-      setSeasonDirection(getSeasonDirection(previous, nextSeason));
       return nextSeason;
     });
   }, [searchParams]);
 
   const applySeason = useCallback(
-    (nextSeason: SeasonFilterValue, direction: number) => {
-      setSeasonDirection(direction);
+    (nextSeason: SeasonFilterValue) => {
       setIsSeasonSwitching(true);
       setSeason(nextSeason);
 
@@ -340,7 +350,7 @@ export function JourneyShowcaseGallery() {
     [pathname, router, searchParams]
   );
 
-  const filteredJourneys = useMemo(() => filterJourneys(journeys, season), [season]);
+  const filteredJourneys = useMemo(() => filterJourneys(journeys, season), [journeys, season]);
   const renderedJourneys = useMemo(
     () => buildRenderedJourneySlides(filteredJourneys),
     [filteredJourneys]
@@ -382,8 +392,6 @@ export function JourneyShowcaseGallery() {
 
   const rootRef = useRef<HTMLDivElement | null>(null);
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [canScrollPrev, setCanScrollPrev] = useState(false);
-  const [canScrollNext, setCanScrollNext] = useState(false);
   const [backgroundDirection, setBackgroundDirection] = useState<1 | -1>(1);
   const [isJourneyTransitioning, setIsJourneyTransitioning] = useState(false);
   const [isSeasonSwitching, setIsSeasonSwitching] = useState(false);
@@ -400,6 +408,8 @@ export function JourneyShowcaseGallery() {
   const currentJourneyMedia = currentJourney
     ? getJourneyMediaForSeason(currentJourney, season)
     : null;
+  // T-036 — PDF « Sustainable Impact » du voyage actif (null → bouton masqué).
+  const sustainableImpactPdf = currentJourney ? getSustainableImpactPdf(currentJourney.slug) : null;
 
   useEffect(() => {
     if (!isSeasonSwitching) {
@@ -514,8 +524,6 @@ export function JourneyShowcaseGallery() {
         previousSelectedIndexRef.current = nextIndex;
         setSelectedIndex(nextIndex);
         setBackgroundDirection(pendingDirectionRef.current);
-        setCanScrollPrev(uniqueJourneyCount > 1);
-        setCanScrollNext(uniqueJourneyCount > 1);
         return;
       }
 
@@ -547,8 +555,6 @@ export function JourneyShowcaseGallery() {
       previousSelectedIndexRef.current = nextIndex;
       setSelectedIndex(nextIndex);
       setBackgroundDirection(rawDirection);
-      setCanScrollPrev(uniqueJourneyCount > 1);
-      setCanScrollNext(uniqueJourneyCount > 1);
     };
 
     emblaApi.on('select', onSelect);
@@ -577,8 +583,6 @@ export function JourneyShowcaseGallery() {
     previousSelectedIndexRef.current = centeredStartIndex;
     setSelectedIndex(centeredStartIndex);
     setBackgroundDirection(1);
-    setCanScrollPrev(uniqueJourneyCount > 1);
-    setCanScrollNext(uniqueJourneyCount > 1);
   }, [
     centeredStartIndex,
     emblaApi,
@@ -641,16 +645,13 @@ export function JourneyShowcaseGallery() {
     };
   }, [emblaApi, safeLength]);
 
-  const currentSeasonIndex = getSeasonIndex(season);
-
-  const handleSeasonCycle = useCallback(
-    (direction: 1 | -1) => {
-      const nextIndex =
-        (currentSeasonIndex + direction + SEASON_OPTIONS.length) % SEASON_OPTIONS.length;
-      const nextSeason = SEASON_OPTIONS[nextIndex]?.value ?? 'all';
-      applySeason(nextSeason, direction);
+  // T-025 / T-027 — sélection directe du filtre saison. Cliquer le filtre
+  // déjà actif le désactive et revient à « All Journeys » (toggle).
+  const handleSeasonMenuSelect = useCallback(
+    (nextSeason: 'summer' | 'winter') => {
+      applySeason(season === nextSeason ? 'all' : nextSeason);
     },
-    [applySeason, currentSeasonIndex]
+    [applySeason, season]
   );
 
   const handleJourneySeasonSelect = useCallback(
@@ -659,7 +660,7 @@ export function JourneyShowcaseGallery() {
       if (nextSeason === season) {
         return;
       }
-      applySeason(nextSeason, getSeasonDirection(season, nextSeason));
+      applySeason(nextSeason);
     },
     [applySeason, season]
   );
@@ -769,17 +770,6 @@ export function JourneyShowcaseGallery() {
           isJourneyTransitioning ? 'pointer-events-none opacity-0' : 'opacity-100'
         )}
       >
-        <div className="pointer-events-none absolute left-4 top-5 z-30 sm:left-6 sm:top-7 md:hidden lg:left-10 lg:top-8">
-          <div className="pointer-events-auto">
-            <SeasonElevator
-              value={season}
-              direction={seasonDirection}
-              prefersReducedMotion={prefersReducedMotion}
-              onCycle={handleSeasonCycle}
-            />
-          </div>
-        </div>
-
         <div className="relative flex flex-1 items-center justify-end">
           <div className="w-full px-2 pb-2 pt-20 sm:px-6 sm:pb-4 sm:pt-24 md:ml-auto md:w-[75%] md:pb-0 md:pl-10 md:pr-6 md:pt-0 lg:py-10 lg:pl-16 lg:pr-10 xl:pl-20">
             {safeLength ? (
@@ -848,14 +838,32 @@ export function JourneyShowcaseGallery() {
 
             <div className="pointer-events-none relative z-40 mt-8 flex flex-col items-center gap-3 pb-5 md:hidden">
               <JourneyHeadline currentJourney={currentJourney} compact centered />
-              <JourneyNavigation
-                canScrollPrev={canScrollPrev}
-                canScrollNext={canScrollNext}
-                onPrev={scrollPrev}
-                onNext={scrollNext}
-                compact
-                centered
-              />
+              <div className="pointer-events-auto flex flex-col items-center gap-3">
+                {sustainableImpactPdf ? (
+                  <BeeButton
+                    href={sustainableImpactPdf}
+                    download
+                    size="sm"
+                    align="center"
+                    className="opacity-80"
+                  >
+                    Sustainable Impacts
+                  </BeeButton>
+                ) : null}
+                <div className="flex items-center justify-center gap-6">
+                  {SEASON_MENU_OPTIONS.map((option) => (
+                    <BeeButton
+                      key={option.value}
+                      size="md"
+                      align="center"
+                      active={season === option.value}
+                      onClick={() => handleSeasonMenuSelect(option.value)}
+                    >
+                      {option.label}
+                    </BeeButton>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -864,138 +872,33 @@ export function JourneyShowcaseGallery() {
           <JourneyHeadline currentJourney={currentJourney} sideAligned />
         </div>
 
-        <div className="pointer-events-none absolute bottom-5 right-4 z-30 hidden sm:bottom-7 sm:right-6 md:right-10 md:block lg:bottom-10 lg:right-16 xl:right-20">
-          <JourneyDesktopControls
-            season={season}
-            seasonDirection={seasonDirection}
-            prefersReducedMotion={prefersReducedMotion}
-            onSeasonCycle={handleSeasonCycle}
-          />
+        {sustainableImpactPdf ? (
+          <div className="pointer-events-none absolute bottom-6 left-8 z-30 hidden md:block">
+            <div className="pointer-events-auto">
+              <BeeButton href={sustainableImpactPdf} download size="md" align="left">
+                Sustainable Impacts
+              </BeeButton>
+            </div>
+          </div>
+        ) : null}
+
+        <div className="pointer-events-none absolute inset-x-0 bottom-6 z-30 hidden justify-center md:flex">
+          <div className="pointer-events-auto flex items-center justify-center gap-10">
+            {SEASON_MENU_OPTIONS.map((option) => (
+              <BeeButton
+                key={option.value}
+                size="md"
+                align="center"
+                active={season === option.value}
+                onClick={() => handleSeasonMenuSelect(option.value)}
+              >
+                {option.label}
+              </BeeButton>
+            ))}
+          </div>
         </div>
       </div>
     </section>
-  );
-}
-
-type SeasonElevatorProps = {
-  value: SeasonFilterValue;
-  direction: number;
-  prefersReducedMotion: boolean;
-  onCycle: (direction: 1 | -1) => void;
-};
-
-function SeasonElevator({ value, direction, prefersReducedMotion, onCycle }: SeasonElevatorProps) {
-  const option = getSeasonOption(value);
-  const hoverIcon = option.hoverIcon ?? option.icon;
-  const [hoveredControl, setHoveredControl] = useState<'prev' | 'next' | 'center' | null>(null);
-  const highlightCenter =
-    hoveredControl === 'prev' || hoveredControl === 'next' || hoveredControl === 'center';
-
-  return (
-    <motion.div
-      layout
-      className="inline-flex items-center gap-2 text-white drop-shadow-[0_12px_28px_rgba(0,0,0,0.38)] sm:gap-3"
-      transition={{
-        layout: { duration: prefersReducedMotion ? 0.18 : 0.42, ease: [0.22, 1, 0.36, 1] },
-      }}
-    >
-      <motion.button
-        layout="position"
-        type="button"
-        onClick={() => onCycle(-1)}
-        onMouseEnter={() => setHoveredControl('prev')}
-        onMouseLeave={() => setHoveredControl((current) => (current === 'prev' ? null : current))}
-        onFocus={() => setHoveredControl('prev')}
-        onBlur={() => setHoveredControl((current) => (current === 'prev' ? null : current))}
-        className={clsx(
-          'flex h-6 w-6 items-center justify-center transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/45',
-          hoveredControl === 'prev'
-            ? 'text-[#f6c452] drop-shadow-[0_0_10px_rgba(246,196,82,0.42)]'
-            : 'text-white/45'
-        )}
-        aria-label="Previous season"
-      >
-        <SiteArrowIcon direction="left" className="h-3.5 w-3.5" />
-      </motion.button>
-
-      <motion.div layout className="relative flex min-w-0 items-center overflow-hidden">
-        <AnimatePresence initial={false} mode="popLayout">
-          <motion.div
-            key={value}
-            layout
-            initial={
-              prefersReducedMotion ? { opacity: 0 } : { opacity: 0, x: direction > 0 ? 28 : -28 }
-            }
-            animate={{ opacity: 1, x: 0 }}
-            exit={
-              prefersReducedMotion ? { opacity: 0 } : { opacity: 0, x: direction > 0 ? -28 : 28 }
-            }
-            transition={{
-              duration: prefersReducedMotion ? 0.2 : 0.42,
-              ease: [0.22, 1, 0.36, 1],
-              layout: { duration: prefersReducedMotion ? 0.18 : 0.42, ease: [0.22, 1, 0.36, 1] },
-            }}
-            onMouseEnter={() => setHoveredControl('center')}
-            onMouseLeave={() =>
-              setHoveredControl((current) => (current === 'center' ? null : current))
-            }
-            className="group/season relative flex items-center gap-2.5 sm:gap-3"
-          >
-            <div className="relative h-8 w-8 shrink-0 sm:h-9 sm:w-9">
-              <Image
-                src={option.icon}
-                alt=""
-                fill
-                className={clsx(
-                  'object-contain transition-opacity duration-300',
-                  option.hoverIcon && highlightCenter ? 'opacity-0' : 'opacity-100'
-                )}
-                priority
-              />
-              {hoverIcon ? (
-                <Image
-                  src={hoverIcon}
-                  alt=""
-                  fill
-                  className={clsx(
-                    'object-contain transition-opacity duration-300',
-                    highlightCenter ? 'opacity-100' : 'opacity-0'
-                  )}
-                />
-              ) : null}
-            </div>
-
-            <span
-              className={clsx(
-                'whitespace-nowrap font-display text-[0.92rem] uppercase tracking-[0.12em] transition-colors duration-300 [text-shadow:0_0_12px_rgba(255,255,255,0.34),0_12px_28px_rgba(0,0,0,0.34),0_24px_56px_rgba(0,0,0,0.22)] sm:text-[1.24rem]',
-                highlightCenter ? 'text-[#f6c452]' : 'text-white'
-              )}
-            >
-              {option.label}
-            </span>
-          </motion.div>
-        </AnimatePresence>
-      </motion.div>
-
-      <motion.button
-        layout="position"
-        type="button"
-        onClick={() => onCycle(1)}
-        onMouseEnter={() => setHoveredControl('next')}
-        onMouseLeave={() => setHoveredControl((current) => (current === 'next' ? null : current))}
-        onFocus={() => setHoveredControl('next')}
-        onBlur={() => setHoveredControl((current) => (current === 'next' ? null : current))}
-        className={clsx(
-          'flex h-6 w-6 items-center justify-center transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/45',
-          hoveredControl === 'next'
-            ? 'text-[#f6c452] drop-shadow-[0_0_10px_rgba(246,196,82,0.42)]'
-            : 'text-white/45'
-        )}
-        aria-label="Next season"
-      >
-        <SiteArrowIcon direction="right" className="h-3.5 w-3.5" />
-      </motion.button>
-    </motion.div>
   );
 }
 
@@ -1013,6 +916,7 @@ function JourneyHeadline({
   sideAligned = false,
 }: JourneyHeadlineProps) {
   const country = currentJourney ? extractCountry(currentJourney.location) : '';
+  const dateRange = currentJourney ? parseJourneyDateRange(currentJourney.date) : null;
 
   return (
     <AnimatePresence mode="wait">
@@ -1034,154 +938,29 @@ function JourneyHeadline({
             className={clsx(
               'font-title uppercase tracking-normal text-white [text-shadow:0_4px_0_rgba(0,0,0,0.36),0_12px_20px_rgba(0,0,0,0.28),0_24px_52px_rgba(0,0,0,0.38),0_40px_88px_rgba(0,0,0,0.3)]',
               compact
-                ? 'text-[clamp(2.15rem,12vw,4.4rem)] leading-[0.82]'
+                ? 'text-[clamp(1.9rem,9vw,3.4rem)] leading-[0.82]'
                 : sideAligned
-                  ? 'text-[clamp(3.2rem,7vw,7.4rem)] leading-[0.82]'
-                  : 'text-[clamp(3.4rem,11vw,10.2rem)] leading-[0.8]'
+                  ? 'text-[clamp(2.6rem,5.5vw,5.6rem)] leading-[0.82]'
+                  : 'text-[clamp(2.8rem,8vw,7.6rem)] leading-[0.8]'
             )}
           >
             {country}
           </h2>
-          <p
-            className={clsx(
-              'mt-0 uppercase tracking-[0.38em] text-white [text-shadow:0_2px_0_rgba(0,0,0,0.3),0_8px_14px_rgba(0,0,0,0.24),0_16px_34px_rgba(0,0,0,0.24)]',
-              compact ? 'text-[0.56rem]' : 'text-[0.68rem] sm:text-[0.78rem]'
-            )}
-          >
-            {currentJourney.date}
-          </p>
+          {dateRange ? (
+            <div
+              className={clsx(
+                'mt-1 flex flex-col uppercase tracking-[0.38em] text-white [text-shadow:0_2px_0_rgba(0,0,0,0.3),0_8px_14px_rgba(0,0,0,0.24),0_16px_34px_rgba(0,0,0,0.24)]',
+                compact ? 'gap-0.5 text-[0.56rem]' : 'gap-1 text-[0.68rem] sm:text-[0.78rem]',
+                centered ? 'items-center' : 'items-start'
+              )}
+            >
+              <span>From {dateRange.from}</span>
+              {dateRange.to ? <span>To {dateRange.to}</span> : null}
+            </div>
+          ) : null}
         </motion.div>
       ) : null}
     </AnimatePresence>
-  );
-}
-
-type JourneyNavigationProps = {
-  canScrollPrev: boolean;
-  canScrollNext: boolean;
-  onPrev: () => void;
-  onNext: () => void;
-  compact?: boolean;
-  centered?: boolean;
-};
-
-function JourneyNavigation({
-  canScrollPrev,
-  canScrollNext,
-  onPrev,
-  onNext,
-  compact = false,
-  centered = false,
-}: JourneyNavigationProps) {
-  return (
-    <div
-      className={clsx(
-        'pointer-events-auto flex items-center text-white',
-        compact ? 'gap-2' : 'gap-3 sm:gap-4',
-        centered && 'justify-center'
-      )}
-    >
-      <JourneyNavButton
-        direction="prev"
-        disabled={!canScrollPrev}
-        onClick={onPrev}
-        compact={compact}
-      />
-      <div
-        className={clsx(
-          'relative flex min-w-0 items-center overflow-hidden',
-          compact ? 'gap-1.5' : 'gap-3'
-        )}
-      >
-        <Image
-          src="/assets/icones/Ico White BEE-12.svg"
-          alt=""
-          width={42}
-          height={42}
-          className={clsx(
-            'shrink-0 drop-shadow-[0_0_20px_rgba(255,255,255,0.42)]',
-            compact ? 'h-7 w-7' : 'h-10 w-10 sm:h-11 sm:w-11'
-          )}
-          priority
-        />
-        <span
-          className={clsx(
-            'truncate font-display uppercase tracking-[0.14em] text-white [text-shadow:0_0_10px_rgba(255,255,255,0.32),0_12px_28px_rgba(0,0,0,0.34),0_24px_52px_rgba(0,0,0,0.2)]',
-            compact ? 'text-[0.7rem]' : 'text-[1.1rem] sm:text-[1.55rem]'
-          )}
-        >
-          Next Journey
-        </span>
-      </div>
-      <JourneyNavButton
-        direction="next"
-        disabled={!canScrollNext}
-        onClick={onNext}
-        compact={compact}
-      />
-    </div>
-  );
-}
-
-type JourneyDesktopControlsProps = {
-  season: SeasonFilterValue;
-  seasonDirection: number;
-  prefersReducedMotion: boolean;
-  onSeasonCycle: (direction: 1 | -1) => void;
-};
-
-function JourneyDesktopControls({
-  season,
-  seasonDirection,
-  prefersReducedMotion,
-  onSeasonCycle,
-}: JourneyDesktopControlsProps) {
-  return (
-    <div className="pointer-events-auto flex items-center text-white">
-      <SeasonElevator
-        value={season}
-        direction={seasonDirection}
-        prefersReducedMotion={prefersReducedMotion}
-        onCycle={onSeasonCycle}
-      />
-    </div>
-  );
-}
-
-type JourneyNavButtonProps = {
-  direction: 'prev' | 'next';
-  disabled: boolean;
-  onClick: () => void;
-  compact?: boolean;
-};
-
-function JourneyNavButton({
-  direction,
-  disabled,
-  onClick,
-  compact = false,
-}: JourneyNavButtonProps) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={disabled}
-      className={clsx(
-        'group flex items-center justify-center transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/45',
-        compact ? 'h-6 w-6' : 'h-7 w-7',
-        disabled ? 'cursor-not-allowed text-white/20' : 'text-white/45 hover:text-white/80'
-      )}
-      aria-label={direction === 'prev' ? 'Previous journey' : 'Next journey'}
-    >
-      <SiteArrowIcon
-        direction={direction === 'prev' ? 'left' : 'right'}
-        className={clsx(
-          'transition-transform duration-300',
-          direction === 'prev' ? 'group-hover:-translate-x-1' : 'group-hover:translate-x-1',
-          compact ? 'h-3.5 w-3.5' : 'h-4 w-4'
-        )}
-      />
-    </button>
   );
 }
 
@@ -1201,40 +980,41 @@ type JourneyCardProps = {
 type SeasonIconScale = 'hero' | 'lead' | 'trail';
 
 function getSeasonIconSizing(compact: boolean, scale: SeasonIconScale) {
+  // T-026 — tailles réduites d'environ 15 % par rapport à la version précédente.
   if (compact) {
     if (scale === 'hero') {
       return {
         gapClass: 'gap-[clamp(0.45rem,1.8vw,0.7rem)]',
-        itemClass: 'h-[clamp(1.45rem,6.9vw,2rem)] w-[clamp(1.45rem,6.9vw,2rem)]',
+        itemClass: 'h-[clamp(1.23rem,5.9vw,1.7rem)] w-[clamp(1.23rem,5.9vw,1.7rem)]',
       };
     }
     if (scale === 'lead') {
       return {
         gapClass: 'gap-[clamp(0.4rem,1.55vw,0.62rem)]',
-        itemClass: 'h-[clamp(1.28rem,6vw,1.78rem)] w-[clamp(1.28rem,6vw,1.78rem)]',
+        itemClass: 'h-[clamp(1.09rem,5.1vw,1.51rem)] w-[clamp(1.09rem,5.1vw,1.51rem)]',
       };
     }
     return {
       gapClass: 'gap-[clamp(0.34rem,1.35vw,0.54rem)]',
-      itemClass: 'h-[clamp(1.1rem,5.2vw,1.52rem)] w-[clamp(1.1rem,5.2vw,1.52rem)]',
+      itemClass: 'h-[clamp(0.94rem,4.4vw,1.29rem)] w-[clamp(0.94rem,4.4vw,1.29rem)]',
     };
   }
 
   if (scale === 'hero') {
     return {
       gapClass: 'gap-[clamp(0.5rem,0.85vw,0.82rem)]',
-      itemClass: 'h-[clamp(1.85rem,2.75vw,2.8rem)] w-[clamp(1.85rem,2.75vw,2.8rem)]',
+      itemClass: 'h-[clamp(1.57rem,2.34vw,2.38rem)] w-[clamp(1.57rem,2.34vw,2.38rem)]',
     };
   }
   if (scale === 'lead') {
     return {
       gapClass: 'gap-[clamp(0.42rem,0.7vw,0.68rem)]',
-      itemClass: 'h-[clamp(1.58rem,2.2vw,2.28rem)] w-[clamp(1.58rem,2.2vw,2.28rem)]',
+      itemClass: 'h-[clamp(1.34rem,1.87vw,1.94rem)] w-[clamp(1.34rem,1.87vw,1.94rem)]',
     };
   }
   return {
     gapClass: 'gap-[clamp(0.34rem,0.58vw,0.54rem)]',
-    itemClass: 'h-[clamp(1.32rem,1.7vw,1.88rem)] w-[clamp(1.32rem,1.7vw,1.88rem)]',
+    itemClass: 'h-[clamp(1.12rem,1.45vw,1.6rem)] w-[clamp(1.12rem,1.45vw,1.6rem)]',
   };
 }
 
@@ -1362,15 +1142,17 @@ function JourneyCard({
               : { duration: useLiteEffects ? 0.38 : 0.62, ease: [0.22, 1, 0.36, 1] }
           }
         />
-        <div className="absolute inset-x-0 bottom-4 flex justify-center">
-          <SeasonIconRow
-            seasons={seasonTags}
-            compact={isMobileViewport}
-            scale={seasonIconScale}
-            activeFilter={season}
-            onSelect={onSeasonSelect}
-          />
-        </div>
+        {forwardOffset === 0 ? (
+          <div className="absolute inset-x-0 bottom-4 flex justify-center">
+            <SeasonIconRow
+              seasons={seasonTags}
+              compact={isMobileViewport}
+              scale={seasonIconScale}
+              activeFilter={season}
+              onSelect={onSeasonSelect}
+            />
+          </div>
+        ) : null}
       </div>
     </motion.button>
   );
@@ -1390,8 +1172,9 @@ function SeasonIconRow({
   onSelect?: (season: JourneySeason) => void;
 }) {
   const sizing = getSeasonIconSizing(compact, scale);
+  // T-026 — ombre portée plus profonde pour accentuer le relief des icônes.
   const seasonIconShadowClass =
-    '[filter:drop-shadow(0_0.16em_0.04em_rgba(0,0,0,0.88))_drop-shadow(0_0.05em_0.16em_rgba(0,0,0,0.45))]';
+    '[filter:drop-shadow(0_0.2em_0.05em_rgba(0,0,0,0.92))_drop-shadow(0_0.1em_0.24em_rgba(0,0,0,0.6))_drop-shadow(0_0.32em_0.5em_rgba(0,0,0,0.38))]';
 
   return (
     <div className={clsx('flex items-center justify-center', sizing.gapClass)}>
@@ -1435,19 +1218,9 @@ function SeasonIconRow({
               alt=""
               fill
               className={clsx(
-                'object-contain transition-all duration-300 group-hover/season:-translate-y-0.5 group-hover/season:scale-105',
+                'object-contain transition-all duration-300 group-hover/season:-translate-y-0.5 group-hover/season:scale-105 group-hover/season:opacity-100',
                 seasonIconShadowClass,
-                isSelected ? 'opacity-0' : 'group-hover/season:opacity-0'
-              )}
-            />
-            <Image
-              src={iconSet.hoverIcon}
-              alt=""
-              fill
-              className={clsx(
-                'object-contain transition-all duration-300 group-hover/season:-translate-y-0.5 group-hover/season:scale-105',
-                seasonIconShadowClass,
-                isSelected ? 'opacity-100' : 'opacity-0 group-hover/season:opacity-100'
+                isSelected ? 'scale-105 opacity-100' : 'opacity-85'
               )}
             />
           </span>

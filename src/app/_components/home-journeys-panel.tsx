@@ -2,13 +2,15 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 
 const LEFT_IMAGE = '/assets/campaigns/craie-maroc/spring-summer-home.jpg';
-const RIGHT_IMAGE = '/assets/campaigns/craie-suisse/Swiss3.png';
+const RIGHT_IMAGE = '/assets/campaigns/craie-suisse/swiss3.jpg';
+
+const TITLE_SHADOW =
+  '[text-shadow:0_4px_0_rgba(0,0,0,0.36),0_12px_20px_rgba(0,0,0,0.28),0_24px_52px_rgba(0,0,0,0.38),0_40px_88px_rgba(0,0,0,0.3)]';
 
 export function HomeJourneysPanel() {
-  const [hoveredSide, setHoveredSide] = useState<'left' | 'right' | null>(null);
   const sectionRef = useRef<HTMLElement>(null);
 
   return (
@@ -20,8 +22,6 @@ export function HomeJourneysPanel() {
           href="/journeys?season=spring-summer"
           data-col-left
           className="group relative flex h-full flex-col items-start justify-end p-4 sm:p-12 lg:p-20"
-          onMouseEnter={() => setHoveredSide('left')}
-          onMouseLeave={() => setHoveredSide(null)}
         >
           <Image
             src={LEFT_IMAGE}
@@ -37,9 +37,7 @@ export function HomeJourneysPanel() {
           {/* Title bottom-left */}
           <h2
             data-animate-text
-            className={`text-glow relative z-10 font-menu text-[clamp(2rem,5vw,5.5rem)] uppercase leading-[0.9] tracking-[0.02em] transition-colors duration-500 ${
-              hoveredSide === 'left' ? 'text-[#edb450]' : 'text-white'
-            }`}
+            className={`relative z-10 font-menu text-[clamp(2rem,5vw,5.5rem)] uppercase leading-[0.9] tracking-[0.02em] text-white ${TITLE_SHADOW}`}
           >
             Spring
             <br />
@@ -61,14 +59,11 @@ export function HomeJourneysPanel() {
           href="/journeys?season=fall-winter"
           data-col-right
           className="group relative flex h-full flex-col items-end justify-start p-4 sm:p-12 lg:p-20"
-          onMouseEnter={() => setHoveredSide('right')}
-          onMouseLeave={() => setHoveredSide(null)}
         >
           <Image
             src={RIGHT_IMAGE}
             alt="Fall Winter"
             fill
-            unoptimized
             sizes="(min-width: 1024px) 50vw, 100vw"
             className="object-cover object-[center_20%]"
           />
@@ -79,9 +74,7 @@ export function HomeJourneysPanel() {
           {/* Title top-right */}
           <h2
             data-animate-text
-            className={`text-glow relative z-10 text-right font-menu text-[clamp(2rem,5vw,5.5rem)] uppercase leading-[0.9] tracking-[0.02em] transition-colors duration-500 ${
-              hoveredSide === 'right' ? 'text-[#edb450]' : 'text-white'
-            }`}
+            className={`relative z-10 text-right font-menu text-[clamp(2rem,5vw,5.5rem)] uppercase leading-[0.9] tracking-[0.02em] text-white ${TITLE_SHADOW}`}
           >
             Fall
             <br />

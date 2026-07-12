@@ -25,6 +25,10 @@ type HomePageContentProps = {
 
 type TriptychTileId = 'bees' | 'flowers' | 'honey';
 
+/* T-003 : animations d'entrée des textes de la home désactivées temporairement
+   (refonte à venir). Repasser à true pour restaurer les apparitions animées. */
+const TEXT_ENTRY_ANIMATIONS_ENABLED = false;
+
 export default function HomePageContent({
   coCreateHref,
   heroVideoSrc,
@@ -90,6 +94,9 @@ export default function HomePageContent({
     () => {
       const section = manifestoRef.current;
       if (!section) return;
+
+      /* T-003 : apparition scrubbée du manifeste neutralisée — lignes statiques */
+      if (!TEXT_ENTRY_ANIMATIONS_ENABLED) return;
 
       const lines = Array.from(section.querySelectorAll<HTMLElement>('[data-manifesto-line]'));
       if (!lines.length) return;
@@ -209,7 +216,7 @@ export default function HomePageContent({
     <main className="flex flex-col bg-[#fdf9ee]">
       <section
         ref={heroSectionRef}
-        className="relative isolate z-0 flex min-h-screen flex-col justify-end overflow-hidden text-white"
+        className="relative isolate z-0 flex min-h-[100svh] flex-col justify-end overflow-hidden text-white"
       >
         <SmartVideo
           wrapperClassName="absolute inset-0 z-0"
@@ -248,6 +255,7 @@ export default function HomePageContent({
               />
             </div>
             <SplitText
+              animated={false} /* T-003 */
               text="Co-journeys pioneering approach for a sustainable transition in fashion advertising"
               tag="h1"
               splitType="words, chars"
@@ -689,6 +697,7 @@ export default function HomePageContent({
         <section className="relative flex flex-col gap-14 overflow-hidden bg-gradient-to-b from-white via-white to-stone-100 pb-6 pt-24">
           <div className="px-6 text-center sm:px-10 lg:px-20">
             <GlowTitle
+              animated={false} /* T-003 */
               eyebrow="Journeys & campaigns"
               title="Explore the journeys and films awaiting brands"
               description="Glissez entre les trois prochaines journeys puis ouvrez l&rsquo;atlas complet &mdash; chaque slide r&eacute;v&egrave;le une sc&egrave;ne pr&ecirc;te &agrave; produire."
@@ -722,6 +731,7 @@ export default function HomePageContent({
               Concept teaser
             </span>
             <SplitText
+              animated={false} /* T-003 */
               text="Dream-sustained by design, luminous in delivery"
               tag="h2"
               splitType="words"

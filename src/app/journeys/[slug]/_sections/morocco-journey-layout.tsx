@@ -11,6 +11,7 @@ import { useBodyScrollLock } from '@/app/concept/_hooks/use-body-scroll-lock';
 import { usePrefersReducedMotion } from '@/app/concept/_hooks/use-prefers-reduced-motion';
 import { SiteArrowIcon } from '@/components/icons/site-arrow-icon';
 import type { JourneyShowcase } from '@/data/showcases';
+import { getSustainableImpactPdf } from '@/data/sustainable-impact';
 import type { JourneySeason } from '@/types/journey';
 
 type IndiaLocation = {
@@ -33,7 +34,8 @@ type RenderedLoopingMobileSelectorItem = {
   renderKey: string;
 };
 type LocationSectionValue = 'locations' | 'csr-impact';
-type SectionMenuValue = LocationSectionValue | 'interested';
+// T-035 — l'entrée « Community » ('interested') a été retirée des menus de sections.
+type SectionMenuValue = LocationSectionValue;
 type MobileMenuValue = SectionMenuValue;
 type IndiaLocationStory = {
   id: string;
@@ -135,13 +137,6 @@ const INDIA_LOCATIONS: IndiaLocation[] = [
 
 const SECTION_OPTIONS = [
   {
-    label: 'Community',
-    value: 'interested' as const,
-    icon: '/assets/icones/Ico White BEE-13.svg',
-    hoverIcon: '/assets/icones/Ico Gold BEE-13.svg',
-    disabled: false,
-  },
-  {
     label: 'Locations',
     value: 'locations' as const,
     icon: '/assets/icones/Ico White BEE-14.svg',
@@ -149,7 +144,7 @@ const SECTION_OPTIONS = [
     disabled: false,
   },
   {
-    label: 'CSR Impact',
+    label: 'Sustainable Impact',
     value: 'csr-impact' as const,
     icon: '/assets/icones/Ico White BEE-06.svg',
     hoverIcon: '/assets/icones/Ico Gold BEE-06.svg',
@@ -159,13 +154,6 @@ const SECTION_OPTIONS = [
 
 const MOBILE_MENU_OPTIONS = [
   {
-    label: 'Community',
-    value: 'interested' as const,
-    icon: '/assets/icones/Ico White BEE-13.svg',
-    hoverIcon: '/assets/icones/Ico Gold BEE-13.svg',
-    disabled: false,
-  },
-  {
     label: 'Locations',
     value: 'locations' as const,
     icon: '/assets/icones/Ico White BEE-14.svg',
@@ -173,15 +161,21 @@ const MOBILE_MENU_OPTIONS = [
     disabled: false,
   },
   {
-    label: 'CSR Impact',
+    label: 'Sustainable Impact',
     value: 'csr-impact' as const,
     icon: '/assets/icones/Ico White BEE-06.svg',
     hoverIcon: '/assets/icones/Ico Gold BEE-06.svg',
     disabled: false,
   },
 ];
+// T-034 — la section CSR est archivée : le menu « Sustainable Impact » télécharge
+// désormais le PDF (voir getSustainableImpactPdf). Code de section conservé.
+const SHOW_CSR_IMPACT_SECTION: boolean = false;
+// T-031 — bouton standard du site : label uppercase + underline doré animé au hover.
 const heroJourneyButtonClass =
-  'group relative inline-flex items-center justify-center overflow-hidden rounded-none border border-white/25 bg-white/10 text-white transition-colors duration-300 [transition-timing-function:var(--bee-ease)] hover:border-white/60 hover:bg-white/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f6c452]/35';
+  'group relative inline-flex flex-col items-center font-display uppercase text-white transition-opacity duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f6c452]/35';
+const heroJourneyButtonUnderlineClass =
+  'mt-1.5 h-px w-full origin-left scale-x-0 bg-gradient-to-r from-[rgba(249,215,162,0.18)] via-[rgba(244,199,122,0.75)] to-[rgba(255,240,225,0.95)] transition-transform duration-300 ease-out group-hover:scale-x-100';
 const CSR_CATEGORY_OPTIONS: {
   value: CsrImpactCategory;
   label: string;
@@ -641,6 +635,15 @@ export function MoroccoJourneyLayout({ journey }: { journey: JourneyShowcase }) 
     return locationIndex >= 0 ? locationIndex : 0;
   });
   const [activeCsrCategory, setActiveCsrCategory] = useState<CsrImpactCategory>('environment');
+  // T-034 — PDF Sustainable Impact : l'entrée de menu n'apparaît que si un PDF existe.
+  const sustainableImpactPdf = getSustainableImpactPdf(journey.slug);
+  const mobileMenuOptions = useMemo(
+    () =>
+      MOBILE_MENU_OPTIONS.filter(
+        (option) => option.value !== 'csr-impact' || sustainableImpactPdf != null
+      ),
+    [sustainableImpactPdf]
+  );
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -746,7 +749,7 @@ export function MoroccoJourneyLayout({ journey }: { journey: JourneyShowcase }) 
     () => LOCATION_STORIES.find((story) => story.id === activeLocationStoryId) ?? null,
     [activeLocationStoryId]
   );
-  const activeMobileMenuOption = MOBILE_MENU_OPTIONS[mobileMenuIndex] ?? MOBILE_MENU_OPTIONS[0];
+  const activeMobileMenuOption = mobileMenuOptions[mobileMenuIndex] ?? mobileMenuOptions[0];
   const isLocationsSection = activeSection === 'locations';
   const hasActiveCsrDetail = activeCsrDetailId != null && activeCsrCard?.id === activeCsrDetailId;
   const isCsrDetailOpen = hasActiveCsrDetail || isDesktopClosingDetail;
@@ -759,11 +762,11 @@ export function MoroccoJourneyLayout({ journey }: { journey: JourneyShowcase }) 
   }, [activeCsrCard, activeCsrCategory]);
 
   useEffect(() => {
-    const optionIndex = MOBILE_MENU_OPTIONS.findIndex((option) => option.value === activeSection);
+    const optionIndex = mobileMenuOptions.findIndex((option) => option.value === activeSection);
     if (optionIndex >= 0) {
       setMobileMenuIndex(optionIndex);
     }
-  }, [activeSection]);
+  }, [activeSection, mobileMenuOptions]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -983,21 +986,19 @@ export function MoroccoJourneyLayout({ journey }: { journey: JourneyShowcase }) 
     setActiveLocationStoryId(nextStory?.id ?? null);
   }, [activeLocationStory, centeredStartIndex, emblaApi]);
 
-  const cycleMobileMenu = useCallback((direction: 1 | -1) => {
-    setMobileMenuIndex((current) => {
-      const nextIndex =
-        (current + direction + MOBILE_MENU_OPTIONS.length) % MOBILE_MENU_OPTIONS.length;
-      return nextIndex;
-    });
-  }, []);
+  const cycleMobileMenu = useCallback(
+    (direction: 1 | -1) => {
+      setMobileMenuIndex((current) => {
+        const nextIndex =
+          (current + direction + mobileMenuOptions.length) % mobileMenuOptions.length;
+        return nextIndex;
+      });
+    },
+    [mobileMenuOptions.length]
+  );
 
   const runMobileMenuAction = useCallback(() => {
     if (!activeMobileMenuOption || activeMobileMenuOption.disabled) {
-      return;
-    }
-
-    if (activeMobileMenuOption.value === 'interested') {
-      router.push('/contact');
       return;
     }
 
@@ -1007,13 +1008,9 @@ export function MoroccoJourneyLayout({ journey }: { journey: JourneyShowcase }) 
       if (activeLocationStory) {
         closeLocationStory();
       }
-      return;
     }
-
-    if (activeMobileMenuOption.value === 'csr-impact') {
-      setActiveSection('csr-impact');
-    }
-  }, [activeLocationStory, activeMobileMenuOption, closeLocationStory, router]);
+    // T-034 — 'csr-impact' est géré comme lien de téléchargement dans MobileMenuCycler.
+  }, [activeLocationStory, activeMobileMenuOption, closeLocationStory]);
 
   useEffect(() => {
     if (activeSection !== 'csr-impact' && activeCsrDetailId) {
@@ -1199,7 +1196,7 @@ export function MoroccoJourneyLayout({ journey }: { journey: JourneyShowcase }) 
       ref={rootRef}
       className="relative flex min-h-[100svh] flex-col overflow-hidden bg-black text-white"
       tabIndex={0}
-      aria-label="India locations carousel"
+      aria-label="Morocco locations carousel"
     >
       <LocationBackground
         activeKey={currentLocation?.id ?? journey.slug}
@@ -1312,6 +1309,11 @@ export function MoroccoJourneyLayout({ journey }: { journey: JourneyShowcase }) 
                         />
                         <MobileMenuCycler
                           option={activeMobileMenuOption}
+                          downloadHref={
+                            activeMobileMenuOption.value === 'csr-impact'
+                              ? sustainableImpactPdf
+                              : null
+                          }
                           onPrev={() => cycleMobileMenu(-1)}
                           onNext={() => cycleMobileMenu(1)}
                           onSelect={runMobileMenuAction}
@@ -1320,7 +1322,8 @@ export function MoroccoJourneyLayout({ journey }: { journey: JourneyShowcase }) 
                     </motion.div>
                   )}
                 </AnimatePresence>
-              ) : (
+              ) : SHOW_CSR_IMPACT_SECTION ? (
+                // T-034 — section CSR archivée (le menu Sustainable Impact télécharge le PDF).
                 <motion.div
                   key="csr-impact-panel"
                   initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0 }}
@@ -1365,6 +1368,11 @@ export function MoroccoJourneyLayout({ journey }: { journey: JourneyShowcase }) 
                     >
                       <MobileMenuCycler
                         option={activeMobileMenuOption}
+                        downloadHref={
+                          activeMobileMenuOption.value === 'csr-impact'
+                            ? sustainableImpactPdf
+                            : null
+                        }
                         onPrev={() => cycleMobileMenu(-1)}
                         onNext={() => cycleMobileMenu(1)}
                         onSelect={runMobileMenuAction}
@@ -1372,30 +1380,27 @@ export function MoroccoJourneyLayout({ journey }: { journey: JourneyShowcase }) 
                     </motion.div>
                   </motion.div>
                 </motion.div>
-              )}
+              ) : null}
             </div>
           </div>
           <div className="pointer-events-none absolute left-6 top-1/2 z-40 hidden -translate-y-1/2 md:block lg:left-10 xl:left-14">
             {isLocationsSection ? (
               <LocationHeadline currentLocation={currentLocation} journey={journey} sideAligned />
-            ) : (
+            ) : SHOW_CSR_IMPACT_SECTION ? (
+              // T-034 — sélecteur de catégories CSR archivé avec la section.
               <CsrImpactCategoryCarousel
                 sideAligned
                 activeCategory={activeCsrCategory}
                 onSelect={handleSelectCsrCategory}
               />
-            )}
+            ) : null}
           </div>
           <div className="pointer-events-none absolute bottom-5 right-4 z-50 hidden sm:bottom-7 sm:right-6 md:right-10 md:block lg:bottom-10 lg:right-16 xl:right-20">
             <div className="pointer-events-auto">
               <LocationSectionMenu
                 value={activeSection}
+                sustainableImpactPdf={sustainableImpactPdf}
                 onSelect={(nextValue) => {
-                  if (nextValue === 'interested') {
-                    router.push('/contact');
-                    return;
-                  }
-
                   setActiveSection(nextValue);
                 }}
               />
@@ -1410,12 +1415,19 @@ export function MoroccoJourneyLayout({ journey }: { journey: JourneyShowcase }) 
 function LocationSectionMenu({
   value,
   compact = false,
+  sustainableImpactPdf = null,
   onSelect,
 }: {
   value: LocationSectionValue;
   compact?: boolean;
+  sustainableImpactPdf?: string | null;
   onSelect?: (value: SectionMenuValue) => void;
 }) {
+  // T-034 — l'entrée « Sustainable Impact » n'apparaît que si un PDF existe pour ce voyage.
+  const visibleOptions = SECTION_OPTIONS.filter(
+    (option) => option.value !== 'csr-impact' || sustainableImpactPdf != null
+  );
+
   return (
     <div
       className={clsx(
@@ -1423,22 +1435,17 @@ function LocationSectionMenu({
         compact ? 'gap-2.5' : 'gap-4'
       )}
     >
-      {SECTION_OPTIONS.map((option) => {
+      {visibleOptions.map((option) => {
         const isActive = option.value === value;
-        return (
-          <button
-            key={option.value}
-            type="button"
-            disabled={option.disabled}
-            aria-pressed={isActive}
-            onClick={onSelect ? () => onSelect(option.value) : undefined}
-            className={clsx(
-              'group relative inline-flex items-center gap-2.5 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/45',
-              compact ? 'gap-2' : 'gap-2.5',
-              option.disabled ? 'cursor-not-allowed opacity-35' : 'opacity-85 hover:opacity-100',
-              isActive && !option.disabled && 'opacity-100'
-            )}
-          >
+        const isPdfDownload = option.value === 'csr-impact' && sustainableImpactPdf != null;
+        const itemClassName = clsx(
+          'group relative inline-flex items-center gap-2.5 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/45',
+          compact ? 'gap-2' : 'gap-2.5',
+          option.disabled ? 'cursor-not-allowed opacity-35' : 'opacity-85 hover:opacity-100',
+          isActive && !option.disabled && 'opacity-100'
+        );
+        const itemContent = (
+          <>
             <div className={clsx('relative shrink-0', compact ? 'h-7 w-7' : 'h-8 w-8')}>
               <Image
                 src={option.icon}
@@ -1478,6 +1485,34 @@ function LocationSectionMenu({
             >
               {option.label}
             </span>
+          </>
+        );
+
+        if (isPdfDownload) {
+          // T-034 — téléchargement direct du PDF Sustainable Impact.
+          return (
+            <a
+              key={option.value}
+              href={sustainableImpactPdf}
+              download
+              className={itemClassName}
+              aria-label={`Download ${option.label} PDF`}
+            >
+              {itemContent}
+            </a>
+          );
+        }
+
+        return (
+          <button
+            key={option.value}
+            type="button"
+            disabled={option.disabled}
+            aria-pressed={isActive}
+            onClick={onSelect ? () => onSelect(option.value) : undefined}
+            className={itemClassName}
+          >
+            {itemContent}
           </button>
         );
       })}
@@ -1515,10 +1550,10 @@ function SectionHeadline({
         className={clsx(
           'font-title uppercase tracking-normal text-white [text-shadow:0_4px_0_rgba(0,0,0,0.36),0_12px_20px_rgba(0,0,0,0.28),0_24px_52px_rgba(0,0,0,0.38),0_40px_88px_rgba(0,0,0,0.3)]',
           compact
-            ? 'text-[clamp(2.15rem,12vw,4.4rem)] leading-[0.82]'
+            ? 'text-[clamp(1.9rem,9vw,3.4rem)] leading-[0.82]'
             : sideAligned
-              ? 'text-[clamp(3.2rem,7vw,7.4rem)] leading-[0.82]'
-              : 'text-[clamp(3.4rem,11vw,10.2rem)] leading-[0.8]'
+              ? 'text-[clamp(2.6rem,5.5vw,5.6rem)] leading-[0.82]'
+              : 'text-[clamp(2.8rem,8vw,7.6rem)] leading-[0.8]'
         )}
       >
         {title}
@@ -1764,10 +1799,10 @@ function LocationHeadline({
             className={clsx(
               'font-title uppercase tracking-normal text-white [filter:drop-shadow(0_0_22px_rgba(255,244,224,0.34))_drop-shadow(0_0_42px_rgba(255,240,214,0.2))] [text-shadow:0_0_24px_rgba(255,248,232,0.44),0_0_54px_rgba(255,244,220,0.28),0_4px_0_rgba(0,0,0,0.38),0_10px_18px_rgba(0,0,0,0.28),0_24px_52px_rgba(0,0,0,0.4),0_40px_88px_rgba(0,0,0,0.34)]',
               compact
-                ? 'text-[clamp(2.15rem,12vw,4.4rem)] leading-[0.82]'
+                ? 'text-[clamp(1.9rem,9vw,3.4rem)] leading-[0.82]'
                 : sideAligned
-                  ? 'text-[clamp(3.2rem,7vw,7.4rem)] leading-[0.82]'
-                  : 'text-[clamp(3.4rem,11vw,10.2rem)] leading-[0.8]'
+                  ? 'text-[clamp(2.6rem,5.5vw,5.6rem)] leading-[0.82]'
+                  : 'text-[clamp(2.8rem,8vw,7.6rem)] leading-[0.8]'
             )}
           >
             {currentLocation.title}
@@ -2071,7 +2106,8 @@ function LoopingMobileIconSelector({
         }
       }}
     >
-      <div className="flex min-w-max items-start gap-3 px-0 pb-5 pt-1">
+      {/* T-028 — espacement aligné sur le gap fixe des cartes journeys. */}
+      <div className="flex min-w-max items-start gap-[var(--journey-gap)] px-0 pb-5 pt-1 [--journey-gap:clamp(14px,1.7vw,28px)]">
         <div style={{ flex: '0 0 calc(50vw - 52px)' }} />
         {renderedItems.map((renderedItem, index) => {
           const isActive = index === activeRenderIndex;
@@ -2276,13 +2312,10 @@ function CsrImpactMobileDetailPanel({
             <button
               type="button"
               onClick={onClose}
-              className={`${heroJourneyButtonClass} gap-2 px-4 py-2 font-display text-[9px] uppercase tracking-[0.2em]`}
+              className={`${heroJourneyButtonClass} text-[9px] tracking-[0.2em]`}
             >
-              <span
-                aria-hidden
-                className="pointer-events-none absolute inset-0 z-0 -translate-x-full bg-gradient-to-r from-transparent via-[#f6c452bf] to-transparent opacity-0 transition-transform duration-500 group-hover:translate-x-full group-hover:opacity-100"
-              />
-              <span className="relative z-10">Back</span>
+              <span>Back</span>
+              <span aria-hidden className={heroJourneyButtonUnderlineClass} />
             </button>
           </div>
         </div>
@@ -2433,14 +2466,10 @@ function CsrImpactCardPanel({
             onToggleDetail();
           }}
           className={clsx(
-            `${heroJourneyButtonClass} z-10 mt-6 px-4 py-2 font-display uppercase tracking-[0.2em]`,
+            `${heroJourneyButtonClass} z-10 mt-6 tracking-[0.2em]`,
             compact ? 'text-[0.55rem]' : 'text-[0.62rem]'
           )}
         >
-          <span
-            aria-hidden
-            className="pointer-events-none absolute inset-0 z-0 -translate-x-full bg-gradient-to-r from-transparent via-[#f6c452bf] to-transparent opacity-0 transition-transform duration-500 group-hover:translate-x-full group-hover:opacity-100"
-          />
           <AnimatePresence mode="wait" initial={false}>
             <motion.span
               key={detailOpen ? 'back' : 'discover'}
@@ -2453,6 +2482,7 @@ function CsrImpactCardPanel({
               {detailOpen ? 'Back' : card.ctaLabel}
             </motion.span>
           </AnimatePresence>
+          <span aria-hidden className={heroJourneyButtonUnderlineClass} />
         </button>
       ) : null}
     </motion.div>
@@ -2585,15 +2615,53 @@ function LocationNavigation({
 
 function MobileMenuCycler({
   option,
+  downloadHref = null,
   onPrev,
   onNext,
   onSelect,
 }: {
   option: (typeof MOBILE_MENU_OPTIONS)[number];
+  downloadHref?: string | null;
   onPrev: () => void;
   onNext: () => void;
   onSelect: () => void;
 }) {
+  const centerClassName = clsx(
+    'group relative flex min-w-[11.5rem] items-center justify-center gap-2 overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/45',
+    option.disabled ? 'cursor-not-allowed opacity-55' : 'opacity-100'
+  );
+  const centerContent = (
+    <>
+      <div className="relative h-7 w-7 shrink-0">
+        <Image
+          src={option.icon}
+          alt=""
+          fill
+          className={clsx(
+            'object-contain transition-opacity duration-300',
+            option.disabled ? 'opacity-100' : 'opacity-100 group-hover:opacity-0'
+          )}
+        />
+        {!option.disabled ? (
+          <Image
+            src={option.hoverIcon}
+            alt=""
+            fill
+            className="object-contain opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+          />
+        ) : null}
+      </div>
+      <span
+        className={clsx(
+          'font-display text-[0.78rem] uppercase tracking-[0.16em] transition-colors duration-300',
+          option.disabled ? 'text-white/72' : 'text-white group-hover:text-[#f6c452]'
+        )}
+      >
+        {option.label}
+      </span>
+    </>
+  );
+
   return (
     <div className="pointer-events-auto flex items-center justify-center gap-2 text-white">
       <button
@@ -2608,43 +2676,26 @@ function MobileMenuCycler({
         />
       </button>
 
-      <button
-        type="button"
-        onClick={onSelect}
-        disabled={option.disabled}
-        className={clsx(
-          'group relative flex min-w-[11.5rem] items-center justify-center gap-2 overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/45',
-          option.disabled ? 'cursor-not-allowed opacity-55' : 'opacity-100'
-        )}
-      >
-        <div className="relative h-7 w-7 shrink-0">
-          <Image
-            src={option.icon}
-            alt=""
-            fill
-            className={clsx(
-              'object-contain transition-opacity duration-300',
-              option.disabled ? 'opacity-100' : 'opacity-100 group-hover:opacity-0'
-            )}
-          />
-          {!option.disabled ? (
-            <Image
-              src={option.hoverIcon}
-              alt=""
-              fill
-              className="object-contain opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-            />
-          ) : null}
-        </div>
-        <span
-          className={clsx(
-            'font-display text-[0.78rem] uppercase tracking-[0.16em] transition-colors duration-300',
-            option.disabled ? 'text-white/72' : 'text-white group-hover:text-[#f6c452]'
-          )}
+      {downloadHref && !option.disabled ? (
+        // T-034 — téléchargement direct du PDF Sustainable Impact.
+        <a
+          href={downloadHref}
+          download
+          className={centerClassName}
+          aria-label={`Download ${option.label} PDF`}
         >
-          {option.label}
-        </span>
-      </button>
+          {centerContent}
+        </a>
+      ) : (
+        <button
+          type="button"
+          onClick={onSelect}
+          disabled={option.disabled}
+          className={centerClassName}
+        >
+          {centerContent}
+        </button>
+      )}
 
       <button
         type="button"
@@ -2990,12 +3041,17 @@ function LocationStoryBand({
           <div
             className={clsx(
               'relative z-10 flex h-full items-center',
-              compact
-                ? 'min-w-[2100px] gap-8 px-5 py-8'
-                : 'min-w-[3200px] gap-12 px-10 py-10 lg:px-14'
+              // T-032 — plus de gap : le titre et le pavé chevauchent l'image via marges négatives.
+              compact ? 'min-w-[2100px] px-5 py-8' : 'min-w-[3200px] px-10 py-10 lg:px-14'
             )}
           >
-            <div className={clsx('shrink-0', compact ? 'w-[240px]' : 'w-[320px]')}>
+            {/* T-032 — le titre recouvre le début (bord gauche) de l'image. */}
+            <div
+              className={clsx(
+                'relative z-10 shrink-0',
+                compact ? '-mr-10 w-[280px]' : '-mr-24 w-[380px]'
+              )}
+            >
               <span
                 aria-hidden
                 className="pointer-events-none absolute -z-10 rounded-full bg-[radial-gradient(circle,rgba(255,241,218,0.28)_0%,rgba(255,241,218,0)_74%)] blur-xl"
@@ -3004,12 +3060,13 @@ function LocationStoryBand({
                 className={clsx(
                   'font-menu normal-case tracking-[-0.01em] text-[#fff9ef] [text-shadow:0_0_18px_rgba(255,238,214,0.42),0_14px_34px_rgba(0,0,0,0.26),0_28px_62px_rgba(0,0,0,0.22)]',
                   compact
-                    ? 'text-[clamp(2.2rem,11vw,3.8rem)] leading-[0.88]'
-                    : 'text-[clamp(3rem,5.8vw,5.4rem)] leading-[0.84]'
+                    ? 'text-[clamp(2rem,9.5vw,3.25rem)] leading-[0.88]'
+                    : 'text-[clamp(2.55rem,5vw,4.6rem)] leading-[0.84]'
                 )}
               >
                 {story.leftTitle.map((line, index) => (
-                  <span key={`${story.id}-title-${index}`} className="block">
+                  // T-030 — chaque entrée de leftTitle est rendue sur exactement une ligne.
+                  <span key={`${story.id}-title-${index}`} className="block whitespace-nowrap">
                     {line}
                   </span>
                 ))}
@@ -3038,30 +3095,45 @@ function LocationStoryBand({
               <div className="absolute inset-0" style={{ backgroundImage: imageShade }} />
             </div>
 
+            {/* T-032 — le pavé narratif recouvre la fin (bord droit) de l'image. */}
             <article
               className={clsx(
-                'relative shrink-0 text-left text-[#fffef8]',
-                compact ? 'w-[320px]' : 'w-[360px]'
+                'relative z-10 shrink-0 text-left text-[#fffef8]',
+                compact
+                  ? // T-033 — hauteur du pavé contrainte à celle de l'image en compact.
+                    '-ml-10 flex max-h-[max(52svh,360px)] w-[320px] flex-col'
+                  : '-ml-20 w-[360px]'
               )}
             >
               <span
                 aria-hidden
                 className="pointer-events-none absolute -inset-x-4 -inset-y-3 -z-10 rounded-[32px] bg-[radial-gradient(circle,rgba(255,240,216,0.24)_0%,rgba(255,240,216,0)_76%)] blur-xl"
               />
-              <p className="font-sans text-[13px] italic leading-[1.86] text-[#fffef8] [text-shadow:0_0_12px_rgba(255,237,210,0.28),0_10px_24px_rgba(0,0,0,0.24),0_18px_38px_rgba(59,36,18,0.24)] sm:text-[14px]">
-                {story.narrative}
-              </p>
-              <div className="flex justify-center pt-8">
+              <div
+                className={clsx(
+                  compact &&
+                    'min-h-0 overflow-y-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden'
+                )}
+              >
+                <p
+                  className={clsx(
+                    'font-sans italic text-[#fffef8] [text-shadow:0_0_12px_rgba(255,237,210,0.28),0_10px_24px_rgba(0,0,0,0.24),0_18px_38px_rgba(59,36,18,0.24)]',
+                    compact
+                      ? 'text-[12px] leading-[1.7]'
+                      : 'text-[13px] leading-[1.86] sm:text-[14px]'
+                  )}
+                >
+                  {story.narrative}
+                </p>
+              </div>
+              <div className={clsx('flex shrink-0 justify-center', compact ? 'pt-4' : 'pt-8')}>
                 <button
                   type="button"
                   onClick={onNext}
-                  className={`${heroJourneyButtonClass} gap-2 px-4 py-2 font-display text-[9px] uppercase tracking-[0.2em]`}
+                  className={`${heroJourneyButtonClass} text-[9px] tracking-[0.2em]`}
                 >
-                  <span
-                    aria-hidden
-                    className="pointer-events-none absolute inset-0 z-0 -translate-x-full bg-gradient-to-r from-transparent via-[#f6c452bf] to-transparent opacity-0 transition-transform duration-500 group-hover:translate-x-full group-hover:opacity-100"
-                  />
-                  <span className="relative z-10">Discover {story.nextLocation}</span>
+                  <span>Discover {story.nextLocation}</span>
+                  <span aria-hidden className={heroJourneyButtonUnderlineClass} />
                 </button>
               </div>
             </article>

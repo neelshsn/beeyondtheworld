@@ -19,7 +19,6 @@ type SeasonOption = {
   label: string;
   value: SeasonFilterValue;
   icon: string;
-  hoverIcon?: string;
   season?: Campaign['season'];
 };
 
@@ -33,32 +32,29 @@ const SEASON_OPTIONS: SeasonOption[] = [
   {
     label: 'All Campaigns',
     value: 'all',
-    icon: '/assets/icones/Ico White BEE-02.svg',
-    hoverIcon: '/assets/icones/Ico Gold BEE-02.svg',
+    icon: '/assets/icones/Ico Gold BEE-02.svg',
   },
   {
     label: 'Spring Summer',
     value: 'summer',
     season: 'spring-summer',
-    icon: '/assets/icones/Ico White BEE-14.svg',
-    hoverIcon: '/assets/icones/Ico Gold BEE-14.svg',
+    icon: '/assets/icones/icono/saisons/flowers.svg',
   },
   {
     label: 'Fall Winter',
     value: 'winter',
     season: 'fall-winter',
-    icon: '/assets/icones/Ico White BEE-01.svg',
-    hoverIcon: '/assets/icones/Ico Gold BEE-01.svg',
+    icon: '/assets/icones/icono/saisons/winter.svg',
   },
 ];
 
 const CAMPAIGN_SEASON_ICONS: Record<Campaign['season'], { icon: string; label: string }> = {
   'spring-summer': {
-    icon: '/assets/icones/Ico White BEE-14.svg',
+    icon: '/assets/icones/icono/saisons/flowers.svg',
     label: 'Spring Summer',
   },
   'fall-winter': {
-    icon: '/assets/icones/Ico White BEE-01.svg',
+    icon: '/assets/icones/icono/saisons/winter.svg',
     label: 'Fall Winter',
   },
 };
@@ -799,7 +795,6 @@ type SeasonElevatorProps = {
 
 function SeasonElevator({ value, direction, prefersReducedMotion, onCycle }: SeasonElevatorProps) {
   const option = getSeasonOption(value);
-  const hoverIcon = option.hoverIcon ?? option.icon;
   const [hoveredControl, setHoveredControl] = useState<'prev' | 'next' | 'center' | null>(null);
   const highlightCenter =
     hoveredControl === 'prev' || hoveredControl === 'next' || hoveredControl === 'center';
@@ -860,22 +855,11 @@ function SeasonElevator({ value, direction, prefersReducedMotion, onCycle }: Sea
                 alt=""
                 fill
                 className={clsx(
-                  'object-contain transition-opacity duration-300',
-                  option.hoverIcon && highlightCenter ? 'opacity-0' : 'opacity-100'
+                  'object-contain transition duration-300 ease-out',
+                  highlightCenter ? 'scale-105 opacity-100' : 'opacity-[0.85]'
                 )}
                 priority
               />
-              {hoverIcon ? (
-                <Image
-                  src={hoverIcon}
-                  alt=""
-                  fill
-                  className={clsx(
-                    'object-contain transition-opacity duration-300',
-                    highlightCenter ? 'opacity-100' : 'opacity-0'
-                  )}
-                />
-              ) : null}
             </div>
 
             <span
@@ -948,10 +932,10 @@ function JourneyHeadline({
             className={clsx(
               'font-title uppercase tracking-normal text-white [text-shadow:0_4px_0_rgba(0,0,0,0.36),0_12px_20px_rgba(0,0,0,0.28),0_24px_52px_rgba(0,0,0,0.38),0_40px_88px_rgba(0,0,0,0.3)]',
               compact
-                ? 'text-[clamp(2.15rem,12vw,4.4rem)] leading-[0.82]'
+                ? 'text-[clamp(1.9rem,9vw,3.4rem)] leading-[0.82]'
                 : sideAligned
-                  ? 'text-[clamp(3.2rem,7vw,7.4rem)] leading-[0.82]'
-                  : 'text-[clamp(3.4rem,11vw,10.2rem)] leading-[0.8]'
+                  ? 'text-[clamp(2.6rem,5.5vw,5.6rem)] leading-[0.82]'
+                  : 'text-[clamp(2.8rem,8vw,7.6rem)] leading-[0.8]'
             )}
           >
             {country}
