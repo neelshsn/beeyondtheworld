@@ -52,11 +52,16 @@ export const locations = pgTable('locations', {
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
 
-/** Comptes éditeurs du dashboard (auth 100 % Neon, indépendante de Supabase). */
+/**
+ * Comptes éditeurs du dashboard (auth 100 % Neon, indépendante de Supabase).
+ * Un compte invité a `passwordHash` null + un `setupToken` à usage unique :
+ * l'invité choisit son mot de passe via /admin/journeys?invite=TOKEN.
+ */
 export const adminUsers = pgTable('admin_users', {
   id: serial('id').primaryKey(),
   email: text('email').notNull().unique(),
-  passwordHash: text('password_hash').notNull(),
+  passwordHash: text('password_hash'),
+  setupToken: text('setup_token').unique(),
   createdAt: timestamp('created_at').notNull().defaultNow(),
 });
 

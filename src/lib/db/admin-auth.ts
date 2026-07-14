@@ -35,6 +35,24 @@ export async function adminCount(): Promise<number> {
   return row?.value ?? 0;
 }
 
+/**
+ * Active un compte invité : consomme le token à usage unique et enregistre
+ * le mot de passe choisi par l'invité. Retourne le compte activé, ou null si
+ * le token est invalide/déjà utilisé.
+ */
+export async function activateInvitedAdmin(
+  token: string,
+  password: string
+): Promise<AdminUserRow | null> {
+  const db = getDb();
+  const [updated] = await db
+    .update(adminUsers)
+    .set({ passwordHash: hashPassword(password), setupToken: null })
+    .where(eq(adminUsers.setupToken, token))
+    .returning();
+  return updated ?? null;
+}
+
 export async function createAdminSession(adminUserId: number): Promise<{
   token: string;
   expiresAt: Date;

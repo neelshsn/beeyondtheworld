@@ -24,7 +24,16 @@ export async function POST(request: Request) {
     const db = getDb();
     const [user] = await db.select().from(adminUsers).where(eq(adminUsers.email, email)).limit(1);
 
-    if (!user || !verifyPassword(password, user.passwordHash)) {
+    if (user && !user.passwordHash) {
+      return NextResponse.json(
+        {
+          error:
+            "Compte pas encore activé — ouvre ton lien d'invitation pour choisir ton mot de passe.",
+        },
+        { status: 403 }
+      );
+    }
+    if (!user || !user.passwordHash || !verifyPassword(password, user.passwordHash)) {
       return NextResponse.json({ error: 'E-mail ou mot de passe incorrect.' }, { status: 401 });
     }
 

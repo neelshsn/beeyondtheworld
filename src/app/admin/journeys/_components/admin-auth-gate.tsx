@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useState, type ReactNode } from 'react';
 import { KeyRound, LogOut } from 'lucide-react';
 
@@ -17,9 +18,14 @@ const fieldClass =
 
 /**
  * T-050 — porte d'authentification du CMS (auth Neon, cookie httpOnly).
- * Premier lancement : création du compte éditeur (bootstrap), ensuite login.
+ * Trois modes : bootstrap (1er compte), invitation (?invite=TOKEN → l'invité
+ * choisit son mot de passe), login classique.
  */
 export function AdminAuthGate({ children }: { children: ReactNode }) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const inviteToken = searchParams.get('invite');
+
   const [status, setStatus] = useState<AuthStatus | null>(null);
   const [statusError, setStatusError] = useState<string | null>(null);
   const [email, setEmail] = useState('');
@@ -44,26 +50,43 @@ export function AdminAuthGate({ children }: { children: ReactNode }) {
     void refresh();
   }, [refresh]);
 
+  const mode: 'invite' | 'bootstrap' | 'login' = inviteToken
+    ? 'invite'
+    : status?.bootstrap
+      ? 'bootstrap'
+      : 'login';
+  const needsConfirm = mode === 'invite' || mode === 'bootstrap';
+
   const submit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!status) return;
-    if (status.bootstrap && password !== confirm) {
+    if (needsConfirm && password !== confirm) {
       setFormError('Les deux mots de passe ne correspondent pas.');
       return;
     }
     setSubmitting(true);
     setFormError(null);
     try {
-      const endpoint = status.bootstrap ? '/api/admin/auth/register' : '/api/admin/auth/login';
+      const endpoint =
+        mode === 'invite'
+          ? '/api/admin/auth/setup'
+          : mode === 'bootstrap'
+            ? '/api/admin/auth/register'
+            : '/api/admin/auth/login';
+      const body = mode === 'invite' ? { token: inviteToken, password } : { email, password };
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify(body),
       });
       const payload = (await response.json().catch(() => ({}))) as { error?: string };
       if (!response.ok) throw new Error(payload.error ?? `Erreur ${response.status}`);
       setPassword('');
       setConfirm('');
+      if (mode === 'invite') {
+        // Retire le token de l'URL une fois consommé.
+        router.replace('/admin/journeys');
+      }
       await refresh();
     } catch (cause) {
       setFormError(cause instanceof Error ? cause.message : 'Erreur');
@@ -94,42 +117,53 @@ export function AdminAuthGate({ children }: { children: ReactNode }) {
   }
 
   if (!status.authenticated) {
+    const title =
+      mode === 'invite'
+        ? 'Bienvenue — choisis ton mot de passe'
+        : mode === 'bootstrap'
+          ? 'Créer le compte éditeur'
+          : 'Connexion éditeur';
+    const description =
+      mode === 'invite'
+        ? 'Ton compte éditeur est prêt : choisis simplement ton mot de passe pour l’activer (lien à usage unique).'
+        : mode === 'bootstrap'
+          ? 'Premier lancement : choisis l’e-mail et le mot de passe du compte qui pourra éditer les voyages (stocké dans Neon).'
+          : 'Accès réservé aux éditeurs — compte stocké dans Neon.';
+
     return (
       <main className="flex min-h-screen items-center justify-center bg-[#0d0a07] px-6 py-24 text-white">
         <Card className="w-full max-w-md border-white/10 bg-white/5 text-white">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-sm uppercase tracking-[0.3em]">
               <KeyRound className="size-4 text-[#f4bb52]" />
-              {status.bootstrap ? 'Créer le compte éditeur' : 'Connexion éditeur'}
+              {title}
             </CardTitle>
-            <CardDescription className="text-white/50">
-              {status.bootstrap
-                ? 'Premier lancement : choisis l’e-mail et le mot de passe du compte qui pourra éditer les voyages (stocké dans Neon).'
-                : 'Accès réservé aux éditeurs — compte stocké dans Neon.'}
-            </CardDescription>
+            <CardDescription className="text-white/50">{description}</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={submit} className="space-y-3">
-              <input
-                className={fieldClass}
-                type="email"
-                placeholder="E-mail"
-                autoComplete="username"
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                required
-              />
+              {mode !== 'invite' ? (
+                <input
+                  className={fieldClass}
+                  type="email"
+                  placeholder="E-mail"
+                  autoComplete="username"
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                  required
+                />
+              ) : null}
               <input
                 className={fieldClass}
                 type="password"
                 placeholder="Mot de passe (8 caractères min.)"
-                autoComplete={status.bootstrap ? 'new-password' : 'current-password'}
+                autoComplete={needsConfirm ? 'new-password' : 'current-password'}
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
                 minLength={8}
                 required
               />
-              {status.bootstrap ? (
+              {needsConfirm ? (
                 <input
                   className={fieldClass}
                   type="password"
@@ -143,7 +177,11 @@ export function AdminAuthGate({ children }: { children: ReactNode }) {
               ) : null}
               {formError ? <p className="text-xs text-red-400">{formError}</p> : null}
               <Button type="submit" size="sm" disabled={submitting} className="w-full">
-                {status.bootstrap ? 'Créer le compte' : 'Se connecter'}
+                {mode === 'invite'
+                  ? 'Activer mon compte'
+                  : mode === 'bootstrap'
+                    ? 'Créer le compte'
+                    : 'Se connecter'}
               </Button>
             </form>
           </CardContent>

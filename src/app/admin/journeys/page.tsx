@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Suspense } from 'react';
 
 import { AdminAuthGate } from './_components/admin-auth-gate';
 import { JourneysManager } from './_components/journeys-manager';
@@ -11,8 +12,10 @@ export const metadata: Metadata = {
 
 export default function AdminJourneysPage() {
   return (
-    <AdminAuthGate>
-      <JourneysManager />
-    </AdminAuthGate>
+    <Suspense>
+      <AdminAuthGate>
+        <JourneysManager />
+      </AdminAuthGate>
+    </Suspense>
   );
 }

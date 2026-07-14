@@ -69,9 +69,12 @@ const statements = [
   `CREATE TABLE IF NOT EXISTS admin_users (
     id serial PRIMARY KEY,
     email text NOT NULL UNIQUE,
-    password_hash text NOT NULL,
+    password_hash text,
+    setup_token text UNIQUE,
     created_at timestamp NOT NULL DEFAULT now()
   )`,
+  `ALTER TABLE admin_users ALTER COLUMN password_hash DROP NOT NULL`,
+  `ALTER TABLE admin_users ADD COLUMN IF NOT EXISTS setup_token text UNIQUE`,
   `CREATE TABLE IF NOT EXISTS admin_sessions (
     token text PRIMARY KEY,
     admin_user_id integer NOT NULL REFERENCES admin_users(id) ON DELETE CASCADE,
