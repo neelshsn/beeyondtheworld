@@ -49,6 +49,27 @@ describe('normalizeLeadSubmission', () => {
     expect(lead.payload.message).toBe('Launch film');
   });
 
+  it('normalizes the Contact journey flow as a Philippines booking', () => {
+    const lead = normalizeLeadSubmission({
+      type: 'journey_booking',
+      journeySlug: 'philippines',
+      audience: 'BRANDS',
+      answers: {
+        category: 'SWIMWEAR',
+        'visual-territory': ['OCEAN & SEA WONDERS'],
+        ...meeting,
+      },
+      consent: true,
+      idempotencyKey: 'booking-philippines-contact-flow',
+    });
+
+    expect(lead.kind).toBe('journey_booking');
+    expect(lead.audience).toBe('BRANDS');
+    expect(lead.journeySlug).toBe('philippines');
+    expect(lead.sourcePath).toBe('/journeys/philippines');
+    expect(lead.phone).toBe('+33 6 12 34 56 78');
+  });
+
   it('rejects a request without consent', () => {
     expect(() =>
       normalizeLeadSubmission({ type: 'contact', audience: 'BRANDS', answers: meeting })

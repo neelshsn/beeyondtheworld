@@ -9,12 +9,12 @@ import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
 
 import { useBodyScrollLock } from '@/app/concept/_hooks/use-body-scroll-lock';
 import { usePrefersReducedMotion } from '@/app/concept/_hooks/use-prefers-reduced-motion';
+import { ContactLanding } from '@/app/contact/_components/contact-landing';
 import { SiteArrowIcon } from '@/components/icons/site-arrow-icon';
+import { BeeButton } from '@/components/primitives/bee-button';
 import type { JourneyShowcase } from '@/data/showcases';
 import { getSustainableImpactPdf } from '@/data/sustainable-impact';
 import type { JourneySeason } from '@/types/journey';
-
-import { PhilippinesBookingForm } from './philippines-booking-form';
 
 type IndiaLocation = {
   id: string;
@@ -1387,13 +1387,14 @@ export function PhilippinesJourneyLayout({ journey }: { journey: JourneyShowcase
             </div>
           </div>
           <div className="pointer-events-none absolute bottom-6 left-5 z-50 sm:bottom-8 sm:left-7 lg:bottom-10 lg:left-12">
-            <button
-              type="button"
+            <BeeButton
               onClick={() => setIsBookingOpen(true)}
-              className="pointer-events-auto border border-white/45 bg-black/35 px-5 py-3 font-display text-[10px] uppercase tracking-[0.22em] text-white backdrop-blur transition hover:border-[#f6c452] hover:text-[#f6c452] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f6c452]/60"
+              size="md"
+              align="left"
+              className="pointer-events-auto [text-shadow:0_0_14px_rgba(255,255,255,0.32),0_0_28px_rgba(255,255,255,0.12)]"
             >
               Book this journey
-            </button>
+            </BeeButton>
           </div>
         </motion.div>
       </AnimatePresence>
@@ -1403,23 +1404,17 @@ export function PhilippinesJourneyLayout({ journey }: { journey: JourneyShowcase
             role="dialog"
             aria-modal="true"
             aria-label="Book the Philippines journey"
-            className="fixed inset-0 z-[90] overflow-y-auto bg-[#061621]/95 px-4 py-16 backdrop-blur-md sm:px-8"
+            className="fixed inset-0 z-[90] overflow-hidden"
             initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={prefersReducedMotion ? { opacity: 1 } : { opacity: 0 }}
             transition={{ duration: prefersReducedMotion ? 0.1 : 0.3 }}
           >
-            <button
-              type="button"
-              onClick={() => setIsBookingOpen(false)}
-              className="fixed right-5 top-5 z-[100] border border-white/35 bg-black/35 px-4 py-2 font-display text-[10px] uppercase tracking-[0.2em] text-white transition hover:border-[#f6c452] hover:text-[#f6c452] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f6c452]/60"
-              aria-label="Close booking form"
-            >
-              Close
-            </button>
-            <div className="mx-auto w-full max-w-6xl">
-              <PhilippinesBookingForm />
-            </div>
+            <ContactLanding
+              initialAudience="BRANDS"
+              journeySlug="philippines"
+              onExit={() => setIsBookingOpen(false)}
+            />
           </motion.div>
         ) : null}
       </AnimatePresence>

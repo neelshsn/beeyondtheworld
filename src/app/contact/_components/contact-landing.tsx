@@ -7,7 +7,13 @@ import { useEffect, useMemo, useState } from 'react';
 import { BeeButton } from '@/components/primitives/bee-button';
 
 type ContactStage = 'entry' | 'audience' | 'form';
-type AudienceKey = 'BRANDS' | 'AGENCIES' | 'NJOS' | 'MEDIAS';
+export type AudienceKey = 'BRANDS' | 'AGENCIES' | 'NJOS' | 'MEDIAS';
+
+type ContactLandingProps = {
+  initialAudience?: AudienceKey;
+  journeySlug?: string;
+  onExit?: () => void;
+};
 
 type ChoiceOption = {
   label: string;
@@ -195,14 +201,14 @@ const AUDIENCE_STEPS: Record<AudienceKey, StepDefinition[]> = {
 };
 
 const stageEase = [0.22, 1, 0.36, 1] as const;
-const heroButtonClass =
-  'group relative inline-flex items-center justify-center overflow-hidden rounded-none border border-white/25 bg-white/10 text-white transition-colors duration-300 [transition-timing-function:var(--bee-ease)] hover:border-white/60 hover:bg-white/15 focus-visible:ring-[#f6c452]/35';
 const audiencePanelMask = 'linear-gradient(to right, transparent 0px, black 132px, black 100%)';
 const stepperPanelMask = 'linear-gradient(to right, transparent 0px, black 132px, black 100%)';
 
-export function ContactLanding() {
-  const [stage, setStage] = useState<ContactStage>('entry');
-  const [selectedAudience, setSelectedAudience] = useState<AudienceKey | null>(null);
+export function ContactLanding({ initialAudience, journeySlug, onExit }: ContactLandingProps = {}) {
+  const [stage, setStage] = useState<ContactStage>(initialAudience ? 'form' : 'entry');
+  const [selectedAudience, setSelectedAudience] = useState<AudienceKey | null>(
+    initialAudience ?? null
+  );
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, StepAnswer>>({});
   const [consentGiven, setConsentGiven] = useState(false);
@@ -285,6 +291,11 @@ export function ContactLanding() {
       return;
     }
 
+    if (initialAudience && onExit) {
+      onExit();
+      return;
+    }
+
     setStage('audience');
   };
 
@@ -297,8 +308,9 @@ export function ContactLanding() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          type: 'contact',
+          type: journeySlug ? 'journey_booking' : 'contact',
           audience: selectedAudience,
+          journeySlug,
           answers,
           consent: consentGiven,
           honeytoken,
@@ -520,17 +532,14 @@ export function ContactLanding() {
                         transition={{ duration: 0.45, ease: stageEase }}
                         className="mt-8 flex justify-center lg:mt-10 lg:flex-1 lg:items-center lg:justify-center"
                       >
-                        <button
-                          type="button"
+                        <BeeButton
                           onClick={confirmAudience}
-                          className={`${heroButtonClass} min-w-[180px] px-6 py-3 text-center text-[0.62rem] uppercase tracking-[0.34em] [font-family:var(--font-adam)] [text-shadow:0_0_14px_rgba(255,255,255,0.32),0_0_28px_rgba(255,255,255,0.12)] sm:min-w-[220px] sm:text-[0.7rem]`}
+                          size="md"
+                          align="center"
+                          className="min-w-[180px] [text-shadow:0_0_14px_rgba(255,255,255,0.32),0_0_28px_rgba(255,255,255,0.12)] sm:min-w-[220px]"
                         >
-                          <span
-                            aria-hidden
-                            className="pointer-events-none absolute inset-0 z-0 -translate-x-full bg-gradient-to-r from-transparent via-[#f6c452bf] to-transparent opacity-0 transition-transform duration-500 group-hover:translate-x-full group-hover:opacity-100"
-                          />
-                          <span className="relative z-10">CONFIRM</span>
-                        </button>
+                          CONFIRM
+                        </BeeButton>
                       </motion.div>
                     ) : null}
                   </AnimatePresence>
@@ -596,6 +605,11 @@ export function ContactLanding() {
                     className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_14%,rgba(255,255,255,0.14)_0%,rgba(255,255,255,0.05)_18%,rgba(255,255,255,0)_42%),linear-gradient(135deg,rgba(255,255,255,0.08)_0%,rgba(255,255,255,0)_36%)]"
                   />
                   <div className="mx-auto w-full max-w-[44rem] pt-4 lg:pt-8">
+                    {journeySlug ? (
+                      <p className="mb-4 text-center text-[0.62rem] uppercase tracking-[0.34em] text-[#f4bb52] [font-family:var(--font-adam)] [text-shadow:0_0_14px_rgba(244,187,82,0.38)]">
+                        Journey selected · {journeySlug}
+                      </p>
+                    ) : null}
                     <div className="mb-5 text-center lg:hidden">
                       <p className="text-white/82 text-[0.62rem] uppercase tracking-[0.34em] [font-family:var(--font-adam)]">
                         {AUDIENCE_INTROS[selectedAudience].eyebrow}
@@ -817,19 +831,15 @@ export function ContactLanding() {
                   ) : null}
 
                   <div className="mx-auto flex w-full max-w-[44rem] items-center justify-between gap-4">
-                    <button
-                      type="button"
+                    <BeeButton
                       onClick={goToPreviousStep}
-                      className={`${heroButtonClass} min-w-[132px] px-5 py-3 text-[0.66rem] uppercase tracking-[0.3em] [font-family:var(--font-adam)]`}
+                      size="md"
+                      align="left"
+                      className="min-w-[132px] [text-shadow:0_0_14px_rgba(255,255,255,0.28)]"
                     >
-                      <span
-                        aria-hidden
-                        className="pointer-events-none absolute inset-0 z-0 -translate-x-full bg-gradient-to-r from-transparent via-[#f6c452bf] to-transparent opacity-0 transition-transform duration-500 group-hover:translate-x-full group-hover:opacity-100"
-                      />
-                      <span className="relative z-10">Back</span>
-                    </button>
-                    <button
-                      type="button"
+                      Back
+                    </BeeButton>
+                    <BeeButton
                       onClick={() => (isFinalStep ? void submitContact() : goToNextStep())}
                       disabled={
                         !isCurrentStepComplete ||
@@ -837,20 +847,16 @@ export function ContactLanding() {
                         submission.status === 'success' ||
                         (isFinalStep && !consentGiven)
                       }
-                      className={`${heroButtonClass} min-w-[152px] px-5 py-3 text-[0.66rem] uppercase tracking-[0.3em] [font-family:var(--font-adam)] disabled:cursor-not-allowed disabled:opacity-45`}
+                      size="md"
+                      align="right"
+                      className="min-w-[152px] [text-shadow:0_0_14px_rgba(255,255,255,0.28)]"
                     >
-                      <span
-                        aria-hidden
-                        className="pointer-events-none absolute inset-0 z-0 -translate-x-full bg-gradient-to-r from-transparent via-[#f6c452bf] to-transparent opacity-0 transition-transform duration-500 group-hover:translate-x-full group-hover:opacity-100"
-                      />
-                      <span className="relative z-10">
-                        {submission.status === 'submitting'
-                          ? 'Saving...'
-                          : isFinalStep
-                            ? 'Send Request'
-                            : 'Continue'}
-                      </span>
-                    </button>
+                      {submission.status === 'submitting'
+                        ? 'Saving...'
+                        : isFinalStep
+                          ? 'Send Request'
+                          : 'Continue'}
+                    </BeeButton>
                   </div>
                 </motion.div>
               </motion.div>

@@ -82,7 +82,10 @@ function normalizeKey(value: unknown): string {
   return /^[a-zA-Z0-9_-]{8,100}$/.test(key) ? key : '';
 }
 
-function normalizeContact(payload: Record<string, unknown>): NormalizedLead {
+function normalizeContact(
+  payload: Record<string, unknown>,
+  context: { kind?: NormalizedLead['kind']; journeySlug?: string } = {}
+): NormalizedLead {
   const audience = sanitize(payload.audience, 40).toUpperCase();
   if (!AUDIENCES.has(audience)) {
     throw new LeadValidationError('Please select a valid profile.', {
@@ -111,18 +114,19 @@ function normalizeContact(payload: Record<string, unknown>): NormalizedLead {
   };
   const core = asObject(answers[coreStepIds[audience]]);
   const company = sanitize(core[companyFields[audience]]) || null;
+  const journeySlug = sanitize(context.journeySlug, 120) || null;
 
   return {
     idempotencyKey: normalizeKey(payload.idempotencyKey),
-    kind: 'contact',
+    kind: context.kind ?? 'contact',
     audience,
     name: sanitize(payload.name) || null,
     email: optionalEmail(payload.email),
     phone,
     company,
-    journeySlug: null,
-    sourcePath: '/contact',
-    payload: { audience, answers },
+    journeySlug,
+    sourcePath: journeySlug ? `/journeys/${journeySlug}` : '/contact',
+    payload: { audience, answers, ...(journeySlug ? { journeySlug } : {}) },
     consentGiven: true,
     consentAt: new Date(),
   };
@@ -176,7 +180,18 @@ export function normalizeLeadSubmission(payload: unknown): NormalizedLead {
   requireConsent(body);
   const kind = sanitize(body.type, 40);
   if (kind === 'contact') return normalizeContact(body);
-  if (kind === 'journey_booking') return normalizeBooking(body);
+  if (kind === 'journey_booking') {
+    const journeySlug = sanitize(body.journeySlug, 120);
+    if (!journeySlug) {
+      throw new LeadValidationError('A journey is required.', {
+        journeySlug: 'Journey is required.',
+      });
+    }
+    if (Object.keys(asObject(body.answers)).length > 0) {
+      return normalizeContact(body, { kind: 'journey_booking', journeySlug });
+    }
+    return normalizeBooking(body);
+  }
   throw new LeadValidationError('Invalid lead type.', { type: 'Invalid lead type.' });
 }
 
