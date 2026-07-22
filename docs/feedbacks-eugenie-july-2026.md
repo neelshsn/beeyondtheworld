@@ -10,16 +10,19 @@ Source canonique du lot : conversation WhatsApp avec Eugénie et PDF transmis le
 - Journeys : cohérence slugs/cartes/pages couverte par un test automatique ; cartes mobiles resserrées, dates davantage espacées et bordure basse restaurée.
 - Médias : fallback image obligatoire et testé pour chaque vidéo de Tale ; `SmartVideo` bascule déjà automatiquement vers le poster en cas d’erreur ou de préférence de données réduites.
 - Tales : Almaaz Kenya et Craie Morocco réécrits depuis les textes validés des PDF ; ajout du Tale Craie Switzerland avec fallback horizontal existant.
+- Tales complémentaires : ajout de Grace & Mila Morocco, Veganboost Greece, Almaaz New York et AN'GE New York à partir des PDF et médias Drive associés.
+- Médias complémentaires : onze photos converties en WebP sans métadonnées ; vidéos Almaaz New York et AN'GE New York compressées en H.264 avec poster statique pour desktop, mobile, économie de données et erreur de lecture.
+- Crédits : seuls la maison et le rôle confirmé de production créative Beeyondtheworld sont affichés dans les quatre nouveaux Tales ; les crédits individuels non confirmés ne sont pas publiés.
 - Community : affichage `NJOs` conservé comme terminologie métier du brief, avec compatibilité de données `NJOS` ; lien vers la notice de confidentialité au moment du consentement.
 - Légal : mentions société, confidentialité et cookies accessibles depuis le footer.
 
-## Assets reçus mais non publiés dans cette branche
+## Assets conservés dans Drive
 
-Les PDF et dossiers Drive décrivent aussi Grace&Mila Morocco, Veganboost Greece, Almaaz New York et An’ge New York. Leurs médias originaux sont disponibles dans Drive, mais ne sont pas copiés ici sans une sélection web optimisée : plusieurs fichiers sources sont très lourds et leur intégration brute dégraderait fortement le mobile.
+Les vidéos originales Grace & Mila Morocco et Veganboost Greece restent dans Drive. Leur taille dépasse la limite de récupération du connecteur utilisé pendant ce chantier. Les Tales correspondants utilisent donc une sélection photo optimisée et un fallback statique garanti, sans intégrer de master lourd au site.
 
 ## Décision de production à prendre avant publication
 
-- Valider les crédits de campagne actuellement hérités de l’ancien jeu de données.
-- Optimiser les vidéos restantes en formats web desktop/mobile et choisir une image horizontale de fallback par Tale.
+- Confirmer les crédits individuels avant de remplacer les valeurs `To be confirmed` dans les métadonnées de campagne.
+- Récupérer les masters Grace & Mila Morocco et Veganboost Greece par un canal adapté si une version vidéo est souhaitée plus tard ; leur absence ne bloque pas les pages actuelles.
 - Faire relire les trois pages légales par le conseil juridique avant mise en ligne publique.
-- Tester visuellement la branche sur les formats mobile et desktop cibles avant déploiement.
+- Publier uniquement après validation visuelle finale et autorisation explicite de déploiement.

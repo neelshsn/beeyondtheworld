@@ -7,6 +7,10 @@ const COUNTRY_BY_ID: Record<string, string> = {
   'almaaz-kenya': 'Kenya',
   'craie-maroc': 'Morocco',
   'craie-suisse': 'Switzerland',
+  'grace-mila-morocco': 'Morocco',
+  'veganboost-greece': 'Greece',
+  'almaaz-new-york': 'United States',
+  'ange-new-york': 'United States',
 };
 
 const SHOOT_YEAR_BY_ID: Record<string, number> = {
@@ -14,6 +18,10 @@ const SHOOT_YEAR_BY_ID: Record<string, number> = {
   'almaaz-kenya': 2023,
   'craie-maroc': 2025,
   'craie-suisse': 2024,
+  'grace-mila-morocco': 2024,
+  'veganboost-greece': 2024,
+  'almaaz-new-york': 2024,
+  'ange-new-york': 2024,
 };
 
 const BRAND_TYPE_BY_ID: Record<string, string> = {
@@ -21,6 +29,10 @@ const BRAND_TYPE_BY_ID: Record<string, string> = {
   'almaaz-kenya': 'Cosmetics',
   'craie-maroc': 'Accessories',
   'craie-suisse': 'Accessories',
+  'grace-mila-morocco': 'Clothing',
+  'veganboost-greece': 'Beauty & wellness',
+  'almaaz-new-york': 'Jewellery',
+  'ange-new-york': 'Clothing',
 };
 
 const ART_DIRECTOR_BY_ID: Record<string, string> = {
@@ -28,6 +40,10 @@ const ART_DIRECTOR_BY_ID: Record<string, string> = {
   'almaaz-kenya': 'Eugenie',
   'craie-maroc': 'Eugenie',
   'craie-suisse': 'Eugenie',
+  'grace-mila-morocco': 'To be confirmed',
+  'veganboost-greece': 'To be confirmed',
+  'almaaz-new-york': 'To be confirmed',
+  'ange-new-york': 'To be confirmed',
 };
 
 const TALENT_BY_ID: Record<string, string> = {
@@ -35,6 +51,10 @@ const TALENT_BY_ID: Record<string, string> = {
   'almaaz-kenya': 'Vera',
   'craie-maroc': 'To be confirmed',
   'craie-suisse': 'To be confirmed',
+  'grace-mila-morocco': 'To be confirmed',
+  'veganboost-greece': 'To be confirmed',
+  'almaaz-new-york': 'To be confirmed',
+  'ange-new-york': 'To be confirmed',
 };
 
 const DOP_BY_ID: Record<string, string> = {
@@ -42,6 +62,10 @@ const DOP_BY_ID: Record<string, string> = {
   'almaaz-kenya': 'Brian',
   'craie-maroc': 'Brian',
   'craie-suisse': 'To be confirmed',
+  'grace-mila-morocco': 'To be confirmed',
+  'veganboost-greece': 'To be confirmed',
+  'almaaz-new-york': 'To be confirmed',
+  'ange-new-york': 'To be confirmed',
 };
 
 const PRODUCTION_TEAM_BY_ID: Record<string, string[]> = {
@@ -49,6 +73,10 @@ const PRODUCTION_TEAM_BY_ID: Record<string, string[]> = {
   'almaaz-kenya': ['Clara'],
   'craie-maroc': ['Rachid'],
   'craie-suisse': [],
+  'grace-mila-morocco': [],
+  'veganboost-greece': [],
+  'almaaz-new-york': [],
+  'ange-new-york': [],
 };
 
 const MODELS_BY_ID: Record<string, string[]> = {
@@ -56,6 +84,10 @@ const MODELS_BY_ID: Record<string, string[]> = {
   'almaaz-kenya': ['Veronika', 'Eden', 'Bianca'],
   'craie-maroc': ['Berta', 'Malak'],
   'craie-suisse': [],
+  'grace-mila-morocco': [],
+  'veganboost-greece': [],
+  'almaaz-new-york': [],
+  'ange-new-york': [],
 };
 
 const MAKEUP_ARTISTS_BY_ID: Record<string, string[]> = {
@@ -63,6 +95,10 @@ const MAKEUP_ARTISTS_BY_ID: Record<string, string[]> = {
   'almaaz-kenya': ['Estelle'],
   'craie-maroc': ['Estelle'],
   'craie-suisse': [],
+  'grace-mila-morocco': [],
+  'veganboost-greece': [],
+  'almaaz-new-york': [],
+  'ange-new-york': [],
 };
 
 const RELEASE_WINDOW_BY_ID: Record<string, string> = {
@@ -70,6 +106,10 @@ const RELEASE_WINDOW_BY_ID: Record<string, string> = {
   'almaaz-kenya': 'Spring Summer 2023',
   'craie-maroc': 'Spring Summer 2025',
   'craie-suisse': 'Spring Summer 2023 / 2024',
+  'grace-mila-morocco': 'Fall Winter 2024 / Spring Summer 2024',
+  'veganboost-greece': '2024',
+  'almaaz-new-york': 'Fall Winter / Summer 2024',
+  'ange-new-york': 'Fall Winter 2024',
 };
 
 const SEASON_BY_ID: Record<string, Campaign['season']> = {
@@ -77,6 +117,15 @@ const SEASON_BY_ID: Record<string, Campaign['season']> = {
   'almaaz-kenya': 'spring-summer',
   'craie-maroc': 'spring-summer',
   'craie-suisse': 'spring-summer',
+  'grace-mila-morocco': 'fall-winter',
+  'veganboost-greece': 'spring-summer',
+  'almaaz-new-york': 'fall-winter',
+  'ange-new-york': 'fall-winter',
+};
+
+const SEASON_TAGS_BY_ID: Partial<Record<string, Campaign['season'][]>> = {
+  'grace-mila-morocco': ['fall-winter', 'spring-summer'],
+  'almaaz-new-york': ['fall-winter', 'spring-summer'],
 };
 
 const LOGO_BY_ID: Record<string, { src: string; alt: string }> = {
@@ -84,6 +133,8 @@ const LOGO_BY_ID: Record<string, { src: string; alt: string }> = {
   'almaaz-kenya': { src: '/assets/brands/almaaz.png', alt: 'Almaaz logo' },
   'craie-maroc': { src: '/assets/brands/craiestudio.png', alt: 'Craie Studio logo' },
   'craie-suisse': { src: '/assets/brands/craiestudio.png', alt: 'Craie Studio logo' },
+  'grace-mila-morocco': { src: '/assets/brands/grace&mila.png', alt: 'Grace & Mila logo' },
+  'almaaz-new-york': { src: '/assets/brands/almaaz.png', alt: 'Almaaz logo' },
 };
 
 function extractClientFromTitle(title: string) {
@@ -143,7 +194,7 @@ export const campaigns: Campaign[] = campaignShowcases.map((showcase) => {
     title: showcase.title,
     client,
     season: SEASON_BY_ID[showcase.id] ?? 'spring-summer',
-    seasonTags: [SEASON_BY_ID[showcase.id] ?? 'spring-summer'],
+    seasonTags: SEASON_TAGS_BY_ID[showcase.id] ?? [SEASON_BY_ID[showcase.id] ?? 'spring-summer'],
     date: RELEASE_WINDOW_BY_ID[showcase.id] ?? 'To be announced',
     location: showcase.destination,
     image: thumbnail.src,
