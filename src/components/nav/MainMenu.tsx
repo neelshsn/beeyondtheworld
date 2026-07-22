@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X } from 'lucide-react';
+import { X } from 'lucide-react';
+import Image from 'next/image';
 import * as React from 'react';
 
 import { MenuLinks } from '@/components/nav/MenuLinks';
@@ -41,7 +42,14 @@ export function MainMenu() {
           className="group inline-flex min-h-[44px] flex-col items-start justify-center focus-visible:outline-none"
         >
           <span className="inline-flex items-center gap-2 font-display text-[10px] uppercase tracking-[0.4em] text-white">
-            <Menu className="size-4" aria-hidden />
+            <Image
+              src="/assets/icones/feedbacks/site-navigation.svg"
+              alt=""
+              width={22}
+              height={22}
+              className="h-[1.15rem] w-[1.15rem] object-contain"
+              aria-hidden
+            />
             <span>Menu</span>
           </span>
           <span

@@ -77,7 +77,7 @@ const AUDIENCE_INTROS: Record<AudienceKey, { eyebrow: string; title: string; bod
   },
   NJOS: {
     eyebrow: 'PROFILE SELECTED',
-    title: 'NJOS',
+    title: 'NJOs',
     body: 'Share your impact focus and partnership needs so we can build a meaningful first exchange.',
   },
   MEDIAS: {
@@ -366,7 +366,7 @@ export function ContactLanding({ initialAudience, journeySlug, onExit }: Contact
   const isFinalStep = currentStepIndex === currentSteps.length - 1;
 
   return (
-    <main className="relative h-[100svh] overflow-hidden bg-[#d8ccb8] text-white">
+    <main className="relative h-[100svh] overflow-hidden border-b border-[#f4bb52]/70 bg-[#d8ccb8] text-white">
       <video
         className="absolute inset-0 h-full w-full object-cover object-center"
         autoPlay
@@ -798,7 +798,12 @@ export function ContactLanding({ initialAudience, journeySlug, onExit }: Contact
                                   className="mt-0.5 size-4 accent-[#f4bb52]"
                                 />
                                 <span>
-                                  I agree to be contacted by Beeyondtheworld about this request.
+                                  I agree to be contacted by Beeyondtheworld about this request and
+                                  have read the{' '}
+                                  <a href="/privacy" className="underline underline-offset-4">
+                                    privacy notice
+                                  </a>
+                                  .
                                 </span>
                               </label>
                               <label className="absolute -left-[9999px]" aria-hidden>

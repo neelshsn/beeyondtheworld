@@ -206,7 +206,7 @@ export function CampaignDetailExperience({
 
   return (
     <>
-      <section className="relative flex min-h-[100svh] flex-col overflow-hidden bg-black text-white">
+      <section className="relative flex min-h-[100svh] flex-col overflow-hidden border-b border-[#f4bb52]/70 bg-black text-white">
         <div className="pointer-events-none absolute inset-0">
           <Image
             src={bg.image}
@@ -243,7 +243,7 @@ export function CampaignDetailExperience({
                     <div
                       key={item.id}
                       className={clsx(
-                        'embla__slide flex flex-[0_0_74%] items-center sm:flex-[0_0_60%]',
+                        'embla__slide flex flex-[0_0_68%] items-center sm:flex-[0_0_58%]',
                         index === selectedIndex
                           ? 'md:flex-[0_0_calc((100%-(var(--campaign-gap)*3))*0.4)]'
                           : 'md:flex-[0_0_calc((100%-(var(--campaign-gap)*3))*0.23)]'
@@ -444,7 +444,7 @@ function MediaElevator({ value, direction, prefersReducedMotion, onCycle }: Medi
         onFocus={() => setHoveredControl('prev')}
         onBlur={() => setHoveredControl((current) => (current === 'prev' ? null : current))}
         className={clsx(
-          'flex h-6 w-6 items-center justify-center transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/45',
+          'flex h-10 w-10 items-center justify-center transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/45',
           hoveredControl === 'prev'
             ? 'text-[#f6c452] drop-shadow-[0_0_10px_rgba(246,196,82,0.42)]'
             : 'text-white/45'

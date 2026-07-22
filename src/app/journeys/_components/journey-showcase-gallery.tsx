@@ -745,7 +745,7 @@ export function JourneyShowcaseGallery({
   return (
     <section
       ref={rootRef}
-      className="relative flex min-h-[100svh] flex-col overflow-hidden bg-black text-white"
+      className="relative flex min-h-[100svh] flex-col overflow-hidden border-b border-[#f4bb52]/70 bg-black text-white"
       tabIndex={0}
       aria-label="Journey carousel"
     >
@@ -796,7 +796,7 @@ export function JourneyShowcaseGallery({
                         key={slide.renderKey}
                         layout={!isSeasonSwitching}
                         className={clsx(
-                          'embla__slide flex flex-[0_0_74%] items-center sm:flex-[0_0_60%]',
+                          'embla__slide flex flex-[0_0_68%] items-center sm:flex-[0_0_58%]',
                           getDesktopSlideBasisClass(forwardOffset)
                         )}
                         initial={prefersReducedMotion ? false : { opacity: 0 }}
@@ -949,8 +949,8 @@ function JourneyHeadline({
           {dateRange ? (
             <div
               className={clsx(
-                'mt-1 flex flex-col uppercase tracking-[0.38em] text-white [text-shadow:0_2px_0_rgba(0,0,0,0.3),0_8px_14px_rgba(0,0,0,0.24),0_16px_34px_rgba(0,0,0,0.24)]',
-                compact ? 'gap-0.5 text-[0.56rem]' : 'gap-1 text-[0.68rem] sm:text-[0.78rem]',
+                'mt-3 flex flex-col uppercase tracking-[0.38em] text-white [text-shadow:0_2px_0_rgba(0,0,0,0.3),0_8px_14px_rgba(0,0,0,0.24),0_16px_34px_rgba(0,0,0,0.24)]',
+                compact ? 'gap-1.5 text-[0.54rem]' : 'gap-1 text-[0.68rem] sm:text-[0.78rem]',
                 centered ? 'items-center' : 'items-start'
               )}
             >

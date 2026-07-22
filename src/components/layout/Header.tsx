@@ -26,7 +26,7 @@ export function Header() {
             alt="Beeyond the World"
             width={44}
             height={44}
-            className="h-9 w-auto object-contain sm:h-11"
+            className="h-8 w-auto object-contain sm:h-9"
             priority
           />
         </Link>

@@ -984,25 +984,24 @@ export const campaignShowcases: CampaignShowcase[] = [
   {
     id: 'almaaz-kenya',
     slug: 'almaaz-kenya',
-    title: 'Almaaz - Wild Canopy Kenya',
-    destination: 'Laikipia & Masai Mara',
-    headline: "High jewellery legends ignited inside Kenya's jungle and savannah night.",
+    title: 'Almaaz - The Bloom of Inclusivity',
+    destination: 'Mombasa, Kenya',
+    headline: 'The Bloom of Inclusivity',
     summary:
-      'Three muses - Lila from Paris, Ayanda from Johannesburg, and Veronica, the Kenyan talent we scouted on-site - carry Almaaz through a wild journey that honours local beauty and global craft.',
+      'In our pursuit of global inclusion, meet Vera from the vibrant city of Mombasa, Kenya. Her story celebrates talent beyond borders and the identities that enrich our world.',
     story: [
-      'Daybreak opens beneath fever trees where Lila and Ayanda move through mist and birdsong while jewellery glows against deep green canopies. Tracking rigs hug the terrain so the camera feels animal and alive.',
-      "At dusk we hand the spotlight to Veronica, the Nairobi-born muse discovered during community casting. She leads a fireside rite that fuses Maasai percussion, Almaaz's new line, and her own words about opportunity.",
+      'Recognizing the diverse backgrounds and experiences that enrich our world, we are committed to creating opportunities where talent is seen beyond borders.',
+      'Through our initiatives, we empower local women who may face barriers to entering the fashion industry, helping them share their stories and identities on an international stage.',
+      'Thanks to this collaboration, Vera was celebrated on the cover of Off Town Magazine, bringing her story, identity and culture to an international audience.',
     ],
     highlights: [
-      'Tri-continental casting bringing Paris, South Africa, and Kenya into one frame',
-      'Jungle sequences with organic lighting that breathes with the canopy',
-      'Fireside storytelling led by Veronica, the Kenyan muse we scouted in the conservancy',
+      'Local talent seen beyond borders',
+      'International visibility through Off Town Magazine',
+      'Spring Summer 2023 · Kenya',
     ],
     credits: [
       { role: 'Maison', value: 'Almaaz' },
-      { role: 'Director', value: 'Beeyondtheworld Studio' },
-      { role: 'Photography', value: 'Sacha Mpesa' },
-      { role: 'Sound design', value: 'Savannah Resonance' },
+      { role: 'Creative production', value: 'Beeyondtheworld' },
     ],
     hero: {
       id: 'almaaz-hero-video',
@@ -1010,7 +1009,7 @@ export const campaignShowcases: CampaignShowcase[] = [
       src: '/assets/campaigns/almaaz-kenya/almaaz-kenya-story.mp4',
       alt: 'Model wearing Almaaz jewellery in savannah dusk light',
       poster: '/assets/campaigns/almaaz-kenya/almaaz-kenya-cover.jpg',
-      caption: 'Immersive reel, 60 s loop',
+      caption: 'Kenya · Spring Summer 2023',
       loopLabel: 'Campaign 02',
     },
     gallery: [
@@ -1056,9 +1055,9 @@ export const campaignShowcases: CampaignShowcase[] = [
       },
     ],
     impact: [
-      'Campaign revenue funds mentorship stipends for Veronica and two Kenyan apprentices',
-      'Low-impact logistics audited with local conservation partners across seven shooting days',
-      'Deliverables split into wild story film, portrait gallery, and press-ready origin pieces',
+      'Opportunity created for a local woman entering the fashion industry',
+      'Vera’s identity and culture shared with an international audience',
+      'A campaign tale grounded in genuine encounters and human creativity',
     ],
     cta: {
       label: 'Request case study',
@@ -1068,25 +1067,23 @@ export const campaignShowcases: CampaignShowcase[] = [
   {
     id: 'craie-maroc',
     slug: 'craie-maroc',
-    title: 'Craie Studio - Atlas Mirage',
-    destination: 'Agafay Desert & Marrakech',
-    headline: 'Leather reveries flowing between Agafay dunes and Marrakech villas.',
+    title: 'Craie Studio - The Poetry of Contrasts',
+    destination: 'Morocco',
+    headline: 'The Poetry of Contrasts',
     summary:
-      'Berta from Spain and Malak from Morocco anchor a dynamic yet fashion-forward tale that flips between sun-baked desert tracks and lantern-lit riad salons for Craie Studio’s bags.',
+      'There are places where just a few kilometres are enough to step into another world, where every road tells a new story and a single country becomes an endless journey of discovery.',
     story: [
-      'We begin at first light with Berta racing dune crests while Steadicam traces the bags in motion; a mobile villa base keeps wardrobe crisp before Malak takes over within a palm-filled patio for poised still-life chapters.',
-      'Twilight reunites both muses in a riad rooftop jam where Gnawa rhythms drive swinging camera moves, closing on an intimate bag ritual beside an artisan leather atelier.',
+      'Distance fades away, giving way to exploration. Every landscape becomes a new setting, a new emotion and a new source of inspiration.',
+      'Four distinct visual chapters reveal different faces of the same land while preserving one coherent creative tale.',
     ],
     highlights: [
-      'Twin-muse casting featuring Berta (Spain) and Malak (Morocco)',
-      'Villa-to-dune production flow keeping bags pristine in extreme conditions',
-      'Gnawa-infused rooftop finale merging fashion and movement',
+      'Four visual chapters within one country',
+      'Contrasting Moroccan landscapes',
+      'Spring Summer 2025 · Morocco',
     ],
     credits: [
       { role: 'Maison', value: 'Craie Studio' },
-      { role: 'Director', value: 'Beeyondtheworld Studio' },
-      { role: 'Photography', value: 'Naila Benali' },
-      { role: 'Sound design', value: 'Atlas Echo' },
+      { role: 'Creative production', value: 'Beeyondtheworld' },
     ],
     hero: {
       id: 'craie-hero-video',
@@ -1094,7 +1091,7 @@ export const campaignShowcases: CampaignShowcase[] = [
       src: '/assets/campaigns/craie-maroc/craie-maroc-story-02.mp4',
       alt: 'Craie Studio muse walking through desert camp',
       poster: '/assets/campaigns/craie-maroc/craie-maroc-gallery-01.jpg',
-      caption: 'Reel edit, 55 s loop',
+      caption: 'Morocco · Spring Summer 2025',
       loopLabel: 'Campaign 03',
     },
     gallery: [
@@ -1140,13 +1137,54 @@ export const campaignShowcases: CampaignShowcase[] = [
       },
     ],
     impact: [
-      'Joint atelier sessions with Marrakech leather collective documented for press kits',
-      'Hero film, lookbook stills, and motion loops delivered within ten days',
-      'Local crew pathway pairing Moroccan trainees with Spanish department heads',
+      'One shared destination transformed into four creative settings',
+      'Resources concentrated within a single coherent production journey',
+      'A tale built around contrast, discovery and visual continuity',
     ],
     cta: {
-      label: 'Discuss Atlas Mirage',
-      href: 'mailto:hello@beeyondtheworld.com?subject=Craie%20Studio%20Atlas%20Mirage',
+      label: 'Discuss the tale',
+      href: 'mailto:hello@beeyondtheworld.com?subject=Craie%20Studio%20Morocco%20Tale',
+    },
+  },
+  {
+    id: 'craie-suisse',
+    slug: 'craie-suisse',
+    title: 'Craie Studio - The Blooming Snowflakes',
+    destination: 'Switzerland',
+    headline: 'The Blooming… Snowflakes.',
+    summary:
+      'One place, a thousand awakenings. At the heart of a single landscape, nature unfolds in endless variations and becomes a living painting that breathes through time.',
+    story: [
+      'Every passing moment reveals a new expression of the same place, where light, atmosphere and perspective gently evolve.',
+      'Today, we choose to celebrate the beauty of temporality, from blooming landscapes to snowflakes.',
+    ],
+    highlights: [
+      'One landscape across two seasons',
+      'Spring Summer 2023 and Spring Summer 2024',
+      'Switzerland',
+    ],
+    credits: [
+      { role: 'Maison', value: 'Craie Studio' },
+      { role: 'Creative production', value: 'Beeyondtheworld' },
+    ],
+    hero: {
+      id: 'craie-suisse-hero',
+      type: 'image',
+      src: '/assets/campaigns/craie-suisse/swiss3.jpg',
+      alt: 'Craie Studio seasonal tale in Switzerland',
+      aspectRatio: 'landscape',
+      caption: 'Switzerland · seasonal tale',
+      loopLabel: 'Campaign 04',
+    },
+    gallery: [],
+    impact: [
+      'One location revisited through changing light and season',
+      'A shared production language across distinct seasonal chapters',
+      'A tale focused on time, atmosphere and perspective',
+    ],
+    cta: {
+      label: 'Discuss the tale',
+      href: 'mailto:hello@beeyondtheworld.com?subject=Craie%20Studio%20Switzerland%20Tale',
     },
   },
 ];

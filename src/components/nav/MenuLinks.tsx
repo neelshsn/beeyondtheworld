@@ -59,8 +59,7 @@ export function MenuLinks({ isOpen, onNavigate }: MenuLinksProps) {
             className="flex flex-col gap-8"
           >
             {mainNav.map((item) => {
-              const isActive =
-                pathname === item.href || (item.href !== '/' && pathname?.startsWith(item.href));
+              const isActive = pathname === item.href || pathname?.startsWith(`${item.href}/`);
 
               return (
                 <motion.li key={item.href} variants={itemVariants}>

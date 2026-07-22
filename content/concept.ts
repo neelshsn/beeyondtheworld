@@ -61,20 +61,20 @@ export const conceptNodes: ConceptNode[] = [
     title: 'CSR LABEL',
     description:
       'BEE DEFINES A CLEAR FRAMEWORK OF STANDARDS AND PROTOCOLS FOR EVERY STAGE OF PRODUCTION. FROM PRE-PRODUCTION TO FINAL DELIVERY, ENSURING THAT ALL TEAMS OPERATE WITH AWARENESS, RESPECT, AND OPTIMISATION OF HUMAN, ENVIRONMENTAL, AND MATERIAL RESOURCES.',
-    openTitle: 'Sustainable transition on the Advertising Sector',
+    openTitle: 'Sustainable Transition in Advertising',
     icon: '/assets/icones/Ico Gold BEE-13.svg',
     details: [
       {
-        icon: '/assets/icones/Ico Gold BEE-13.svg',
-        text: 'The Bee Label commitments define a conscious and responsible environment, respecting human well-being, and ensuring fair collaboration across all stages. They prioritise integrity over perfection, guaranteeing that creation never compromises people or places.',
+        icon: '/assets/icones/feedbacks/concept-quality-charter.svg',
+        text: 'The Bee Authenticity Commitment protects what matters most: human creativity. Every campaign is rooted in genuine emotions, real encounters and lived experiences, ensuring that visual storytelling remains deeply human. Artificial Intelligence is embraced only as a tool to optimize workflows and accelerate production, not to replace artistic vision, creativity or human sensitivity. Through the Bee Authenticator, every production is traceable and certified, guaranteeing that a minimum of 90% of each campaign is crafted by humans, with complete transparency on the origin and creation process.',
       },
       {
         icon: '/assets/icones/Ico Gold BEE-17.svg',
         text: 'Sustainable guidelines that frame attitude, behavior, ethics, and creative execution across all departments. They ensure consistency, respect, and excellence - from pre-production to post-production. Every talent and partner operates under shared values and clear expectations.',
       },
       {
-        icon: '/assets/icones/Ico Gold BEE-07.svg',
-        text: 'Traceability is key through the development of a precise in-house method to track decisions, budgets, resources, suppliers, carbon impact, and human involvement. It brings transparency to each step of the process and allows brands to quantify their commitment and measure progress over time.',
+        icon: '/assets/icones/feedbacks/concept-sustainable-development.svg',
+        text: 'Every advertising production is fully traceable through our in-house technology. By measuring carbon footprint, resource optimization, Bee Sustainable Guidelines compliance, verified NJOs and geo-localized initiatives, every campaign actively contributes to worldwide sustainable development while providing transparent proof of its environmental, cultural and human impact.',
       },
     ],
     background: defaultBackground,

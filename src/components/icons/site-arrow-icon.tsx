@@ -5,7 +5,7 @@ import clsx from 'clsx';
 type SiteArrowDirection = 'right' | 'left' | 'up' | 'down' | 'up-right';
 
 const ARROW_MASK_CLASS =
-  '[mask-image:url(/assets/icones/site-arrow.svg)] [mask-position:center] [mask-repeat:no-repeat] [mask-size:contain] [-webkit-mask-image:url(/assets/icones/site-arrow.svg)] [-webkit-mask-position:center] [-webkit-mask-repeat:no-repeat] [-webkit-mask-size:contain]';
+  '[mask-image:url(/assets/icones/feedbacks/site-arrow.svg)] [mask-position:center] [mask-repeat:no-repeat] [mask-size:contain] [-webkit-mask-image:url(/assets/icones/feedbacks/site-arrow.svg)] [-webkit-mask-position:center] [-webkit-mask-repeat:no-repeat] [-webkit-mask-size:contain]';
 
 const DIRECTION_CLASS: Record<SiteArrowDirection, string> = {
   right: '',

@@ -6,72 +6,84 @@ const COUNTRY_BY_ID: Record<string, string> = {
   'maradji-ibiza': 'Spain',
   'almaaz-kenya': 'Kenya',
   'craie-maroc': 'Morocco',
+  'craie-suisse': 'Switzerland',
 };
 
 const SHOOT_YEAR_BY_ID: Record<string, number> = {
   'maradji-ibiza': 2024,
   'almaaz-kenya': 2023,
-  'craie-maroc': 2023,
+  'craie-maroc': 2025,
+  'craie-suisse': 2024,
 };
 
 const BRAND_TYPE_BY_ID: Record<string, string> = {
   'maradji-ibiza': 'Clothing',
   'almaaz-kenya': 'Cosmetics',
-  'craie-maroc': 'Accesories',
+  'craie-maroc': 'Accessories',
+  'craie-suisse': 'Accessories',
 };
 
 const ART_DIRECTOR_BY_ID: Record<string, string> = {
   'maradji-ibiza': 'Eugenie',
   'almaaz-kenya': 'Eugenie',
   'craie-maroc': 'Eugenie',
+  'craie-suisse': 'Eugenie',
 };
 
 const TALENT_BY_ID: Record<string, string> = {
   'maradji-ibiza': 'Zak',
-  'almaaz-kenya': 'Zak',
-  'craie-maroc': 'Zak',
+  'almaaz-kenya': 'Vera',
+  'craie-maroc': 'To be confirmed',
+  'craie-suisse': 'To be confirmed',
 };
 
 const DOP_BY_ID: Record<string, string> = {
   'maradji-ibiza': 'Brian',
   'almaaz-kenya': 'Brian',
   'craie-maroc': 'Brian',
+  'craie-suisse': 'To be confirmed',
 };
 
 const PRODUCTION_TEAM_BY_ID: Record<string, string[]> = {
   'maradji-ibiza': ['Clara'],
   'almaaz-kenya': ['Clara'],
   'craie-maroc': ['Rachid'],
+  'craie-suisse': [],
 };
 
 const MODELS_BY_ID: Record<string, string[]> = {
   'maradji-ibiza': ['Karimah'],
   'almaaz-kenya': ['Veronika', 'Eden', 'Bianca'],
   'craie-maroc': ['Berta', 'Malak'],
+  'craie-suisse': [],
 };
 
 const MAKEUP_ARTISTS_BY_ID: Record<string, string[]> = {
   'maradji-ibiza': ['Estelle'],
   'almaaz-kenya': ['Estelle'],
   'craie-maroc': ['Estelle'],
+  'craie-suisse': [],
 };
 
 const RELEASE_WINDOW_BY_ID: Record<string, string> = {
   'maradji-ibiza': 'Summer 2025',
-  'almaaz-kenya': 'Autumn 2024',
-  'craie-maroc': 'Spring 2025',
+  'almaaz-kenya': 'Spring Summer 2023',
+  'craie-maroc': 'Spring Summer 2025',
+  'craie-suisse': 'Spring Summer 2023 / 2024',
 };
 
 const SEASON_BY_ID: Record<string, Campaign['season']> = {
   'maradji-ibiza': 'spring-summer',
-  'almaaz-kenya': 'fall-winter',
+  'almaaz-kenya': 'spring-summer',
   'craie-maroc': 'spring-summer',
+  'craie-suisse': 'spring-summer',
 };
 
 const LOGO_BY_ID: Record<string, { src: string; alt: string }> = {
   'maradji-ibiza': { src: '/assets/brands/maradji.svg', alt: 'Maradji logo' },
   'almaaz-kenya': { src: '/assets/brands/almaaz.png', alt: 'Almaaz logo' },
   'craie-maroc': { src: '/assets/brands/craiestudio.png', alt: 'Craie Studio logo' },
+  'craie-suisse': { src: '/assets/brands/craiestudio.png', alt: 'Craie Studio logo' },
 };
 
 function extractClientFromTitle(title: string) {

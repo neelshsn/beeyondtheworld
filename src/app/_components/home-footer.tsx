@@ -1,8 +1,9 @@
 import Image from 'next/image';
+import Link from 'next/link';
 
 const ICON_GOLD = '/assets/icones/Ico Gold BEE-13.svg';
 
-const LEGAL_TEXT = `Visual representations of the property, layout plans, and other materials are for illustration purposes only. All information on this website is provided for general informational use and does not constitute an offer or any form of binding commitment. All materials on this website, including design elements, are the intellectual property of the Organization. Any copying, reproduction, distribution (including reposting to other websites or online resources), or other use of these materials is prohibited without the prior written consent of the rights holder.`;
+const LEGAL_TEXT = `BEEYONDTHEWORLD LIMITED · COMPANY NO. 14163182 · VAT GB450245815 · REGISTERED IN ENGLAND AND WALES.`;
 
 export function HomeFooter() {
   return (
@@ -24,6 +25,20 @@ export function HomeFooter() {
       <p className="max-w-4xl text-center font-display text-[7px] uppercase leading-[2] tracking-[0.12em] text-[#1b130e]/40 sm:text-[8px]">
         {LEGAL_TEXT}
       </p>
+      <nav
+        aria-label="Legal information"
+        className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 font-display text-[8px] uppercase tracking-[0.18em] text-[#1b130e]/55"
+      >
+        <Link href="/legal" className="transition hover:text-[#1b130e]">
+          Legal notice
+        </Link>
+        <Link href="/privacy" className="transition hover:text-[#1b130e]">
+          Privacy
+        </Link>
+        <Link href="/cookies" className="transition hover:text-[#1b130e]">
+          Cookies
+        </Link>
+      </nav>
     </footer>
   );
 }

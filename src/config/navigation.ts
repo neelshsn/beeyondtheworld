@@ -8,13 +8,6 @@ export type MainNavItem = {
 
 export const mainNav = [
   {
-    label: 'Home',
-    labelKey: 'navigation.home',
-    href: '/',
-    index: '05',
-    iconSrc: '/assets/icones/Ico Gold BEE-05.svg',
-  },
-  {
     label: 'Concept',
     labelKey: 'navigation.concept',
     href: '/concept',
