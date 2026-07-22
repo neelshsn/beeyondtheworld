@@ -8,6 +8,8 @@ import { boolean, integer, jsonb, pgTable, serial, text, timestamp } from 'drizz
 
 export type SeasonVisual = { image?: string; backgroundVideo?: string };
 export type LocationMedia = { url: string; type: 'image' | 'video'; alt?: string };
+export type LeadKind = 'contact' | 'journey_booking';
+export type LeadNotificationStatus = 'pending' | 'sent' | 'failed' | 'not_configured';
 
 export const journeys = pgTable('journeys', {
   id: serial('id').primaryKey(),
@@ -74,8 +76,40 @@ export const adminSessions = pgTable('admin_sessions', {
   createdAt: timestamp('created_at').notNull().defaultNow(),
 });
 
+/**
+ * Source de vérité des demandes commerciales. La persistance précède toujours
+ * la notification afin qu'une panne du canal d'alerte ne puisse perdre un lead.
+ */
+export const leadSubmissions = pgTable('lead_submissions', {
+  id: text('id').primaryKey(),
+  reference: text('reference').notNull().unique(),
+  idempotencyKey: text('idempotency_key').notNull().unique(),
+  kind: text('kind').$type<LeadKind>().notNull(),
+  audience: text('audience'),
+  name: text('name'),
+  email: text('email'),
+  phone: text('phone'),
+  company: text('company'),
+  journeySlug: text('journey_slug'),
+  sourcePath: text('source_path').notNull(),
+  payload: jsonb('payload').$type<Record<string, unknown>>().notNull().default({}),
+  consentGiven: boolean('consent_given').notNull(),
+  consentAt: timestamp('consent_at').notNull(),
+  notificationStatus: text('notification_status')
+    .$type<LeadNotificationStatus>()
+    .notNull()
+    .default('pending'),
+  notificationAttempts: integer('notification_attempts').notNull().default(0),
+  notificationLastError: text('notification_last_error'),
+  notifiedAt: timestamp('notified_at'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+
 export type JourneyRow = typeof journeys.$inferSelect;
 export type NewJourneyRow = typeof journeys.$inferInsert;
 export type LocationRow = typeof locations.$inferSelect;
 export type NewLocationRow = typeof locations.$inferInsert;
 export type AdminUserRow = typeof adminUsers.$inferSelect;
+export type LeadSubmissionRow = typeof leadSubmissions.$inferSelect;
+export type NewLeadSubmissionRow = typeof leadSubmissions.$inferInsert;

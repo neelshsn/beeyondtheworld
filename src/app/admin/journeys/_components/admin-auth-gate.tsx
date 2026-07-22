@@ -31,6 +31,7 @@ export function AdminAuthGate({ children }: { children: ReactNode }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
+  const [bootstrapToken, setBootstrapToken] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
@@ -73,7 +74,10 @@ export function AdminAuthGate({ children }: { children: ReactNode }) {
           : mode === 'bootstrap'
             ? '/api/admin/auth/register'
             : '/api/admin/auth/login';
-      const body = mode === 'invite' ? { token: inviteToken, password } : { email, password };
+      const body =
+        mode === 'invite'
+          ? { token: inviteToken, password }
+          : { email, password, bootstrapToken: mode === 'bootstrap' ? bootstrapToken : undefined };
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -150,6 +154,17 @@ export function AdminAuthGate({ children }: { children: ReactNode }) {
                   autoComplete="username"
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
+                  required
+                />
+              ) : null}
+              {mode === 'bootstrap' ? (
+                <input
+                  className={fieldClass}
+                  type="password"
+                  placeholder="Code de bootstrap administrateur"
+                  autoComplete="off"
+                  value={bootstrapToken}
+                  onChange={(event) => setBootstrapToken(event.target.value)}
                   required
                 />
               ) : null}

@@ -1,114 +1,72 @@
-﻿import { NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 
-import { isDemoMode } from '@/lib/supabase/demo-client';
-import { getSupabaseServerClient } from '@/lib/supabase/server-client';
+import { hasHoneypot, LeadValidationError, normalizeLeadSubmission } from '@/lib/leads/normalize';
+import { notifyLead } from '@/lib/leads/notify';
+import { persistLead, updateNotification } from '@/lib/leads/repository';
 
-const CONTACT_METHODS = new Set(['email', 'whatsapp', 'call']);
-const ORIGIN = 'beeyondtheworld-platform';
-const SUCCESS_MESSAGE = "Your journey begins here ✨🐝 We'll be in touch soon.";
-
-function sanitize(value: unknown): string {
-  if (typeof value !== 'string') return '';
-  return value
-    .replace(/<[^>]*>?/g, '')
-    .replace(/\s+/g, ' ')
-    .trim();
-}
-
-function sanitizeLong(value: unknown, max = 2000): string {
-  return sanitize(value).slice(0, max);
-}
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+const MAX_BODY_BYTES = 64 * 1024;
 
 export async function POST(request: Request) {
-  let payload: Record<string, unknown>;
+  const contentLength = Number(request.headers.get('content-length') ?? 0);
+  if (Number.isFinite(contentLength) && contentLength > MAX_BODY_BYTES) {
+    return NextResponse.json({ error: 'Request payload is too large.' }, { status: 413 });
+  }
+
+  let payload: unknown;
   try {
-    payload = await request.json();
+    const rawPayload = await request.text();
+    if (Buffer.byteLength(rawPayload, 'utf8') > MAX_BODY_BYTES) {
+      return NextResponse.json({ error: 'Request payload is too large.' }, { status: 413 });
+    }
+    payload = JSON.parse(rawPayload);
   } catch {
     return NextResponse.json({ error: 'Invalid request payload.' }, { status: 400 });
   }
 
-  const honeytoken = sanitize(payload.honeytoken);
-  if (honeytoken) {
-    return NextResponse.json({ success: true });
-  }
-
-  const name = sanitize(payload.name);
-  const email = sanitize(payload.email).toLowerCase();
-  const brand = sanitize(payload.brand);
-  const journeyId = sanitize(payload.journeyId);
-  const campaignId = sanitize(payload.campaignId);
-  const journeyTitle = sanitize(payload.journeyTitle);
-  const campaignTitle = sanitize(payload.campaignTitle);
-  const projectNotes = sanitizeLong(payload.projectNotes);
-  const preferredDateRaw = sanitize(payload.preferredDate);
-
-  const fieldErrors: Record<string, string> = {};
-  if (!name) fieldErrors.name = 'Name is required.';
-  if (!email) {
-    fieldErrors.email = 'Email is required.';
-  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    fieldErrors.email = 'Enter a valid email address.';
-  }
-
-  if (Object.keys(fieldErrors).length) {
-    return NextResponse.json(
-      { error: 'Please correct the highlighted fields.', fieldErrors },
-      { status: 400 }
-    );
-  }
-
-  const contactMethodsRaw = Array.isArray(payload.contactMethods) ? payload.contactMethods : [];
-  const contactMethods = contactMethodsRaw
-    .map((method) => sanitize(method))
-    .filter((method) => CONTACT_METHODS.has(method));
-
-  if (!contactMethods.length) {
-    contactMethods.push('email');
-  }
-
-  const preferredDate =
-    preferredDateRaw && !Number.isNaN(Date.parse(preferredDateRaw))
-      ? new Date(preferredDateRaw).toISOString().split('T')[0]
-      : null;
-
-  const record = {
-    name,
-    email,
-    brand: brand || null,
-    journey_id: journeyId || null,
-    journey_title: journeyTitle || null,
-    campaign_id: campaignId || null,
-    campaign_title: campaignTitle || null,
-    project_notes: projectNotes || null,
-    contact_methods: contactMethods,
-    preferred_date: preferredDate,
-    origin: ORIGIN,
-  };
-
-  if (isDemoMode()) {
-    console.info('[contact] demo submission captured', record);
-    return NextResponse.json({ success: true, message: SUCCESS_MESSAGE, demo: true });
+  // Les bots remplissant le champ invisible reçoivent une réponse neutre sans écriture.
+  if (hasHoneypot(payload)) {
+    return NextResponse.json({ success: true }, { status: 202 });
   }
 
   try {
-    const supabase = await getSupabaseServerClient();
-    const { error } = await supabase.from('contact_requests').insert(record);
-    if (error) throw error;
+    const normalized = normalizeLeadSubmission(payload);
+    const { lead, created } = await persistLead(normalized);
 
-    const functionName = process.env.SUPABASE_CONTACT_NOTIFICATION_FUNCTION;
-    if (functionName) {
+    let notificationStatus = lead.notificationStatus;
+    if (created || notificationStatus !== 'sent') {
+      const notification = await notifyLead(lead);
+      notificationStatus = notification.status;
       try {
-        await supabase.functions.invoke(functionName, {
-          body: { ...record, message: SUCCESS_MESSAGE },
-        });
-      } catch (notifyError) {
-        console.error('[contact] notification error', notifyError);
+        await updateNotification(
+          lead.id,
+          notification.status,
+          'error' in notification ? notification.error : undefined
+        );
+      } catch (cause) {
+        // La persistance du lead reste la source de vérité : une panne de suivi
+        // de notification ne doit pas transformer un lead sauvegardé en faux échec.
+        console.error('[lead] notification status update failed', cause);
+        notificationStatus = 'failed';
       }
     }
 
-    return NextResponse.json({ success: true, message: SUCCESS_MESSAGE });
-  } catch (error) {
-    console.error('[contact] submission error', error);
+    return NextResponse.json({
+      success: true,
+      reference: lead.reference,
+      notificationStatus,
+      duplicate: !created,
+      message: 'Your request has been saved. Our team will be in touch soon.',
+    });
+  } catch (cause) {
+    if (cause instanceof LeadValidationError) {
+      return NextResponse.json(
+        { error: cause.message, fieldErrors: cause.fieldErrors },
+        { status: 400 }
+      );
+    }
+    console.error('[lead] submission error', cause);
     return NextResponse.json(
       {
         error:

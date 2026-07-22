@@ -9,22 +9,14 @@ import { KeyRound, Lock, Mail } from 'lucide-react';
 import { SmartVideo } from '@/components/primitives/smart-video';
 import { Button } from '@/components/ui/button';
 import { useSupabase } from '@/components/providers/supabase-provider';
-import {
-  DEMO_AUTH_COOKIE,
-  DEMO_EMAIL,
-  DEMO_PASSWORD,
-  isDemoMode,
-} from '@/lib/supabase/demo-client';
+import { isSupabaseConfigured } from '@/lib/supabase/unavailable-client';
 
-const DEMO_ENABLED = isDemoMode();
+const AUTH_CONFIGURED = isSupabaseConfigured();
 
-const DEMO_ACCOUNTS: ReadonlyArray<{ email: string; password: string; note?: string }> = [
-  { email: DEMO_EMAIL, password: DEMO_PASSWORD, note: 'Client space' },
-  { email: 'neels@beeyondtheworld.com', password: 'admin', note: 'Developer, Super Admin' },
-  { email: 'eugenie@beeyondtheworld.com', password: 'admin' },
-  { email: 'talent@beeyondtheworld.com', password: 'talent' },
-  { email: 'producer@beeyondtheworld.com', password: 'producer' },
-];
+function safeRedirectPath(value: string | null): string {
+  if (!value || !/^\/(?!\/)[^\\\r\n]*$/.test(value)) return '/client';
+  return value;
+}
 
 export default function LoginPage() {
   const router = useRouter();
@@ -33,32 +25,27 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const handleDemoPrefill = (demoEmail: string, demoPassword: string) => {
-    setEmail(demoEmail);
-    setPassword(demoPassword);
-    setError(null);
-  };
+  const [error, setError] = useState<string | null>(
+    searchParams.get('error') === 'auth_unavailable'
+      ? 'Client access is temporarily unavailable. Please contact our team.'
+      : null
+  );
 
   useEffect(() => {
     if (!loading && session) {
-      const redirectTo = searchParams.get('redirectTo') ?? '/client';
+      const redirectTo = safeRedirectPath(searchParams.get('redirectTo'));
       router.replace(redirectTo);
     }
   }, [session, loading, router, searchParams]);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setSubmitting(true);
-    setError(null);
-
-    if (DEMO_ENABLED && email === DEMO_EMAIL && password === DEMO_PASSWORD) {
-      document.cookie = `${DEMO_AUTH_COOKIE}=demo; path=/; max-age=${60 * 60 * 24 * 30}; SameSite=Lax`;
-      setSubmitting(false);
-      router.replace('/client');
+    if (!AUTH_CONFIGURED) {
+      setError('Client access is temporarily unavailable. Please contact our team.');
       return;
     }
+    setSubmitting(true);
+    setError(null);
 
     const { error: authError } = await supabase.auth.signInWithPassword({
       email,
@@ -150,7 +137,7 @@ export default function LoginPage() {
 
           <Button
             type="submit"
-            disabled={submitting}
+            disabled={submitting || !AUTH_CONFIGURED}
             className="group relative w-full overflow-hidden rounded-full border border-white/50 bg-white/85 px-6 py-4 font-display text-xs uppercase tracking-[0.35em] text-foreground transition [transition-timing-function:var(--bee-ease)] hover:bg-white focus-visible:ring-[#f6c452]/35 disabled:cursor-not-allowed disabled:opacity-80"
           >
             <span
@@ -163,33 +150,12 @@ export default function LoginPage() {
 
         <div className="mt-6 rounded-2xl border border-white/30 bg-white/10 p-4 text-xs text-white/70">
           <p className="font-display text-[10px] uppercase tracking-[0.35em] text-white/60">
-            Demo access
+            Private access
           </p>
-          <ul className="mt-2 space-y-2 text-[11px] sm:text-xs">
-            {DEMO_ACCOUNTS.map(({ email: demoEmail, password: demoPassword, note }) => (
-              <li key={demoEmail}>
-                <button
-                  type="button"
-                  onClick={() => handleDemoPrefill(demoEmail, demoPassword)}
-                  className="flex w-full flex-col rounded-xl border border-white/10 bg-white/5 p-3 text-left transition hover:border-white/30 hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/80"
-                  title={`Prefill with ${demoEmail}`}
-                >
-                  <p>
-                    Email: <span className="font-sans text-white">{demoEmail}</span>
-                  </p>
-                  <p className="mt-1 text-white/80">
-                    Password: <span className="font-sans text-white">{demoPassword}</span>
-                  </p>
-                  {note ? (
-                    <p className="mt-2 text-[10px] uppercase tracking-[0.3em] text-white/60">
-                      {note}
-                    </p>
-                  ) : null}
-                </button>
-              </li>
-            ))}
-          </ul>
-          <p className="mt-4">
+          <p className="mt-3">
+            Access is by invitation only. Use the credentials provided directly by your producer.
+          </p>
+          <p className="mt-3">
             Need access? Contact{' '}
             <Link href="mailto:hello@beeyondtheworld.com" className="underline">
               hello@beeyondtheworld.com

@@ -15,8 +15,12 @@ export async function GET() {
       bootstrap: total === 0,
     });
   } catch (error) {
+    console.error('Admin auth status failed:', error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Base indisponible.' },
+      {
+        authenticated: false,
+        error: 'Authentification administrateur indisponible.',
+      },
       { status: 500 }
     );
   }

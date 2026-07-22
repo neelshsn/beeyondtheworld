@@ -1,3 +1,5 @@
+import { timingSafeEqual } from 'node:crypto';
+
 import { NextResponse } from 'next/server';
 
 import { adminUsers, getDb } from '@/lib/db';
@@ -16,6 +18,13 @@ export const dynamic = 'force-dynamic';
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PASSWORD_MIN_LENGTH = 8;
 
+function validBootstrapToken(candidate: string): boolean {
+  if (process.env.NODE_ENV !== 'production') return true;
+  const expected = process.env.ADMIN_BOOTSTRAP_TOKEN;
+  if (!expected || !candidate || expected.length !== candidate.length) return false;
+  return timingSafeEqual(Buffer.from(candidate), Buffer.from(expected));
+}
+
 /**
  * Création de compte éditeur :
  * - si AUCUN compte n'existe → bootstrap libre (premier compte) ;
@@ -26,6 +35,7 @@ export async function POST(request: Request) {
     const body = (await request.json().catch(() => ({}))) as {
       email?: string;
       password?: string;
+      bootstrapToken?: string;
     };
     const email = body.email?.trim().toLowerCase() ?? '';
     const password = body.password ?? '';
@@ -41,6 +51,12 @@ export async function POST(request: Request) {
     }
 
     const total = await adminCount();
+    if (total === 0 && !validBootstrapToken(body.bootstrapToken ?? '')) {
+      return NextResponse.json(
+        { error: 'Le code de bootstrap administrateur est requis.' },
+        { status: 403 }
+      );
+    }
     if (total > 0) {
       const requester = await getSessionAdmin();
       if (!requester) {

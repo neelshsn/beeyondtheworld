@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { BeeButton } from '@/components/primitives/bee-button';
 
@@ -43,6 +43,11 @@ type StepDefinition =
     };
 
 type StepAnswer = string | string[] | Record<string, string>;
+type SubmissionState =
+  | { status: 'idle' }
+  | { status: 'submitting' }
+  | { status: 'success'; reference: string }
+  | { status: 'error'; message: string };
 
 const ICONO_BASE = '/assets/icones/icono';
 
@@ -200,6 +205,14 @@ export function ContactLanding() {
   const [selectedAudience, setSelectedAudience] = useState<AudienceKey | null>(null);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, StepAnswer>>({});
+  const [consentGiven, setConsentGiven] = useState(false);
+  const [honeytoken, setHoneytoken] = useState('');
+  const [idempotencyKey, setIdempotencyKey] = useState('');
+  const [submission, setSubmission] = useState<SubmissionState>({ status: 'idle' });
+
+  useEffect(() => {
+    setIdempotencyKey(crypto.randomUUID());
+  }, []);
 
   const currentSteps = useMemo(
     () => (selectedAudience ? AUDIENCE_STEPS[selectedAudience] : []),
@@ -246,6 +259,9 @@ export function ContactLanding() {
 
     setCurrentStepIndex(0);
     setAnswers({});
+    setConsentGiven(false);
+    setSubmission({ status: 'idle' });
+    setIdempotencyKey(crypto.randomUUID());
     setStage('form');
   };
 
@@ -270,6 +286,39 @@ export function ContactLanding() {
     }
 
     setStage('audience');
+  };
+
+  const submitContact = async () => {
+    if (!selectedAudience || !currentStep || !isCurrentStepComplete || !consentGiven) return;
+
+    setSubmission({ status: 'submitting' });
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'contact',
+          audience: selectedAudience,
+          answers,
+          consent: consentGiven,
+          honeytoken,
+          idempotencyKey,
+        }),
+      });
+      const payload = (await response.json().catch(() => ({}))) as {
+        reference?: string;
+        error?: string;
+      };
+      if (!response.ok || !payload.reference) {
+        throw new Error(payload.error ?? 'Your request could not be saved. Please try again.');
+      }
+      setSubmission({ status: 'success', reference: payload.reference });
+    } catch (cause) {
+      setSubmission({
+        status: 'error',
+        message: cause instanceof Error ? cause.message : 'Your request could not be saved.',
+      });
+    }
   };
 
   const isCurrentStepComplete = useMemo(() => {
@@ -301,6 +350,8 @@ export function ContactLanding() {
       return typeof value === 'string' && value.trim().length > 0;
     });
   }, [answers, currentStep]);
+
+  const isFinalStep = currentStepIndex === currentSteps.length - 1;
 
   return (
     <main className="relative h-[100svh] overflow-hidden bg-[#d8ccb8] text-white">
@@ -725,12 +776,45 @@ export function ContactLanding() {
                                   className="placeholder:text-white/42 h-16 rounded-none border border-[rgba(255,244,227,0.12)] bg-[rgba(18,12,9,0.16)] px-5 text-center text-base text-white outline-none transition duration-300 focus:border-[#f4bb52] focus:bg-[rgba(18,12,9,0.22)]"
                                 />
                               </label>
+                              <label className="mt-5 flex items-start gap-3 text-left text-xs leading-relaxed text-white/70">
+                                <input
+                                  type="checkbox"
+                                  checked={consentGiven}
+                                  onChange={(event) => setConsentGiven(event.target.checked)}
+                                  className="mt-0.5 size-4 accent-[#f4bb52]"
+                                />
+                                <span>
+                                  I agree to be contacted by Beeyondtheworld about this request.
+                                </span>
+                              </label>
+                              <label className="absolute -left-[9999px]" aria-hidden>
+                                Website
+                                <input
+                                  type="text"
+                                  tabIndex={-1}
+                                  autoComplete="off"
+                                  value={honeytoken}
+                                  onChange={(event) => setHoneytoken(event.target.value)}
+                                />
+                              </label>
                             </div>
                           ) : null}
                         </motion.div>
                       </AnimatePresence>
                     </div>
                   </div>
+
+                  {submission.status === 'success' ? (
+                    <p className="mx-auto mb-4 w-full max-w-[44rem] text-center text-sm text-[#f4bb52]">
+                      Request saved — reference {submission.reference}. Our team will be in touch
+                      soon.
+                    </p>
+                  ) : null}
+                  {submission.status === 'error' ? (
+                    <p className="mx-auto mb-4 w-full max-w-[44rem] text-center text-sm text-red-300">
+                      {submission.message}
+                    </p>
+                  ) : null}
 
                   <div className="mx-auto flex w-full max-w-[44rem] items-center justify-between gap-4">
                     <button
@@ -746,9 +830,12 @@ export function ContactLanding() {
                     </button>
                     <button
                       type="button"
-                      onClick={goToNextStep}
+                      onClick={() => (isFinalStep ? void submitContact() : goToNextStep())}
                       disabled={
-                        currentStepIndex === currentSteps.length - 1 || !isCurrentStepComplete
+                        !isCurrentStepComplete ||
+                        submission.status === 'submitting' ||
+                        submission.status === 'success' ||
+                        (isFinalStep && !consentGiven)
                       }
                       className={`${heroButtonClass} min-w-[152px] px-5 py-3 text-[0.66rem] uppercase tracking-[0.3em] [font-family:var(--font-adam)] disabled:cursor-not-allowed disabled:opacity-45`}
                     >
@@ -757,9 +844,11 @@ export function ContactLanding() {
                         className="pointer-events-none absolute inset-0 z-0 -translate-x-full bg-gradient-to-r from-transparent via-[#f6c452bf] to-transparent opacity-0 transition-transform duration-500 group-hover:translate-x-full group-hover:opacity-100"
                       />
                       <span className="relative z-10">
-                        {currentStepIndex === currentSteps.length - 1
-                          ? 'Meeting Ready'
-                          : 'Continue'}
+                        {submission.status === 'submitting'
+                          ? 'Saving...'
+                          : isFinalStep
+                            ? 'Send Request'
+                            : 'Continue'}
                       </span>
                     </button>
                   </div>

@@ -1,0 +1,22 @@
+CREATE TABLE IF NOT EXISTS "lead_submissions" (
+  "id" text PRIMARY KEY NOT NULL,
+  "reference" text NOT NULL UNIQUE,
+  "idempotency_key" text NOT NULL UNIQUE,
+  "kind" text NOT NULL,
+  "audience" text,
+  "name" text,
+  "email" text,
+  "phone" text,
+  "company" text,
+  "journey_slug" text,
+  "source_path" text NOT NULL,
+  "payload" jsonb DEFAULT '{}'::jsonb NOT NULL,
+  "consent_given" boolean NOT NULL,
+  "consent_at" timestamp NOT NULL,
+  "notification_status" text DEFAULT 'pending' NOT NULL,
+  "notification_attempts" integer DEFAULT 0 NOT NULL,
+  "notification_last_error" text,
+  "notified_at" timestamp,
+  "created_at" timestamp DEFAULT now() NOT NULL,
+  "updated_at" timestamp DEFAULT now() NOT NULL
+);

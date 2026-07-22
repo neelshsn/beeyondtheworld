@@ -3,7 +3,7 @@
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { CalendarDays, Check, HeartHandshake, Mail, Sparkles, Users, Waves } from 'lucide-react';
-import { FormEvent, useMemo, useState } from 'react';
+import { FormEvent, useEffect, useMemo, useState } from 'react';
 
 import { SiteArrowIcon } from '@/components/icons/site-arrow-icon';
 
@@ -61,7 +61,19 @@ const DEFAULT_STATE: FormState = {
 export function PhilippinesBookingForm() {
   const shouldReduceMotion = useReducedMotion();
   const [state, setState] = useState<FormState>(DEFAULT_STATE);
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [consentGiven, setConsentGiven] = useState(false);
+  const [honeytoken, setHoneytoken] = useState('');
+  const [idempotencyKey, setIdempotencyKey] = useState('');
+  const [submission, setSubmission] = useState<
+    | { status: 'idle' }
+    | { status: 'submitting' }
+    | { status: 'success'; reference: string }
+    | { status: 'error'; message: string }
+  >({ status: 'idle' });
+
+  useEffect(() => {
+    setIdempotencyKey(crypto.randomUUID());
+  }, []);
 
   const selectedFocus = useMemo(
     () => FOCUS_OPTIONS.filter((option) => state.focus.includes(option.id)),
@@ -90,10 +102,45 @@ export function PhilippinesBookingForm() {
     setState((previous) => ({ ...previous, [field]: value }));
   };
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setIsSubmitted(true);
-    setTimeout(() => setIsSubmitted(false), 3600);
+    if (!consentGiven || submission.status === 'submitting') return;
+
+    setSubmission({ status: 'submitting' });
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'journey_booking',
+          journeySlug: 'philippines',
+          company: state.marque,
+          name: state.contact,
+          email: state.email,
+          phone: state.phone,
+          timeframe: state.timeframe,
+          crewSize: state.crewSize,
+          focus: state.focus,
+          message: state.message,
+          consent: consentGiven,
+          honeytoken,
+          idempotencyKey,
+        }),
+      });
+      const payload = (await response.json().catch(() => ({}))) as {
+        reference?: string;
+        error?: string;
+      };
+      if (!response.ok || !payload.reference) {
+        throw new Error(payload.error ?? 'La demande n’a pas pu être sauvegardée.');
+      }
+      setSubmission({ status: 'success', reference: payload.reference });
+    } catch (cause) {
+      setSubmission({
+        status: 'error',
+        message: cause instanceof Error ? cause.message : 'La demande n’a pas pu être sauvegardée.',
+      });
+    }
   };
 
   return (
@@ -265,12 +312,38 @@ export function PhilippinesBookingForm() {
             </div>
           </label>
 
+          <label className="flex items-start gap-3 text-xs leading-relaxed text-foreground/65">
+            <input
+              type="checkbox"
+              checked={consentGiven}
+              onChange={(event) => setConsentGiven(event.target.checked)}
+              className="mt-0.5 size-4 accent-foreground"
+              required
+            />
+            <span>J’accepte d’être contacté par Beeyondtheworld au sujet de cette demande.</span>
+          </label>
+          <label className="absolute -left-[9999px]" aria-hidden>
+            Website
+            <input
+              type="text"
+              tabIndex={-1}
+              autoComplete="off"
+              value={honeytoken}
+              onChange={(event) => setHoneytoken(event.target.value)}
+            />
+          </label>
+
           <div className="flex flex-wrap items-center gap-4">
             <Button
               type="submit"
+              disabled={
+                !consentGiven ||
+                submission.status === 'submitting' ||
+                submission.status === 'success'
+              }
               className="inline-flex items-center gap-3 rounded-full border border-foreground/15 bg-foreground px-7 py-3 text-[11px] uppercase tracking-[0.4em] text-white shadow-[0_18px_45px_rgba(4,20,30,0.25)] transition hover:bg-foreground/90"
             >
-              Envoyer la demande
+              {submission.status === 'submitting' ? 'Sauvegarde...' : 'Envoyer la demande'}
               <SiteArrowIcon direction="right" className="size-4" />
             </Button>
             <span className="text-[11px] uppercase tracking-[0.34em] text-foreground/50">
@@ -279,7 +352,7 @@ export function PhilippinesBookingForm() {
           </div>
 
           <AnimatePresence>
-            {isSubmitted ? (
+            {submission.status === 'success' ? (
               <motion.p
                 key="submitted"
                 initial={shouldReduceMotion ? undefined : { opacity: 0, y: -8 }}
@@ -290,7 +363,18 @@ export function PhilippinesBookingForm() {
                 }
                 className="text-xs uppercase tracking-[0.38em] text-foreground"
               >
-                Merci ! Nous vous recontactons sous 24h pour verrouiller la feuille de route.
+                Demande sauvegardée — référence {submission.reference}. Nous vous recontactons
+                rapidement.
+              </motion.p>
+            ) : null}
+            {submission.status === 'error' ? (
+              <motion.p
+                key="submission-error"
+                initial={shouldReduceMotion ? undefined : { opacity: 0, y: -8 }}
+                animate={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
+                className="text-xs text-red-700"
+              >
+                {submission.message}
               </motion.p>
             ) : null}
           </AnimatePresence>

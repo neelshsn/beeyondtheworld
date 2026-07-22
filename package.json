@@ -12,7 +12,8 @@
     "format:fix": "prettier --write .",
     "typecheck": "tsc --noEmit",
     "prepare": "husky",
-    "test:unit": "vitest run"
+    "test:unit": "vitest run",
+    "db:migrate:leads": "node scripts/migrate-leads.mjs"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",

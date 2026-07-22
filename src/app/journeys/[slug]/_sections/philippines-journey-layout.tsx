@@ -14,6 +14,8 @@ import type { JourneyShowcase } from '@/data/showcases';
 import { getSustainableImpactPdf } from '@/data/sustainable-impact';
 import type { JourneySeason } from '@/types/journey';
 
+import { PhilippinesBookingForm } from './philippines-booking-form';
+
 type IndiaLocation = {
   id: string;
   title: string;
@@ -598,6 +600,7 @@ export function PhilippinesJourneyLayout({ journey }: { journey: JourneyShowcase
   const [isMobileViewport, setIsMobileViewport] = useState(false);
   const [useLiteEffects, setUseLiteEffects] = useState(false);
   const [activeSection, setActiveSection] = useState<LocationSectionValue>('locations');
+  const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [mobileMenuIndex, setMobileMenuIndex] = useState(() => {
     const locationIndex = MOBILE_MENU_OPTIONS.findIndex((option) => option.value === 'locations');
     return locationIndex >= 0 ? locationIndex : 0;
@@ -632,6 +635,15 @@ export function PhilippinesJourneyLayout({ journey }: { journey: JourneyShowcase
       liteQuery.removeEventListener('change', onChange);
     };
   }, []);
+
+  useEffect(() => {
+    if (!isBookingOpen) return;
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setIsBookingOpen(false);
+    };
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, [isBookingOpen]);
 
   const renderedLocations = useMemo(() => buildRenderedLocationSlides(INDIA_LOCATIONS), []);
   const renderedIdsSignature = useMemo(
@@ -1374,7 +1386,42 @@ export function PhilippinesJourneyLayout({ journey }: { journey: JourneyShowcase
               />
             </div>
           </div>
+          <div className="pointer-events-none absolute bottom-6 left-5 z-50 sm:bottom-8 sm:left-7 lg:bottom-10 lg:left-12">
+            <button
+              type="button"
+              onClick={() => setIsBookingOpen(true)}
+              className="pointer-events-auto border border-white/45 bg-black/35 px-5 py-3 font-display text-[10px] uppercase tracking-[0.22em] text-white backdrop-blur transition hover:border-[#f6c452] hover:text-[#f6c452] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f6c452]/60"
+            >
+              Book this journey
+            </button>
+          </div>
         </motion.div>
+      </AnimatePresence>
+      <AnimatePresence>
+        {isBookingOpen ? (
+          <motion.div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Book the Philippines journey"
+            className="fixed inset-0 z-[90] overflow-y-auto bg-[#061621]/95 px-4 py-16 backdrop-blur-md sm:px-8"
+            initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={prefersReducedMotion ? { opacity: 1 } : { opacity: 0 }}
+            transition={{ duration: prefersReducedMotion ? 0.1 : 0.3 }}
+          >
+            <button
+              type="button"
+              onClick={() => setIsBookingOpen(false)}
+              className="fixed right-5 top-5 z-[100] border border-white/35 bg-black/35 px-4 py-2 font-display text-[10px] uppercase tracking-[0.2em] text-white transition hover:border-[#f6c452] hover:text-[#f6c452] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f6c452]/60"
+              aria-label="Close booking form"
+            >
+              Close
+            </button>
+            <div className="mx-auto w-full max-w-6xl">
+              <PhilippinesBookingForm />
+            </div>
+          </motion.div>
+        ) : null}
       </AnimatePresence>
     </section>
   );

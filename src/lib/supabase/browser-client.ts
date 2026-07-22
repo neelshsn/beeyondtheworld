@@ -3,29 +3,20 @@
 import { createBrowserClient } from '@supabase/ssr';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
-import { createDemoBrowserClient, isDemoMode } from './demo-client';
+import { createUnavailableBrowserClient, isSupabaseConfigured } from './unavailable-client';
 
 let browserClient: SupabaseClient | null = null;
 
 export function getSupabaseBrowserClient() {
-  if (isDemoMode()) {
-    if (!browserClient) {
-      browserClient = createDemoBrowserClient();
-    }
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!isSupabaseConfigured() || !supabaseUrl || !supabaseAnonKey) {
+    if (!browserClient) browserClient = createUnavailableBrowserClient();
     return browserClient;
   }
 
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-    throw new Error(
-      'Supabase environment variables are missing. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.'
-    );
-  }
-
   if (!browserClient) {
-    browserClient = createBrowserClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-    );
+    browserClient = createBrowserClient(supabaseUrl, supabaseAnonKey);
   }
 
   return browserClient;
