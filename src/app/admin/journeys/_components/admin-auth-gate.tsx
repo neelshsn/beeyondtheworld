@@ -207,8 +207,8 @@ export function AdminAuthGate({ children }: { children: ReactNode }) {
 
   return (
     <div className="relative">
-      <div className="absolute right-6 top-6 z-10 flex items-center gap-3 text-xs text-white/60">
-        <span>{status.email}</span>
+      <div className="absolute right-6 top-20 z-10 flex items-center gap-3 text-xs text-white/60">
+        <span className="hidden sm:inline">{status.email}</span>
         <Button size="sm" variant="ghost" onClick={logout} className="text-white/70">
           <LogOut className="size-4" /> Déconnexion
         </Button>

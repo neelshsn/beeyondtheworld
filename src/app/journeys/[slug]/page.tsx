@@ -8,6 +8,7 @@ import { BeeButton } from '@/components/primitives/bee-button';
 import SplitText from '@/components/SplitText';
 import type { JourneyShowcase } from '@/data/showcases';
 import { journeyShowcases } from '@/data/showcases';
+import { getPublishedJourneyLocations } from '@/lib/cms/journey-locations';
 
 import { IndiaJourneyLayout } from './_sections/india-journey-layout';
 import { PhilippinesJourneyLayout } from './_sections/philippines-journey-layout';
@@ -22,9 +23,10 @@ type JourneyPageProps = {
   params: Promise<{ slug: string }>;
 };
 
-export function generateStaticParams() {
-  return journeyShowcases.map((journey) => ({ slug: journey.slug }));
-}
+// Les Tales sont éditables dans Neon : la page doit refléter chaque sauvegarde
+// sans attendre un nouveau déploiement.
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export async function generateMetadata({ params }: JourneyPageProps): Promise<Metadata> {
   const { slug } = await params;
@@ -101,37 +103,38 @@ export async function generateMetadata({ params }: JourneyPageProps): Promise<Me
 export default async function JourneyPage({ params }: JourneyPageProps) {
   const { slug } = await params;
   const journey = journeyShowcases.find((item) => item.slug === slug) ?? notFound();
+  const cmsLocations = await getPublishedJourneyLocations(slug);
 
   if (slug === 'philippines') {
-    return <PhilippinesJourneyLayout journey={journey} />;
+    return <PhilippinesJourneyLayout journey={journey} cmsLocations={cmsLocations} />;
   }
 
   if (slug === 'thailand') {
-    return <ThailandJourneyLayout journey={journey} />;
+    return <ThailandJourneyLayout journey={journey} cmsLocations={cmsLocations} />;
   }
 
   if (slug === 'azores') {
-    return <AzoresJourneyLayout journey={journey} />;
+    return <AzoresJourneyLayout journey={journey} cmsLocations={cmsLocations} />;
   }
 
   if (slug === 'france') {
-    return <FranceJourneyLayout journey={journey} />;
+    return <FranceJourneyLayout journey={journey} cmsLocations={cmsLocations} />;
   }
 
   if (slug === 'morocco') {
-    return <MoroccoJourneyLayout journey={journey} />;
+    return <MoroccoJourneyLayout journey={journey} cmsLocations={cmsLocations} />;
   }
 
   if (slug === 'italy') {
-    return <ItalyJourneyLayout journey={journey} />;
+    return <ItalyJourneyLayout journey={journey} cmsLocations={cmsLocations} />;
   }
 
   if (slug === 'balearic') {
-    return <BalearicJourneyLayout journey={journey} />;
+    return <BalearicJourneyLayout journey={journey} cmsLocations={cmsLocations} />;
   }
 
   if (slug === 'india-january-2026') {
-    return <IndiaJourneyLayout journey={journey} />;
+    return <IndiaJourneyLayout journey={journey} cmsLocations={cmsLocations} />;
   }
 
   return <DefaultJourneyLayout journey={journey} />;

@@ -12,7 +12,9 @@ import { usePrefersReducedMotion } from '@/app/concept/_hooks/use-prefers-reduce
 import { SiteArrowIcon } from '@/components/icons/site-arrow-icon';
 import type { JourneyShowcase } from '@/data/showcases';
 import { getSustainableImpactPdf } from '@/data/sustainable-impact';
+import { resolveJourneyLocationContent } from '@/lib/cms/resolve-journey-locations';
 import type { JourneySeason } from '@/types/journey';
+import type { CmsJourneyLocation } from '@/types/journey-location';
 
 type IndiaLocation = {
   id: string;
@@ -93,7 +95,7 @@ const JOURNEY_SEASON_ICONS: Record<
   },
 };
 
-const INDIA_LOCATIONS: IndiaLocation[] = [
+const FALLBACK_LOCATIONS: IndiaLocation[] = [
   {
     id: 'india-location-rajasthan',
     title: 'Rajasthan',
@@ -221,7 +223,7 @@ const CSR_CATEGORY_ARC_CONFIG: Record<
   },
 };
 
-const LOCATION_STORIES: IndiaLocationStory[] = [
+const FALLBACK_LOCATION_STORIES: IndiaLocationStory[] = [
   {
     id: 'india-story-rajasthan',
     locationId: 'india-location-rajasthan',
@@ -408,10 +410,13 @@ function getLocationBackgroundSource(location: IndiaLocation) {
   return location.backgroundVideo ?? INDIA_BACKGROUND_VIDEO;
 }
 
-function resolvePreferredEntryLocationId(state: VideoContinuityState | null) {
+function resolvePreferredEntryLocationId(
+  state: VideoContinuityState | null,
+  availableLocations: IndiaLocation[] = FALLBACK_LOCATIONS
+) {
   if (!state?.src) return null;
 
-  const exactBackgroundMatch = INDIA_LOCATIONS.find(
+  const exactBackgroundMatch = availableLocations.find(
     (location) => getLocationBackgroundSource(location) === state.src
   );
   if (exactBackgroundMatch) {
@@ -420,7 +425,7 @@ function resolvePreferredEntryLocationId(state: VideoContinuityState | null) {
 
   if (state.season) {
     const season = state.season;
-    const seasonFallback = INDIA_LOCATIONS.find((location) => location.seasons.includes(season));
+    const seasonFallback = availableLocations.find((location) => location.seasons.includes(season));
     if (seasonFallback) {
       return seasonFallback.id;
     }
@@ -429,7 +434,10 @@ function resolvePreferredEntryLocationId(state: VideoContinuityState | null) {
   return null;
 }
 
-function readPreferredEntryLocationId(journeySlug: string) {
+function readPreferredEntryLocationId(
+  journeySlug: string,
+  availableLocations: IndiaLocation[] = FALLBACK_LOCATIONS
+) {
   if (typeof window === 'undefined') return null;
 
   try {
@@ -437,7 +445,7 @@ function readPreferredEntryLocationId(journeySlug: string) {
     if (!rawState) return null;
     const state = JSON.parse(rawState) as VideoContinuityState;
     if (state.slug !== journeySlug) return null;
-    return resolvePreferredEntryLocationId(state);
+    return resolvePreferredEntryLocationId(state, availableLocations);
   } catch {
     return null;
   }
@@ -588,9 +596,20 @@ function getCardFadeProfile(forwardOffset: number, isMobileViewport: boolean) {
   };
 }
 
-export function IndiaJourneyLayout({ journey }: { journey: JourneyShowcase }) {
+export function IndiaJourneyLayout({
+  journey,
+  cmsLocations,
+}: {
+  journey: JourneyShowcase;
+  cmsLocations: CmsJourneyLocation[];
+}) {
   useBodyScrollLock();
 
+  const { locations: INDIA_LOCATIONS, stories: LOCATION_STORIES } = useMemo(
+    () =>
+      resolveJourneyLocationContent(cmsLocations, FALLBACK_LOCATIONS, FALLBACK_LOCATION_STORIES),
+    [cmsLocations]
+  );
   const router = useRouter();
   const prefersReducedMotion = usePrefersReducedMotion();
   const [isMobileViewport, setIsMobileViewport] = useState(false);
@@ -631,7 +650,10 @@ export function IndiaJourneyLayout({ journey }: { journey: JourneyShowcase }) {
     };
   }, []);
 
-  const renderedLocations = useMemo(() => buildRenderedLocationSlides(INDIA_LOCATIONS), []);
+  const renderedLocations = useMemo(
+    () => buildRenderedLocationSlides(INDIA_LOCATIONS),
+    [INDIA_LOCATIONS]
+  );
   const renderedIdsSignature = useMemo(
     () => renderedLocations.map((location) => location.renderKey).join('|'),
     [renderedLocations]
@@ -655,14 +677,14 @@ export function IndiaJourneyLayout({ journey }: { journey: JourneyShowcase }) {
     centeredCsrStartIndex + CSR_CATEGORY_START_INDEX.environment;
   const [preferredEntryLocationId, setPreferredEntryLocationId] = useState<
     IndiaLocation['id'] | null
-  >(() => readPreferredEntryLocationId(journey.slug));
+  >(() => readPreferredEntryLocationId(journey.slug, INDIA_LOCATIONS));
   const preferredEntrySourceIndex = useMemo(() => {
     if (!preferredEntryLocationId) return 0;
     const matchIndex = INDIA_LOCATIONS.findIndex(
       (location) => location.id === preferredEntryLocationId
     );
     return matchIndex >= 0 ? matchIndex : 0;
-  }, [preferredEntryLocationId]);
+  }, [INDIA_LOCATIONS, preferredEntryLocationId]);
   const targetStartIndex = centeredStartIndex + preferredEntrySourceIndex;
 
   const [emblaRef, emblaApi] = useEmblaCarousel({
@@ -713,7 +735,7 @@ export function IndiaJourneyLayout({ journey }: { journey: JourneyShowcase }) {
   const activeCsrCard = activeRenderedCsrCard?.card ?? null;
   const activeLocationStory = useMemo(
     () => LOCATION_STORIES.find((story) => story.id === activeLocationStoryId) ?? null,
-    [activeLocationStoryId]
+    [LOCATION_STORIES, activeLocationStoryId]
   );
   const activeMobileMenuOption = mobileMenuOptions[mobileMenuIndex] ?? mobileMenuOptions[0];
   const isLocationsSection = activeSection === 'locations';
@@ -743,11 +765,11 @@ export function IndiaJourneyLayout({ journey }: { journey: JourneyShowcase }) {
       const state = JSON.parse(rawState) as VideoContinuityState;
       if (state.slug !== journey.slug) return;
 
-      setPreferredEntryLocationId(resolvePreferredEntryLocationId(state));
+      setPreferredEntryLocationId(resolvePreferredEntryLocationId(state, INDIA_LOCATIONS));
     } catch {
       // Ignore malformed continuity state and keep the default entry location.
     }
-  }, [journey.slug]);
+  }, [INDIA_LOCATIONS, journey.slug]);
 
   useEffect(() => {
     if (!emblaApi) return;
@@ -926,12 +948,15 @@ export function IndiaJourneyLayout({ journey }: { journey: JourneyShowcase }) {
     [centeredCsrStartIndex, csrEmblaApi]
   );
 
-  const openLocationStory = useCallback((locationId: IndiaLocation['id']) => {
-    const story = LOCATION_STORIES.find((item) => item.locationId === locationId);
-    if (story) {
-      setActiveLocationStoryId(story.id);
-    }
-  }, []);
+  const openLocationStory = useCallback(
+    (locationId: IndiaLocation['id']) => {
+      const story = LOCATION_STORIES.find((item) => item.locationId === locationId);
+      if (story) {
+        setActiveLocationStoryId(story.id);
+      }
+    },
+    [LOCATION_STORIES]
+  );
 
   const closeLocationStory = useCallback(() => {
     setActiveLocationStoryId(null);
@@ -950,7 +975,7 @@ export function IndiaJourneyLayout({ journey }: { journey: JourneyShowcase }) {
       (story) => story.locationId === activeLocationStory.nextLocationId
     );
     setActiveLocationStoryId(nextStory?.id ?? null);
-  }, [activeLocationStory, centeredStartIndex, emblaApi]);
+  }, [INDIA_LOCATIONS, LOCATION_STORIES, activeLocationStory, centeredStartIndex, emblaApi]);
 
   const cycleMobileMenu = useCallback(
     (direction: 1 | -1) => {
@@ -1089,7 +1114,7 @@ export function IndiaJourneyLayout({ journey }: { journey: JourneyShowcase }) {
     if (activeLocationStory.locationId !== currentLocation.id) {
       setActiveLocationStoryId(null);
     }
-  }, [activeLocationStory, currentLocation]);
+  }, [LOCATION_STORIES, activeLocationStory, currentLocation]);
 
   useEffect(() => {
     if (!activeCsrDetailId || !activeCsrCard) return;
