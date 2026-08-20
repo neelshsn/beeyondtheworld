@@ -230,10 +230,14 @@ function filterCampaigns(data: Campaign[], season: SeasonFilterValue) {
 
 function buildRenderedCampaignSlides(data: Campaign[]): RenderedCampaignSlide[] {
   if (!data.length) return [];
+  if (data.length === 1) {
+    return [{ campaign: data[0], sourceIndex: 0, renderKey: `${data[0].id}-0` }];
+  }
 
-  // Build several cycles so we can keep re-centering the viewport and
-  // preserve an effectively infinite loop for every filter state.
-  const repeatCycles = Math.max(7, Math.ceil(18 / data.length));
+  // Three cycles are enough to keep one recentering buffer on each side.
+  // Keep roughly 18 slides for smaller filters without multiplying a larger
+  // campaign catalogue into dozens of image, logo and season-icon clones.
+  const repeatCycles = Math.max(3, Math.ceil(18 / data.length));
   const targetCount = data.length * repeatCycles;
 
   return Array.from({ length: targetCount }, (_, index) => {
