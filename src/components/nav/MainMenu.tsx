@@ -8,7 +8,14 @@ import * as React from 'react';
 
 import { MenuLinks } from '@/components/nav/MenuLinks';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Sheet, SheetClose, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet';
 import { socialLinks } from '@/config/socials';
 import { cn } from '@/lib/utils';
 
@@ -65,6 +72,9 @@ export function MainMenu() {
           className="w-[96vw] max-w-[836px] border-l border-[rgba(255,210,170,0.28)] bg-[linear-gradient(137deg,rgba(20,12,8,0.82)_0%,rgba(45,28,18,0.78)_42%,rgba(86,47,24,0.8)_100%)] px-8 pb-12 pt-14 font-menu text-[rgba(255,240,225,0.92)] shadow-[0_45px_160px_-70px_rgba(16,10,6,0.9)] backdrop-blur-2xl sm:w-[77vw] md:px-14 lg:w-[60vw] xl:w-[55vw]"
         >
           <SheetTitle className="sr-only">Primary navigation</SheetTitle>
+          <SheetDescription className="sr-only">
+            Navigate to the main Beeyondtheworld platform sections.
+          </SheetDescription>
           <div className="flex h-full flex-col">
             <div className="flex justify-end">
               <SheetClose asChild>

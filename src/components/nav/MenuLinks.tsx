@@ -66,6 +66,7 @@ export function MenuLinks({ isOpen, onNavigate }: MenuLinksProps) {
                   <Link
                     href={item.href}
                     prefetch
+                    aria-label={item.label}
                     aria-current={isActive ? 'page' : undefined}
                     onClick={handleNavigate}
                     className={cn(
