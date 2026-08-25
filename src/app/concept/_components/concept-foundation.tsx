@@ -1,7 +1,6 @@
 'use client';
 
 import { SmartVideo } from '@/components/primitives/smart-video';
-import { SiteArrowIcon } from '@/components/icons/site-arrow-icon';
 
 import {
   conceptNodes,
@@ -824,17 +823,24 @@ function NavArrow({
       tabIndex={hidden ? -1 : undefined}
       onClick={onClick}
       disabled={hidden}
-      className={`group pointer-events-auto flex h-12 w-12 items-center justify-center text-white transition hover:text-[#f4bb52] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 sm:h-14 sm:w-14 ${
+      className={`group pointer-events-auto flex h-14 w-20 items-center justify-center transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 sm:h-16 sm:w-28 ${
         hidden ? 'invisible' : ''
       }`}
       style={{ transitionTimingFunction: 'var(--bee-ease)' }}
     >
-      <SiteArrowIcon
-        direction={direction}
-        className={`h-6 w-6 !scale-[1.5] transition-colors duration-300 sm:translate-x-0 sm:!scale-[5] ${
-          direction === 'left' ? '-translate-x-5' : 'translate-x-5'
+      <span
+        className={`relative block h-10 w-20 transition duration-500 group-hover:scale-105 sm:h-12 sm:w-24 ${
+          direction === 'left' ? 'rotate-180' : ''
         }`}
-      />
+      >
+        <Image
+          src="/assets/icones/feedbacks/site-arrow.svg"
+          alt=""
+          fill
+          sizes="96px"
+          className="object-contain"
+        />
+      </span>
     </button>
   );
 }

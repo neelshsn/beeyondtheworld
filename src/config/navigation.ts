@@ -19,7 +19,7 @@ export const mainNav = [
     labelKey: 'navigation.journeys',
     href: '/journeys',
     index: '14',
-    iconSrc: '/assets/icones/Ico Gold BEE-14.svg',
+    iconSrc: '/assets/icones/feedbacks/journeys-flower.svg',
   },
   {
     label: 'Campaigns',

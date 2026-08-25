@@ -30,11 +30,11 @@ export function HomeConceptPanel() {
       <div className="relative flex h-full items-center justify-center px-8">
         <p
           data-animate-text
-          className="max-w-[90vw] text-center font-script text-[clamp(1.6rem,3vw,3rem)] lowercase leading-[1.5] tracking-[0.02em] text-white/90 lg:whitespace-nowrap"
+          className="max-w-[90vw] text-center font-script text-[clamp(1.6rem,3vw,3rem)] leading-[1.5] tracking-[0.02em] text-white/90 lg:whitespace-nowrap"
         >
           {/* T-014 : retour à la ligne mobile entre « sustainable » et « worldwide » */}
-          Visual tales that support a sustainable
-          <br className="lg:hidden" /> worldwide development
+          Visual Tales That Support a Sustainable
+          <br className="lg:hidden" /> Worldwide Development
         </p>
       </div>
 

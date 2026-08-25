@@ -1,6 +1,7 @@
 'use client';
 
 import { gsap } from 'gsap';
+import Image from 'next/image';
 import { useCallback, useEffect, useRef } from 'react';
 
 import { HomeHeroPanel } from './home-hero-panel';
@@ -349,6 +350,17 @@ export default function HomeExperience({ coCreateHref }: HomeExperienceProps) {
        T-009 : h-[100dvh] suit le viewport dynamique mobile (barre d'URL) pour que
        le fond beige du layout n'apparaisse plus en bande sous les panels. */
     <div ref={containerRef} className="home-panel-stack h-[100dvh] bg-[#040301]">
+      <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+        <Image
+          src="/assets/home/kenya-transition.jpg"
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover"
+        />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(4,3,1,0.18),rgba(4,3,1,0.36))]" />
+      </div>
       {/* Panel 1: Hero */}
       <div data-panel style={{ zIndex: 1 }}>
         <HomeHeroPanel />

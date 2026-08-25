@@ -40,9 +40,10 @@ export function HomeHeroPanel() {
 
           <p
             data-animate-text
-            className="text-white/86 mt-5 max-w-3xl font-display text-[clamp(0.58rem,0.78vw,0.72rem)] uppercase leading-[1.65] tracking-[0.28em]"
+            className="text-white/92 mt-5 max-w-3xl font-menu text-[clamp(0.78rem,1.35vw,1.25rem)] uppercase leading-[1.28] tracking-[0.065em]"
           >
-            Pioneering creative model for a sustainable worldwide development
+            PIONEERING CREATIVE MODEL FOR
+            <br />A SUSTAINABLE WORLDWIDE DEVELOPMENT
           </p>
 
           {/* Description — Avenir */}

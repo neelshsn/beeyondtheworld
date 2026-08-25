@@ -16,7 +16,7 @@ import type { CampaignShowcase, ShowcaseMedia } from '@/data/showcases';
 import { formatCampaignSeason } from '@/lib/format-campaign-season';
 import type { Campaign } from '@/types/campaign';
 
-import { VeganboostStoryExperience } from './veganboost-story-experience';
+import { CampaignStoryExperience } from './campaign-story-experience';
 
 type MediaFilter = 'all' | 'image' | 'video';
 type MediaOption = {
@@ -141,14 +141,10 @@ export function CampaignDetailExperience({
   campaign: CampaignShowcase;
   meta: Campaign | null;
 }) {
-  if (campaign.slug === 'veganboost-greece') {
-    return <VeganboostStoryExperience />;
-  }
-
-  return <CampaignGalleryExperience campaign={campaign} meta={meta} />;
+  return <CampaignStoryExperience campaign={campaign} meta={meta} />;
 }
 
-function CampaignGalleryExperience({
+export function CampaignGalleryExperience({
   campaign,
   meta,
 }: {

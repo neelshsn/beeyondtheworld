@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { BeeButton } from '@/components/primitives/bee-button';
 
@@ -58,10 +58,10 @@ type SubmissionState =
 const ICONO_BASE = '/assets/icones/icono';
 
 const CONTACT_AUDIENCES: Array<{ key: AudienceKey; icon: string }> = [
-  { key: 'BRANDS', icon: `${ICONO_BASE}/ecosystem/brands.svg` },
+  { key: 'BRANDS', icon: '/assets/icones/feedbacks/community-brands.svg' },
   { key: 'AGENCIES', icon: `${ICONO_BASE}/ecosystem/agencies.svg` },
   { key: 'NJOS', icon: `${ICONO_BASE}/ecosystem/njos.svg` },
-  { key: 'MEDIAS', icon: `${ICONO_BASE}/ecosystem/distribution.svg` },
+  { key: 'MEDIAS', icon: '/assets/icones/feedbacks/community-media.svg' },
 ];
 
 const AUDIENCE_INTROS: Record<AudienceKey, { eyebrow: string; title: string; body: string }> = {
@@ -99,6 +99,7 @@ const SIGNATURE_WORLDS_STEP: StepDefinition = {
     { label: 'HERITAGE CITIES', icon: `${ICONO_BASE}/landscape/heritage-cities.svg` },
     { label: 'HIGHLAND REALMS', icon: `${ICONO_BASE}/landscape/highland-realms.svg` },
     { label: 'SLOW LIVING STORIES', icon: `${ICONO_BASE}/landscape/slow-living-stories.svg` },
+    { label: 'WILD IN THE TROPICS', icon: `${ICONO_BASE}/landscape/wild-in-the-tropics.svg` },
   ],
 };
 
@@ -204,6 +205,107 @@ const stageEase = [0.22, 1, 0.36, 1] as const;
 const audiencePanelMask = 'linear-gradient(to right, transparent 0px, black 132px, black 100%)';
 const stepperPanelMask = 'linear-gradient(to right, transparent 0px, black 132px, black 100%)';
 
+const CALENDAR_WEEKDAYS = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
+
+function toIsoDate(date: Date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+function GlassCalendar({ value, onChange }: { value: string; onChange: (value: string) => void }) {
+  const [viewDate, setViewDate] = useState(() => {
+    const parsed = value ? new Date(`${value}T12:00:00`) : new Date();
+    return Number.isNaN(parsed.getTime()) ? new Date() : parsed;
+  });
+
+  useEffect(() => {
+    if (!value) return;
+    const parsed = new Date(`${value}T12:00:00`);
+    if (!Number.isNaN(parsed.getTime())) setViewDate(parsed);
+  }, [value]);
+
+  const year = viewDate.getFullYear();
+  const month = viewDate.getMonth();
+  const firstWeekday = (new Date(year, month, 1).getDay() + 6) % 7;
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const monthLabel = new Intl.DateTimeFormat('en', {
+    month: 'long',
+    year: 'numeric',
+  }).format(new Date(year, month, 1));
+
+  return (
+    <div className="rounded-[1.75rem] border border-white/20 bg-[linear-gradient(145deg,rgba(255,255,255,0.16),rgba(255,255,255,0.055))] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.25),0_24px_70px_rgba(0,0,0,0.36)] backdrop-blur-2xl sm:p-5">
+      <div className="mb-4 flex items-center justify-between">
+        <button
+          type="button"
+          aria-label="Previous month"
+          onClick={() => setViewDate(new Date(year, month - 1, 1))}
+          className="flex h-9 w-12 items-center justify-center text-white/75 transition hover:text-[#f4bb52]"
+        >
+          <span className="relative block h-5 w-9 rotate-180">
+            <Image
+              src="/assets/icones/feedbacks/site-arrow.svg"
+              alt=""
+              fill
+              className="object-contain"
+            />
+          </span>
+        </button>
+        <p className="text-[0.7rem] uppercase tracking-[0.28em] text-white [font-family:var(--font-adam)]">
+          {monthLabel}
+        </p>
+        <button
+          type="button"
+          aria-label="Next month"
+          onClick={() => setViewDate(new Date(year, month + 1, 1))}
+          className="flex h-9 w-12 items-center justify-center text-white/75 transition hover:text-[#f4bb52]"
+        >
+          <span className="relative block h-5 w-9">
+            <Image
+              src="/assets/icones/feedbacks/site-arrow.svg"
+              alt=""
+              fill
+              className="object-contain"
+            />
+          </span>
+        </button>
+      </div>
+      <div className="grid grid-cols-7 gap-1 text-center">
+        {CALENDAR_WEEKDAYS.map((day) => (
+          <span key={day} className="pb-2 text-[0.48rem] tracking-[0.18em] text-white/50">
+            {day}
+          </span>
+        ))}
+        {Array.from({ length: 42 }, (_, index) => {
+          const day = index - firstWeekday + 1;
+          if (day < 1 || day > daysInMonth) return <span key={`blank-${index}`} />;
+          const date = new Date(year, month, day);
+          const iso = toIsoDate(date);
+          const selected = value === iso;
+
+          return (
+            <button
+              key={iso}
+              type="button"
+              onClick={() => onChange(iso)}
+              aria-pressed={selected}
+              className={`aspect-square rounded-full text-[0.72rem] transition duration-300 [font-family:var(--font-adam)] ${
+                selected
+                  ? 'border border-[#f4bb52]/75 bg-[#f4bb52]/20 text-[#f8d38f] shadow-[0_0_22px_rgba(244,187,82,0.25)]'
+                  : 'text-white/78 border border-transparent hover:border-[#f4bb52]/35 hover:bg-[#f4bb52]/10 hover:text-[#f4bb52]'
+              }`}
+            >
+              {day}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 export function ContactLanding({ initialAudience, journeySlug, onExit }: ContactLandingProps = {}) {
   const [stage, setStage] = useState<ContactStage>(initialAudience ? 'form' : 'entry');
   const [selectedAudience, setSelectedAudience] = useState<AudienceKey | null>(
@@ -215,10 +317,15 @@ export function ContactLanding({ initialAudience, journeySlug, onExit }: Contact
   const [honeytoken, setHoneytoken] = useState('');
   const [idempotencyKey, setIdempotencyKey] = useState('');
   const [submission, setSubmission] = useState<SubmissionState>({ status: 'idle' });
+  const formScrollRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     setIdempotencyKey(crypto.randomUUID());
   }, []);
+
+  useEffect(() => {
+    if (formScrollRef.current) formScrollRef.current.scrollTop = 0;
+  }, [currentStepIndex, stage]);
 
   const currentSteps = useMemo(
     () => (selectedAudience ? AUDIENCE_STEPS[selectedAudience] : []),
@@ -474,7 +581,7 @@ export function ContactLanding({ initialAudience, journeySlug, onExit }: Contact
                   </div>
 
                   <div className="mt-[14svh] flex flex-1 items-start justify-center lg:mt-[12svh] lg:flex-none lg:justify-center">
-                    <div className="grid w-full max-w-[38rem] grid-cols-2 gap-x-8 gap-y-9 sm:grid-cols-4 sm:gap-x-6">
+                    <div className="grid w-full max-w-[52rem] grid-cols-2 gap-x-8 gap-y-10 sm:grid-cols-4 sm:gap-x-8">
                       {CONTACT_AUDIENCES.map((audience, index) => {
                         const isSelected = selectedAudience === audience.key;
 
@@ -495,15 +602,25 @@ export function ContactLanding({ initialAudience, journeySlug, onExit }: Contact
                               onClick={() => setSelectedAudience(audience.key)}
                               className="group flex flex-col items-center gap-4"
                             >
-                              <span className="relative h-12 w-12 sm:h-14 sm:w-14">
+                              <span className="relative h-20 w-20 sm:h-24 sm:w-24 lg:h-28 lg:w-28">
                                 <Image
                                   src={audience.icon}
                                   alt=""
                                   fill
-                                  className={`object-contain transition duration-300 ${
+                                  className={`object-contain transition duration-700 ${
                                     isSelected
                                       ? 'scale-105 opacity-100'
-                                      : 'opacity-85 group-hover:scale-105 group-hover:opacity-100'
+                                      : 'scale-100 opacity-0 group-hover:scale-105 group-hover:opacity-100'
+                                  }`}
+                                />
+                                <Image
+                                  src={audience.icon}
+                                  alt=""
+                                  fill
+                                  className={`object-contain brightness-0 invert transition duration-700 ${
+                                    isSelected
+                                      ? 'scale-105 opacity-0'
+                                      : 'scale-100 opacity-100 group-hover:scale-105 group-hover:opacity-0'
                                   }`}
                                 />
                               </span>
@@ -588,10 +705,11 @@ export function ContactLanding({ initialAudience, journeySlug, onExit }: Contact
                 initial={{ opacity: 0, x: 34, filter: 'blur(12px)' }}
                 animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
                 transition={{ duration: 0.9, ease: stageEase }}
-                className="relative flex h-full min-h-0 flex-col overflow-hidden"
+                ref={formScrollRef}
+                className="relative flex h-full min-h-0 flex-col overflow-y-auto"
               >
                 <motion.div
-                  className="relative z-10 flex h-full min-h-0 w-full flex-col overflow-hidden border border-[rgba(255,244,227,0.18)] bg-[linear-gradient(180deg,rgba(8,8,8,0.32)_0%,rgba(12,12,12,0.24)_34%,rgba(16,16,16,0.2)_100%)] px-5 py-8 shadow-[inset_0_1px_0_rgba(255,255,255,0.12),inset_0_-1px_0_rgba(255,255,255,0.04),0_24px_80px_rgba(0,0,0,0.34)] backdrop-blur-[34px] sm:px-8 sm:py-10 lg:px-12 lg:py-10"
+                  className="relative z-10 flex min-h-full w-full flex-col border border-[rgba(255,244,227,0.18)] bg-[linear-gradient(180deg,rgba(8,8,8,0.32)_0%,rgba(12,12,12,0.24)_34%,rgba(16,16,16,0.2)_100%)] px-5 py-8 shadow-[inset_0_1px_0_rgba(255,255,255,0.12),inset_0_-1px_0_rgba(255,255,255,0.04),0_24px_80px_rgba(0,0,0,0.34)] backdrop-blur-[34px] sm:px-8 sm:py-10 lg:px-12 lg:py-10"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.75, ease: stageEase }}
@@ -620,9 +738,9 @@ export function ContactLanding({ initialAudience, journeySlug, onExit }: Contact
                     </div>
 
                     <div className="relative mx-auto h-10 w-full max-w-[28rem]">
-                      <div className="absolute left-0 right-0 top-1/2 h-[3px] -translate-y-1/2 rounded-full bg-white/70" />
+                      <div className="absolute left-0 right-0 top-1/2 h-px -translate-y-1/2 bg-white/55" />
                       <motion.div
-                        className="absolute left-0 top-1/2 h-[3px] -translate-y-1/2 rounded-full bg-[#f4bb52]"
+                        className="absolute left-0 top-1/2 h-px -translate-y-1/2 bg-[#f4bb52] shadow-[0_0_12px_rgba(244,187,82,0.55)]"
                         animate={{ width: `${Math.max(progress * 100, 0)}%` }}
                         transition={{ duration: 0.55, ease: stageEase }}
                       />
@@ -685,27 +803,45 @@ export function ContactLanding({ initialAudience, journeySlug, onExit }: Contact
                                     key={option.label}
                                     type="button"
                                     onClick={() => setChoiceAnswer(currentStep, option.label)}
-                                    className={`group flex min-h-[4.25rem] flex-col items-center justify-center gap-3 rounded-none border px-4 py-4 text-center text-[0.74rem] uppercase tracking-[0.24em] transition duration-300 [font-family:var(--font-adam)] sm:text-[0.82rem] ${
+                                    className={`group relative flex min-h-[9rem] flex-col items-center justify-center gap-4 px-3 pb-5 pt-2 text-center text-[0.72rem] uppercase tracking-[0.24em] transition duration-500 [font-family:var(--font-adam)] sm:min-h-[11rem] sm:text-[0.82rem] ${
                                       isSelected
-                                        ? 'border-[#f4bb52] bg-[rgba(244,187,82,0.12)] text-white'
-                                        : 'text-white/92 border-transparent bg-[rgba(244,187,82,0.09)] hover:border-[rgba(255,244,227,0.14)] hover:bg-[rgba(244,187,82,0.13)]'
+                                        ? 'text-[#f4bb52]'
+                                        : 'text-white/92 hover:text-[#f4bb52]'
                                     }`}
                                   >
                                     {option.icon ? (
-                                      <span className="relative h-10 w-10 sm:h-11 sm:w-11">
+                                      <span className="relative h-20 w-20 sm:h-28 sm:w-28">
                                         <Image
                                           src={option.icon}
                                           alt=""
                                           fill
-                                          className={`object-contain transition duration-300 ${
+                                          className={`object-contain transition duration-700 ${
                                             isSelected
                                               ? 'scale-105 opacity-100'
-                                              : 'opacity-85 group-hover:scale-105 group-hover:opacity-100'
+                                              : 'scale-100 opacity-0 group-hover:scale-105 group-hover:opacity-100'
+                                          }`}
+                                        />
+                                        <Image
+                                          src={option.icon}
+                                          alt=""
+                                          fill
+                                          className={`object-contain brightness-0 invert transition duration-700 ${
+                                            isSelected
+                                              ? 'scale-105 opacity-0'
+                                              : 'scale-100 opacity-100 group-hover:scale-105 group-hover:opacity-0'
                                           }`}
                                         />
                                       </span>
                                     ) : null}
                                     <span>{option.label}</span>
+                                    <span
+                                      aria-hidden
+                                      className={`absolute inset-x-3 bottom-0 h-px origin-center bg-gradient-to-r from-transparent via-[#f4bb52] to-transparent transition-transform duration-500 ${
+                                        isSelected
+                                          ? 'scale-x-100'
+                                          : 'scale-x-0 group-hover:scale-x-100'
+                                      }`}
+                                    />
                                   </button>
                                 );
                               })}
@@ -729,7 +865,7 @@ export function ContactLanding({ initialAudience, journeySlug, onExit }: Contact
                                       setFieldAnswer(currentStep.id, field.id, event.target.value)
                                     }
                                     placeholder={field.placeholder}
-                                    className="placeholder:text-white/42 h-14 rounded-none border border-[rgba(255,244,227,0.12)] bg-[rgba(18,12,9,0.16)] px-4 text-sm text-white outline-none transition duration-300 focus:border-[#f4bb52] focus:bg-[rgba(18,12,9,0.22)]"
+                                    className="placeholder:text-white/42 h-14 rounded-none border-0 border-b border-white/35 bg-transparent px-1 text-sm text-white outline-none transition duration-300 focus:border-[#f4bb52]"
                                   />
                                 </label>
                               ))}
@@ -737,24 +873,22 @@ export function ContactLanding({ initialAudience, journeySlug, onExit }: Contact
                           ) : null}
 
                           {currentStep.kind === 'date' ? (
-                            <div className="mx-auto max-w-[24rem]">
-                              <label className="flex flex-col gap-3">
+                            <div className="mx-auto max-w-[26rem]">
+                              <div className="flex flex-col gap-3">
                                 <span className="text-center text-[0.62rem] uppercase tracking-[0.26em] text-white/70 [font-family:var(--font-adam)]">
                                   Meeting Date
                                 </span>
-                                <input
-                                  type="date"
+                                <GlassCalendar
                                   value={
                                     ((answers[currentStep.id] as
                                       | Record<string, string>
                                       | undefined) ?? {})['date'] ?? ''
                                   }
-                                  onChange={(event) =>
-                                    setFieldAnswer(currentStep.id, 'date', event.target.value)
+                                  onChange={(value) =>
+                                    setFieldAnswer(currentStep.id, 'date', value)
                                   }
-                                  className="h-16 rounded-none border border-[rgba(255,244,227,0.12)] bg-[rgba(18,12,9,0.16)] px-5 text-center text-base text-white outline-none transition duration-300 focus:border-[#f4bb52] focus:bg-[rgba(18,12,9,0.22)]"
                                 />
-                              </label>
+                              </div>
                               <label className="mt-4 flex flex-col gap-3">
                                 <span className="text-center text-[0.62rem] uppercase tracking-[0.26em] text-white/70 [font-family:var(--font-adam)]">
                                   Availability Time
@@ -769,7 +903,7 @@ export function ContactLanding({ initialAudience, journeySlug, onExit }: Contact
                                   onChange={(event) =>
                                     setFieldAnswer(currentStep.id, 'time', event.target.value)
                                   }
-                                  className="h-16 rounded-none border border-[rgba(255,244,227,0.12)] bg-[rgba(18,12,9,0.16)] px-5 text-center text-base text-white outline-none transition duration-300 focus:border-[#f4bb52] focus:bg-[rgba(18,12,9,0.22)]"
+                                  className="h-14 rounded-none border-0 border-b border-white/35 bg-transparent px-2 text-center text-base text-white outline-none transition duration-300 focus:border-[#f4bb52]"
                                 />
                               </label>
                               <label className="mt-4 flex flex-col gap-3">
@@ -787,7 +921,7 @@ export function ContactLanding({ initialAudience, journeySlug, onExit }: Contact
                                     setFieldAnswer(currentStep.id, 'whatsapp', event.target.value)
                                   }
                                   placeholder="+33 6 12 34 56 78"
-                                  className="placeholder:text-white/42 h-16 rounded-none border border-[rgba(255,244,227,0.12)] bg-[rgba(18,12,9,0.16)] px-5 text-center text-base text-white outline-none transition duration-300 focus:border-[#f4bb52] focus:bg-[rgba(18,12,9,0.22)]"
+                                  className="placeholder:text-white/42 h-14 rounded-none border-0 border-b border-white/35 bg-transparent px-2 text-center text-base text-white outline-none transition duration-300 focus:border-[#f4bb52]"
                                 />
                               </label>
                               <label className="mt-5 flex items-start gap-3 text-left text-xs leading-relaxed text-white/70">
