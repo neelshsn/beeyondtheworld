@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { X } from 'lucide-react';
 import Image from 'next/image';
 import * as React from 'react';
 
@@ -50,11 +49,11 @@ export function MainMenu() {
         >
           <span className="inline-flex items-center gap-2 font-display text-[10px] uppercase tracking-[0.4em] text-white">
             <Image
-              src="/assets/icones/feedbacks/site-navigation.svg"
+              src="/assets/icones/Ico Gold BEE-05.svg"
               alt=""
-              width={22}
-              height={22}
-              className="h-[1.15rem] w-[1.15rem] object-contain"
+              width={24}
+              height={24}
+              className="h-5 w-5 object-contain"
               aria-hidden
             />
             <span>Menu</span>
@@ -83,7 +82,10 @@ export function MainMenu() {
                   aria-label="Close menu"
                   className="flex h-11 w-11 items-center justify-center rounded-full text-[rgba(255,240,225,0.8)] transition hover:text-[#f6c452] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f6c452]/60 focus-visible:ring-offset-0"
                 >
-                  <X className="h-5 w-5" aria-hidden />
+                  <span aria-hidden className="relative block h-5 w-5">
+                    <span className="absolute left-1/2 top-1/2 h-px w-6 -translate-x-1/2 -translate-y-1/2 rotate-45 bg-current" />
+                    <span className="absolute left-1/2 top-1/2 h-px w-6 -translate-x-1/2 -translate-y-1/2 -rotate-45 bg-current" />
+                  </span>
                 </button>
               </SheetClose>
             </div>

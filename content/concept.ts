@@ -1,4 +1,10 @@
-export type ConceptNodeId = 'coJourney' | 'csrLabel' | 'communities' | 'impacts';
+export type ConceptNodeId =
+  | 'coJourney'
+  | 'signatureJourney'
+  | 'investingBeyondCreation'
+  | 'csrLabel'
+  | 'communities'
+  | 'impacts';
 
 export type ConceptDetail = {
   icon: string;
@@ -16,7 +22,8 @@ export type ConceptBackground =
       src: string;
     };
 
-export type ConceptNode = {
+export type ConceptInteractiveNode = {
+  kind: 'interactive';
   id: ConceptNodeId;
   title: string;
   description: string;
@@ -26,6 +33,16 @@ export type ConceptNode = {
   background: ConceptBackground;
 };
 
+export type ConceptEditorialNode = {
+  kind: 'editorial';
+  id: ConceptNodeId;
+  title: string;
+  body: readonly string[];
+  layout: 'centered' | 'columns';
+};
+
+export type ConceptNode = ConceptInteractiveNode | ConceptEditorialNode;
+
 const defaultBackground: ConceptBackground = {
   type: 'video',
   src: '/assets/campaigns/almaaz-kenya/almaaz-kenya-story.mp4',
@@ -34,6 +51,7 @@ const defaultBackground: ConceptBackground = {
 
 export const conceptNodes: ConceptNode[] = [
   {
+    kind: 'interactive',
     id: 'coJourney',
     title: 'CO-JOURNEY',
     description:
@@ -57,6 +75,26 @@ export const conceptNodes: ConceptNode[] = [
     background: defaultBackground,
   },
   {
+    kind: 'editorial',
+    id: 'signatureJourney',
+    title: 'SIGNATURE JOURNEY',
+    layout: 'centered',
+    body: [
+      'SIGNATURE CREATION EMBODIES A NEW VISION OF LUXURY, WHERE EXCLUSIVITY AND RESPONSIBILITY EVOLVE AS ONE. EVERY BESPOKE PRODUCTION IS DESIGNED WITH COMPLETE CREATIVE FREEDOM WHILE CONTRIBUTING TO BEE’S LIVING ECOSYSTEM—CELEBRATING LOCAL CULTURES, EMPOWERING COMMUNITIES AND GENERATING MEASURABLE ENVIRONMENTAL AND SOCIAL IMPACT, ALL WITH ABSOLUTE DISCRETION. BECAUSE TRUE LUXURY IS NO LONGER DEFINED BY WHAT IT PRESERVES FOR ITSELF, BUT BY WHAT IT LEAVES BEHIND.',
+    ],
+  },
+  {
+    kind: 'editorial',
+    id: 'investingBeyondCreation',
+    title: 'Investing beyond Creation',
+    layout: 'columns',
+    body: [
+      "Every investment made through Signature Creation strengthens Bee's Creative & Impact Capital—a regenerative ecosystem designed to transform creative budgets into long-term value. The more brands invest in meaningful creation, the greater their contribution to preserving cultural heritage, empowering local communities, supporting artisans and accelerating environmental restoration initiatives around the world. Creation is no longer a cost. It becomes a catalyst for sustainable development.",
+      "Each Signature Creation expands the reach of Bee's ecosystem. By nurturing local collaborations, funding verified nonprofit initiatives and restoring the places that inspire every campaign, brands become active contributors to a circular model where creativity continuously gives back to the world. The greater the creative investment, the greater the collective impact, allowing every story to leave behind something far more valuable than content alone.",
+    ],
+  },
+  {
+    kind: 'interactive',
     id: 'csrLabel',
     title: 'CSR LABEL',
     description:
@@ -80,6 +118,7 @@ export const conceptNodes: ConceptNode[] = [
     background: defaultBackground,
   },
   {
+    kind: 'interactive',
     id: 'communities',
     title: 'WORLDWIDE COMMUNITIES',
     description:
@@ -99,6 +138,7 @@ export const conceptNodes: ConceptNode[] = [
     background: defaultBackground,
   },
   {
+    kind: 'interactive',
     id: 'impacts',
     title: 'IMPACTS',
     description:

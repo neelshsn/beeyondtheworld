@@ -772,6 +772,16 @@ export function JourneyShowcaseGallery({
       >
         <div className="relative flex flex-1 items-center justify-end">
           <div className="w-full px-2 pb-2 pt-20 sm:px-6 sm:pb-4 sm:pt-24 md:ml-auto md:w-[75%] md:pb-0 md:pl-10 md:pr-6 md:pt-0 lg:py-10 lg:pl-16 lg:pr-10 xl:pl-20">
+            <div className="mb-4 flex justify-center md:mb-6">
+              <BeeButton
+                size="md"
+                align="center"
+                active={season === 'all'}
+                onClick={() => applySeason('all')}
+              >
+                All Journeys
+              </BeeButton>
+            </div>
             {safeLength ? (
               <div
                 className="overflow-visible pb-8 sm:pb-10 md:overflow-hidden md:pb-0"

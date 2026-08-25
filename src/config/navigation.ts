@@ -12,7 +12,7 @@ export const mainNav = [
     labelKey: 'navigation.concept',
     href: '/concept',
     index: '02',
-    iconSrc: '/assets/icones/Ico Gold BEE-13.svg',
+    iconSrc: '/assets/icones/Ico Gold BEE-05.svg',
   },
   {
     label: 'Journeys',

@@ -11,6 +11,7 @@ import { useBodyScrollLock } from '@/app/concept/_hooks/use-body-scroll-lock';
 import { usePrefersReducedMotion } from '@/app/concept/_hooks/use-prefers-reduced-motion';
 import { SiteArrowIcon } from '@/components/icons/site-arrow-icon';
 import { campaigns } from '@/data/campaigns-carousel';
+import { formatCampaignSeason } from '@/lib/format-campaign-season';
 import type { Campaign } from '@/types/campaign';
 
 type SeasonFilterValue = 'all' | 'summer' | 'winter';
@@ -958,7 +959,7 @@ function JourneyHeadline({
               compact ? 'text-[0.48rem]' : 'text-[0.6rem] sm:text-[0.68rem]'
             )}
           >
-            {currentJourney.date}
+            {formatCampaignSeason(currentJourney.releaseWindow)}
           </p>
         </motion.div>
       ) : null}
@@ -1227,23 +1228,6 @@ function JourneyCard({
               : { duration: useLiteEffects ? 0.38 : 0.62, ease: [0.22, 1, 0.36, 1] }
           }
         />
-        <motion.div
-          className="pointer-events-none absolute inset-x-0 top-0 flex justify-center px-6 pt-6"
-          initial={false}
-          animate={isActive ? { y: 0, opacity: 1 } : { y: '-40%', opacity: 0 }}
-          whileHover={prefersReducedMotion ? undefined : { y: 0, opacity: 1 }}
-          transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-        >
-          <span className="relative flex h-16 w-full max-w-[220px] items-center justify-center">
-            <Image
-              src={journey.logo.src}
-              alt={journey.logo.alt}
-              fill
-              sizes="220px"
-              className="object-contain"
-            />
-          </span>
-        </motion.div>
         <div className="absolute inset-x-0 bottom-0 flex items-center justify-center px-6 pb-7">
           <SeasonIconRow
             seasons={journey.seasonTags ?? [journey.season]}

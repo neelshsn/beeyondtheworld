@@ -3,7 +3,11 @@
 import { SmartVideo } from '@/components/primitives/smart-video';
 import { SiteArrowIcon } from '@/components/icons/site-arrow-icon';
 
-import { conceptNodes, type ConceptNode } from '@content/concept';
+import {
+  conceptNodes,
+  type ConceptEditorialNode,
+  type ConceptInteractiveNode,
+} from '@content/concept';
 
 import Image from 'next/image';
 
@@ -61,9 +65,9 @@ export function ConceptFoundation() {
 
   const progressValue = totalNodes > 0 ? ((currentIndex + 1) / totalNodes) * 100 : 0;
 
-  const activeBackground =
-    conceptNodes[Math.max(0, Math.min(conceptNodes.length - 1, currentIndex))]?.background ??
-    conceptNodes[0]?.background;
+  const activeNode = conceptNodes[Math.max(0, Math.min(conceptNodes.length - 1, currentIndex))];
+
+  const activeBackground = activeNode?.kind === 'interactive' ? activeNode.background : undefined;
 
   const goToIndex = useCallback(
     (index: number, { smooth = true, preserveOpen = false }: ConceptGoToIndexOptions = {}) => {
@@ -292,6 +296,11 @@ export function ConceptFoundation() {
 
   const handleOpenRequest = useCallback(
     (index: number) => {
+      if (conceptNodes[index]?.kind !== 'interactive') {
+        setOpenIndex(null);
+        return;
+      }
+
       const shouldOpen = openIndex !== index;
 
       selectIndex(index, { openCards: shouldOpen });
@@ -299,7 +308,7 @@ export function ConceptFoundation() {
       goToIndex(index, { preserveOpen: shouldOpen });
     },
 
-    [goToIndex, openIndex, selectIndex]
+    [goToIndex, openIndex, selectIndex, setOpenIndex]
   );
 
   useEffect(() => {
@@ -332,6 +341,10 @@ export function ConceptFoundation() {
         const activeElement = document.activeElement as HTMLElement | null;
 
         if (activeElement && activeElement.closest(ENTER_INTERACTIVE_SELECTOR)) {
+          return;
+        }
+
+        if (conceptNodes[currentIndex]?.kind !== 'interactive') {
           return;
         }
 
@@ -435,12 +448,16 @@ export function ConceptFoundation() {
 
     const targetIndex = hashIndex >= 0 ? hashIndex : currentIndex;
 
-    selectIndex(targetIndex, { openCards: true });
+    if (conceptNodes[targetIndex]?.kind === 'interactive') {
+      selectIndex(targetIndex, { openCards: true });
+    } else {
+      setOpenIndex(null);
+    }
 
     goToIndex(targetIndex, { preserveOpen: true });
 
     hasAppliedOpenParamRef.current = true;
-  }, [currentIndex, goToIndex, selectIndex]);
+  }, [currentIndex, goToIndex, selectIndex, setOpenIndex]);
 
   const contextValue = useMemo(
     () => ({
@@ -505,27 +522,91 @@ export function ConceptFoundation() {
             {conceptNodes.map((node, index) => (
               <section
                 key={node.id}
-                className="relative flex h-full w-screen flex-shrink-0 snap-center items-center justify-center px-5 py-10 sm:px-12 md:px-16"
+                className={`relative flex h-full w-screen flex-shrink-0 snap-center items-center justify-center px-5 py-10 sm:px-12 md:px-16 ${
+                  node.kind === 'editorial' ? 'bg-[#f3eee4] text-[#30261f]' : ''
+                }`}
                 aria-hidden={index !== currentIndex}
               >
-                <div
-                  className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/65"
-                  aria-hidden
-                />
-                <ConceptSlide
-                  node={node}
-                  isCurrent={index === currentIndex}
-                  isOpen={openIndex === index}
-                  prefersReducedMotion={prefersReducedMotion}
-                  onToggle={() => handleOpenRequest(index)}
-                  onFocus={() => goToIndex(index, { smooth: false, preserveOpen: true })}
-                />
+                {node.kind === 'interactive' ? (
+                  <>
+                    <div
+                      className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/65"
+                      aria-hidden
+                    />
+                    <ConceptSlide
+                      node={node}
+                      isCurrent={index === currentIndex}
+                      isOpen={openIndex === index}
+                      prefersReducedMotion={prefersReducedMotion}
+                      onToggle={() => handleOpenRequest(index)}
+                      onFocus={() => goToIndex(index, { smooth: false, preserveOpen: true })}
+                    />
+                  </>
+                ) : (
+                  <ConceptEditorialSlide
+                    node={node}
+                    isCurrent={index === currentIndex}
+                    prefersReducedMotion={prefersReducedMotion}
+                  />
+                )}
               </section>
             ))}
           </div>
         </main>
       </div>
     </ConceptTrackProvider>
+  );
+}
+
+function ConceptEditorialSlide({
+  node,
+  isCurrent,
+  prefersReducedMotion,
+}: {
+  node: ConceptEditorialNode;
+  isCurrent: boolean;
+  prefersReducedMotion: boolean;
+}) {
+  const isColumns = node.layout === 'columns';
+
+  return (
+    <motion.article
+      initial={false}
+      animate={{ opacity: isCurrent ? 1 : 0.38, y: isCurrent || prefersReducedMotion ? 0 : 14 }}
+      transition={{ duration: prefersReducedMotion ? 0 : 0.75, ease: [0.16, 1, 0.3, 1] }}
+      className="relative z-10 mx-auto flex w-full max-w-6xl flex-col items-center px-3 text-center"
+    >
+      <h2
+        className={
+          isColumns
+            ? 'font-title text-[clamp(2.8rem,7vw,6.8rem)] normal-case leading-[0.88] tracking-[-0.025em] text-[#3b2e25]'
+            : 'font-menu text-[clamp(2rem,4.5vw,4.6rem)] uppercase leading-[0.96] tracking-[0.025em] text-[#3b2e25]'
+        }
+      >
+        {node.title}
+      </h2>
+
+      <div
+        className={
+          isColumns
+            ? 'mt-12 grid w-full max-w-5xl gap-8 text-left sm:mt-16 md:grid-cols-2 md:gap-16 lg:gap-24'
+            : 'mt-10 max-w-4xl sm:mt-14'
+        }
+      >
+        {node.body.map((paragraph, index) => (
+          <p
+            key={`${node.id}-${index}`}
+            className={
+              isColumns
+                ? 'text-[#493a30]/82 font-sans text-[clamp(0.76rem,1vw,0.96rem)] leading-[1.85]'
+                : 'text-[#493a30]/86 font-sans text-[clamp(0.7rem,1.05vw,0.98rem)] uppercase leading-[1.95] tracking-[0.12em]'
+            }
+          >
+            {paragraph}
+          </p>
+        ))}
+      </div>
+    </motion.article>
   );
 }
 
@@ -537,7 +618,7 @@ function ConceptSlide({
   onToggle,
   onFocus,
 }: {
-  node: ConceptNode;
+  node: ConceptInteractiveNode;
   isCurrent: boolean;
   isOpen: boolean;
   prefersReducedMotion: boolean;
@@ -684,7 +765,7 @@ function ConceptActionButton({
   );
 }
 
-function ConceptDetailsPanel({ node }: { node: ConceptNode }) {
+function ConceptDetailsPanel({ node }: { node: ConceptInteractiveNode }) {
   if (!node.details?.length) {
     return null;
   }
@@ -750,7 +831,9 @@ function NavArrow({
     >
       <SiteArrowIcon
         direction={direction}
-        className="h-6 w-6 !scale-[5] transition-colors duration-300"
+        className={`h-6 w-6 !scale-[1.5] transition-colors duration-300 sm:translate-x-0 sm:!scale-[5] ${
+          direction === 'left' ? '-translate-x-5' : 'translate-x-5'
+        }`}
       />
     </button>
   );
@@ -760,7 +843,7 @@ function BackgroundCanvas({
   background,
   prefersReducedMotion,
 }: {
-  background: ConceptNode['background'];
+  background: ConceptInteractiveNode['background'];
   prefersReducedMotion: boolean;
 }) {
   const posterSrc =

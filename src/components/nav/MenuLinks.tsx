@@ -70,19 +70,19 @@ export function MenuLinks({ isOpen, onNavigate }: MenuLinksProps) {
                     aria-current={isActive ? 'page' : undefined}
                     onClick={handleNavigate}
                     className={cn(
-                      'group relative flex min-h-[44px] items-start gap-3 rounded-[18px] px-1 py-3 text-[rgba(255,237,222,0.86)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(244,199,122,0.9)] focus-visible:ring-offset-2 focus-visible:ring-offset-[rgba(34,24,18,0.95)]',
+                      'group relative flex min-h-[44px] items-center gap-4 rounded-[18px] px-1 py-3 text-[rgba(255,237,222,0.86)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(244,199,122,0.9)] focus-visible:ring-offset-2 focus-visible:ring-offset-[rgba(34,24,18,0.95)]',
                       isActive
                         ? 'text-[rgba(255,243,231,0.98)]'
                         : 'hover:text-[rgba(255,243,231,0.98)]'
                     )}
                   >
-                    <span className="flex h-[0.95em] shrink-0 items-center text-[clamp(30px,2vw,36px)] leading-[0.95]">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center">
                       <Image
                         src={item.iconSrc}
                         alt=""
                         width={36}
                         height={36}
-                        className="h-8 w-8 drop-shadow-[0_4px_14px_rgba(0,0,0,0.32)] md:h-9 md:w-9"
+                        className="h-8 w-8 object-contain drop-shadow-[0_4px_14px_rgba(0,0,0,0.32)] md:h-9 md:w-9"
                         aria-hidden
                       />
                       <span className="sr-only">{item.index}</span>

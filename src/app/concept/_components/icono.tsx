@@ -4,12 +4,12 @@ import Image from 'next/image';
 
 import { cn } from '@/lib/utils';
 
-import type { ConceptNode } from '@content/concept';
+import type { ConceptInteractiveNode } from '@content/concept';
 
 import { forwardRef, useCallback } from 'react';
 
 export type IconoProps = {
-  node: ConceptNode;
+  node: ConceptInteractiveNode;
   isActive: boolean;
   isExpanded?: boolean;
   onSelect: () => void;

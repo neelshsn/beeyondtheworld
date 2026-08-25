@@ -28,12 +28,10 @@ export function HomeManifestoPanel() {
       <div className="relative flex h-full items-center justify-center px-8 sm:px-16 lg:px-20">
         <p
           data-animate-text
-          className="max-w-2xl text-center font-menu text-[clamp(1.1rem,1.9vw,1.8rem)] lowercase leading-[1.65] tracking-[0.02em] text-white/90"
+          className="text-white/94 max-w-3xl text-center font-title text-[clamp(2.25rem,5.4vw,5.75rem)] leading-[0.92] tracking-[-0.015em]"
         >
-          we believe in innovation that reveals new horizons where our eyes once perceived only
-          boundaries. it&apos;s all about dreams, perceptions and worldwide communities. we shape a
-          collaborative ecosystem where each brand maintains its uniqueness while collectively
-          contributing to a better world. we dream, we create, we are beeyond the world.
+          Creation becomes a living force, giving back to the people and places that make every
+          story possible.
         </p>
       </div>
     </section>

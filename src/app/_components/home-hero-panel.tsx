@@ -27,24 +27,41 @@ export function HomeHeroPanel() {
 
       {/* Content — bottom left */}
       <div className="relative flex h-full flex-col items-start justify-end px-6 pb-16 sm:px-12 sm:pb-20 lg:px-20 lg:pb-24">
-        <div className="flex max-w-3xl flex-col items-start text-left">
+        <div className="flex max-w-4xl flex-col items-start text-left">
           {/* Main title — Cannia uppercase */}
           <h1
             data-animate-text
-            className="text-glow font-menu text-[clamp(1.4rem,3.6vw,3.2rem)] uppercase leading-[1.18] tracking-[0.06em] text-white"
+            className="text-glow max-w-3xl font-menu text-[clamp(1.45rem,3.35vw,3rem)] uppercase leading-[1.08] tracking-[0.045em] text-white"
           >
-            Co-journeys pioneering approach for a sustainable transition in fashion advertising
+            Beeyond the World,
+            <br />
+            Creation as an Impact.
           </h1>
+
+          <p
+            data-animate-text
+            className="text-white/86 mt-5 max-w-3xl font-display text-[clamp(0.58rem,0.78vw,0.72rem)] uppercase leading-[1.65] tracking-[0.28em]"
+          >
+            Pioneering creative model for a sustainable worldwide development
+          </p>
 
           {/* Description — Avenir */}
           <p
             data-animate-text
-            className="mt-6 max-w-2xl font-sans text-[clamp(0.78rem,1vw,0.95rem)] leading-[1.9] tracking-[0.02em] text-white/65"
+            className="text-white/72 mt-5 max-w-3xl font-sans text-[clamp(0.66rem,0.82vw,0.82rem)] leading-[1.72] tracking-[0.015em]"
           >
-            Beeyondtheworld&apos;s mission is to curb the excessive individualization of visual
-            productions by optimizing every resource with intelligence and intention. We introduce a
-            refined, sustainable model that elevates creative excellence while minimizing impact,
-            proving that luxury and responsibility can move forward as one.
+            Beeyondtheworld is pioneering a new model of visual production where creativity becomes
+            an investment in people, places and the future. Every campaign is designed as a living
+            ecosystem that brings together brands, creators, artisans, local communities and
+            environmental initiatives around one shared ambition: creating enchanted visual tales
+            while generating measurable cultural, environmental and economic impact. Whether through
+            an exclusive production or collaborative Co-Journeys, every project contributes to the
+            same vision: transforming creative investment into a regenerative force that gives back
+            to the territories that make it possible. More than a production model, Creation as an
+            Impact is a Creative &amp; Impact Capital where financial resources, creative excellence
+            and human collaboration circulate with intention, reducing excess, nurturing every
+            resource with intention, and allowing lasting value to blossom across the entire
+            ecosystem.
           </p>
         </div>
       </div>

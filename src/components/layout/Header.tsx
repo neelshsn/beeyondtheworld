@@ -24,9 +24,9 @@ export function Header() {
           <Image
             src="/assets/icones/Ico Gold BEE-13.svg"
             alt="Beeyond the World"
-            width={44}
-            height={44}
-            className="h-8 w-auto object-contain sm:h-9"
+            width={38}
+            height={38}
+            className="h-7 w-auto object-contain sm:h-8"
             priority
           />
         </Link>

@@ -19,7 +19,7 @@ const SHOOT_YEAR_BY_ID: Record<string, number> = {
   'craie-maroc': 2025,
   'craie-suisse': 2024,
   'grace-mila-morocco': 2024,
-  'veganboost-greece': 2024,
+  'veganboost-greece': 2023,
   'almaaz-new-york': 2024,
   'ange-new-york': 2024,
 };
@@ -107,7 +107,7 @@ const RELEASE_WINDOW_BY_ID: Record<string, string> = {
   'craie-maroc': 'Spring Summer 2025',
   'craie-suisse': 'Spring Summer 2023 / 2024',
   'grace-mila-morocco': 'Fall Winter 2024 / Spring Summer 2024',
-  'veganboost-greece': '2024',
+  'veganboost-greece': 'Fall Winter 2023',
   'almaaz-new-york': 'Fall Winter / Summer 2024',
   'ange-new-york': 'Fall Winter 2024',
 };
@@ -118,7 +118,7 @@ const SEASON_BY_ID: Record<string, Campaign['season']> = {
   'craie-maroc': 'spring-summer',
   'craie-suisse': 'spring-summer',
   'grace-mila-morocco': 'fall-winter',
-  'veganboost-greece': 'spring-summer',
+  'veganboost-greece': 'fall-winter',
   'almaaz-new-york': 'fall-winter',
   'ange-new-york': 'fall-winter',
 };

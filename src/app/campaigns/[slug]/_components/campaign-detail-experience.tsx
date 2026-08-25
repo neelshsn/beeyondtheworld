@@ -13,7 +13,10 @@ import { usePrefersReducedMotion } from '@/app/concept/_hooks/use-prefers-reduce
 import { SiteArrowIcon } from '@/components/icons/site-arrow-icon';
 import { SmartVideo } from '@/components/primitives';
 import type { CampaignShowcase, ShowcaseMedia } from '@/data/showcases';
+import { formatCampaignSeason } from '@/lib/format-campaign-season';
 import type { Campaign } from '@/types/campaign';
+
+import { VeganboostStoryExperience } from './veganboost-story-experience';
 
 type MediaFilter = 'all' | 'image' | 'video';
 type MediaOption = {
@@ -138,6 +141,20 @@ export function CampaignDetailExperience({
   campaign: CampaignShowcase;
   meta: Campaign | null;
 }) {
+  if (campaign.slug === 'veganboost-greece') {
+    return <VeganboostStoryExperience />;
+  }
+
+  return <CampaignGalleryExperience campaign={campaign} meta={meta} />;
+}
+
+function CampaignGalleryExperience({
+  campaign,
+  meta,
+}: {
+  campaign: CampaignShowcase;
+  meta: Campaign | null;
+}) {
   useBodyScrollLock();
 
   const prefersReducedMotion = usePrefersReducedMotion();
@@ -201,7 +218,9 @@ export function CampaignDetailExperience({
   const bg = backgroundFor(campaign, meta);
   const title = meta?.client ?? campaign.title;
   const subtitle = meta?.destination ?? campaign.destination;
-  const detail = meta?.date ?? campaign.hero.caption ?? 'Campaign edit';
+  const detail = meta?.releaseWindow
+    ? formatCampaignSeason(meta.releaseWindow)
+    : (campaign.hero.caption ?? 'Campaign edit');
   const subtitleLine = [subtitle, detail].filter(Boolean).join(' / ');
 
   return (
