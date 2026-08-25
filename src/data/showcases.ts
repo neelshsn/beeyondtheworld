@@ -1268,10 +1268,10 @@ export const campaignShowcases: CampaignShowcase[] = [
     ],
     hero: {
       id: 'veganboost-greece-hero',
-      type: 'image',
-      src: '/assets/campaigns/veganboost-greece/veganboost-greece-cover.webp',
+      type: 'video',
+      src: '/assets/campaigns/veganboost-greece/veganboost-greece-hero.mp4',
       alt: 'Veganboost campaign portrait in warm Greek sunlight',
-      aspectRatio: 'landscape',
+      poster: '/assets/campaigns/veganboost-greece/veganboost-greece-cover.webp',
       caption: 'Greece · coastal tale',
       loopLabel: 'Campaign 06',
     },

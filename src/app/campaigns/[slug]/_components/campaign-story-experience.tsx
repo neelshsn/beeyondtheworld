@@ -12,7 +12,13 @@ import { formatCampaignSeason } from '@/lib/format-campaign-season';
 import type { Campaign } from '@/types/campaign';
 
 type StoryCopy = { title: string; body: string };
-type MediaOverride = { heroVideo?: string; storyVideo?: string; images?: string[] };
+type MediaOverride = {
+  heroVideo?: string;
+  storyVideo?: string;
+  videos?: string[];
+  images?: string[];
+};
+type StoryMediaPanel = { type: 'image' | 'video'; src: string };
 
 const STORY_COPY: Record<string, StoryCopy> = {
   'maradji-ibiza': {
@@ -50,6 +56,28 @@ const STORY_COPY: Record<string, StoryCopy> = {
 };
 
 const MEDIA_OVERRIDES: Record<string, MediaOverride> = {
+  'maradji-ibiza': {
+    images: [
+      '/assets/campaigns/maradji-ibiza/maradji-ibiza-gallery-01.jpg',
+      '/assets/campaigns/maradji-ibiza/maradji-ibiza-gallery-02.jpg',
+      '/assets/campaigns/maradji-ibiza/maradji-ibiza-gallery-03.jpg',
+      '/assets/campaigns/maradji-ibiza/maradji-ibiza-lookbook.jpg',
+      '/assets/campaigns/maradji-ibiza/maradji-ibiza-carousel-04.jpg',
+    ],
+  },
+  'craie-maroc': {
+    videos: [
+      '/assets/campaigns/craie-maroc/craie-maroc-story-01.mp4',
+      '/assets/campaigns/craie-maroc/craie-maroc-story-04.mp4',
+    ],
+    images: [
+      '/assets/campaigns/craie-maroc/craie-maroc-carousel-01.jpg',
+      '/assets/campaigns/craie-maroc/craie-maroc-gallery-03.jpg',
+      '/assets/campaigns/craie-maroc/craie-maroc-gallery-04.jpg',
+      '/assets/campaigns/craie-maroc/craie-maroc-gallery-05.jpg',
+      '/assets/campaigns/craie-maroc/craie-maroc-gallery-06.jpg',
+    ],
+  },
   'craie-suisse': {
     heroVideo: '/assets/campaigns/craie-suisse/craie-suisse-story.mp4',
     storyVideo: '/assets/campaigns/craie-suisse/craie-suisse-story.mp4',
@@ -58,13 +86,21 @@ const MEDIA_OVERRIDES: Record<string, MediaOverride> = {
   'grace-mila-morocco': {
     heroVideo: '/assets/campaigns/grace-mila-morocco/grace-mila-morocco-story.mp4',
     storyVideo: '/assets/campaigns/grace-mila-morocco/grace-mila-morocco-story.mp4',
+    images: [
+      '/assets/campaigns/grace-mila-morocco/grace-mila-morocco-gallery-01.webp',
+      '/assets/campaigns/grace-mila-morocco/grace-mila-morocco-gallery-02.webp',
+      '/assets/campaigns/grace-mila-morocco/grace-mila-morocco-cover.webp',
+    ],
   },
   'veganboost-greece': {
     heroVideo: '/assets/campaigns/veganboost-greece/veganboost-greece-hero.mp4',
     storyVideo: '/assets/campaigns/veganboost-greece/veganboost-greece-story.mp4',
     images: [
       '/assets/campaigns/veganboost-greece/veganboost-greece-picture-02.webp',
+      '/assets/campaigns/veganboost-greece/veganboost-greece-gallery-02.webp',
       '/assets/campaigns/veganboost-greece/veganboost-greece-editorial-01.webp',
+      '/assets/campaigns/veganboost-greece/veganboost-greece-editorial-02.webp',
+      '/assets/campaigns/veganboost-greece/veganboost-greece-gallery-01.webp',
     ],
   },
 };
@@ -81,17 +117,46 @@ function resolveMedia(campaign: CampaignShowcase) {
     campaign.hero.type === 'video' ? campaign.hero.src : undefined,
     ...campaign.gallery.map((item) => (item.type === 'video' ? item.src : undefined)),
   ]);
-  const derivedImages = unique([
-    campaign.hero.type === 'image' ? campaign.hero.src : campaign.hero.poster,
-    ...campaign.gallery.map((item) => (item.type === 'image' ? item.src : item.poster)),
+  const galleryImages = unique([
+    ...campaign.gallery.map((item) => (item.type === 'image' ? item.src : undefined)),
   ]);
-  const images = unique([...(override.images ?? []), ...derivedImages]);
+  const fallbackImage =
+    campaign.hero.type === 'image' ? campaign.hero.src : campaign.hero.poster;
+  const images = unique([...(override.images ?? []), ...galleryImages]);
+  const resolvedImages = (images.length ? images : unique([fallbackImage])).slice(0, 5);
+  const videos = unique([
+    override.heroVideo,
+    ...derivedVideos,
+    override.storyVideo,
+    ...(override.videos ?? []),
+  ]).slice(0, 5);
 
   return {
-    heroVideo: override.heroVideo ?? derivedVideos[0],
-    storyVideo: override.storyVideo ?? derivedVideos[1] ?? derivedVideos[0],
-    images: images.length ? images : ['/assets/home/kenya-transition.jpg'],
+    heroVideo: override.heroVideo ?? videos[0],
+    storyVideo: override.storyVideo ?? videos[1] ?? videos[0],
+    videos,
+    images: resolvedImages.length ? resolvedImages : ['/assets/home/kenya-transition.jpg'],
   };
+}
+
+function alternateMedia(images: string[], videos: string[]): StoryMediaPanel[] {
+  const panels: StoryMediaPanel[] = [];
+  let imageIndex = 0;
+  let videoIndex = 0;
+
+  while (imageIndex < images.length || videoIndex < videos.length) {
+    if (imageIndex < images.length) {
+      panels.push({ type: 'image', src: images[imageIndex] });
+      imageIndex += 1;
+    }
+
+    if (videoIndex < videos.length) {
+      panels.push({ type: 'video', src: videos[videoIndex] });
+      videoIndex += 1;
+    }
+  }
+
+  return panels;
 }
 
 export function CampaignStoryExperience({
@@ -119,54 +184,68 @@ export function CampaignStoryExperience({
   const detail = formatCampaignSeason(
     meta?.releaseWindow ?? campaign.hero.caption ?? campaign.destination
   );
-  const panelCount = 5;
+  const additionalMedia = useMemo(() => {
+    const remainingImages = media.images.slice(1);
+    const remainingVideos = media.videos.filter(
+      (video) => video !== media.heroVideo && video !== media.storyVideo
+    );
 
-  const goTo = useCallback((index: number) => {
-    if (index < 0 || index >= panelCount || index === activeRef.current || animatingRef.current)
-      return;
-    const container = containerRef.current;
-    if (!container) return;
-    const panels = container.querySelectorAll<HTMLElement>('[data-story-panel]');
-    const current = panels[activeRef.current];
-    const incoming = panels[index];
-    if (!current || !incoming) return;
+    return alternateMedia(remainingImages, remainingVideos);
+  }, [media]);
+  const panelCount = 4 + additionalMedia.length;
 
-    animatingRef.current = true;
-    const forward = index > activeRef.current;
-    if (forward) {
-      gsap.set(incoming, { visibility: 'visible', clipPath: 'inset(100% 0 0 0)' });
-      gsap.to(incoming, {
-        clipPath: 'inset(0% 0 0 0)',
+  const goTo = useCallback(
+    (index: number) => {
+      if (index < 0 || index >= panelCount || index === activeRef.current || animatingRef.current)
+        return;
+      const container = containerRef.current;
+      if (!container) return;
+      const panels = container.querySelectorAll<HTMLElement>('[data-story-panel]');
+      const current = panels[activeRef.current];
+      const incoming = panels[index];
+      if (!current || !incoming) return;
+
+      animatingRef.current = true;
+      const forward = index > activeRef.current;
+      if (forward) {
+        gsap.set(incoming, { visibility: 'visible', clipPath: 'inset(100% 0 0 0)' });
+        gsap.to(incoming, {
+          clipPath: 'inset(0% 0 0 0)',
+          duration: 1.05,
+          ease: 'power3.inOut',
+          onComplete: () => {
+            gsap.set(current, { visibility: 'hidden' });
+            activeRef.current = index;
+            setActiveIndex(index);
+            animatingRef.current = false;
+          },
+        });
+        return;
+      }
+
+      gsap.set(incoming, { visibility: 'visible', clipPath: 'inset(0% 0 0 0)' });
+      gsap.to(current, {
+        clipPath: 'inset(100% 0 0 0)',
         duration: 1.05,
         ease: 'power3.inOut',
         onComplete: () => {
-          gsap.set(current, { visibility: 'hidden' });
+          gsap.set(current, { visibility: 'hidden', clipPath: 'inset(0% 0 0 0)' });
           activeRef.current = index;
           setActiveIndex(index);
           animatingRef.current = false;
         },
       });
-      return;
-    }
-
-    gsap.set(incoming, { visibility: 'visible', clipPath: 'inset(0% 0 0 0)' });
-    gsap.to(current, {
-      clipPath: 'inset(100% 0 0 0)',
-      duration: 1.05,
-      ease: 'power3.inOut',
-      onComplete: () => {
-        gsap.set(current, { visibility: 'hidden', clipPath: 'inset(0% 0 0 0)' });
-        activeRef.current = index;
-        setActiveIndex(index);
-        animatingRef.current = false;
-      },
-    });
-  }, []);
+    },
+    [panelCount]
+  );
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
     const panels = container.querySelectorAll<HTMLElement>('[data-story-panel]');
+    activeRef.current = 0;
+    animatingRef.current = false;
+    setActiveIndex(0);
     panels.forEach((panel, index) => {
       gsap.set(panel, {
         visibility: index === 0 ? 'visible' : 'hidden',
@@ -213,7 +292,7 @@ export function CampaignStoryExperience({
       container.removeEventListener('touchend', onTouchEnd);
       window.removeEventListener('keydown', onKeyDown);
     };
-  }, [goTo]);
+  }, [campaign.slug, goTo]);
 
   return (
     <main ref={containerRef} className="relative h-[100svh] overflow-hidden bg-black text-white">
@@ -224,7 +303,7 @@ export function CampaignStoryExperience({
       >
         <MediaBackground video={media.heroVideo} image={media.images[0]} priority />
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(4,4,3,0.12)_0%,rgba(4,4,3,0.02)_46%,rgba(4,4,3,0.72)_100%)]" />
-        <div className="absolute bottom-10 right-6 z-10 max-w-[90vw] text-right sm:bottom-14 sm:right-12 lg:bottom-20 lg:right-20">
+        <div className="absolute bottom-10 left-6 z-10 max-w-[90vw] text-left sm:bottom-14 sm:left-12 lg:bottom-20 lg:left-20">
           <h1 className="font-title text-[clamp(3.5rem,10vw,10rem)] uppercase leading-[0.76] tracking-[-0.025em] text-white [text-shadow:0_14px_55px_rgba(0,0,0,0.52)]">
             {client}
           </h1>
@@ -277,26 +356,37 @@ export function CampaignStoryExperience({
         </article>
       </section>
 
-      <section
-        data-story-panel
-        className="absolute inset-0 overflow-hidden bg-black"
-        style={{ zIndex: 4 }}
-      >
-        <Image
-          src={media.images[1] ?? media.images[0]}
-          alt={`${campaign.title} editorial chapter`}
-          fill
-          quality={100}
-          sizes="100vw"
-          className="object-cover"
-        />
-        <div className="to-black/24 absolute inset-0 bg-gradient-to-b from-black/5 via-transparent" />
-      </section>
+      {additionalMedia.map((item, index) => {
+        const poster = media.images[(index + 1) % media.images.length] ?? media.images[0];
+
+        return (
+          <section
+            key={`${item.type}-${item.src}`}
+            data-story-panel
+            className="absolute inset-0 overflow-hidden bg-black"
+            style={{ zIndex: 4 + index }}
+          >
+            {item.type === 'image' ? (
+              <Image
+                src={item.src}
+                alt={`${campaign.title} editorial chapter ${index + 2}`}
+                fill
+                quality={100}
+                sizes="100vw"
+                className="object-cover"
+              />
+            ) : (
+              <MediaBackground video={item.src} image={poster} />
+            )}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/5 via-transparent to-black/20" />
+          </section>
+        );
+      })}
 
       <section
         data-story-panel
         className="absolute inset-0 overflow-hidden bg-black"
-        style={{ zIndex: 5 }}
+        style={{ zIndex: 4 + additionalMedia.length }}
       >
         <Image
           src={nextMedia.images[0]}

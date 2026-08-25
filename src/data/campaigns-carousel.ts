@@ -137,6 +137,13 @@ const LOGO_BY_ID: Record<string, { src: string; alt: string }> = {
   'almaaz-new-york': { src: '/assets/brands/almaaz.png', alt: 'Almaaz logo' },
 };
 
+const THUMBNAIL_BY_ID: Partial<Record<string, { src: string; alt: string }>> = {
+  'veganboost-greece': {
+    src: '/assets/campaigns/veganboost-greece/veganboost-greece-gallery-02.webp',
+    alt: 'Veganboost portrait reflected in the clear waters of Milos',
+  },
+};
+
 function extractClientFromTitle(title: string) {
   const [client] = title.split(' - ');
   return client?.trim() ?? title;
@@ -152,6 +159,11 @@ function resolveCoverAsset(showcase: CampaignShowcase) {
 }
 
 function resolveThumbnailPhoto(showcase: CampaignShowcase, fallback: { src: string; alt: string }) {
+  const explicitThumbnail = THUMBNAIL_BY_ID[showcase.id];
+  if (explicitThumbnail) {
+    return explicitThumbnail;
+  }
+
   const stills = showcase.gallery.filter((media) => media.type === 'image');
   const rankedStills = [...stills].sort((left, right) => {
     const leftScore =
