@@ -1,6 +1,5 @@
 ﻿import type { Campaign } from '@/types/campaign';
-import { campaignShowcases } from '@/data/showcases';
-import type { CampaignShowcase } from '@/data/showcases';
+import { campaignShowcases, type CampaignShowcase } from './showcases';
 
 const COUNTRY_BY_ID: Record<string, string> = {
   'maradji-ibiza': 'Spain',
@@ -138,9 +137,37 @@ const LOGO_BY_ID: Record<string, { src: string; alt: string }> = {
 };
 
 const THUMBNAIL_BY_ID: Partial<Record<string, { src: string; alt: string }>> = {
+  'maradji-ibiza': {
+    src: '/assets/campaigns/maradji-ibiza/maradji-ibiza-carousel-02.jpg',
+    alt: 'Maradji portrait in front of white Ibizan architecture',
+  },
+  'almaaz-kenya': {
+    src: '/assets/campaigns/almaaz-kenya/almaaz-kenya-carousel-02.jpg',
+    alt: 'Almaaz campaign portrait among the red rocks of Kenya',
+  },
+  'craie-maroc': {
+    src: '/assets/campaigns/craie-maroc/craie-maroc-carousel-05.jpg',
+    alt: 'Craie Studio campaign portrait with a blue bag in Morocco',
+  },
+  'craie-suisse': {
+    src: '/assets/campaigns/craie-suisse/craie-suisse-spring-03.jpg',
+    alt: 'Craie Studio spring portrait in the Swiss landscape',
+  },
+  'grace-mila-morocco': {
+    src: '/assets/campaigns/grace-mila-morocco/grace-mila-morocco-fw-01.jpg',
+    alt: 'Grace and Mila Fall Winter portrait in Morocco',
+  },
   'veganboost-greece': {
     src: '/assets/campaigns/veganboost-greece/veganboost-greece-gallery-02.webp',
     alt: 'Veganboost portrait reflected in the clear waters of Milos',
+  },
+  'almaaz-new-york': {
+    src: '/assets/campaigns/almaaz-new-york/almaaz-new-york-gallery-02.webp',
+    alt: 'Almaaz New York campaign portrait overlooking the skyline',
+  },
+  'ange-new-york': {
+    src: '/assets/campaigns/ange-new-york/ange-new-york-drive-01.jpg',
+    alt: 'AN’GE Fall Winter portrait on a New York street',
   },
 };
 

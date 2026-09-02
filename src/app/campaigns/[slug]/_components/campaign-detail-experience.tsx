@@ -12,6 +12,7 @@ import { useBodyScrollLock } from '@/app/concept/_hooks/use-body-scroll-lock';
 import { usePrefersReducedMotion } from '@/app/concept/_hooks/use-prefers-reduced-motion';
 import { SiteArrowIcon } from '@/components/icons/site-arrow-icon';
 import { SmartVideo } from '@/components/primitives';
+import { CAMPAIGN_FORMAT_BY_ID } from '@/data/campaign-formats';
 import type { CampaignShowcase, ShowcaseMedia } from '@/data/showcases';
 import { formatCampaignSeason } from '@/lib/format-campaign-season';
 import type { Campaign } from '@/types/campaign';
@@ -141,7 +142,13 @@ export function CampaignDetailExperience({
   campaign: CampaignShowcase;
   meta: Campaign | null;
 }) {
-  return <CampaignStoryExperience campaign={campaign} meta={meta} />;
+  const format = CAMPAIGN_FORMAT_BY_ID[campaign.id] ?? 'tale';
+
+  return format === 'gallery' ? (
+    <CampaignGalleryExperience campaign={campaign} meta={meta} />
+  ) : (
+    <CampaignStoryExperience campaign={campaign} meta={meta} />
+  );
 }
 
 export function CampaignGalleryExperience({

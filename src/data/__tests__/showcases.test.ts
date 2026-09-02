@@ -3,8 +3,32 @@ import path from 'node:path';
 
 import { describe, expect, it } from 'vitest';
 
+import { CAMPAIGN_FORMAT_BY_ID } from '../campaign-formats';
+import { campaigns } from '../campaigns-carousel';
 import { journeys } from '../journeys-carousel';
 import { campaignShowcases, journeyShowcases, type ShowcaseMedia } from '../showcases';
+
+const EXPECTED_CAMPAIGN_THUMBNAILS: Record<string, string> = {
+  'maradji-ibiza': '/assets/campaigns/maradji-ibiza/maradji-ibiza-carousel-02.jpg',
+  'almaaz-kenya': '/assets/campaigns/almaaz-kenya/almaaz-kenya-carousel-02.jpg',
+  'craie-maroc': '/assets/campaigns/craie-maroc/craie-maroc-carousel-05.jpg',
+  'craie-suisse': '/assets/campaigns/craie-suisse/craie-suisse-spring-03.jpg',
+  'grace-mila-morocco': '/assets/campaigns/grace-mila-morocco/grace-mila-morocco-fw-01.jpg',
+  'veganboost-greece': '/assets/campaigns/veganboost-greece/veganboost-greece-gallery-02.webp',
+  'almaaz-new-york': '/assets/campaigns/almaaz-new-york/almaaz-new-york-gallery-02.webp',
+  'ange-new-york': '/assets/campaigns/ange-new-york/ange-new-york-drive-01.jpg',
+};
+
+const EXPECTED_CAMPAIGN_FORMATS = {
+  'maradji-ibiza': 'gallery',
+  'almaaz-kenya': 'tale',
+  'craie-maroc': 'tale',
+  'craie-suisse': 'gallery',
+  'grace-mila-morocco': 'gallery',
+  'veganboost-greece': 'tale',
+  'almaaz-new-york': 'tale',
+  'ange-new-york': 'gallery',
+};
 
 function expectUniqueSlugs(items: Array<{ slug: string }>) {
   const slugs = items.map((item) => item.slug);
@@ -28,6 +52,13 @@ describe('public showcase integrity', () => {
     expectUniqueSlugs(campaignShowcases);
   });
 
+  it('assigns one fixed feedback format to every campaign', () => {
+    expect(CAMPAIGN_FORMAT_BY_ID).toEqual(EXPECTED_CAMPAIGN_FORMATS);
+    expect(new Set(Object.keys(CAMPAIGN_FORMAT_BY_ID))).toEqual(
+      new Set(campaignShowcases.map((campaign) => campaign.id))
+    );
+  });
+
   it('ships every local showcase asset referenced by the data', () => {
     for (const journey of journeyShowcases) {
       expectLocalAsset(journey.hero);
@@ -48,6 +79,20 @@ describe('public showcase integrity', () => {
           expect(existsSync(path.join(process.cwd(), 'public', media.poster ?? ''))).toBe(true);
         }
       }
+    }
+  });
+
+  it('keeps every All Campaigns card on its approved campaign media', () => {
+    expect(Object.fromEntries(campaigns.map((campaign) => [campaign.id, campaign.image]))).toEqual(
+      EXPECTED_CAMPAIGN_THUMBNAILS
+    );
+
+    for (const campaign of campaigns) {
+      expect(existsSync(path.join(process.cwd(), 'public', campaign.image))).toBe(true);
+      expect(campaign.backgroundVideo).toMatch(/^\/assets\/campaigns\//);
+      expect(existsSync(path.join(process.cwd(), 'public', campaign.backgroundVideo ?? ''))).toBe(
+        true
+      );
     }
   });
 });
