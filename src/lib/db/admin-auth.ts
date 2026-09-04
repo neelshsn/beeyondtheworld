@@ -1,9 +1,10 @@
-import { randomBytes, scryptSync, timingSafeEqual } from 'node:crypto';
+import { createHash, randomBytes, scryptSync, timingSafeEqual } from 'node:crypto';
 
-import { count, eq, lt } from 'drizzle-orm';
+import { and, count, eq, gt, isNull, lt } from 'drizzle-orm';
 import { cookies } from 'next/headers';
 
 import { adminSessions, adminUsers, getDb, type AdminUserRow } from '@/lib/db';
+import { ensureAdminAuthSchema } from '@/lib/db/ensure-admin-auth-schema';
 
 /**
  * T-050 — auth du dashboard 100 % Neon (même base que le CMS) :
@@ -29,7 +30,12 @@ export function verifyPassword(password: string, stored: string): boolean {
   return derived.length === expected.length && timingSafeEqual(derived, expected);
 }
 
+export function hashSetupToken(token: string): string {
+  return createHash('sha256').update(token).digest('hex');
+}
+
 export async function adminCount(): Promise<number> {
+  await ensureAdminAuthSchema();
   const db = getDb();
   const [row] = await db.select({ value: count() }).from(adminUsers);
   return row?.value ?? 0;
@@ -44,11 +50,22 @@ export async function activateInvitedAdmin(
   token: string,
   password: string
 ): Promise<AdminUserRow | null> {
+  await ensureAdminAuthSchema();
   const db = getDb();
   const [updated] = await db
     .update(adminUsers)
-    .set({ passwordHash: hashPassword(password), setupToken: null })
-    .where(eq(adminUsers.setupToken, token))
+    .set({
+      passwordHash: hashPassword(password),
+      setupToken: null,
+      setupTokenExpiresAt: null,
+    })
+    .where(
+      and(
+        eq(adminUsers.setupToken, hashSetupToken(token)),
+        gt(adminUsers.setupTokenExpiresAt, new Date()),
+        isNull(adminUsers.passwordHash)
+      )
+    )
     .returning();
   return updated ?? null;
 }
@@ -73,6 +90,7 @@ export async function deleteAdminSession(token: string): Promise<void> {
 
 /** Retourne l'éditeur connecté (via le cookie de session), ou null. */
 export async function getSessionAdmin(): Promise<AdminUserRow | null> {
+  await ensureAdminAuthSchema();
   const cookieStore = await cookies();
   const token = cookieStore.get(ADMIN_SESSION_COOKIE)?.value;
   if (!token) return null;

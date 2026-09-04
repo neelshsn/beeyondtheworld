@@ -2,7 +2,7 @@ import { eq } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 
 import { getDb, journeys, locations } from '@/lib/db';
-import { requireAdmin } from '@/lib/db/admin-guard';
+import { rejectCrossSiteWrite, requireAdmin } from '@/lib/db/admin-guard';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -17,7 +17,7 @@ type ReorderPayload = {
  * dans le nouvel ordre et réécrit les positions (0..n).
  */
 export async function PATCH(request: Request) {
-  const unauthorized = await requireAdmin();
+  const unauthorized = (await requireAdmin()) ?? rejectCrossSiteWrite(request);
   if (unauthorized) return unauthorized;
 
   try {

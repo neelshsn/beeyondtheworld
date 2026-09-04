@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-const BG_IMAGE = '/assets/campaigns/maradji-ibiza/maradji-ibiza-cover.jpg';
+const BG_IMAGE = '/assets/home/creative-visual-production.webp';
 
 type HomeCreativePanelProps = {
   coCreateHref: string;
@@ -17,7 +17,7 @@ export function HomeCreativePanel({ coCreateHref }: HomeCreativePanelProps) {
           src={BG_IMAGE}
           alt="Creative production"
           fill
-          quality={100}
+          quality={75}
           sizes="100vw"
           className="object-cover"
           priority

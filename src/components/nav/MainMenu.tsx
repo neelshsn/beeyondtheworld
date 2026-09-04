@@ -2,10 +2,10 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import Image from 'next/image';
 import * as React from 'react';
 
 import { MenuLinks } from '@/components/nav/MenuLinks';
+import { MaskedIcon } from '@/components/primitives/masked-icon';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Sheet,
@@ -45,17 +45,10 @@ export function MainMenu() {
         <button
           type="button"
           aria-label="Open menu"
-          className="group inline-flex min-h-[44px] flex-col items-start justify-center focus-visible:outline-none"
+          className="group inline-flex min-h-[44px] flex-col items-start justify-center text-white transition-colors hover:text-[#f6c452] focus-visible:text-[#f6c452] focus-visible:outline-none"
         >
-          <span className="inline-flex items-center gap-2 font-display text-[10px] uppercase tracking-[0.4em] text-white">
-            <Image
-              src="/assets/icones/Ico Gold BEE-05.svg"
-              alt=""
-              width={24}
-              height={24}
-              className="h-5 w-5 object-contain"
-              aria-hidden
-            />
+          <span className="inline-grid grid-cols-[1.25rem_auto] items-center gap-x-2 font-display text-[10px] uppercase tracking-[0.4em]">
+            <MaskedIcon src="/assets/icones/Ico Gold BEE-05.svg" className="h-5 w-5" />
             <span>Menu</span>
           </span>
           <span

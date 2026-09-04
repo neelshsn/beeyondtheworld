@@ -1,6 +1,9 @@
+'use client';
+
 import type { CSSProperties } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 import { MainMenu } from '@/components/nav/MainMenu';
 
@@ -10,6 +13,10 @@ const SAFE_AREA_STYLES: CSSProperties = {
 };
 
 export function Header() {
+  const pathname = usePathname();
+
+  if (pathname.startsWith('/admin')) return null;
+
   return (
     <div className="pointer-events-none fixed inset-x-0 top-0 z-40">
       <div

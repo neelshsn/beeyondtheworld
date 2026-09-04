@@ -10,6 +10,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useBodyScrollLock } from '@/app/concept/_hooks/use-body-scroll-lock';
 import { usePrefersReducedMotion } from '@/app/concept/_hooks/use-prefers-reduced-motion';
 import { BeeButton } from '@/components/primitives/bee-button';
+import { MaskedIcon } from '@/components/primitives/masked-icon';
 import { journeys as staticJourneys } from '@/data/journeys-carousel';
 import { getSustainableImpactPdf } from '@/data/sustainable-impact';
 import type { Journey, JourneySeason } from '@/types/journey';
@@ -81,9 +82,6 @@ const JOURNEY_SEASON_ICONS: Record<JourneySeason, { icon: string; label: string 
 
 const JOURNEY_TRANSITION_FADE_MS = 980;
 const VIDEO_CONTINUITY_STORAGE_KEY = 'journey-background-video-state';
-const INDIA_BACKGROUND_VIDEO =
-  '/assets/journeys/india-january-2026/anime_cette_image__Kling_30__17267.mp4';
-
 function parseSeasonFilter(value: string | null): SeasonFilterValue {
   if (value === 'summer') return 'summer';
   if (value === 'winter') return 'winter';
@@ -385,7 +383,7 @@ export function JourneyShowcaseGallery({
         },
       },
     }),
-    [renderedJourneys.length]
+    []
   );
 
   const [emblaRef, emblaApi] = useEmblaCarousel(emblaOptions);
@@ -1048,12 +1046,10 @@ function JourneyCard({
     forwardOffset === 0 ? 'hero' : forwardOffset === 1 ? 'lead' : 'trail';
 
   return (
-    <motion.button
-      type="button"
-      onClick={onAction}
+    <motion.div
       layout={!disableLayoutAnimation}
       className={clsx(
-        'group relative w-full overflow-visible focus:outline-none focus-visible:ring-2 focus-visible:ring-[#f5d49b] focus-visible:ring-offset-0',
+        'group relative w-full overflow-visible',
         prefersReducedMotion
           ? 'transition-none'
           : 'ease-[cubic-bezier(0.22,1,0.36,1)] transition-transform duration-700'
@@ -1087,7 +1083,6 @@ function JourneyCard({
                 : { duration: useLiteEffects ? 0.46 : 0.7, ease: [0.22, 1, 0.36, 1] },
             }
       }
-      aria-label={`Journey: ${journey.title}, ${journey.date}`}
       style={{ transformOrigin: isMobileViewport ? 'center center' : 'left center' }}
     >
       <div
@@ -1098,6 +1093,12 @@ function JourneyCard({
             : 'shadow-[0_30px_75px_-24px_rgba(0,0,0,0.78)]'
         )}
       >
+        <button
+          type="button"
+          onClick={onAction}
+          aria-label={`Journey: ${journey.title}, ${journey.date}`}
+          className="absolute inset-0 z-10 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#f5d49b]"
+        />
         <motion.div
           className="absolute inset-0"
           animate={
@@ -1153,7 +1154,7 @@ function JourneyCard({
           }
         />
         {forwardOffset === 0 ? (
-          <div className="absolute inset-x-0 bottom-4 flex justify-center">
+          <div className="absolute inset-x-0 bottom-4 z-20 flex justify-center">
             <SeasonIconRow
               seasons={seasonTags}
               compact={isMobileViewport}
@@ -1164,7 +1165,7 @@ function JourneyCard({
           </div>
         ) : null}
       </div>
-    </motion.button>
+    </motion.div>
   );
 }
 
@@ -1196,43 +1197,38 @@ function SeasonIconRow({
             : activeFilter === 'summer'
               ? season === 'spring-summer'
               : season === 'fall-winter';
-        return (
-          <span
+        const icon = (
+          <MaskedIcon
+            src={iconSet.icon}
+            className={clsx(
+              'h-full w-full transition-all duration-300 group-hover/season:-translate-y-0.5 group-hover/season:scale-105 group-hover/season:text-[#f6c452]',
+              seasonIconShadowClass,
+              isSelected ? 'scale-105 text-[#f6c452]' : 'text-white opacity-85'
+            )}
+          />
+        );
+        const className = clsx(
+          'group/season relative shrink-0 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#f6c452]',
+          sizing.itemClass
+        );
+
+        return onSelect ? (
+          <button
             key={season}
-            className={clsx('group/season relative shrink-0', sizing.itemClass)}
+            type="button"
+            className={className}
             aria-label={iconSet.label}
-            role={onSelect ? 'button' : undefined}
-            tabIndex={onSelect ? 0 : undefined}
-            onClick={
-              onSelect
-                ? (event) => {
-                    event.stopPropagation();
-                    onSelect(season);
-                  }
-                : undefined
-            }
-            onKeyDown={
-              onSelect
-                ? (event) => {
-                    if (event.key === 'Enter' || event.key === ' ') {
-                      event.preventDefault();
-                      event.stopPropagation();
-                      onSelect(season);
-                    }
-                  }
-                : undefined
-            }
+            aria-pressed={isSelected}
+            onClick={(event) => {
+              event.stopPropagation();
+              onSelect(season);
+            }}
           >
-            <Image
-              src={iconSet.icon}
-              alt=""
-              fill
-              className={clsx(
-                'object-contain transition-all duration-300 group-hover/season:-translate-y-0.5 group-hover/season:scale-105 group-hover/season:opacity-100',
-                seasonIconShadowClass,
-                isSelected ? 'scale-105 opacity-100' : 'opacity-85'
-              )}
-            />
+            {icon}
+          </button>
+        ) : (
+          <span key={season} className={className} aria-label={iconSet.label}>
+            {icon}
           </span>
         );
       })}

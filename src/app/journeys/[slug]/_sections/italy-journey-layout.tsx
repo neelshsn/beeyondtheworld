@@ -10,6 +10,7 @@ import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
 import { useBodyScrollLock } from '@/app/concept/_hooks/use-body-scroll-lock';
 import { usePrefersReducedMotion } from '@/app/concept/_hooks/use-prefers-reduced-motion';
 import { SiteArrowIcon } from '@/components/icons/site-arrow-icon';
+import { MaskedIcon } from '@/components/primitives/masked-icon';
 import type { JourneyShowcase } from '@/data/showcases';
 import { getSustainableImpactPdf } from '@/data/sustainable-impact';
 import { resolveJourneyLocationContent } from '@/lib/cms/resolve-journey-locations';
@@ -38,7 +39,6 @@ type RenderedLoopingMobileSelectorItem = {
 type LocationSectionValue = 'locations' | 'csr-impact';
 // T-035 — l'entrée « Community » ('interested') a été retirée des menus de sections.
 type SectionMenuValue = LocationSectionValue;
-type MobileMenuValue = SectionMenuValue;
 type IndiaLocationStory = {
   id: string;
   locationId: IndiaLocation['id'];
@@ -78,18 +78,13 @@ type RenderedCsrImpactSlide = { card: CsrImpactCard; sourceIndex: number; render
 
 const INDIA_BACKGROUND_VIDEO = '/assets/journeys/italy-2026/italy-all-journeys-thumbnail.jpg';
 const VIDEO_CONTINUITY_STORAGE_KEY = 'journey-background-video-state';
-const JOURNEY_SEASON_ICONS: Record<
-  JourneySeason,
-  { icon: string; hoverIcon: string; label: string }
-> = {
+const JOURNEY_SEASON_ICONS: Record<JourneySeason, { icon: string; label: string }> = {
   'spring-summer': {
-    icon: '/assets/icones/Ico White BEE-14.svg',
-    hoverIcon: '/assets/icones/Ico Gold BEE-14.svg',
+    icon: '/assets/icones/icono/saisons/flowers.svg',
     label: 'Spring Summer',
   },
   'fall-winter': {
-    icon: '/assets/icones/Ico White BEE-01.svg',
-    hoverIcon: '/assets/icones/Ico Gold BEE-01.svg',
+    icon: '/assets/icones/icono/saisons/winter.svg',
     label: 'Fall Winter',
   },
 };
@@ -243,7 +238,7 @@ const FALLBACK_LOCATION_STORIES: IndiaLocationStory[] = [
     id: 'italy-story-dolomites',
     locationId: 'italy-location-dolomites',
     image: '/assets/journeys/italy-2026/italy-location-dolomites-story.jpg',
-    leftTitle: ['The Art', 'of Green,', 'Painted', 'by Nature.'],
+    leftTitle: ['The', 'Silent Majesty', 'of Stone'],
     narrative:
       'In the Dolomites, nature rises in a more vertical language. Jagged peaks catch the shifting alpine light, while meadows, forests, and still lakes soften the scale of the mountains. Villages rest quietly beneath vast stone walls, and every path feels suspended between earth and sky. The air is pure, the rhythm slower, the silence almost mineral. Here, Italy becomes expansive and elemental, a landscape where grandeur and calm live side by side.',
     nextLocationId: 'italy-location-sicily',
@@ -734,8 +729,6 @@ export function ItalyJourneyLayout({
   const [csrSelectedIndex, setCsrSelectedIndex] = useState(0);
   const [activeCsrDetailId, setActiveCsrDetailId] = useState<string | null>(null);
   const [isDesktopClosingDetail, setIsDesktopClosingDetail] = useState(false);
-  const [canScrollPrev, setCanScrollPrev] = useState(false);
-  const [canScrollNext, setCanScrollNext] = useState(false);
   const [backgroundDirection, setBackgroundDirection] = useState<1 | -1>(1);
   const [activeLocationStoryId, setActiveLocationStoryId] = useState<string | null>(null);
   const backgroundVideoRef = useRef<HTMLVideoElement | null>(null);
@@ -797,8 +790,6 @@ export function ItalyJourneyLayout({
         previousSelectedIndexRef.current = nextIndex;
         setSelectedIndex(nextIndex);
         setBackgroundDirection(pendingDirectionRef.current);
-        setCanScrollPrev(uniqueLocationCount > 1);
-        setCanScrollNext(uniqueLocationCount > 1);
         return;
       }
       const rawDirection =
@@ -826,8 +817,6 @@ export function ItalyJourneyLayout({
       previousSelectedIndexRef.current = nextIndex;
       setSelectedIndex(nextIndex);
       setBackgroundDirection(rawDirection);
-      setCanScrollPrev(uniqueLocationCount > 1);
-      setCanScrollNext(uniqueLocationCount > 1);
     };
     emblaApi.on('select', onSelect);
     emblaApi.on('reInit', onSelect);
@@ -892,8 +881,6 @@ export function ItalyJourneyLayout({
     previousSelectedIndexRef.current = targetStartIndex;
     setSelectedIndex(targetStartIndex);
     setBackgroundDirection(1);
-    setCanScrollPrev(uniqueLocationCount > 1);
-    setCanScrollNext(uniqueLocationCount > 1);
   }, [
     emblaApi,
     targetStartIndex,
@@ -985,7 +972,17 @@ export function ItalyJourneyLayout({
       (location) => location.id === activeLocationStory.nextLocationId
     );
     if (nextLocationIndex >= 0) {
-      emblaApi?.scrollTo(centeredStartIndex + nextLocationIndex, true);
+      const nextRenderedIndex = centeredStartIndex + nextLocationIndex;
+      const direction = 1 as const;
+
+      // Update the location-facing UI immediately. Embla's select event can be
+      // delayed (or absent while re-initialising), which previously left the
+      // title, dates and background on the previous location.
+      pendingDirectionRef.current = direction;
+      previousSelectedIndexRef.current = nextRenderedIndex;
+      setSelectedIndex(nextRenderedIndex);
+      setBackgroundDirection(direction);
+      emblaApi?.scrollTo(nextRenderedIndex, true);
     }
     const nextStory = LOCATION_STORIES.find(
       (story) => story.locationId === activeLocationStory.nextLocationId
@@ -1223,7 +1220,7 @@ export function ItalyJourneyLayout({
           transition={{ duration: prefersReducedMotion ? 0.2 : 0.48, ease: [0.22, 1, 0.36, 1] }}
           className="relative z-20 flex min-h-[100svh] flex-col"
         >
-          <div className="pointer-events-none absolute left-4 top-5 z-30 sm:left-6 sm:top-7 lg:left-10 lg:top-8">
+          <div className="pointer-events-none absolute left-4 top-[4.25rem] z-30 sm:left-[6rem] sm:top-6 lg:left-[8rem]">
             <div className="pointer-events-auto">
               <BackToJourneysButton onClick={() => router.push('/journeys')} />
             </div>
@@ -1246,6 +1243,7 @@ export function ItalyJourneyLayout({
                     >
                       <LocationStoryBand
                         story={activeLocationStory}
+                        currentLocationName={currentLocation?.title}
                         compact={isMobileViewport}
                         onClose={closeLocationStory}
                         onNext={openNextLocationStory}
@@ -1527,60 +1525,6 @@ function LocationSectionMenu({
   );
 }
 
-function SectionHeadline({
-  title,
-  subtitle,
-  compact = false,
-  centered = false,
-  sideAligned = false,
-}: {
-  title: string;
-  subtitle?: string;
-  compact?: boolean;
-  centered?: boolean;
-  sideAligned?: boolean;
-}) {
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-      className={clsx(
-        'relative z-10',
-        compact ? 'max-w-[80vw]' : 'max-w-[62vw]',
-        sideAligned && !compact && 'max-w-[28vw] xl:max-w-[24vw]',
-        centered && 'text-center'
-      )}
-    >
-      <h1
-        className={clsx(
-          'font-title uppercase tracking-normal text-white [text-shadow:0_4px_0_rgba(0,0,0,0.36),0_12px_20px_rgba(0,0,0,0.28),0_24px_52px_rgba(0,0,0,0.38),0_40px_88px_rgba(0,0,0,0.3)]',
-          compact
-            ? 'text-[clamp(1.9rem,9vw,3.4rem)] leading-[0.82]'
-            : sideAligned
-              ? 'text-[clamp(2.6rem,5.5vw,5.6rem)] leading-[0.82]'
-              : 'text-[clamp(2.8rem,8vw,7.6rem)] leading-[0.8]'
-        )}
-      >
-        {title}
-      </h1>
-      {subtitle ? (
-        <p
-          className={clsx(
-            'mt-1 uppercase text-white [text-shadow:0_2px_0_rgba(0,0,0,0.3),0_8px_14px_rgba(0,0,0,0.24),0_16px_34px_rgba(0,0,0,0.24)]',
-            compact
-              ? 'text-[0.5rem] tracking-[0.32em]'
-              : 'text-[0.62rem] tracking-[0.34em] sm:text-[0.72rem]'
-          )}
-        >
-          {subtitle}
-        </p>
-      ) : null}
-    </motion.div>
-  );
-}
-
 function CsrImpactCategoryCarousel({
   activeCategory,
   onSelect,
@@ -1773,6 +1717,21 @@ function CsrImpactCategoryRow({
   );
 }
 
+function parseJourneyTimeframe(timeframe: string): { from: string; to: string | null } {
+  const normalized = timeframe
+    .replaceAll('â€“', '-')
+    .replaceAll('–', '-')
+    .replaceAll('—', '-')
+    .replace(/^\s*from\s+/i, '')
+    .trim();
+  const parts = normalized.split(/\s+to\s+/i);
+
+  return {
+    from: parts[0]?.trim() ?? normalized,
+    to: parts.length > 1 ? parts.slice(1).join(' to ').trim() : null,
+  };
+}
+
 function LocationHeadline({
   currentLocation,
   journey,
@@ -1786,6 +1745,8 @@ function LocationHeadline({
   centered?: boolean;
   sideAligned?: boolean;
 }) {
+  const dateRange = parseJourneyTimeframe(journey.timeframe);
+
   return (
     <AnimatePresence mode="wait">
       {currentLocation ? (
@@ -1814,16 +1775,18 @@ function LocationHeadline({
           >
             {currentLocation.title}
           </h1>
-          <p
+          <div
             className={clsx(
-              'mt-1 uppercase text-white [filter:drop-shadow(0_0_12px_rgba(255,245,226,0.22))] [text-shadow:0_0_16px_rgba(255,250,238,0.42),0_0_30px_rgba(255,245,224,0.22),0_3px_0_rgba(0,0,0,0.34),0_10px_18px_rgba(0,0,0,0.24),0_14px_28px_rgba(0,0,0,0.3),0_22px_42px_rgba(0,0,0,0.22)]',
+              'mt-3 flex flex-col uppercase text-white [filter:drop-shadow(0_0_12px_rgba(255,245,226,0.22))] [text-shadow:0_0_16px_rgba(255,250,238,0.42),0_0_30px_rgba(255,245,224,0.22),0_3px_0_rgba(0,0,0,0.34),0_10px_18px_rgba(0,0,0,0.24),0_14px_28px_rgba(0,0,0,0.3),0_22px_42px_rgba(0,0,0,0.22)]',
               compact
-                ? 'text-[0.5rem] tracking-[0.32em]'
-                : 'text-[0.62rem] tracking-[0.34em] sm:text-[0.72rem]'
+                ? 'gap-1.5 text-[0.54rem] tracking-[0.38em]'
+                : 'gap-1 text-[0.68rem] tracking-[0.38em] sm:text-[0.78rem]',
+              centered ? 'items-center text-center' : 'items-start text-left'
             )}
           >
-            {journey.timeframe}
-          </p>
+            <span>From {dateRange.from}</span>
+            {dateRange.to ? <span>To {dateRange.to}</span> : null}
+          </div>
         </motion.div>
       ) : null}
     </AnimatePresence>
@@ -2508,115 +2471,14 @@ function BackToJourneysButton({ onClick }: { onClick: () => void }) {
         direction="left"
         className="h-5 w-5 text-white/55 transition-all duration-300 group-hover:-translate-x-0.5 group-hover:text-[#f6c452]"
       />
-      <div className="relative h-8 w-8 shrink-0">
-        <Image
-          src="/assets/icones/Ico White BEE-12.svg"
-          alt=""
-          fill
-          className="object-contain transition-opacity duration-300 group-hover:opacity-0"
-        />
-        <Image
-          src="/assets/icones/Ico Gold BEE-12.svg"
-          alt=""
-          fill
-          className="object-contain opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-        />
-      </div>
+      <MaskedIcon
+        src="/assets/icones/Ico Gold BEE-02.svg"
+        className="h-8 w-8 text-white transition-colors duration-300 group-hover:text-[#f6c452]"
+      />
       <span className="font-display text-[0.72rem] uppercase tracking-[0.16em] text-white transition-colors duration-300 [text-shadow:0_2px_0_rgba(0,0,0,0.3),0_8px_14px_rgba(0,0,0,0.24),0_16px_34px_rgba(0,0,0,0.24)] group-hover:text-[#f6c452] sm:text-[0.8rem]">
         All Journeys
       </span>
     </button>
-  );
-}
-
-function LocationNavigation({
-  canScrollPrev,
-  canScrollNext,
-  onPrev,
-  onNext,
-  compact = false,
-  centered = false,
-}: {
-  canScrollPrev: boolean;
-  canScrollNext: boolean;
-  onPrev: () => void;
-  onNext: () => void;
-  compact?: boolean;
-  centered?: boolean;
-}) {
-  return (
-    <div
-      className={clsx(
-        'pointer-events-auto flex items-center text-white',
-        compact ? 'gap-2' : 'gap-3 sm:gap-4',
-        centered && 'justify-center'
-      )}
-    >
-      <button
-        type="button"
-        onClick={onPrev}
-        disabled={!canScrollPrev}
-        className={clsx(
-          'group flex items-center justify-center transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/45',
-          compact ? 'h-6 w-6' : 'h-7 w-7',
-          !canScrollPrev ? 'cursor-not-allowed text-white/20' : 'text-white/45 hover:text-white/80'
-        )}
-        aria-label="Previous location"
-      >
-        <SiteArrowIcon
-          direction="left"
-          className={clsx(
-            'transition-transform duration-300 group-hover:-translate-x-1',
-            compact ? 'h-3.5 w-3.5' : 'h-4 w-4'
-          )}
-        />
-      </button>
-      <div
-        className={clsx(
-          'relative flex min-w-0 items-center overflow-hidden',
-          compact ? 'gap-1.5' : 'gap-3'
-        )}
-      >
-        <Image
-          src="/assets/icones/Ico White BEE-14.svg"
-          alt=""
-          width={42}
-          height={42}
-          className={clsx(
-            'shrink-0 drop-shadow-[0_0_20px_rgba(255,255,255,0.42)]',
-            compact ? 'h-7 w-7' : 'h-10 w-10 sm:h-11 sm:w-11'
-          )}
-          priority
-        />
-        <span
-          className={clsx(
-            'truncate font-display uppercase tracking-[0.14em] text-white [text-shadow:0_2px_0_rgba(0,0,0,0.3),0_8px_14px_rgba(0,0,0,0.24),0_16px_34px_rgba(0,0,0,0.24)]',
-            compact ? 'text-[0.7rem]' : 'text-[1.1rem] sm:text-[1.55rem]'
-          )}
-        >
-          Next Location
-        </span>
-      </div>
-      <button
-        type="button"
-        onClick={onNext}
-        disabled={!canScrollNext}
-        className={clsx(
-          'group flex items-center justify-center transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/45',
-          compact ? 'h-6 w-6' : 'h-7 w-7',
-          !canScrollNext ? 'cursor-not-allowed text-white/20' : 'text-white/45 hover:text-white/80'
-        )}
-        aria-label="Next location"
-      >
-        <SiteArrowIcon
-          direction="right"
-          className={clsx(
-            'transition-transform duration-300 group-hover:translate-x-1',
-            compact ? 'h-3.5 w-3.5' : 'h-4 w-4'
-          )}
-        />
-      </button>
-    </div>
   );
 }
 
@@ -2813,6 +2675,7 @@ function LocationCard({
             seasons={location.seasons}
             compact={isMobileViewport}
             scale={seasonIconScale}
+            active={isActive}
           />
         </div>
       </div>
@@ -2824,10 +2687,12 @@ function SeasonIconRow({
   seasons,
   compact = false,
   scale = 'hero',
+  active = false,
 }: {
   seasons: JourneySeason[];
   compact?: boolean;
   scale?: SeasonIconScale;
+  active?: boolean;
 }) {
   const sizing = getSeasonIconSizing(compact, scale);
 
@@ -2838,27 +2703,14 @@ function SeasonIconRow({
         const seasonIconShadowClass =
           '[filter:drop-shadow(0_0.16em_0.04em_rgba(0,0,0,0.88))_drop-shadow(0_0.05em_0.16em_rgba(0,0,0,0.45))]';
         return (
-          <div
-            key={season}
-            className={clsx('group/season relative shrink-0', sizing.itemClass)}
-            aria-label={iconSet.label}
-          >
-            <Image
+          <div key={season} className={clsx('group/season relative shrink-0', sizing.itemClass)}>
+            <MaskedIcon
               src={iconSet.icon}
-              alt=""
-              fill
+              label={iconSet.label}
               className={clsx(
-                'object-contain transition-all duration-300 group-hover/season:-translate-y-0.5 group-hover/season:scale-105 group-hover/season:opacity-0',
-                seasonIconShadowClass
-              )}
-            />
-            <Image
-              src={iconSet.hoverIcon}
-              alt=""
-              fill
-              className={clsx(
-                'object-contain opacity-0 transition-all duration-300 group-hover/season:-translate-y-0.5 group-hover/season:scale-105 group-hover/season:opacity-100',
-                seasonIconShadowClass
+                'h-full w-full transition-all duration-300 group-hover/season:-translate-y-0.5 group-hover:-translate-y-0.5 group-hover/season:scale-105 group-hover:scale-105 group-hover/season:text-[#f6c452] group-hover:text-[#f6c452]',
+                seasonIconShadowClass,
+                active ? 'text-[#f6c452]' : 'text-white'
               )}
             />
           </div>
@@ -2963,11 +2815,13 @@ function LocationBackground({
 
 function LocationStoryBand({
   story,
+  currentLocationName,
   compact = false,
   onClose,
   onNext,
 }: {
   story: IndiaLocationStory;
+  currentLocationName?: string;
   compact?: boolean;
   onClose: () => void;
   onNext: () => void;
@@ -3093,7 +2947,7 @@ function LocationStoryBand({
             >
               <Image
                 src={story.image}
-                alt={story.nextLocation}
+                alt={currentLocationName ?? ''}
                 fill
                 className="object-contain"
                 sizes="(min-width: 1024px) 2240px, 1440px"

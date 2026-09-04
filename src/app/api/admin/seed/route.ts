@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 import { journeys as staticJourneys } from '@/data/journeys-carousel';
 import { getSustainableImpactPdf } from '@/data/sustainable-impact';
 import { getDb, journeys } from '@/lib/db';
-import { requireAdmin } from '@/lib/db/admin-guard';
+import { rejectCrossSiteWrite, requireAdmin } from '@/lib/db/admin-guard';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -13,8 +13,8 @@ export const dynamic = 'force-dynamic';
  * vers Neon. Ré-exécutable : upsert par slug (les éditions manuelles des champs
  * seedés sont écrasées, les voyages créés à la main sont conservés).
  */
-export async function POST() {
-  const unauthorized = await requireAdmin();
+export async function POST(request: Request) {
+  const unauthorized = (await requireAdmin()) ?? rejectCrossSiteWrite(request);
   if (unauthorized) return unauthorized;
 
   try {

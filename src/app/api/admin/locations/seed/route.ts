@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 
 import { journeyLocationSeeds } from '@/data/journey-location-seeds';
 import { getDb, journeys, locations } from '@/lib/db';
-import { requireAdmin } from '@/lib/db/admin-guard';
+import { rejectCrossSiteWrite, requireAdmin } from '@/lib/db/admin-guard';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -12,8 +12,8 @@ export const dynamic = 'force-dynamic';
  * Importe uniquement les Tales manquants. Les voyages, dates et Locations déjà
  * présentes ne sont jamais modifiés.
  */
-export async function POST() {
-  const unauthorized = await requireAdmin();
+export async function POST(request: Request) {
+  const unauthorized = (await requireAdmin()) ?? rejectCrossSiteWrite(request);
   if (unauthorized) return unauthorized;
 
   try {
@@ -31,14 +31,17 @@ export async function POST() {
       if (!seed?.length) continue;
 
       const existing = await db
-        .select({ id: locations.id })
+        .select({ name: locations.name })
         .from(locations)
-        .where(eq(locations.journeyId, journey.id))
-        .limit(1);
-      if (existing.length > 0) continue;
+        .where(eq(locations.journeyId, journey.id));
+      const existingNames = new Set(existing.map((location) => location.name.trim().toLowerCase()));
+      const missingLocations = seed
+        .map((location, position) => ({ location, position }))
+        .filter(({ location }) => !existingNames.has(location.name.trim().toLowerCase()));
+      if (missingLocations.length === 0) continue;
 
       await db.insert(locations).values(
-        seed.map((location, position) => ({
+        missingLocations.map(({ location, position }) => ({
           journeyId: journey.id,
           ...location,
           position,
@@ -46,7 +49,7 @@ export async function POST() {
         }))
       );
       seededJourneys += 1;
-      seededLocations += seed.length;
+      seededLocations += missingLocations.length;
     }
 
     return NextResponse.json({ ok: true, seededJourneys, seededLocations });

@@ -3,9 +3,9 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { AnimatePresence, MotionConfig, motion, useReducedMotion } from 'framer-motion';
-import Image from 'next/image';
 import * as React from 'react';
 
+import { MaskedIcon } from '@/components/primitives/masked-icon';
 import { mainNav } from '@/config/navigation';
 import { cn } from '@/lib/utils';
 
@@ -70,20 +70,14 @@ export function MenuLinks({ isOpen, onNavigate }: MenuLinksProps) {
                     aria-current={isActive ? 'page' : undefined}
                     onClick={handleNavigate}
                     className={cn(
-                      'group relative flex min-h-[44px] items-center gap-4 rounded-[18px] px-1 py-3 text-[rgba(255,237,222,0.86)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(244,199,122,0.9)] focus-visible:ring-offset-2 focus-visible:ring-offset-[rgba(34,24,18,0.95)]',
-                      isActive
-                        ? 'text-[rgba(255,243,231,0.98)]'
-                        : 'hover:text-[rgba(255,243,231,0.98)]'
+                      'group relative grid min-h-[52px] grid-cols-[2.75rem_minmax(0,1fr)] items-center gap-x-4 rounded-[18px] px-1 py-3 text-white/90 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(244,199,122,0.9)] focus-visible:ring-offset-2 focus-visible:ring-offset-[rgba(34,24,18,0.95)]',
+                      isActive ? 'text-[#f6c452]' : 'hover:text-[#f6c452]'
                     )}
                   >
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center">
-                      <Image
+                    <span className="flex h-11 w-11 shrink-0 items-center justify-center">
+                      <MaskedIcon
                         src={item.iconSrc}
-                        alt=""
-                        width={36}
-                        height={36}
-                        className="h-8 w-8 object-contain drop-shadow-[0_4px_14px_rgba(0,0,0,0.32)] md:h-9 md:w-9"
-                        aria-hidden
+                        className="h-8 w-8 drop-shadow-[0_4px_14px_rgba(0,0,0,0.32)] md:h-9 md:w-9"
                       />
                       <span className="sr-only">{item.index}</span>
                     </span>

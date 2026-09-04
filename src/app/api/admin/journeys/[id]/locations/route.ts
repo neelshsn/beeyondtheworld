@@ -2,7 +2,7 @@ import { asc, eq } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 
 import { getDb, locations, type NewLocationRow } from '@/lib/db';
-import { requireAdmin } from '@/lib/db/admin-guard';
+import { rejectCrossSiteWrite, requireAdmin } from '@/lib/db/admin-guard';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -37,7 +37,7 @@ export async function GET(_request: Request, context: RouteContext) {
 }
 
 export async function POST(request: Request, context: RouteContext) {
-  const unauthorized = await requireAdmin();
+  const unauthorized = (await requireAdmin()) ?? rejectCrossSiteWrite(request);
   if (unauthorized) return unauthorized;
 
   try {

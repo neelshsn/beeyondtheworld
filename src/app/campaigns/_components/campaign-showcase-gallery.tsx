@@ -10,7 +10,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useBodyScrollLock } from '@/app/concept/_hooks/use-body-scroll-lock';
 import { usePrefersReducedMotion } from '@/app/concept/_hooks/use-prefers-reduced-motion';
 import { SiteArrowIcon } from '@/components/icons/site-arrow-icon';
-import { campaigns } from '@/data/campaigns-carousel';
 import { formatCampaignSeason } from '@/lib/format-campaign-season';
 import type { Campaign } from '@/types/campaign';
 
@@ -258,7 +257,7 @@ function extractCountry(location: string) {
   return parts[parts.length - 1]?.trim() || location;
 }
 
-export function CampaignShowcaseGallery() {
+export function CampaignShowcaseGallery({ campaigns }: { campaigns: Campaign[] }) {
   useBodyScrollLock();
 
   const prefersReducedMotion = usePrefersReducedMotion();
@@ -329,7 +328,7 @@ export function CampaignShowcaseGallery() {
     [pathname, router, searchParams]
   );
 
-  const filteredJourneys = useMemo(() => filterCampaigns(campaigns, season), [season]);
+  const filteredJourneys = useMemo(() => filterCampaigns(campaigns, season), [campaigns, season]);
   const renderedJourneys = useMemo(
     () => buildRenderedCampaignSlides(filteredJourneys),
     [filteredJourneys]
@@ -915,7 +914,11 @@ function JourneyHeadline({
   sideAligned = false,
 }: JourneyHeadlineProps) {
   const country = currentJourney ? currentJourney.client : '';
-  const destination = currentJourney ? extractCountry(currentJourney.location) : '';
+  const destination = currentJourney
+    ? currentJourney.country || extractCountry(currentJourney.location)
+    : '';
+  const season = currentJourney ? formatCampaignSeason(currentJourney.releaseWindow) : '';
+  const splitVeganboostTitle = currentJourney?.slug === 'veganboost-greece';
 
   return (
     <AnimatePresence mode="wait">
@@ -943,23 +946,28 @@ function JourneyHeadline({
                   : 'text-[clamp(2.8rem,8vw,7.6rem)] leading-[0.8]'
             )}
           >
-            {country}
+            {splitVeganboostTitle ? (
+              <>
+                <span className="block">Vegan</span>
+                <span className="block">Boost</span>
+              </>
+            ) : (
+              country
+            )}
           </h2>
           <p
             className={clsx(
-              'mt-0 uppercase tracking-[0.38em] text-white [text-shadow:0_2px_0_rgba(0,0,0,0.3),0_8px_14px_rgba(0,0,0,0.24),0_16px_34px_rgba(0,0,0,0.24)]',
-              compact ? 'text-[0.56rem]' : 'text-[0.68rem] sm:text-[0.78rem]'
+              'mt-2 inline-flex items-center whitespace-nowrap uppercase text-white [text-shadow:0_2px_0_rgba(0,0,0,0.3),0_8px_14px_rgba(0,0,0,0.24),0_16px_34px_rgba(0,0,0,0.24)]',
+              compact
+                ? 'text-[0.5rem] tracking-[0.28em]'
+                : 'text-[0.6rem] tracking-[0.34em] sm:text-[0.68rem]'
             )}
           >
-            {destination}
-          </p>
-          <p
-            className={clsx(
-              'text-white/84 mt-2 uppercase tracking-[0.38em] [text-shadow:0_2px_0_rgba(0,0,0,0.3),0_8px_14px_rgba(0,0,0,0.24),0_16px_34px_rgba(0,0,0,0.24)]',
-              compact ? 'text-[0.48rem]' : 'text-[0.6rem] sm:text-[0.68rem]'
-            )}
-          >
-            {formatCampaignSeason(currentJourney.releaseWindow)}
+            <span>{destination}</span>
+            <span className="px-2 text-[#f6c452]" aria-hidden="true">
+              |
+            </span>
+            <span>{season}</span>
           </p>
         </motion.div>
       ) : null}

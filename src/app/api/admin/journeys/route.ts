@@ -2,7 +2,7 @@ import { asc } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 
 import { getDb, journeys, locations, type NewJourneyRow } from '@/lib/db';
-import { requireAdmin } from '@/lib/db/admin-guard';
+import { rejectCrossSiteWrite, requireAdmin } from '@/lib/db/admin-guard';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -33,7 +33,7 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const unauthorized = await requireAdmin();
+  const unauthorized = (await requireAdmin()) ?? rejectCrossSiteWrite(request);
   if (unauthorized) return unauthorized;
 
   try {
@@ -61,7 +61,8 @@ export async function POST(request: Request) {
         moods: body.moods ?? [],
         sustainablePdf: body.sustainablePdf ?? null,
         position: body.position ?? 0,
-        published: body.published ?? true,
+        // A newly created Journey stays hidden until its content and media are ready.
+        published: body.published ?? false,
       })
       .returning();
 

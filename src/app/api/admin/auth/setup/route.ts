@@ -6,6 +6,7 @@ import {
   createAdminSession,
   sessionCookieOptions,
 } from '@/lib/db/admin-auth';
+import { rejectCrossSiteWrite } from '@/lib/db/admin-guard';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -14,10 +15,12 @@ const PASSWORD_MIN_LENGTH = 8;
 
 /**
  * Activation d'un compte invité : l'invité ouvre son lien
- * /admin/journeys?invite=TOKEN et choisit son mot de passe ici.
- * Le token est à usage unique (effacé à l'activation).
+ * /admin#invite=TOKEN et choisit son mot de passe ici.
+ * Le token est à usage unique, stocké sous forme de digest et expire après 72 h.
  */
 export async function POST(request: Request) {
+  const denied = rejectCrossSiteWrite(request);
+  if (denied) return denied;
   try {
     const body = (await request.json().catch(() => ({}))) as {
       token?: string;
@@ -39,7 +42,7 @@ export async function POST(request: Request) {
     const activated = await activateInvitedAdmin(token, password);
     if (!activated) {
       return NextResponse.json(
-        { error: "Lien d'invitation invalide ou déjà utilisé." },
+        { error: "Ce lien d'invitation est invalide, expiré ou déjà utilisé." },
         { status: 400 }
       );
     }
@@ -53,8 +56,9 @@ export async function POST(request: Request) {
     );
     return response;
   } catch (error) {
+    console.error('Admin invitation activation failed:', error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Activation impossible.' },
+      { error: 'Activation temporairement impossible. Réessaie dans un instant.' },
       { status: 500 }
     );
   }

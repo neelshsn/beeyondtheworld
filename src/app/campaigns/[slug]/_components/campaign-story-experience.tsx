@@ -10,6 +10,7 @@ import { SmartVideo } from '@/components/primitives';
 import { campaignShowcases, type CampaignShowcase } from '@/data/showcases';
 import { formatCampaignSeason } from '@/lib/format-campaign-season';
 import type { Campaign } from '@/types/campaign';
+import type { CampaignTaleContent } from '@/types/editorial-content';
 
 type StoryCopy = { title: string; body: string };
 type MediaOverride = {
@@ -97,7 +98,19 @@ function unique(items: Array<string | undefined>) {
   );
 }
 
-function resolveMedia(campaign: CampaignShowcase) {
+function resolveMedia(campaign: CampaignShowcase, tale?: CampaignTaleContent) {
+  if (tale) {
+    const videos = unique([tale.heroVideo, ...tale.videos, tale.storyVideo]).slice(0, 5);
+    const images = unique(tale.images).slice(0, 5);
+    const fallbackImage = campaign.hero.type === 'image' ? campaign.hero.src : campaign.hero.poster;
+    return {
+      heroVideo: tale.heroVideo ?? videos[0],
+      storyVideo: tale.storyVideo ?? videos[1] ?? videos[0],
+      videos,
+      images: images.length ? images : unique([fallbackImage]),
+    };
+  }
+
   const override = MEDIA_OVERRIDES[campaign.slug] ?? {};
   const derivedVideos = unique([
     campaign.hero.type === 'video' ? campaign.hero.src : undefined,
@@ -147,25 +160,31 @@ function alternateMedia(images: string[], videos: string[]): StoryMediaPanel[] {
 export function CampaignStoryExperience({
   campaign,
   meta,
+  tale,
+  campaignCatalog = campaignShowcases,
 }: {
   campaign: CampaignShowcase;
   meta: Campaign | null;
+  tale?: CampaignTaleContent;
+  campaignCatalog?: CampaignShowcase[];
 }) {
   useBodyScrollLock();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const activeRef = useRef(0);
   const animatingRef = useRef(false);
   const [activeIndex, setActiveIndex] = useState(0);
-  const media = useMemo(() => resolveMedia(campaign), [campaign]);
-  const copy = STORY_COPY[campaign.slug] ?? {
-    title: campaign.headline,
-    body: campaign.summary.toUpperCase(),
-  };
-  const campaignIndex = campaignShowcases.findIndex((item) => item.slug === campaign.slug);
+  const media = useMemo(() => resolveMedia(campaign, tale), [campaign, tale]);
+  const copy = tale ??
+    STORY_COPY[campaign.slug] ?? {
+      title: campaign.headline,
+      body: campaign.summary.toUpperCase(),
+    };
+  const campaignIndex = campaignCatalog.findIndex((item) => item.slug === campaign.slug);
   const nextCampaign =
-    campaignShowcases[(campaignIndex + 1) % campaignShowcases.length] ?? campaignShowcases[0];
+    campaignCatalog[(campaignIndex + 1) % campaignCatalog.length] ?? campaignCatalog[0] ?? campaign;
   const nextMedia = resolveMedia(nextCampaign);
   const client = meta?.client ?? campaign.title.split(' - ')[0] ?? campaign.title;
+  const splitVeganboostTitle = campaign.slug === 'veganboost-greece';
   const detail = formatCampaignSeason(
     meta?.releaseWindow ?? campaign.hero.caption ?? campaign.destination
   );
@@ -290,7 +309,14 @@ export function CampaignStoryExperience({
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(4,4,3,0.12)_0%,rgba(4,4,3,0.02)_46%,rgba(4,4,3,0.72)_100%)]" />
         <div className="absolute bottom-10 left-6 z-10 max-w-[90vw] text-left sm:bottom-14 sm:left-12 lg:bottom-20 lg:left-20">
           <h1 className="font-title text-[clamp(3.5rem,10vw,10rem)] uppercase leading-[0.76] tracking-[-0.025em] text-white [text-shadow:0_14px_55px_rgba(0,0,0,0.52)]">
-            {client}
+            {splitVeganboostTitle ? (
+              <>
+                <span className="block">Vegan</span>
+                <span className="block">Boost</span>
+              </>
+            ) : (
+              client
+            )}
           </h1>
           <p className="mt-4 font-display text-[0.56rem] uppercase tracking-[0.34em] text-white/90 sm:text-[0.7rem]">
             {campaign.destination} <span className="px-2 text-[#f6c452]">|</span> {detail}

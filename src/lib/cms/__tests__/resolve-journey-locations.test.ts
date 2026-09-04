@@ -73,4 +73,100 @@ describe('resolveJourneyLocationContent', () => {
       nextLocation: 'New title',
     });
   });
+
+  it('keeps newly added fallback Locations when the CMS only contains an older subset', () => {
+    const locations: JourneyLocationView[] = [
+      {
+        id: 'azores',
+        title: 'Azores',
+        region: 'Volcanic Lakes',
+        image: '/azores.jpg',
+        seasons: ['spring-summer', 'fall-winter'],
+      },
+      {
+        id: 'madeira',
+        title: 'Madeira',
+        region: 'Cloud Mountains',
+        image: '/madeira.jpg',
+        seasons: ['spring-summer', 'fall-winter'],
+      },
+      {
+        id: 'lisboa',
+        title: 'Lisboa',
+        region: 'Tiled Light',
+        image: '/lisboa.jpg',
+        seasons: ['spring-summer', 'fall-winter'],
+      },
+    ];
+    const stories: JourneyLocationStoryView[] = locations.map((location, index) => ({
+      id: `story-${location.id}`,
+      locationId: location.id,
+      image: location.image,
+      leftTitle: [location.title],
+      narrative: `${location.title} narrative`,
+      nextLocationId: locations[(index + 1) % locations.length].id,
+      nextLocation: locations[(index + 1) % locations.length].title,
+    }));
+
+    const result = resolveJourneyLocationContent(
+      [
+        {
+          id: 7,
+          name: 'Azores',
+          subtitle: 'CMS region',
+          leftTitle: [],
+          narrative: '',
+          image: null,
+          video: null,
+          media: [],
+          position: 0,
+        },
+      ],
+      locations,
+      stories,
+      { appendMissingFallbacks: true, preferFallbackMedia: true }
+    );
+
+    expect(result.locations.map((location) => location.title)).toEqual([
+      'Azores',
+      'Madeira',
+      'Lisboa',
+    ]);
+    expect(result.stories.map((story) => story.nextLocation)).toEqual([
+      'Madeira',
+      'Lisboa',
+      'Azores',
+    ]);
+    expect(result.locations[0].image).toBe('/azores.jpg');
+  });
+
+  it('keeps a populated CMS authoritative unless compatibility is explicitly enabled', () => {
+    const extraFallback: JourneyLocationView = {
+      id: 'fallback-two',
+      title: 'Hidden fallback',
+      region: 'Fallback region',
+      image: '/fallback-two.jpg',
+      seasons: ['fall-winter'],
+    };
+
+    const result = resolveJourneyLocationContent(
+      [
+        {
+          id: 42,
+          name: 'New title',
+          subtitle: 'New region',
+          leftTitle: ['New', 'Tale'],
+          narrative: 'New narrative',
+          image: '/new-thumbnail.jpg',
+          video: '/new-background.mp4',
+          media: [{ url: '/new-story.jpg', type: 'image' }],
+          position: 0,
+        },
+      ],
+      [...fallbackLocations, extraFallback],
+      fallbackStories
+    );
+
+    expect(result.locations.map((location) => location.title)).toEqual(['New title']);
+  });
 });

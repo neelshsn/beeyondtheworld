@@ -71,14 +71,46 @@ const statements = [
     email text NOT NULL UNIQUE,
     password_hash text,
     setup_token text UNIQUE,
+    setup_token_expires_at timestamp,
     created_at timestamp NOT NULL DEFAULT now()
   )`,
   `ALTER TABLE admin_users ALTER COLUMN password_hash DROP NOT NULL`,
   `ALTER TABLE admin_users ADD COLUMN IF NOT EXISTS setup_token text UNIQUE`,
+  `ALTER TABLE admin_users ADD COLUMN IF NOT EXISTS setup_token_expires_at timestamp`,
+  `CREATE UNIQUE INDEX IF NOT EXISTS admin_users_setup_token_idx ON admin_users(setup_token)`,
   `CREATE TABLE IF NOT EXISTS admin_sessions (
     token text PRIMARY KEY,
     admin_user_id integer NOT NULL REFERENCES admin_users(id) ON DELETE CASCADE,
     expires_at timestamp NOT NULL,
+    created_at timestamp NOT NULL DEFAULT now()
+  )`,
+  `CREATE TABLE IF NOT EXISTS content_documents (
+    id serial PRIMARY KEY,
+    kind text NOT NULL,
+    slug text NOT NULL,
+    draft jsonb NOT NULL,
+    published jsonb,
+    revision integer NOT NULL DEFAULT 1,
+    published_revision integer NOT NULL DEFAULT 0,
+    position integer NOT NULL DEFAULT 0,
+    archived boolean NOT NULL DEFAULT false,
+    updated_by text,
+    published_at timestamp,
+    created_at timestamp NOT NULL DEFAULT now(),
+    updated_at timestamp NOT NULL DEFAULT now()
+  )`,
+  `CREATE UNIQUE INDEX IF NOT EXISTS content_documents_kind_slug_idx
+    ON content_documents(kind, slug)`,
+  `CREATE TABLE IF NOT EXISTS media_assets (
+    id serial PRIMARY KEY,
+    url text NOT NULL UNIQUE,
+    pathname text NOT NULL UNIQUE,
+    original_name text NOT NULL,
+    content_type text NOT NULL,
+    media_type text NOT NULL,
+    size integer NOT NULL DEFAULT 0,
+    uploaded_by text,
+    archived_at timestamp,
     created_at timestamp NOT NULL DEFAULT now()
   )`,
 ];

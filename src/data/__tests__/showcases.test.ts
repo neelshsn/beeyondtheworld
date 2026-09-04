@@ -5,6 +5,7 @@ import { describe, expect, it } from 'vitest';
 
 import { CAMPAIGN_FORMAT_BY_ID } from '../campaign-formats';
 import { campaigns } from '../campaigns-carousel';
+import { journeyLocationSeeds } from '../journey-location-seeds';
 import { journeys } from '../journeys-carousel';
 import { campaignShowcases, journeyShowcases, type ShowcaseMedia } from '../showcases';
 
@@ -94,5 +95,30 @@ describe('public showcase integrity', () => {
         true
       );
     }
+  });
+
+  it('publishes Portugal as one Journey with Azores, Madeira, and Lisboa', () => {
+    const portugalCard = journeys.find((journey) => journey.slug === 'azores');
+    const portugalShowcase = journeyShowcases.find((journey) => journey.slug === 'azores');
+
+    expect(portugalCard).toMatchObject({
+      title: 'Portugal',
+      location: 'Azores, Madeira & Lisboa, Portugal',
+    });
+    expect(portugalShowcase).toMatchObject({
+      title: 'Portugal',
+      locale: 'Azores, Madeira & Lisboa, Portugal',
+    });
+    expect(journeyLocationSeeds.azores.map((location) => location.name)).toEqual([
+      'Azores',
+      'Madeira',
+      'Lisboa',
+    ]);
+  });
+
+  it('keeps the approved Dolomites title', () => {
+    const dolomites = journeyLocationSeeds.italy.find((location) => location.name === 'Dolomites');
+
+    expect(dolomites?.leftTitle).toEqual(['The', 'Silent Majesty', 'of Stone']);
   });
 });

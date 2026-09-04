@@ -17,6 +17,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { cn } from '@/lib/utils';
 import type { JourneySeason } from '@/types/journey';
 
+import { MediaUploadField } from '../../_components/media-upload-field';
+
 type LocationMedia = {
   url: string;
   type: 'image' | 'video';
@@ -62,12 +64,102 @@ type JourneyRecord = {
 };
 
 type JourneyDraft = Partial<Omit<JourneyRecord, 'id' | 'locations'>>;
-type LocationDraft = Partial<Omit<LocationRecord, 'id' | 'journeyId'>> & { leftTitleText?: string };
+type EditableLocationMedia = LocationMedia & { editorId: string };
+type LocationDraft = Partial<Omit<LocationRecord, 'id' | 'journeyId' | 'media'>> & {
+  leftTitleText: string;
+  media: EditableLocationMedia[];
+};
+type EditorActivity = { dirty: boolean; uploading: boolean };
+
+const EMPTY_ACTIVITY: EditorActivity = { dirty: false, uploading: false };
 
 const SEASONS: { value: JourneySeason; label: string }[] = [
   { value: 'spring-summer', label: 'Spring Summer' },
   { value: 'fall-winter', label: 'Fall Winter' },
 ];
+
+function createLocationDraft(location: LocationRecord): LocationDraft {
+  return {
+    name: location.name,
+    subtitle: location.subtitle ?? '',
+    leftTitleText: location.leftTitle.join('\n'),
+    narrative: location.narrative,
+    image: location.image ?? '',
+    video: location.video ?? '',
+    media: (location.media ?? []).map((item, index) => ({
+      ...item,
+      editorId: `saved-${location.id}-${index}`,
+    })),
+    published: location.published,
+  };
+}
+
+function createMediaEditorId() {
+  if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) return crypto.randomUUID();
+  return `media-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+}
+
+function useUploadTracker() {
+  const [uploadingKeys, setUploadingKeys] = useState<Set<string>>(() => new Set());
+  const setUploadState = useCallback((key: string, uploading: boolean) => {
+    setUploadingKeys((current) => {
+      const next = new Set(current);
+      if (uploading) next.add(key);
+      else next.delete(key);
+      return next;
+    });
+  }, []);
+
+  return { uploadingKeys, setUploadState, uploading: uploadingKeys.size > 0 };
+}
+
+function useDraftNavigationGuard(shouldBlock: boolean) {
+  useEffect(() => {
+    if (!shouldBlock) return;
+
+    const message =
+      'Tu as des modifications non enregistrées ou un fichier en cours d’envoi. Quitter cette page les perdra.';
+    const beforeUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      event.returnValue = '';
+    };
+    const guardAdminLink = (event: MouseEvent) => {
+      if (
+        event.defaultPrevented ||
+        event.button !== 0 ||
+        event.metaKey ||
+        event.ctrlKey ||
+        event.shiftKey ||
+        event.altKey
+      ) {
+        return;
+      }
+      const control =
+        event.target instanceof Element ? event.target.closest('a[href], button') : null;
+      if (control instanceof HTMLButtonElement) {
+        if (control.getAttribute('aria-label') !== 'Se déconnecter de l’Espace Bee') return;
+      } else if (control instanceof HTMLAnchorElement) {
+        const rawHref = control.getAttribute('href');
+        if (!rawHref || rawHref.startsWith('#') || control.target === '_blank') return;
+        const nextUrl = new URL(control.href, window.location.href);
+        if (nextUrl.origin !== window.location.origin || nextUrl.href === window.location.href)
+          return;
+      } else {
+        return;
+      }
+      if (window.confirm(message)) return;
+      event.preventDefault();
+      event.stopPropagation();
+    };
+
+    window.addEventListener('beforeunload', beforeUnload);
+    document.addEventListener('click', guardAdminLink, true);
+    return () => {
+      window.removeEventListener('beforeunload', beforeUnload);
+      document.removeEventListener('click', guardAdminLink, true);
+    };
+  }, [shouldBlock]);
+}
 
 async function api<T>(url: string, init?: RequestInit): Promise<T> {
   const response = await fetch(url, {
@@ -82,8 +174,8 @@ async function api<T>(url: string, init?: RequestInit): Promise<T> {
 }
 
 const fieldClass =
-  'w-full rounded-none border border-white/15 bg-white/5 px-3 py-2 text-sm text-white outline-none transition-colors focus:border-[#f4bb52]';
-const labelClass = 'mb-1 block text-[10px] uppercase tracking-[0.3em] text-white/50';
+  'min-h-11 w-full rounded-none border border-white/15 bg-white/5 px-3 py-2 text-base text-white outline-none transition-colors focus-visible:border-[#f4bb52] focus-visible:ring-2 focus-visible:ring-[#f4bb52]/30 disabled:cursor-not-allowed disabled:opacity-55 sm:text-sm';
+const labelClass = 'mb-1 block text-xs uppercase tracking-[0.22em] text-white/65';
 
 function Field({
   label,
@@ -91,12 +183,14 @@ function Field({
   onChange,
   placeholder,
   textarea = false,
+  disabled = false,
 }: {
   label: string;
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
   textarea?: boolean;
+  disabled?: boolean;
 }) {
   return (
     <label className="block">
@@ -107,6 +201,7 @@ function Field({
           value={value}
           placeholder={placeholder}
           onChange={(event) => onChange(event.target.value)}
+          disabled={disabled}
         />
       ) : (
         <input
@@ -114,6 +209,7 @@ function Field({
           value={value}
           placeholder={placeholder}
           onChange={(event) => onChange(event.target.value)}
+          disabled={disabled}
         />
       )}
     </label>
@@ -124,27 +220,48 @@ function LocationEditor({
   location,
   onSaved,
   onDeleted,
+  onActivityChange,
 }: {
   location: LocationRecord;
-  onSaved: () => void;
-  onDeleted: () => void;
+  onSaved: () => void | Promise<void>;
+  onDeleted: () => void | Promise<void>;
+  onActivityChange: (locationId: number, activity: EditorActivity) => void;
 }) {
-  const [draft, setDraft] = useState<LocationDraft>({
-    name: location.name,
-    subtitle: location.subtitle ?? '',
-    leftTitleText: location.leftTitle.join('\n'),
-    narrative: location.narrative,
-    image: location.image ?? '',
-    video: location.video ?? '',
-    media: location.media ?? [],
-    published: location.published,
-  });
+  const [draft, setDraft] = useState<LocationDraft>(() => createLocationDraft(location));
+  const [dirty, setDirty] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
+  const { uploadingKeys, setUploadState, uploading } = useUploadTracker();
+
+  const updateDraft = (updater: (current: LocationDraft) => LocationDraft) => {
+    setDraft(updater);
+    setDirty(true);
+    setNotice(null);
+  };
+
+  useEffect(() => {
+    onActivityChange(location.id, { dirty, uploading });
+  }, [dirty, location.id, onActivityChange, uploading]);
+
+  useEffect(() => {
+    return () => onActivityChange(location.id, EMPTY_ACTIVITY);
+  }, [location.id, onActivityChange]);
 
   const save = async () => {
+    const incompleteMedia = draft.media.find((item) => !item.url.trim());
+    if (incompleteMedia) {
+      setError('Ajoute un fichier dans chaque ligne de galerie, ou supprime la ligne vide.');
+      return;
+    }
+    if (uploading) {
+      setError('Attends la fin de l’envoi du fichier avant d’enregistrer.');
+      return;
+    }
+
     setBusy(true);
     setError(null);
+    setNotice(null);
     try {
       await api(`/api/admin/locations/${location.id}`, {
         method: 'PATCH',
@@ -158,11 +275,17 @@ function LocationEditor({
           narrative: draft.narrative,
           image: draft.image || null,
           video: draft.video || null,
-          media: draft.media ?? [],
+          media: draft.media.map(({ url, type, alt }) => ({
+            url: url.trim(),
+            type,
+            alt: alt?.trim() || undefined,
+          })),
           published: draft.published ?? false,
         }),
       });
-      onSaved();
+      await onSaved();
+      setDirty(false);
+      setNotice('Location enregistrée.');
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'Erreur');
     } finally {
@@ -171,11 +294,15 @@ function LocationEditor({
   };
 
   const remove = async () => {
+    const confirmed = window.confirm(
+      `Supprimer définitivement la Location « ${location.name} » ? Cette action est irréversible.`
+    );
+    if (!confirmed) return;
     setBusy(true);
     setError(null);
     try {
       await api(`/api/admin/locations/${location.id}`, { method: 'DELETE' });
-      onDeleted();
+      await onDeleted();
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'Erreur');
       setBusy(false);
@@ -183,45 +310,48 @@ function LocationEditor({
   };
 
   return (
-    <div className="space-y-3 border border-white/10 bg-black/20 p-4">
+    <fieldset disabled={busy} className="min-w-0 space-y-3 border border-white/10 bg-black/20 p-4">
       <div className="grid gap-3 md:grid-cols-2">
         <Field
           label="Nom"
           value={draft.name ?? ''}
-          onChange={(name) => setDraft((d) => ({ ...d, name }))}
+          onChange={(name) => updateDraft((current) => ({ ...current, name }))}
         />
         <Field
           label="Sous-titre"
           value={draft.subtitle ?? ''}
-          onChange={(subtitle) => setDraft((d) => ({ ...d, subtitle }))}
+          onChange={(subtitle) => updateDraft((current) => ({ ...current, subtitle }))}
         />
-        <Field
-          label="Image (URL)"
+        <MediaUploadField
+          label="Image principale"
           value={draft.image ?? ''}
-          onChange={(image) => setDraft((d) => ({ ...d, image }))}
-          placeholder="/assets/journeys/…"
+          onChange={(image) => updateDraft((current) => ({ ...current, image }))}
+          disabled={busy}
+          onBusyChange={(active) => setUploadState('location-image', active)}
         />
-        <Field
-          label="Vidéo (URL)"
+        <MediaUploadField
+          label="Vidéo principale"
+          kind="video"
           value={draft.video ?? ''}
-          onChange={(video) => setDraft((d) => ({ ...d, video }))}
-          placeholder="/assets/journeys/…"
+          onChange={(video) => updateDraft((current) => ({ ...current, video }))}
+          disabled={busy}
+          onBusyChange={(active) => setUploadState('location-video', active)}
         />
       </div>
       <Field
         label="Titre gauche (1 ligne par entrée)"
         value={draft.leftTitleText ?? ''}
-        onChange={(leftTitleText) => setDraft((d) => ({ ...d, leftTitleText }))}
+        onChange={(leftTitleText) => updateDraft((current) => ({ ...current, leftTitleText }))}
         textarea
       />
       <Field
         label="Texte du Tale"
         value={draft.narrative ?? ''}
-        onChange={(narrative) => setDraft((d) => ({ ...d, narrative }))}
+        onChange={(narrative) => updateDraft((current) => ({ ...current, narrative }))}
         textarea
       />
       <div className="space-y-3 border-t border-white/10 pt-4">
-        <div className="flex items-center justify-between gap-3">
+        <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-[10px] uppercase tracking-[0.3em] text-white/50">Galerie du Tale</p>
             <p className="mt-1 text-xs text-white/45">
@@ -232,11 +362,14 @@ function LocationEditor({
             size="sm"
             variant="outline"
             type="button"
-            className="border-white/20 bg-transparent text-white hover:bg-white/10 hover:text-white"
+            className="min-h-11 w-full border-white/20 bg-transparent text-white hover:bg-white/10 hover:text-white sm:w-auto"
             onClick={() =>
-              setDraft((current) => ({
+              updateDraft((current) => ({
                 ...current,
-                media: [...(current.media ?? []), { url: '', type: 'image', alt: '' }],
+                media: [
+                  ...current.media,
+                  { editorId: createMediaEditorId(), url: '', type: 'image', alt: '' },
+                ],
               }))
             }
           >
@@ -245,7 +378,7 @@ function LocationEditor({
         </div>
         {(draft.media ?? []).map((media, index) => (
           <div
-            key={index}
+            key={media.editorId}
             className="grid gap-2 border border-white/10 bg-white/[0.03] p-3 md:grid-cols-[130px_1fr_1fr_auto]"
           >
             <label className="block">
@@ -253,42 +386,52 @@ function LocationEditor({
               <select
                 className={fieldClass}
                 value={media.type}
-                onChange={(event) =>
-                  setDraft((current) => ({
+                disabled={busy || uploadingKeys.has(`media-${media.editorId}`)}
+                onChange={(event) => {
+                  const nextType = event.target.value as LocationMedia['type'];
+                  if (
+                    media.url &&
+                    !window.confirm(
+                      'Changer le type retirera le fichier actuel de cette ligne. Continuer ?'
+                    )
+                  ) {
+                    return;
+                  }
+                  updateDraft((current) => ({
                     ...current,
-                    media: (current.media ?? []).map((item, itemIndex) =>
-                      itemIndex === index
-                        ? { ...item, type: event.target.value as LocationMedia['type'] }
-                        : item
+                    media: current.media.map((item) =>
+                      item.editorId === media.editorId ? { ...item, type: nextType, url: '' } : item
                     ),
-                  }))
-                }
+                  }));
+                }}
               >
                 <option value="image">Image</option>
                 <option value="video">Vidéo</option>
               </select>
             </label>
-            <Field
-              label="URL"
+            <MediaUploadField
+              label={`Fichier ${index + 1}`}
+              kind={media.type}
               value={media.url}
+              disabled={busy}
+              onBusyChange={(active) => setUploadState(`media-${media.editorId}`, active)}
               onChange={(url) =>
-                setDraft((current) => ({
+                updateDraft((current) => ({
                   ...current,
-                  media: (current.media ?? []).map((item, itemIndex) =>
-                    itemIndex === index ? { ...item, url } : item
+                  media: current.media.map((item) =>
+                    item.editorId === media.editorId ? { ...item, url } : item
                   ),
                 }))
               }
-              placeholder="/assets/journeys/…"
             />
             <Field
               label="Texte alternatif"
               value={media.alt ?? ''}
               onChange={(alt) =>
-                setDraft((current) => ({
+                updateDraft((current) => ({
                   ...current,
-                  media: (current.media ?? []).map((item, itemIndex) =>
-                    itemIndex === index ? { ...item, alt } : item
+                  media: current.media.map((item) =>
+                    item.editorId === media.editorId ? { ...item, alt } : item
                   ),
                 }))
               }
@@ -298,12 +441,13 @@ function LocationEditor({
               size="sm"
               variant="ghost"
               type="button"
-              className="self-end"
+              className="min-h-11 min-w-11 self-end"
               aria-label={`Supprimer le média ${index + 1}`}
+              disabled={busy || uploadingKeys.has(`media-${media.editorId}`)}
               onClick={() =>
-                setDraft((current) => ({
+                updateDraft((current) => ({
                   ...current,
-                  media: (current.media ?? []).filter((_, itemIndex) => itemIndex !== index),
+                  media: current.media.filter((item) => item.editorId !== media.editorId),
                 }))
               }
             >
@@ -311,35 +455,73 @@ function LocationEditor({
             </Button>
           </div>
         ))}
-        {(draft.media ?? []).length === 0 ? (
+        {draft.media.length === 0 ? (
           <p className="text-xs text-white/35">Aucun média de galerie pour le moment.</p>
         ) : null}
       </div>
-      <label className="flex items-center gap-3 text-sm text-white/70">
+      <label className="flex min-h-11 items-center gap-3 text-sm text-white/70">
         <input
           type="checkbox"
           checked={draft.published ?? false}
           onChange={(event) =>
-            setDraft((current) => ({ ...current, published: event.target.checked }))
+            updateDraft((current) => ({ ...current, published: event.target.checked }))
           }
           className="size-4 accent-[#f4bb52]"
         />
         Visible sur la page Journey
       </label>
-      {error ? <p className="text-xs text-red-400">{error}</p> : null}
-      <div className="flex items-center gap-2">
-        <Button size="sm" onClick={save} disabled={busy}>
-          Enregistrer
+      {uploading ? (
+        <p className="text-xs text-[#f4bb52]" role="status">
+          Un fichier est en cours d’envoi. Attends avant d’enregistrer.
+        </p>
+      ) : null}
+      {dirty && !uploading ? (
+        <p className="text-xs text-[#f4bb52]" role="status">
+          Modifications non enregistrées.
+        </p>
+      ) : null}
+      {error ? (
+        <p className="text-xs text-red-400" role="alert">
+          {error}
+        </p>
+      ) : null}
+      {notice ? (
+        <p className="text-xs text-emerald-300" role="status">
+          {notice}
+        </p>
+      ) : null}
+      <div className="flex flex-wrap items-center gap-2">
+        <Button
+          className="min-h-11"
+          size="sm"
+          onClick={save}
+          disabled={busy || uploading || !dirty}
+        >
+          {busy ? 'Enregistrement…' : 'Enregistrer'}
         </Button>
-        <Button size="sm" variant="ghost" onClick={remove} disabled={busy}>
+        <Button
+          className="min-h-11"
+          size="sm"
+          variant="ghost"
+          onClick={remove}
+          disabled={busy || uploading}
+        >
           <Trash2 className="size-4" /> Supprimer
         </Button>
       </div>
-    </div>
+    </fieldset>
   );
 }
 
-function JourneyEditor({ journey, onChanged }: { journey: JourneyRecord; onChanged: () => void }) {
+function JourneyEditor({
+  journey,
+  onChanged,
+  onActivityChange,
+}: {
+  journey: JourneyRecord;
+  onChanged: () => void | Promise<void>;
+  onActivityChange: (journeyId: number, activity: EditorActivity) => void;
+}) {
   const [draft, setDraft] = useState<JourneyDraft>({
     slug: journey.slug,
     title: journey.title,
@@ -356,13 +538,51 @@ function JourneyEditor({ journey, onChanged }: { journey: JourneyRecord; onChang
     image: journey.image,
     backgroundVideo: journey.backgroundVideo ?? '',
     sustainablePdf: journey.sustainablePdf ?? '',
+    published: journey.published,
   });
+  const [dirty, setDirty] = useState(false);
   const [newLocationName, setNewLocationName] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
+  const [locationActivities, setLocationActivities] = useState<Record<number, EditorActivity>>({});
+  const { setUploadState, uploading } = useUploadTracker();
+  const locationDirty = Object.values(locationActivities).some((activity) => activity.dirty);
+  const locationUploading = Object.values(locationActivities).some(
+    (activity) => activity.uploading
+  );
+  const hasUnsavedChanges = dirty || locationDirty || Boolean(newLocationName.trim());
+  const hasActiveUpload = uploading || locationUploading;
+
+  const updateDraft = (updater: (current: JourneyDraft) => JourneyDraft) => {
+    setDraft(updater);
+    setDirty(true);
+    setNotice(null);
+  };
+
+  const updateLocationActivity = useCallback((locationId: number, activity: EditorActivity) => {
+    setLocationActivities((current) => {
+      const previous = current[locationId] ?? EMPTY_ACTIVITY;
+      if (previous.dirty === activity.dirty && previous.uploading === activity.uploading) {
+        return current;
+      }
+      return { ...current, [locationId]: activity };
+    });
+  }, []);
+
+  useEffect(() => {
+    onActivityChange(journey.id, {
+      dirty: hasUnsavedChanges,
+      uploading: hasActiveUpload,
+    });
+  }, [hasActiveUpload, hasUnsavedChanges, journey.id, onActivityChange]);
+
+  useEffect(() => {
+    return () => onActivityChange(journey.id, EMPTY_ACTIVITY);
+  }, [journey.id, onActivityChange]);
 
   const toggleSeason = (season: JourneySeason) => {
-    setDraft((current) => {
+    updateDraft((current) => {
       const selected = current.seasonTags ?? [];
       if (selected.includes(season)) {
         if (selected.length === 1) return current;
@@ -373,7 +593,7 @@ function JourneyEditor({ journey, onChanged }: { journey: JourneyRecord; onChang
   };
 
   const updateSeasonVisual = (season: JourneySeason, field: keyof SeasonVisual, value: string) => {
-    setDraft((current) => ({
+    updateDraft((current) => ({
       ...current,
       seasonVisuals: {
         ...(current.seasonVisuals ?? {}),
@@ -386,8 +606,13 @@ function JourneyEditor({ journey, onChanged }: { journey: JourneyRecord; onChang
   };
 
   const save = async () => {
+    if (uploading) {
+      setError('Attends la fin de l’envoi du fichier avant d’enregistrer.');
+      return;
+    }
     setBusy(true);
     setError(null);
+    setNotice(null);
     try {
       const seasonTags =
         draft.seasonTags && draft.seasonTags.length > 0
@@ -420,9 +645,12 @@ function JourneyEditor({ journey, onChanged }: { journey: JourneyRecord; onChang
           image: draft.image,
           backgroundVideo: draft.backgroundVideo || null,
           sustainablePdf: draft.sustainablePdf || null,
+          published: draft.published ?? false,
         }),
       });
-      onChanged();
+      await onChanged();
+      setDirty(false);
+      setNotice('Voyage enregistré.');
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'Erreur');
     } finally {
@@ -444,7 +672,7 @@ function JourneyEditor({ journey, onChanged }: { journey: JourneyRecord; onChang
         }),
       });
       setNewLocationName('');
-      onChanged();
+      await onChanged();
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'Erreur');
     } finally {
@@ -453,70 +681,95 @@ function JourneyEditor({ journey, onChanged }: { journey: JourneyRecord; onChang
   };
 
   const moveLocation = async (index: number, direction: -1 | 1) => {
+    if (hasUnsavedChanges || hasActiveUpload) {
+      setError('Enregistre d’abord tes modifications avant de changer l’ordre.');
+      return;
+    }
     const ordered = [...journey.locations].map((location) => location.id);
     const target = index + direction;
     if (target < 0 || target >= ordered.length) return;
     [ordered[index], ordered[target]] = [ordered[target], ordered[index]];
-    await api('/api/admin/reorder', {
-      method: 'PATCH',
-      body: JSON.stringify({ entity: 'locations', orderedIds: ordered }),
-    });
-    onChanged();
+    setBusy(true);
+    setError(null);
+    try {
+      await api('/api/admin/reorder', {
+        method: 'PATCH',
+        body: JSON.stringify({ entity: 'locations', orderedIds: ordered }),
+      });
+      await onChanged();
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : 'Impossible de changer l’ordre.');
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
-    <div className="space-y-5 border-t border-white/10 p-5">
+    <fieldset
+      id={`journey-editor-${journey.id}`}
+      disabled={busy}
+      className="min-w-0 space-y-5 border-t border-white/10 p-4 sm:p-5"
+    >
       <div className="grid gap-3 md:grid-cols-2">
         <Field
           label="Slug"
           value={draft.slug ?? ''}
-          onChange={(slug) => setDraft((d) => ({ ...d, slug }))}
+          onChange={(slug) => updateDraft((current) => ({ ...current, slug }))}
         />
         <Field
           label="Titre"
           value={draft.title ?? ''}
-          onChange={(title) => setDraft((d) => ({ ...d, title }))}
+          onChange={(title) => updateDraft((current) => ({ ...current, title }))}
         />
         <Field
           label="Lieu"
           value={draft.location ?? ''}
-          onChange={(location) => setDraft((d) => ({ ...d, location }))}
+          onChange={(location) => updateDraft((current) => ({ ...current, location }))}
         />
         <Field
           label="Libellé de dates"
           value={draft.dateLabel ?? ''}
-          onChange={(dateLabel) => setDraft((d) => ({ ...d, dateLabel }))}
+          onChange={(dateLabel) => updateDraft((current) => ({ ...current, dateLabel }))}
           placeholder="From 1st May to 30th September"
         />
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <Field
             label="From"
             value={draft.dateFrom ?? ''}
-            onChange={(dateFrom) => setDraft((d) => ({ ...d, dateFrom }))}
+            onChange={(dateFrom) => updateDraft((current) => ({ ...current, dateFrom }))}
           />
           <Field
             label="To"
             value={draft.dateTo ?? ''}
-            onChange={(dateTo) => setDraft((d) => ({ ...d, dateTo }))}
+            onChange={(dateTo) => updateDraft((current) => ({ ...current, dateTo }))}
           />
         </div>
-        <Field
-          label="Image par défaut (URL)"
+        <MediaUploadField
+          label="Image par défaut"
           value={draft.image ?? ''}
-          onChange={(image) => setDraft((d) => ({ ...d, image }))}
-          placeholder="Utilisée si une saison n’a pas encore son visuel"
+          onChange={(image) => updateDraft((current) => ({ ...current, image }))}
+          help="Utilisée si une saison n’a pas encore son propre visuel."
+          disabled={busy}
+          onBusyChange={(active) => setUploadState('journey-image', active)}
         />
-        <Field
-          label="Fond par défaut (URL)"
+        <MediaUploadField
+          label="Vidéo de fond par défaut"
+          kind="video"
           value={draft.backgroundVideo ?? ''}
-          onChange={(backgroundVideo) => setDraft((d) => ({ ...d, backgroundVideo }))}
-          placeholder="Utilisé si une saison n’a pas encore son fond"
+          onChange={(backgroundVideo) =>
+            updateDraft((current) => ({ ...current, backgroundVideo }))
+          }
+          help="Utilisée si une saison n’a pas encore son propre fond."
+          disabled={busy}
+          onBusyChange={(active) => setUploadState('journey-background-video', active)}
         />
-        <Field
-          label="PDF Sustainable Impact (URL)"
+        <MediaUploadField
+          label="PDF Sustainable Impact"
+          kind="document"
           value={draft.sustainablePdf ?? ''}
-          onChange={(sustainablePdf) => setDraft((d) => ({ ...d, sustainablePdf }))}
-          placeholder="/pdfs/…"
+          onChange={(sustainablePdf) => updateDraft((current) => ({ ...current, sustainablePdf }))}
+          disabled={busy}
+          onBusyChange={(active) => setUploadState('journey-sustainable-pdf', active)}
         />
       </div>
       <section className="space-y-4 border border-[#f4bb52]/25 bg-[#f4bb52]/[0.04] p-4">
@@ -539,7 +792,7 @@ function JourneyEditor({ journey, onChanged }: { journey: JourneyRecord; onChang
                 aria-pressed={selected}
                 onClick={() => toggleSeason(season.value)}
                 className={cn(
-                  'border px-4 py-2 text-xs uppercase tracking-[0.2em] transition-colors',
+                  'min-h-11 border px-4 py-2 text-xs uppercase tracking-[0.2em] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f4bb52]',
                   selected
                     ? 'border-[#f4bb52] bg-[#f4bb52] text-black'
                     : 'border-white/15 bg-white/5 text-white/55 hover:border-white/35'
@@ -556,26 +809,65 @@ function JourneyEditor({ journey, onChanged }: { journey: JourneyRecord; onChang
             (season) => (
               <div key={season.value} className="space-y-3 border border-white/10 bg-black/20 p-4">
                 <p className="text-xs uppercase tracking-[0.24em] text-white/75">{season.label}</p>
-                <Field
-                  label={`Miniature ${season.label} (URL)`}
+                <MediaUploadField
+                  label={`Miniature ${season.label}`}
                   value={draft.seasonVisuals?.[season.value]?.image ?? ''}
                   onChange={(value) => updateSeasonVisual(season.value, 'image', value)}
-                  placeholder={draft.image || '/assets/journeys/…'}
+                  disabled={busy}
+                  onBusyChange={(active) => setUploadState(`${season.value}-image`, active)}
                 />
-                <Field
-                  label={`Fond ${season.label} (URL)`}
+                <MediaUploadField
+                  label={`Vidéo de fond ${season.label}`}
+                  kind="video"
                   value={draft.seasonVisuals?.[season.value]?.backgroundVideo ?? ''}
                   onChange={(value) => updateSeasonVisual(season.value, 'backgroundVideo', value)}
-                  placeholder={draft.backgroundVideo || '/assets/journeys/…'}
+                  disabled={busy}
+                  onBusyChange={(active) =>
+                    setUploadState(`${season.value}-background-video`, active)
+                  }
                 />
               </div>
             )
           )}
         </div>
       </section>
-      {error ? <p className="text-xs text-red-400">{error}</p> : null}
-      <Button size="sm" onClick={save} disabled={busy}>
-        Enregistrer le voyage
+      <label className="flex min-h-11 items-center gap-3 text-sm text-white/70">
+        <input
+          type="checkbox"
+          checked={draft.published ?? false}
+          onChange={(event) =>
+            updateDraft((current) => ({ ...current, published: event.target.checked }))
+          }
+          className="size-4 accent-[#f4bb52]"
+        />
+        Voyage visible sur le site
+      </label>
+      <p className="text-xs leading-relaxed text-white/45">
+        Les changements d’un voyage déjà visible apparaissent après « Enregistrer le voyage ».
+        Décoche cette case avant une grosse modification si tu préfères le cacher temporairement.
+      </p>
+      {uploading ? (
+        <p className="text-xs text-[#f4bb52]" role="status">
+          Un fichier du voyage est en cours d’envoi. Attends avant d’enregistrer.
+        </p>
+      ) : null}
+      {dirty && !uploading ? (
+        <p className="text-xs text-[#f4bb52]" role="status">
+          Modifications du voyage non enregistrées.
+        </p>
+      ) : null}
+      {error ? (
+        <p className="text-xs text-red-400" role="alert">
+          {error}
+        </p>
+      ) : null}
+      {notice ? (
+        <p className="text-xs text-emerald-300" role="status">
+          {notice}
+        </p>
+      ) : null}
+      <Button className="min-h-11" size="sm" onClick={save} disabled={busy || uploading || !dirty}>
+        {busy ? 'Enregistrement…' : 'Enregistrer le voyage'}
       </Button>
 
       <div className="space-y-3">
@@ -590,15 +882,17 @@ function JourneyEditor({ journey, onChanged }: { journey: JourneyRecord; onChang
         </div>
         {journey.locations.map((location, index) => (
           <div key={location.id} className="space-y-2">
-            <div className="flex items-center gap-2 text-sm text-white/80">
-              <span className="flex-1">
+            <div className="flex min-w-0 items-center gap-2 text-sm text-white/80">
+              <span className="min-w-0 flex-1">
                 {index + 1}. {location.name}
               </span>
               <Button
                 size="sm"
                 variant="ghost"
                 onClick={() => moveLocation(index, -1)}
-                disabled={index === 0}
+                disabled={busy || hasUnsavedChanges || hasActiveUpload || index === 0}
+                className="min-h-11 min-w-11"
+                aria-label={`Monter ${location.name}`}
               >
                 <ArrowUp className="size-4" />
               </Button>
@@ -606,33 +900,51 @@ function JourneyEditor({ journey, onChanged }: { journey: JourneyRecord; onChang
                 size="sm"
                 variant="ghost"
                 onClick={() => moveLocation(index, 1)}
-                disabled={index === journey.locations.length - 1}
+                disabled={
+                  busy ||
+                  hasUnsavedChanges ||
+                  hasActiveUpload ||
+                  index === journey.locations.length - 1
+                }
+                className="min-h-11 min-w-11"
+                aria-label={`Descendre ${location.name}`}
               >
                 <ArrowDown className="size-4" />
               </Button>
             </div>
-            <LocationEditor location={location} onSaved={onChanged} onDeleted={onChanged} />
+            <LocationEditor
+              location={location}
+              onSaved={onChanged}
+              onDeleted={onChanged}
+              onActivityChange={updateLocationActivity}
+            />
           </div>
         ))}
-        <div className="flex items-center gap-2">
-          <input
-            className={cn(fieldClass, 'max-w-xs')}
-            value={newLocationName}
-            placeholder="Nom de la nouvelle Location / Tale"
-            onChange={(event) => setNewLocationName(event.target.value)}
-          />
+        <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-end">
+          <label className="min-w-0 flex-1">
+            <span className={labelClass}>Nom de la nouvelle Location / Tale</span>
+            <input
+              className={fieldClass}
+              value={newLocationName}
+              placeholder="Nom de la nouvelle Location / Tale"
+              onChange={(event) => {
+                setNewLocationName(event.target.value);
+                setNotice(null);
+              }}
+            />
+          </label>
           <Button
             size="sm"
             variant="outline"
-            className="border-white/20 bg-transparent text-white hover:bg-white/10 hover:text-white"
+            className="min-h-11 w-full border-white/20 bg-transparent text-white hover:bg-white/10 hover:text-white sm:w-auto"
             onClick={addLocation}
-            disabled={busy || !newLocationName.trim()}
+            disabled={busy || hasActiveUpload || !newLocationName.trim()}
           >
             <Plus className="size-4" /> Ajouter
           </Button>
         </div>
       </div>
-    </div>
+    </fieldset>
   );
 }
 
@@ -645,6 +957,46 @@ export function JourneysManager() {
   const [newTitle, setNewTitle] = useState('');
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
+  const [activeEditorActivity, setActiveEditorActivity] = useState<
+    EditorActivity & { journeyId: number | null }
+  >({ ...EMPTY_ACTIVITY, journeyId: null });
+  const createDraftDirty = Boolean(newSlug.trim() || newTitle.trim());
+  const hasBlockingDraft =
+    createDraftDirty || activeEditorActivity.dirty || activeEditorActivity.uploading;
+
+  useDraftNavigationGuard(hasBlockingDraft);
+
+  const updateEditorActivity = useCallback((journeyId: number, activity: EditorActivity) => {
+    setActiveEditorActivity((current) => {
+      if (
+        current.journeyId === journeyId &&
+        current.dirty === activity.dirty &&
+        current.uploading === activity.uploading
+      ) {
+        return current;
+      }
+      return { journeyId, ...activity };
+    });
+  }, []);
+
+  const confirmDiscardDraft = (includeCreateDraft = true) => {
+    const hasDraftToDiscard =
+      activeEditorActivity.dirty ||
+      activeEditorActivity.uploading ||
+      (includeCreateDraft && createDraftDirty);
+    if (!hasDraftToDiscard) return true;
+    return window.confirm(
+      activeEditorActivity.uploading
+        ? 'Un fichier est encore en cours d’envoi. Quitter cet éditeur annulera cet envoi. Continuer ?'
+        : 'Tu as des modifications non enregistrées. Les abandonner ?'
+    );
+  };
+
+  const toggleJourney = (journeyId: number) => {
+    if (expandedId !== null && !confirmDiscardDraft(false)) return;
+    setActiveEditorActivity({ ...EMPTY_ACTIVITY, journeyId: null });
+    setExpandedId((current) => (current === journeyId ? null : journeyId));
+  };
 
   const reload = useCallback(async () => {
     setError(null);
@@ -663,14 +1015,27 @@ export function JourneysManager() {
   }, [reload]);
 
   const seed = async () => {
-    const confirmed = window.confirm(
-      'Cette action réinitialise le contenu principal des voyages depuis le site et peut écraser des dates déjà modifiées. Continuer ?'
+    if (activeEditorActivity.uploading) {
+      setError('Attends la fin de l’envoi du fichier avant cette opération.');
+      return;
+    }
+    if (hasBlockingDraft && !confirmDiscardDraft()) return;
+    const confirmation = window.prompt(
+      'Cette action peut écraser des dates et des contenus déjà modifiés. Pour confirmer, écris exactement REINITIALISER.'
     );
-    if (!confirmed) return;
+    if (confirmation !== 'REINITIALISER') {
+      if (confirmation !== null)
+        setError('Réinitialisation annulée : le mot saisi était différent.');
+      return;
+    }
     setBusy(true);
     setError(null);
     try {
       await api('/api/admin/seed', { method: 'POST' });
+      setExpandedId(null);
+      setActiveEditorActivity({ ...EMPTY_ACTIVITY, journeyId: null });
+      setNewSlug('');
+      setNewTitle('');
       await reload();
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'Seed impossible');
@@ -725,6 +1090,11 @@ export function JourneysManager() {
   };
 
   const removeJourney = async (id: number) => {
+    const journey = journeys.find((item) => item.id === id);
+    const confirmed = window.confirm(
+      `Supprimer définitivement le voyage « ${journey?.title ?? 'sans titre'} » et toutes ses Locations ? Cette action est irréversible.`
+    );
+    if (!confirmed) return;
     setBusy(true);
     setError(null);
     try {
@@ -738,19 +1108,31 @@ export function JourneysManager() {
   };
 
   const moveJourney = async (index: number, direction: -1 | 1) => {
+    if (hasBlockingDraft) {
+      setError('Enregistre d’abord tes modifications avant de changer l’ordre.');
+      return;
+    }
     const ordered = journeys.map((journey) => journey.id);
     const target = index + direction;
     if (target < 0 || target >= ordered.length) return;
     [ordered[index], ordered[target]] = [ordered[target], ordered[index]];
-    await api('/api/admin/reorder', {
-      method: 'PATCH',
-      body: JSON.stringify({ entity: 'journeys', orderedIds: ordered }),
-    });
-    await reload();
+    setBusy(true);
+    setError(null);
+    try {
+      await api('/api/admin/reorder', {
+        method: 'PATCH',
+        body: JSON.stringify({ entity: 'journeys', orderedIds: ordered }),
+      });
+      await reload();
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : 'Impossible de changer l’ordre.');
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
-    <main className="min-h-screen bg-[#0d0a07] px-6 pb-24 pt-36 text-white sm:pt-24">
+    <main className="min-h-screen bg-[#0d0a07] px-4 pb-24 pt-36 text-white sm:px-6 sm:pt-24">
       <div className="mx-auto max-w-4xl space-y-8">
         <header className="space-y-2">
           <p className="text-[11px] uppercase tracking-[0.4em] text-[#f4bb52]">Dashboard</p>
@@ -758,7 +1140,10 @@ export function JourneysManager() {
           <p className="text-sm text-white/60">
             Créer et éditer les voyages & locations : textes, médias (URLs), dates, ordre
             d&apos;affichage.{' '}
-            <Link href="/admin" className="underline underline-offset-4">
+            <Link
+              href="/admin"
+              className="inline-flex min-h-11 items-center rounded-sm underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c9a24a] focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+            >
               ← Retour admin
             </Link>
           </p>
@@ -772,44 +1157,91 @@ export function JourneysManager() {
               ni les Locations déjà éditées.
             </CardDescription>
           </CardHeader>
-          <CardContent className="flex flex-wrap items-center gap-3">
-            <Button size="sm" onClick={seedLocations} disabled={busy}>
-              <RefreshCw className="size-4" /> Importer les Tales existants
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              className="border-white/20 bg-transparent text-white hover:bg-white/10 hover:text-white"
-              onClick={seed}
-              disabled={busy}
-            >
-              <RefreshCw className="size-4" /> Réinitialiser les voyages depuis le site
-            </Button>
-            <input
-              className={cn(fieldClass, 'max-w-[160px]')}
-              value={newSlug}
-              placeholder="slug"
-              onChange={(event) => setNewSlug(event.target.value)}
-            />
-            <input
-              className={cn(fieldClass, 'max-w-[200px]')}
-              value={newTitle}
-              placeholder="Titre"
-              onChange={(event) => setNewTitle(event.target.value)}
-            />
-            <Button
-              size="sm"
-              onClick={createJourney}
-              disabled={busy || !newSlug.trim() || !newTitle.trim()}
-            >
-              <Plus className="size-4" /> Nouveau voyage
-            </Button>
+          <CardContent className="space-y-5">
+            <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:items-end">
+              <Button
+                className="min-h-11 w-full sm:w-auto"
+                size="sm"
+                onClick={seedLocations}
+                disabled={busy || hasBlockingDraft}
+              >
+                <RefreshCw className="size-4" /> Importer les Tales existants
+              </Button>
+              <label className="min-w-0 flex-1 sm:max-w-[180px]">
+                <span className={labelClass}>Adresse courte du voyage</span>
+                <input
+                  className={fieldClass}
+                  value={newSlug}
+                  placeholder="exemple-portugal"
+                  disabled={busy}
+                  onChange={(event) => setNewSlug(event.target.value)}
+                />
+              </label>
+              <label className="min-w-0 flex-1 sm:max-w-[240px]">
+                <span className={labelClass}>Titre du nouveau voyage</span>
+                <input
+                  className={fieldClass}
+                  value={newTitle}
+                  placeholder="Portugal"
+                  disabled={busy}
+                  onChange={(event) => setNewTitle(event.target.value)}
+                />
+              </label>
+              <Button
+                className="min-h-11 w-full sm:w-auto"
+                size="sm"
+                onClick={createJourney}
+                disabled={busy || !newSlug.trim() || !newTitle.trim()}
+              >
+                <Plus className="size-4" /> Nouveau voyage
+              </Button>
+            </div>
+
+            <details className="border-t border-white/10 pt-3 text-sm text-white/65">
+              <summary className="flex min-h-11 cursor-pointer items-center outline-none hover:text-white focus-visible:ring-2 focus-visible:ring-[#f4bb52]">
+                Maintenance avancée
+              </summary>
+              <div className="space-y-3 border-l-2 border-red-400/50 pl-3">
+                <p className="text-xs leading-5 text-white/60">
+                  À utiliser seulement pour repartir du contenu du site. Des dates et des textes
+                  déjà modifiés peuvent être remplacés.
+                </p>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-auto min-h-11 w-full whitespace-normal border-red-300/50 bg-transparent py-3 text-center text-red-200 hover:bg-red-400/10 hover:text-red-100 sm:w-auto"
+                  onClick={seed}
+                  disabled={busy || activeEditorActivity.uploading}
+                >
+                  <RefreshCw className="size-4" /> Réinitialiser les voyages depuis le site
+                </Button>
+              </div>
+            </details>
           </CardContent>
         </Card>
 
-        {error ? <p className="text-sm text-red-400">{error}</p> : null}
-        {notice ? <p className="text-sm text-emerald-300">{notice}</p> : null}
-        {loading ? <p className="text-sm text-white/50">Chargement…</p> : null}
+        {hasBlockingDraft ? (
+          <p className="text-sm text-[#f4bb52]" role="status">
+            {activeEditorActivity.uploading
+              ? 'Un fichier est en cours d’envoi.'
+              : 'Modifications non enregistrées.'}
+          </p>
+        ) : null}
+        {error ? (
+          <p className="text-sm text-red-400" role="alert">
+            {error}
+          </p>
+        ) : null}
+        {notice ? (
+          <p className="text-sm text-emerald-300" role="status">
+            {notice}
+          </p>
+        ) : null}
+        {loading ? (
+          <p className="text-sm text-white/50" role="status">
+            Chargement…
+          </p>
+        ) : null}
 
         <div className="space-y-4">
           {journeys.map((journey, index) => (
@@ -817,10 +1249,10 @@ export function JourneysManager() {
               <CardHeader className="flex flex-row flex-wrap items-center gap-2 space-y-0 sm:gap-3">
                 <button
                   type="button"
-                  className="flex min-w-0 flex-[1_1_220px] items-center gap-3 text-left"
-                  onClick={() =>
-                    setExpandedId((current) => (current === journey.id ? null : journey.id))
-                  }
+                  className="flex min-h-11 min-w-0 flex-[1_1_220px] items-center gap-3 text-left outline-none focus-visible:ring-2 focus-visible:ring-[#f4bb52]"
+                  onClick={() => toggleJourney(journey.id)}
+                  aria-expanded={expandedId === journey.id}
+                  aria-controls={`journey-editor-${journey.id}`}
                 >
                   {expandedId === journey.id ? (
                     <ChevronDown className="size-4 text-white/50" />
@@ -841,7 +1273,9 @@ export function JourneysManager() {
                   size="sm"
                   variant="ghost"
                   onClick={() => moveJourney(index, -1)}
-                  disabled={index === 0}
+                  disabled={busy || hasBlockingDraft || index === 0}
+                  className="min-h-11 min-w-11"
+                  aria-label={`Monter le voyage ${journey.title}`}
                 >
                   <ArrowUp className="size-4" />
                 </Button>
@@ -849,7 +1283,9 @@ export function JourneysManager() {
                   size="sm"
                   variant="ghost"
                   onClick={() => moveJourney(index, 1)}
-                  disabled={index === journeys.length - 1}
+                  disabled={busy || hasBlockingDraft || index === journeys.length - 1}
+                  className="min-h-11 min-w-11"
+                  aria-label={`Descendre le voyage ${journey.title}`}
                 >
                   <ArrowDown className="size-4" />
                 </Button>
@@ -857,13 +1293,19 @@ export function JourneysManager() {
                   size="sm"
                   variant="ghost"
                   onClick={() => removeJourney(journey.id)}
-                  disabled={busy}
+                  disabled={busy || activeEditorActivity.uploading}
+                  className="min-h-11 min-w-11"
+                  aria-label={`Supprimer le voyage ${journey.title}`}
                 >
                   <Trash2 className="size-4" />
                 </Button>
               </CardHeader>
               {expandedId === journey.id ? (
-                <JourneyEditor journey={journey} onChanged={reload} />
+                <JourneyEditor
+                  journey={journey}
+                  onChanged={reload}
+                  onActivityChange={updateEditorActivity}
+                />
               ) : null}
             </Card>
           ))}

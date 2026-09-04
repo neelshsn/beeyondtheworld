@@ -1,7 +1,5 @@
 import type { Metadata } from 'next';
-import { Suspense } from 'react';
 
-import { AdminAuthGate } from '../journeys/_components/admin-auth-gate';
 import { LeadInbox } from './lead-inbox';
 
 export const metadata: Metadata = {
@@ -10,11 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function AdminLeadsPage() {
-  return (
-    <Suspense>
-      <AdminAuthGate>
-        <LeadInbox />
-      </AdminAuthGate>
-    </Suspense>
-  );
+  return <LeadInbox />;
 }

@@ -7,8 +7,8 @@ import { GlowTitle, ShowcaseMediaGallery } from '@/components/primitives';
 import { BeeButton } from '@/components/primitives/bee-button';
 import SplitText from '@/components/SplitText';
 import type { JourneyShowcase } from '@/data/showcases';
-import { journeyShowcases } from '@/data/showcases';
 import { getPublishedJourneyLocations } from '@/lib/cms/journey-locations';
+import { getPublishedJourneyShowcase } from '@/lib/cms/journeys';
 
 import { IndiaJourneyLayout } from './_sections/india-journey-layout';
 import { PhilippinesJourneyLayout } from './_sections/philippines-journey-layout';
@@ -30,7 +30,7 @@ export const revalidate = 0;
 
 export async function generateMetadata({ params }: JourneyPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const journey = journeyShowcases.find((item) => item.slug === slug);
+  const journey = await getPublishedJourneyShowcase(slug);
 
   if (!journey) {
     return {
@@ -61,7 +61,7 @@ export async function generateMetadata({ params }: JourneyPageProps): Promise<Me
 
   if (slug === 'azores') {
     return {
-      title: 'Azores - From 1st June to 30th September',
+      title: 'Portugal - Azores, Madeira & Lisboa - From 1st June to 30th September',
       description: journey.summary,
     };
   }
@@ -102,8 +102,11 @@ export async function generateMetadata({ params }: JourneyPageProps): Promise<Me
 
 export default async function JourneyPage({ params }: JourneyPageProps) {
   const { slug } = await params;
-  const journey = journeyShowcases.find((item) => item.slug === slug) ?? notFound();
-  const cmsLocations = await getPublishedJourneyLocations(slug);
+  const [journey, cmsLocations] = await Promise.all([
+    getPublishedJourneyShowcase(slug),
+    getPublishedJourneyLocations(slug),
+  ]);
+  if (!journey) notFound();
 
   if (slug === 'philippines') {
     return <PhilippinesJourneyLayout journey={journey} cmsLocations={cmsLocations} />;

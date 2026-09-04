@@ -2,11 +2,14 @@ import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 
 import { ADMIN_SESSION_COOKIE, deleteAdminSession } from '@/lib/db/admin-auth';
+import { rejectCrossSiteWrite } from '@/lib/db/admin-guard';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-export async function POST() {
+export async function POST(request: Request) {
+  const denied = rejectCrossSiteWrite(request);
+  if (denied) return denied;
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get(ADMIN_SESSION_COOKIE)?.value;

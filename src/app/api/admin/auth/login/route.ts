@@ -8,12 +8,17 @@ import {
   sessionCookieOptions,
   verifyPassword,
 } from '@/lib/db/admin-auth';
+import { ensureAdminAuthSchema } from '@/lib/db/ensure-admin-auth-schema';
+import { rejectCrossSiteWrite } from '@/lib/db/admin-guard';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: Request) {
+  const denied = rejectCrossSiteWrite(request);
+  if (denied) return denied;
   try {
+    await ensureAdminAuthSchema();
     const body = (await request.json().catch(() => ({}))) as {
       email?: string;
       password?: string;
@@ -24,15 +29,6 @@ export async function POST(request: Request) {
     const db = getDb();
     const [user] = await db.select().from(adminUsers).where(eq(adminUsers.email, email)).limit(1);
 
-    if (user && !user.passwordHash) {
-      return NextResponse.json(
-        {
-          error:
-            "Compte pas encore activé — ouvre ton lien d'invitation pour choisir ton mot de passe.",
-        },
-        { status: 403 }
-      );
-    }
     if (!user || !user.passwordHash || !verifyPassword(password, user.passwordHash)) {
       return NextResponse.json({ error: 'E-mail ou mot de passe incorrect.' }, { status: 401 });
     }
@@ -46,8 +42,9 @@ export async function POST(request: Request) {
     );
     return response;
   } catch (error) {
+    console.error('Admin login failed:', error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Connexion impossible.' },
+      { error: 'Connexion temporairement impossible. Réessaie dans un instant.' },
       { status: 500 }
     );
   }

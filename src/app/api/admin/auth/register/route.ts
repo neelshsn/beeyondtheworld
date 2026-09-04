@@ -11,6 +11,7 @@ import {
   hashPassword,
   sessionCookieOptions,
 } from '@/lib/db/admin-auth';
+import { rejectCrossSiteWrite } from '@/lib/db/admin-guard';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -31,6 +32,8 @@ function validBootstrapToken(candidate: string): boolean {
  * - sinon → réservé à un éditeur déjà connecté (ajout de collègues).
  */
 export async function POST(request: Request) {
+  const denied = rejectCrossSiteWrite(request);
+  if (denied) return denied;
   try {
     const body = (await request.json().catch(() => ({}))) as {
       email?: string;
@@ -87,8 +90,9 @@ export async function POST(request: Request) {
     );
     return response;
   } catch (error) {
+    console.error('Admin registration failed:', error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Création impossible.' },
+      { error: 'Création temporairement impossible. Réessaie dans un instant.' },
       { status: 500 }
     );
   }

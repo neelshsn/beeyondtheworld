@@ -12,7 +12,7 @@ export type JourneyLocationSeed = {
 
 /**
  * Contenu initial des Locations / Tales, extrait des pages Journey historiques.
- * Le dashboard l'importe uniquement lorsqu'un Journey ne possède encore aucune Location.
+ * Le dashboard importe uniquement les Locations manquantes, sans modifier les entrées existantes.
  */
 export const journeyLocationSeeds: Record<string, JourneyLocationSeed[]> = {
   azores: [
@@ -22,13 +22,45 @@ export const journeyLocationSeeds: Record<string, JourneyLocationSeed[]> = {
       leftTitle: ['The', 'Silence', 'of the Azores'],
       narrative:
         'In the heart of the Atlantic Ocean, the Azores rise like a mirage of deep greens and endless blues. Between volcanic lakes shimmering in emerald tones, cliffs lined with pale hydrangeas, and mist-washed forests glowing in golden light. The light is ever-changing, soft and milky above the craters, then brilliant over the open sea. The Azores invite you to slow down, wander along paths suspended between sky and water, and feel the rare harmony of a land shaped by fire yet soothed by the ocean.',
-      image: '/assets/journeys/azores-2026/azores-location-azores-thumbnail.png',
-      video: '/assets/journeys/azores-2026/azores-location-azores-background.jpg',
+      image: '/assets/journeys/portugal-2026/portugal-azores.webp',
+      video: '/assets/journeys/portugal-2026/portugal-azores.webp',
       media: [
         {
-          url: '/assets/journeys/azores-2026/azores-location-azores-story.jpg',
+          url: '/assets/journeys/portugal-2026/portugal-azores.webp',
           type: 'image',
           alt: 'Azores tale',
+        },
+      ],
+    },
+    {
+      name: 'Madeira',
+      subtitle: 'Cloud Mountains',
+      leftTitle: ['Above', 'the Clouds,', 'the Atlantic'],
+      narrative:
+        'Madeira rises from the Atlantic in a succession of volcanic peaks, laurel forests, and vertiginous coastlines. At sunrise, mountain paths float above a sea of clouds before descending through fern-lined levadas toward hidden viewpoints and villages poised over the ocean. The island moves between wild scale and quiet intimacy: raw cliffs, botanical abundance, and tables set at the edge of the horizon. Madeira offers a visual language of elevation and elemental softness, where every frame seems suspended between mist, stone, and deep blue water.',
+      image: '/assets/journeys/portugal-2026/portugal-madeira.webp',
+      video: '/assets/journeys/portugal-2026/portugal-madeira.webp',
+      media: [
+        {
+          url: '/assets/journeys/portugal-2026/portugal-madeira.webp',
+          type: 'image',
+          alt: 'Madeira tale',
+        },
+      ],
+    },
+    {
+      name: 'Lisboa',
+      subtitle: 'Tiled Light',
+      leftTitle: ['Where', 'Light', 'Climbs', 'the City'],
+      narrative:
+        'Lisboa unfolds in warm light across tiled facades, steep streets, and terraces opening toward the Tagus. The city carries a graceful tension between patina and modern rhythm: yellow trams cross patterned walls, shaded cafes invite a slower pause, and late-afternoon sun turns every balcony and pavement into a cinematic surface. Lisboa is both intimate and expansive, a lived-in capital whose color, craft, and Atlantic horizon create an unmistakable setting for contemporary stories.',
+      image: '/assets/journeys/portugal-2026/portugal-lisboa.webp',
+      video: '/assets/journeys/portugal-2026/portugal-lisboa.webp',
+      media: [
+        {
+          url: '/assets/journeys/portugal-2026/portugal-lisboa.webp',
+          type: 'image',
+          alt: 'Lisboa tale',
         },
       ],
     },
@@ -205,7 +237,7 @@ export const journeyLocationSeeds: Record<string, JourneyLocationSeed[]> = {
     {
       name: 'Dolomites',
       subtitle: 'Alpine Peaks',
-      leftTitle: ['The Art', 'of Green,', 'Painted', 'by Nature.'],
+      leftTitle: ['The', 'Silent Majesty', 'of Stone'],
       narrative:
         'In the Dolomites, nature rises in a more vertical language. Jagged peaks catch the shifting alpine light, while meadows, forests, and still lakes soften the scale of the mountains. Villages rest quietly beneath vast stone walls, and every path feels suspended between earth and sky. The air is pure, the rhythm slower, the silence almost mineral. Here, Italy becomes expansive and elemental, a landscape where grandeur and calm live side by side.',
       image: '/assets/journeys/italy-2026/italy-location-dolomites-thumbnail.png',

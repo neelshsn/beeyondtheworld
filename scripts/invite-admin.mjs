@@ -6,7 +6,7 @@
  * Usage : node scripts/invite-admin.mjs eugenie@beeyondtheworld.com
  * (Ré-exécuter sur un e-mail existant régénère un lien = réinitialisation.)
  */
-import { randomBytes } from 'node:crypto';
+import { createHash, randomBytes } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { neon } from '@neondatabase/serverless';
 
@@ -38,14 +38,25 @@ if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
 
 const sql = neon(url);
 const token = randomBytes(32).toString('hex');
+const tokenDigest = createHash('sha256').update(token).digest('hex');
+const expiresAt = new Date(Date.now() + 72 * 60 * 60 * 1000);
 
-await sql.query(
-  `INSERT INTO admin_users (email, password_hash, setup_token)
-   VALUES ($1, NULL, $2)
-   ON CONFLICT (email) DO UPDATE SET setup_token = EXCLUDED.setup_token`,
-  [email, token]
+const invited = await sql.query(
+  `INSERT INTO admin_users (email, password_hash, setup_token, setup_token_expires_at)
+   VALUES ($1, NULL, $2, $3)
+   ON CONFLICT (email) DO UPDATE SET
+     setup_token = EXCLUDED.setup_token,
+     setup_token_expires_at = EXCLUDED.setup_token_expires_at
+   WHERE admin_users.password_hash IS NULL
+   RETURNING email`,
+  [email, tokenDigest, expiresAt]
 );
 
+if (invited.length === 0) {
+  console.error('Ce compte est déjà actif. Utilise un flux de réinitialisation séparé.');
+  process.exit(1);
+}
+
 console.log(`Invitation créée pour ${email}`);
-console.log('Lien d\'activation (usage unique, ne pas commiter) :');
-console.log(`  /admin/journeys?invite=${token}`);
+console.log("Lien d'activation (usage unique, valable 72 h, ne pas commiter) :");
+console.log(`  /admin#invite=${token}`);

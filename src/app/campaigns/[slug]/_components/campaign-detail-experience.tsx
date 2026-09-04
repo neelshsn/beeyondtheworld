@@ -12,10 +12,11 @@ import { useBodyScrollLock } from '@/app/concept/_hooks/use-body-scroll-lock';
 import { usePrefersReducedMotion } from '@/app/concept/_hooks/use-prefers-reduced-motion';
 import { SiteArrowIcon } from '@/components/icons/site-arrow-icon';
 import { SmartVideo } from '@/components/primitives';
-import { CAMPAIGN_FORMAT_BY_ID } from '@/data/campaign-formats';
+import type { CampaignFormat } from '@/data/campaign-formats';
 import type { CampaignShowcase, ShowcaseMedia } from '@/data/showcases';
 import { formatCampaignSeason } from '@/lib/format-campaign-season';
 import type { Campaign } from '@/types/campaign';
+import type { CampaignTaleContent } from '@/types/editorial-content';
 
 import { CampaignStoryExperience } from './campaign-story-experience';
 
@@ -48,8 +49,6 @@ const MEDIA_OPTIONS: MediaOption[] = [
   },
 ];
 
-const PHOTO_CARD_ICON = '/assets/icones/Ico White BEE-08.svg';
-const VIDEO_CARD_ICON = '/assets/icones/Ico White BEE-15.svg';
 const OPEN_CARD_ICON = '/assets/icones/Ico White BEE-13.svg';
 
 function getMediaOption(value: MediaFilter) {
@@ -138,16 +137,25 @@ function carouselCardAspectClass() {
 export function CampaignDetailExperience({
   campaign,
   meta,
+  format,
+  tale,
+  campaignCatalog,
 }: {
   campaign: CampaignShowcase;
   meta: Campaign | null;
+  format: CampaignFormat;
+  tale?: CampaignTaleContent;
+  campaignCatalog?: CampaignShowcase[];
 }) {
-  const format = CAMPAIGN_FORMAT_BY_ID[campaign.id] ?? 'tale';
-
   return format === 'gallery' ? (
     <CampaignGalleryExperience campaign={campaign} meta={meta} />
   ) : (
-    <CampaignStoryExperience campaign={campaign} meta={meta} />
+    <CampaignStoryExperience
+      campaign={campaign}
+      meta={meta}
+      tale={tale}
+      campaignCatalog={campaignCatalog}
+    />
   );
 }
 
@@ -326,15 +334,7 @@ export function CampaignGalleryExperience({
                             />
                           )}
                           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-black/10" />
-                          <div className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-4 px-5 pb-5">
-                            <span className="relative block h-6 w-6 shrink-0 drop-shadow-[0_0_12px_rgba(255,255,255,0.28)]">
-                              <Image
-                                src={item.type === 'video' ? VIDEO_CARD_ICON : PHOTO_CARD_ICON}
-                                alt=""
-                                fill
-                                className="object-contain"
-                              />
-                            </span>
+                          <div className="absolute inset-x-0 bottom-0 flex items-center justify-end px-5 pb-5">
                             <span className="relative block h-6 w-6 shrink-0 drop-shadow-[0_0_12px_rgba(255,255,255,0.28)]">
                               <Image src={OPEN_CARD_ICON} alt="" fill className="object-contain" />
                             </span>
