@@ -136,15 +136,13 @@ const SECTION_OPTIONS = [
   {
     label: 'Locations',
     value: 'locations' as const,
-    icon: '/assets/icones/Ico White BEE-14.svg',
-    hoverIcon: '/assets/icones/Ico Gold BEE-14.svg',
+    icon: '/assets/icones/feedbacks/journeys-flower.svg',
     disabled: false,
   },
   {
     label: 'Sustainable Impact',
     value: 'csr-impact' as const,
     icon: '/assets/icones/Ico White BEE-06.svg',
-    hoverIcon: '/assets/icones/Ico Gold BEE-06.svg',
     disabled: false,
   },
 ];
@@ -153,15 +151,13 @@ const MOBILE_MENU_OPTIONS = [
   {
     label: 'Locations',
     value: 'locations' as const,
-    icon: '/assets/icones/Ico White BEE-14.svg',
-    hoverIcon: '/assets/icones/Ico Gold BEE-14.svg',
+    icon: '/assets/icones/feedbacks/journeys-flower.svg',
     disabled: false,
   },
   {
     label: 'Sustainable Impact',
     value: 'csr-impact' as const,
     icon: '/assets/icones/Ico White BEE-06.svg',
-    hoverIcon: '/assets/icones/Ico Gold BEE-06.svg',
     disabled: false,
   },
 ];
@@ -1238,13 +1234,16 @@ export function MoroccoJourneyLayout({
           transition={{ duration: prefersReducedMotion ? 0.2 : 0.48, ease: [0.22, 1, 0.36, 1] }}
           className="relative z-20 flex min-h-[100svh] flex-col"
         >
-          <div className="pointer-events-none absolute left-4 top-[4.25rem] z-30 sm:left-[6rem] sm:top-6 lg:left-[8rem]">
+          <div className="pointer-events-none absolute left-[6rem] top-6 z-30 hidden md:block lg:left-[8rem]">
             <div className="pointer-events-auto">
               <BackToJourneysButton onClick={() => router.push('/journeys')} />
             </div>
           </div>
           <div className="relative flex flex-1 items-center justify-end">
             <div className="w-full px-2 pb-2 pt-20 sm:px-6 sm:pb-4 sm:pt-24 md:ml-auto md:w-[75%] md:pb-0 md:pl-10 md:pr-6 md:pt-0 lg:py-10 lg:pl-16 lg:pr-10 xl:pl-20">
+              <div className="mb-4 flex justify-center md:hidden">
+                <BackToJourneysButton compact onClick={() => router.push('/journeys')} />
+              </div>
               {isLocationsSection ? (
                 <AnimatePresence mode="wait" initial={false}>
                   {activeLocationStory ? (
@@ -1469,32 +1468,14 @@ function LocationSectionMenu({
         );
         const itemContent = (
           <>
-            <div className={clsx('relative shrink-0', compact ? 'h-7 w-7' : 'h-8 w-8')}>
-              <Image
-                src={option.icon}
-                alt=""
-                fill
-                className={clsx(
-                  'object-contain transition-opacity duration-300',
-                  option.disabled
-                    ? 'opacity-100'
-                    : isActive
-                      ? 'opacity-0 group-hover:opacity-0'
-                      : 'opacity-100 group-hover:opacity-0'
-                )}
-              />
-              {!option.disabled ? (
-                <Image
-                  src={option.hoverIcon}
-                  alt=""
-                  fill
-                  className={clsx(
-                    'object-contain transition-opacity duration-300',
-                    isActive ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
-                  )}
-                />
-              ) : null}
-            </div>
+            <MaskedIcon
+              src={option.icon}
+              className={clsx(
+                'transition-colors duration-300',
+                compact ? 'h-7 w-7' : 'h-8 w-8',
+                option.disabled ? 'text-white' : 'text-white group-hover:text-[#f6c452]'
+              )}
+            />
             <span
               className={clsx(
                 'font-display uppercase transition-colors duration-300 [text-shadow:0_2px_0_rgba(0,0,0,0.3),0_8px_14px_rgba(0,0,0,0.24),0_16px_34px_rgba(0,0,0,0.24)]',
@@ -2477,23 +2458,54 @@ function CsrImpactCardPanel({
   );
 }
 
-function BackToJourneysButton({ onClick }: { onClick: () => void }) {
+function BackToJourneysButton({
+  onClick,
+  compact = false,
+}: {
+  onClick: () => void;
+  compact?: boolean;
+}) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className="group inline-flex items-center gap-2 text-white drop-shadow-[0_12px_28px_rgba(0,0,0,0.38)] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/45"
+      className={clsx(
+        'group inline-flex items-center text-white drop-shadow-[0_12px_28px_rgba(0,0,0,0.38)] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/45',
+        compact ? 'gap-1.5' : 'gap-2'
+      )}
       aria-label="Back to all journeys"
     >
-      <SiteArrowIcon
-        direction="left"
-        className="h-5 w-5 text-white/55 transition-all duration-300 group-hover:-translate-x-0.5 group-hover:text-[#f6c452]"
-      />
+      {compact ? (
+        <span
+          aria-hidden
+          className="relative flex h-7 w-10 shrink-0 items-center justify-center overflow-hidden"
+        >
+          <SiteArrowIcon
+            direction="left"
+            className="h-3.5 w-3.5 text-white/55 transition-all duration-300 group-hover:-translate-x-0.5 group-hover:text-[#f6c452]"
+          />
+        </span>
+      ) : (
+        <SiteArrowIcon
+          direction="left"
+          className="h-5 w-5 text-white/55 transition-all duration-300 group-hover:-translate-x-0.5 group-hover:text-[#f6c452]"
+        />
+      )}
       <MaskedIcon
         src="/assets/icones/Ico Gold BEE-02.svg"
-        className="h-8 w-8 text-white transition-colors duration-300 group-hover:text-[#f6c452]"
+        className={clsx(
+          'text-white transition-colors duration-300 group-hover:text-[#f6c452]',
+          compact ? 'h-7 w-7' : 'h-8 w-8'
+        )}
       />
-      <span className="font-display text-[0.72rem] uppercase tracking-[0.16em] text-white transition-colors duration-300 [text-shadow:0_2px_0_rgba(0,0,0,0.3),0_8px_14px_rgba(0,0,0,0.24),0_16px_34px_rgba(0,0,0,0.24)] group-hover:text-[#f6c452] sm:text-[0.8rem]">
+      <span
+        className={clsx(
+          'font-display whitespace-nowrap uppercase text-white transition-colors duration-300 [text-shadow:0_2px_0_rgba(0,0,0,0.3),0_8px_14px_rgba(0,0,0,0.24),0_16px_34px_rgba(0,0,0,0.24)] group-hover:text-[#f6c452]',
+          compact
+            ? 'text-[0.68rem] tracking-[0.14em]'
+            : 'text-[0.72rem] tracking-[0.16em] sm:text-[0.8rem]'
+        )}
+      >
         All Journeys
       </span>
     </button>
@@ -2519,25 +2531,13 @@ function MobileMenuCycler({
   );
   const centerContent = (
     <>
-      <div className="relative h-7 w-7 shrink-0">
-        <Image
-          src={option.icon}
-          alt=""
-          fill
-          className={clsx(
-            'object-contain transition-opacity duration-300',
-            option.disabled ? 'opacity-100' : 'opacity-100 group-hover:opacity-0'
-          )}
-        />
-        {!option.disabled ? (
-          <Image
-            src={option.hoverIcon}
-            alt=""
-            fill
-            className="object-contain opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-          />
-        ) : null}
-      </div>
+      <MaskedIcon
+        src={option.icon}
+        className={clsx(
+          'h-7 w-7 transition-colors duration-300',
+          option.disabled ? 'text-white' : 'text-white group-hover:text-[#f6c452]'
+        )}
+      />
       <span
         className={clsx(
           'font-display text-[0.78rem] uppercase tracking-[0.16em] transition-colors duration-300',

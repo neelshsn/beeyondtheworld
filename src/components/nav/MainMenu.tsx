@@ -47,8 +47,11 @@ export function MainMenu() {
           aria-label="Open menu"
           className="group inline-flex min-h-[44px] flex-col items-start justify-center text-white transition-colors hover:text-[#f6c452] focus-visible:text-[#f6c452] focus-visible:outline-none"
         >
-          <span className="inline-grid grid-cols-[1.25rem_auto] items-center gap-x-2 font-display text-[10px] uppercase tracking-[0.4em]">
-            <MaskedIcon src="/assets/icones/Ico Gold BEE-05.svg" className="h-5 w-5" />
+          <span className="inline-grid grid-cols-[1.25rem_auto] items-center gap-x-2 font-display text-[10px] uppercase leading-none tracking-[0.4em]">
+            <MaskedIcon
+              src="/assets/icones/Ico Gold BEE-05.svg"
+              className="h-5 w-5 -translate-y-px"
+            />
             <span>Menu</span>
           </span>
           <span
