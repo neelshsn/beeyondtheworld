@@ -81,14 +81,14 @@ export function MenuLinks({ isOpen, onNavigate }: MenuLinksProps) {
                       />
                       <span className="sr-only">{item.index}</span>
                     </span>
-                    <span className="relative flex w-full flex-col">
+                    <span className="relative flex h-11 w-full items-center">
                       <span className="font-menu text-[clamp(30px,2vw,36px)] font-semibold uppercase leading-[0.95] tracking-[0em]">
                         {item.label}
                       </span>
                       <span
                         aria-hidden
                         className={cn(
-                          'mt-3 h-px w-full origin-left scale-x-0 rounded-full bg-gradient-to-r from-[rgba(249,215,162,0.18)] via-[rgba(244,199,122,0.75)] to-[rgba(255,240,225,0.95)] transition-transform duration-300 ease-out group-hover:scale-x-100',
+                          'absolute inset-x-0 bottom-0 h-px w-full origin-left scale-x-0 rounded-full bg-gradient-to-r from-[rgba(249,215,162,0.18)] via-[rgba(244,199,122,0.75)] to-[rgba(255,240,225,0.95)] transition-transform duration-300 ease-out group-hover:scale-x-100',
                           isActive && 'scale-x-100'
                         )}
                       />
