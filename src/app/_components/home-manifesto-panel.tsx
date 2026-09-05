@@ -30,8 +30,8 @@ export function HomeManifestoPanel() {
           data-animate-text
           className="text-white/94 max-w-3xl text-center font-title text-[clamp(2.25rem,5.4vw,5.75rem)] leading-[0.92] tracking-[-0.015em]"
         >
-          Creation becomes a living force, giving back to the people and places that make every
-          story possible.
+          Our ambition is to connect the campaigns we create with the people, skills and local
+          initiatives that give them life.
         </p>
       </div>
     </section>

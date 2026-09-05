@@ -49,7 +49,7 @@ export function HomeJourneysPanel() {
             data-animate-text
             className="relative z-10 mt-3 inline-flex flex-col items-start font-display text-[7px] uppercase tracking-[0.35em] text-white sm:mt-6 sm:text-[9px] sm:tracking-[0.45em]"
           >
-            <span>Discover journeys</span>
+            <span>Find your next campaign location</span>
             <span className="mt-1.5 h-px w-full origin-left scale-x-0 bg-gradient-to-r from-[rgba(249,215,162,0.18)] via-[rgba(244,199,122,0.75)] to-[rgba(255,240,225,0.95)] transition-transform duration-300 ease-out group-hover:scale-x-100" />
           </div>
         </Link>
@@ -86,7 +86,7 @@ export function HomeJourneysPanel() {
             data-animate-text
             className="relative z-10 mt-3 inline-flex flex-col items-end font-display text-[7px] uppercase tracking-[0.35em] text-white sm:mt-6 sm:text-[9px] sm:tracking-[0.45em]"
           >
-            <span>Discover journeys</span>
+            <span>Find your next campaign location</span>
             <span className="mt-1.5 h-px w-full origin-right scale-x-0 bg-gradient-to-r from-[rgba(255,240,225,0.95)] via-[rgba(244,199,122,0.75)] to-[rgba(249,215,162,0.18)] transition-transform duration-300 ease-out group-hover:scale-x-100" />
           </div>
         </Link>

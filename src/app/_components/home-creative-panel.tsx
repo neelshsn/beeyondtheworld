@@ -33,46 +33,40 @@ export function HomeCreativePanel({ coCreateHref }: HomeCreativePanelProps) {
         <div className="text-left">
           <h2
             data-animate-text
-            className="text-glow font-menu text-[clamp(2.4rem,7vw,8.5rem)] uppercase leading-[0.88] tracking-[0.02em] text-white"
+            className="text-glow font-menu text-[clamp(2rem,5.5vw,6.5rem)] uppercase leading-[0.88] tracking-[0.02em] text-white"
           >
-            Creative
+            Fashion campaigns,
           </h2>
           <h2
             data-animate-text
-            className="text-glow font-menu text-[clamp(2.4rem,7vw,8.5rem)] uppercase leading-[0.88] tracking-[0.02em] text-white"
+            className="text-glow font-menu text-[clamp(2rem,5.5vw,6.5rem)] uppercase leading-[0.88] tracking-[0.02em] text-white"
           >
-            Visuals
+            Created worldwide
           </h2>
           <h2
             data-animate-text
-            className="text-glow font-menu text-[clamp(2.4rem,7vw,8.5rem)] uppercase leading-[0.88] tracking-[0.02em] text-white"
+            className="text-glow font-menu text-[clamp(2rem,5.5vw,6.5rem)] uppercase leading-[0.88] tracking-[0.02em] text-white"
           >
-            Production
-          </h2>
-          <h2
-            data-animate-text
-            className="text-glow font-menu text-[clamp(2.4rem,7vw,8.5rem)] uppercase leading-[0.88] tracking-[0.02em] text-white"
-          >
-            Beeyond <span className="font-script lowercase">the</span> world
+            Through our <span className="whitespace-nowrap">Co-Journeys.</span>
           </h2>
         </div>
 
         {/* Buttons — inline row, underline hover style */}
-        <div className="flex items-center gap-8">
+        <div className="flex w-full flex-wrap items-center gap-x-8 gap-y-5">
           <Link
             href={coCreateHref}
             data-animate-text
-            className="group relative inline-flex flex-col items-start font-display text-[9px] uppercase tracking-[0.45em] text-white"
+            className="group relative inline-flex max-w-full flex-col items-start font-display text-[9px] uppercase leading-relaxed tracking-[0.45em] text-white"
           >
-            <span>Co-create a journey</span>
+            <span>Discuss your campaign with us</span>
             <span className="mt-1.5 h-px w-full origin-left scale-x-0 bg-gradient-to-r from-[rgba(249,215,162,0.18)] via-[rgba(244,199,122,0.75)] to-[rgba(255,240,225,0.95)] transition-transform duration-300 ease-out group-hover:scale-x-100" />
           </Link>
           <Link
             href="/concept"
             data-animate-text
-            className="group relative inline-flex flex-col items-start font-display text-[9px] uppercase tracking-[0.45em] text-white"
+            className="group relative inline-flex max-w-full flex-col items-start font-display text-[9px] uppercase leading-relaxed tracking-[0.45em] text-white"
           >
-            <span>Discover the concept</span>
+            <span>Get to know our production model</span>
             <span className="mt-1.5 h-px w-full origin-left scale-x-0 bg-gradient-to-r from-[rgba(249,215,162,0.18)] via-[rgba(244,199,122,0.75)] to-[rgba(255,240,225,0.95)] transition-transform duration-300 ease-out group-hover:scale-x-100" />
           </Link>
         </div>
