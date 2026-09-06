@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "postbuild": "node scripts/run-production-content-migrations.mjs",
     "start": "next start",
     "lint": "eslint .",
     "preview": "next start",
