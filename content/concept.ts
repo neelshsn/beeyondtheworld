@@ -1,4 +1,5 @@
 export type ConceptNodeId =
+  | 'overview'
   | 'coJourney'
   | 'signatureJourney'
   | 'investingBeyondCreation'
@@ -41,7 +42,15 @@ export type ConceptEditorialNode = {
   layout: 'centered' | 'columns';
 };
 
-export type ConceptNode = ConceptInteractiveNode | ConceptEditorialNode;
+export type ConceptOverviewNode = {
+  kind: 'overview';
+  id: 'overview';
+  title: string;
+  description: string;
+  background: ConceptBackground;
+};
+
+export type ConceptNode = ConceptInteractiveNode | ConceptEditorialNode | ConceptOverviewNode;
 
 const defaultBackground: ConceptBackground = {
   type: 'video',
@@ -51,9 +60,16 @@ const defaultBackground: ConceptBackground = {
 
 export const conceptNodes: ConceptNode[] = [
   {
+    kind: 'overview',
+    id: 'overview',
+    title: 'One vision. Two ways to create with Beeyond.',
+    description: 'Choose the production model that best fits your campaign.',
+    background: defaultBackground,
+  },
+  {
     kind: 'interactive',
     id: 'coJourney',
-    title: 'CO-JOURNEY',
+    title: 'SHARED JOURNEYS',
     description:
       'ONE DESTINATION, SEVERAL VISUAL PRODUCTIONS. WE WEAVE\nNON-COMPETING BRANDS INTO SHARED JOURNEYS SO EVERY\nPATH LIGHTENS FIXED COSTS AND FOOTPRINT WHILE GUARDING\nEACH TALE AS SOMETHING INTIMATE AND RARE.',
     openTitle: 'Intelligent Resource Optimization',
@@ -75,23 +91,24 @@ export const conceptNodes: ConceptNode[] = [
     background: defaultBackground,
   },
   {
-    kind: 'editorial',
+    kind: 'interactive',
     id: 'signatureJourney',
     title: 'SIGNATURE JOURNEY',
-    layout: 'centered',
-    body: [
-      'SIGNATURE CREATION EMBODIES A NEW VISION OF LUXURY, WHERE EXCLUSIVITY AND RESPONSIBILITY EVOLVE AS ONE. EVERY BESPOKE PRODUCTION IS DESIGNED WITH COMPLETE CREATIVE FREEDOM WHILE CONTRIBUTING TO BEE’S LIVING ECOSYSTEM—CELEBRATING LOCAL CULTURES, EMPOWERING COMMUNITIES AND GENERATING MEASURABLE ENVIRONMENTAL AND SOCIAL IMPACT, ALL WITH ABSOLUTE DISCRETION. BECAUSE TRUE LUXURY IS NO LONGER DEFINED BY WHAT IT PRESERVES FOR ITSELF, BUT BY WHAT IT LEAVES BEHIND.',
+    description:
+      'SIGNATURE CREATION IS OUR MOST BESPOKE EXPRESSION OF BEEYONDTHEWORLD.\nA FULLY CUSTOM PRODUCTION BUILT AROUND THE BRAND’S VISION, TERRITORY AND AMBITION. EACH JOURNEY COMBINES CREATIVE FREEDOM WITH A LOCAL IMPACT LAYER, CONNECTING INTERNATIONAL TALENT, LOCAL KNOWLEDGE AND REGENERATIVE ACTION WITHOUT COMPROMISING EXCLUSIVITY OR DISCRETION. THE RESULT IS MORE THAN A CAMPAIGN: A DISTINCTIVE VISUAL WORLD THAT BUILDS BRAND VALUE WHILE LEAVING MEASURABLE VALUE BEHIND IN THE PLACE THAT MADE IT POSSIBLE.',
+    openTitle: 'Investing Beyond Creation',
+    icon: '/assets/icones/feedbacks/concept-signature-journey.svg',
+    details: [
+      {
+        icon: '/assets/icones/feedbacks/concept-signature-impact.svg',
+        text: 'Signature Creation turns creative budgets into Creative & Impact Capital, directing part of each investment toward verified local initiatives that support communities, cultural heritage, artisans and environmental restoration. The result is a production model where brand investment generates both campaign value and measurable long-term impact.',
+      },
+      {
+        icon: '/assets/icones/feedbacks/concept-beyond-creation.svg',
+        text: 'Each Signature Creation strengthens Bee’s ecosystem by connecting brands with verified local initiatives, communities and regenerative projects in the territories where campaigns are produced. As creative investment grows, so does the scale of local value created, allowing every campaign to generate impact that lasts beyond the content itself.',
+      },
     ],
-  },
-  {
-    kind: 'editorial',
-    id: 'investingBeyondCreation',
-    title: 'Investing beyond Creation',
-    layout: 'columns',
-    body: [
-      "Every investment made through Signature Creation strengthens Bee's Creative & Impact Capital—a regenerative ecosystem designed to transform creative budgets into long-term value. The more brands invest in meaningful creation, the greater their contribution to preserving cultural heritage, empowering local communities, supporting artisans and accelerating environmental restoration initiatives around the world. Creation is no longer a cost. It becomes a catalyst for sustainable development.",
-      "Each Signature Creation expands the reach of Bee's ecosystem. By nurturing local collaborations, funding verified nonprofit initiatives and restoring the places that inspire every campaign, brands become active contributors to a circular model where creativity continuously gives back to the world. The greater the creative investment, the greater the collective impact, allowing every story to leave behind something far more valuable than content alone.",
-    ],
+    background: defaultBackground,
   },
   {
     kind: 'interactive',
@@ -104,7 +121,7 @@ export const conceptNodes: ConceptNode[] = [
     details: [
       {
         icon: '/assets/icones/feedbacks/concept-quality-charter.svg',
-        text: 'The Bee Authenticity Commitment protects what matters most: human creativity. Every campaign is rooted in genuine emotions, real encounters and lived experiences, ensuring that visual storytelling remains deeply human. Artificial Intelligence is embraced only as a tool to optimize workflows and accelerate production, not to replace artistic vision, creativity or human sensitivity. Through the Bee Authenticator, every production is traceable and certified, guaranteeing that a minimum of 90% of each campaign is crafted by humans, with complete transparency on the origin and creation process.',
+        text: 'Bee Authenticator protects human creativity and makes the creation process traceable. AI may support workflows and production efficiency, but never replace artistic vision, lived experience or human sensitivity. Through the Bee Authenticator, each campaign documents its creative provenance and process with transparency, protecting the human value behind the work.',
       },
       {
         icon: '/assets/icones/Ico Gold BEE-17.svg',

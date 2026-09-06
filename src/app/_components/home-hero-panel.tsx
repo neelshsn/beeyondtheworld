@@ -31,11 +31,13 @@ export function HomeHeroPanel() {
           {/* Main title — Cannia uppercase */}
           <h1
             data-animate-text
-            className="text-glow max-w-3xl font-menu text-[clamp(1.45rem,3.35vw,3rem)] uppercase leading-[1.08] tracking-[0.045em] text-white"
+            className="text-glow max-w-4xl font-menu text-[clamp(1.6rem,4.8vw,4.6rem)] uppercase leading-[0.95] tracking-[0.01em] text-white"
           >
-            Beyond Visuals
+            Beyond Visuals,
             <br />
-            With the World in Mind
+            Creating Impact
+            <br />
+            Around the World.
           </h1>
         </div>
       </div>

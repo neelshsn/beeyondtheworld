@@ -5,6 +5,7 @@ import {
   getStaticCampaignContent,
   staticCampaignEditorialContent,
 } from '@/data/campaign-editorial';
+import { getCampaignTaleImageLimit } from '@/data/campaign-tale-content';
 import { getPublishedCampaigns, normalizeCampaignEditorContent } from '@/lib/cms/campaign-content';
 
 afterEach(() => {
@@ -12,6 +13,30 @@ afterEach(() => {
 });
 
 describe('campaign editorial content', () => {
+  it('keeps the six Greece photo chapters through CMS normalization and the public limit', () => {
+    const base = getStaticCampaignContent('veganboost-greece');
+    expect(base).not.toBeNull();
+    const saved = normalizeCampaignEditorContent(
+      JSON.parse(JSON.stringify(base)),
+      'veganboost-greece',
+      base
+    );
+
+    expect(saved.tale.images).toHaveLength(6);
+    expect(saved.tale.images.slice(0, getCampaignTaleImageLimit('veganboost-greece'))).toEqual(
+      base!.tale.images
+    );
+    expect(saved.tale.images[5]).toContain('feedback-20260906-photo-06.webp');
+  });
+
+  it('preserves the existing image limit for other campaigns', () => {
+    for (const entry of staticCampaignEditorialContent) {
+      if (entry.showcase.slug === 'veganboost-greece') continue;
+      expect(getCampaignTaleImageLimit(entry.showcase.slug)).toBe(5);
+      expect(entry.tale.images.length).toBeLessThanOrEqual(5);
+    }
+  });
+
   it('keeps the eight approved campaigns and their two formats', () => {
     expect(staticCampaignEditorialContent).toHaveLength(8);
     expect(

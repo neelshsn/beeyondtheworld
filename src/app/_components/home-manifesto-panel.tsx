@@ -28,10 +28,12 @@ export function HomeManifestoPanel() {
       <div className="relative flex h-full items-center justify-center px-8 sm:px-16 lg:px-20">
         <p
           data-animate-text
-          className="text-white/94 max-w-3xl text-center font-title text-[clamp(2.25rem,5.4vw,5.75rem)] leading-[0.92] tracking-[-0.015em]"
+          className="max-w-7xl text-center font-display text-[clamp(0.875rem,1.3vw,1.25rem)] leading-[2] tracking-[0.18em] text-white"
         >
-          Our ambition is to connect the campaigns we create with the people, skills and local
-          initiatives that give them life.
+          <span className="font-script text-[5em] leading-[0.8] tracking-normal">T</span>urning
+          brands’ visual investment into creative capital by connecting local talent, cultural
+          knowledge, communities and regenerative action to create lasting value beyond the
+          campaign.
         </p>
       </div>
     </section>

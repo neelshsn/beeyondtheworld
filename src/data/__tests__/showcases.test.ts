@@ -15,7 +15,7 @@ const EXPECTED_CAMPAIGN_THUMBNAILS: Record<string, string> = {
   'craie-maroc': '/assets/campaigns/craie-maroc/craie-maroc-carousel-05.jpg',
   'craie-suisse': '/assets/campaigns/craie-suisse/craie-suisse-spring-03.jpg',
   'grace-mila-morocco': '/assets/campaigns/grace-mila-morocco/grace-mila-morocco-fw-01.jpg',
-  'veganboost-greece': '/assets/campaigns/veganboost-greece/veganboost-greece-gallery-02.webp',
+  'veganboost-greece': '/assets/campaigns/veganboost-greece/feedback-20260906-carousel.webp',
   'almaaz-new-york': '/assets/campaigns/almaaz-new-york/almaaz-new-york-gallery-02.webp',
   'ange-new-york': '/assets/campaigns/ange-new-york/ange-new-york-drive-01.jpg',
 };

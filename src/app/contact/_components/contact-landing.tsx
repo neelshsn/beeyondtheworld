@@ -2,7 +2,6 @@
 
 import Image from 'next/image';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Gem, Shapes, ShoppingBag, type LucideIcon } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { BeeButton } from '@/components/primitives/bee-button';
@@ -19,7 +18,6 @@ type ContactLandingProps = {
 type ChoiceOption = {
   label: string;
   icon?: string;
-  Icon?: LucideIcon;
 };
 
 type StepDefinition =
@@ -128,20 +126,20 @@ const AUDIENCE_STEPS: Record<AudienceKey, StepDefinition[]> = {
   BRANDS: [
     {
       id: 'category',
-      title: 'Select your essence',
-      helper: 'Choose the universe that best reflects your brand.',
+      title: 'Define your essence',
+      helper: 'Choose your brand category',
       kind: 'choice',
       columns: 3,
       options: [
         { label: 'SWIMWEAR', icon: `${ICONO_BASE}/brands/swimwear.svg` },
         { label: 'APPAREL', icon: `${ICONO_BASE}/brands/apparel.svg` },
         { label: 'SHOES', icon: `${ICONO_BASE}/brands/access.svg` },
-        { label: 'ACCESSORIES', Icon: ShoppingBag },
+        { label: 'ACCESSORIES', icon: '/assets/icones/feedbacks/contact-accessories.svg' },
         { label: 'OPTICAL', icon: `${ICONO_BASE}/brands/eyewear.svg` },
         { label: 'COSMETICS', icon: `${ICONO_BASE}/brands/makeup-cosmetic.svg` },
         { label: 'PERFUME', icon: `${ICONO_BASE}/brands/perfume.svg` },
-        { label: 'JEWELRY', Icon: Gem },
-        { label: 'OTHERS', Icon: Shapes },
+        { label: 'JEWELRY', icon: '/assets/icones/feedbacks/contact-jewelry.svg' },
+        { label: 'OTHERS', icon: '/assets/icones/feedbacks/contact-others.svg' },
       ],
     },
     SIGNATURE_WORLDS_STEP,
@@ -188,7 +186,7 @@ const AUDIENCE_STEPS: Record<AudienceKey, StepDefinition[]> = {
       options: [
         { label: 'ENVIRONMENT', icon: `${ICONO_BASE}/association/njos.svg` },
         { label: 'SOCIAL', icon: `${ICONO_BASE}/association/social.svg` },
-        { label: 'SOCIETAL', icon: `${ICONO_BASE}/association/support.svg` },
+        { label: 'ECONOMICS', icon: '/assets/icones/feedbacks/concept-signature-journey.svg' },
       ],
     },
     SIGNATURE_WORLDS_STEP,
@@ -248,7 +246,7 @@ function GlassCalendar({ value, onChange }: { value: string; onChange: (value: s
   }).format(new Date(year, month, 1));
 
   return (
-    <div className="rounded-none border border-white/[0.14] bg-[linear-gradient(145deg,rgba(255,255,255,0.09),rgba(255,255,255,0.025))] p-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_18px_54px_rgba(0,0,0,0.28)] backdrop-blur-xl sm:p-4">
+    <div className="rounded-none border border-white/25 bg-black/25 p-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_18px_54px_rgba(0,0,0,0.28)] backdrop-blur-xl sm:p-4">
       <div className="mb-4 flex items-center justify-between">
         <button
           type="button"
@@ -298,7 +296,7 @@ function GlassCalendar({ value, onChange }: { value: string; onChange: (value: s
       </div>
       <div className="grid grid-cols-7 gap-x-0.5 gap-y-1 text-center">
         {CALENDAR_WEEKDAYS.map((day) => (
-          <span key={day} className="pb-2 text-[0.48rem] tracking-[0.18em] text-white/50">
+          <span key={day} className="pb-2 text-[0.55rem] tracking-[0.12em] text-white/75">
             {day}
           </span>
         ))}
@@ -315,6 +313,7 @@ function GlassCalendar({ value, onChange }: { value: string; onChange: (value: s
               key={iso}
               type="button"
               onClick={() => onChange(iso)}
+              aria-label={new Intl.DateTimeFormat('en', { dateStyle: 'full' }).format(date)}
               aria-pressed={selected}
               disabled={isPast}
               className={`relative min-h-10 text-[0.72rem] transition duration-300 [font-family:var(--font-adam)] after:absolute after:inset-x-[22%] after:bottom-[12%] after:h-px after:origin-center after:bg-[#f4bb52] after:transition-transform after:duration-300 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#f4bb52]/70 ${
@@ -322,7 +321,7 @@ function GlassCalendar({ value, onChange }: { value: string; onChange: (value: s
                   ? 'cursor-not-allowed text-white/25 after:scale-x-0'
                   : selected
                     ? 'text-[#f8d38f] after:scale-x-100'
-                    : 'text-white/78 after:scale-x-0 hover:text-[#f4bb52] hover:after:scale-x-100 focus-visible:text-[#f4bb52] focus-visible:after:scale-x-100'
+                    : 'text-white after:scale-x-0 hover:text-[#f4bb52] hover:after:scale-x-100 focus-visible:text-[#f4bb52] focus-visible:after:scale-x-100'
               }`}
             >
               {day}
@@ -732,7 +731,7 @@ export function ContactLanding({ initialAudience, journeySlug, onExit }: Contact
                 className="relative flex h-full min-h-0 flex-col overflow-y-auto"
               >
                 <motion.div
-                  className="relative z-10 flex min-h-full w-full flex-col border border-[rgba(255,244,227,0.18)] bg-[linear-gradient(180deg,rgba(8,8,8,0.32)_0%,rgba(12,12,12,0.24)_34%,rgba(16,16,16,0.2)_100%)] px-4 pb-8 pt-20 shadow-[inset_0_1px_0_rgba(255,255,255,0.12),inset_0_-1px_0_rgba(255,255,255,0.04),0_24px_80px_rgba(0,0,0,0.34)] backdrop-blur-[34px] sm:px-8 sm:pb-10 sm:pt-24 lg:px-12 lg:py-10 lg:[-webkit-mask-image:linear-gradient(to_right,transparent_0px,black_132px,black_100%)] lg:[mask-image:linear-gradient(to_right,transparent_0px,black_132px,black_100%)]"
+                  className="relative z-10 flex min-h-full w-full shrink-0 flex-col border border-[rgba(255,244,227,0.18)] bg-[linear-gradient(180deg,rgba(8,8,8,0.76)_0%,rgba(12,12,12,0.7)_100%)] px-4 pb-8 pt-24 shadow-[inset_0_1px_0_rgba(255,255,255,0.12),inset_0_-1px_0_rgba(255,255,255,0.04),0_24px_80px_rgba(0,0,0,0.34)] backdrop-blur-[34px] sm:px-8 sm:pb-10 lg:px-12"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.75, ease: stageEase }}
@@ -741,7 +740,7 @@ export function ContactLanding({ initialAudience, journeySlug, onExit }: Contact
                     aria-hidden
                     className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_14%,rgba(255,255,255,0.14)_0%,rgba(255,255,255,0.05)_18%,rgba(255,255,255,0)_42%),linear-gradient(135deg,rgba(255,255,255,0.08)_0%,rgba(255,255,255,0)_36%)]"
                   />
-                  <div className="mx-auto w-full max-w-[44rem] lg:pt-8">
+                  <div className="mx-auto w-full max-w-[44rem] shrink-0">
                     {journeySlug ? (
                       <p className="mb-4 text-center text-[0.62rem] uppercase tracking-[0.34em] text-[#f4bb52] [font-family:var(--font-adam)] [text-shadow:0_0_14px_rgba(244,187,82,0.38)]">
                         Journey selected · {journeySlug}
@@ -782,8 +781,8 @@ export function ContactLanding({ initialAudience, journeySlug, onExit }: Contact
                     </div>
                   </div>
 
-                  <div className="flex flex-none items-start justify-center py-4 sm:py-6 lg:min-h-0 lg:flex-1 lg:items-center lg:py-8">
-                    <div className="w-full max-w-[44rem] px-1 py-4 sm:px-8 sm:py-8 lg:px-10 lg:py-10">
+                  <div className="flex shrink-0 grow items-start justify-center py-4 sm:py-6 lg:items-center">
+                    <div className="w-full max-w-[44rem] px-1 py-4 sm:px-8 sm:py-6 lg:px-10">
                       <AnimatePresence mode="wait" initial={false}>
                         <motion.div
                           key={currentStep.id}
@@ -823,13 +822,13 @@ export function ContactLanding({ initialAudience, journeySlug, onExit }: Contact
                                     type="button"
                                     onClick={() => setChoiceAnswer(currentStep, option.label)}
                                     aria-pressed={isSelected}
-                                    className={`group relative flex min-h-[8rem] min-w-0 flex-col items-center justify-center gap-3 px-1 pb-5 pt-2 text-center text-[0.64rem] uppercase leading-relaxed tracking-[0.16em] transition duration-500 [font-family:var(--font-adam)] focus-visible:text-[#f4bb52] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#f4bb52]/70 sm:min-h-[11rem] sm:gap-4 sm:px-3 sm:text-[0.82rem] sm:tracking-[0.24em] ${
+                                    className={`group relative flex min-h-[8rem] min-w-0 flex-col items-center justify-center gap-3 px-1 pb-5 pt-2 text-center text-[0.64rem] uppercase leading-relaxed tracking-[0.16em] transition duration-500 [font-family:var(--font-adam)] focus-visible:text-[#f4bb52] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#f4bb52]/70 sm:min-h-[9.5rem] sm:gap-3 sm:px-3 sm:text-[0.82rem] sm:tracking-[0.24em] ${
                                       isSelected
                                         ? 'text-[#f4bb52]'
                                         : 'text-white/92 hover:text-[#f4bb52]'
                                     }`}
                                   >
-                                    <span className="relative flex h-16 w-16 items-center justify-center sm:h-28 sm:w-28">
+                                    <span className="relative flex h-16 w-16 items-center justify-center sm:h-24 sm:w-24">
                                       {option.icon ? (
                                         <>
                                           <Image
@@ -853,13 +852,6 @@ export function ContactLanding({ initialAudience, journeySlug, onExit }: Contact
                                             }`}
                                           />
                                         </>
-                                      ) : null}
-                                      {option.Icon ? (
-                                        <option.Icon
-                                          aria-hidden
-                                          strokeWidth={1.15}
-                                          className="h-[62%] w-[62%] transition-transform duration-700 group-hover:scale-105 group-focus-visible:scale-105"
-                                        />
                                       ) : null}
                                     </span>
                                     <span>{option.label}</span>
@@ -932,7 +924,7 @@ export function ContactLanding({ initialAudience, journeySlug, onExit }: Contact
                                   onChange={(event) =>
                                     setFieldAnswer(currentStep.id, 'time', event.target.value)
                                   }
-                                  className="h-14 rounded-none border-0 border-b border-white/35 bg-transparent px-2 text-center text-base text-white outline-none transition duration-300 focus:border-[#f4bb52]"
+                                  className="h-14 rounded-none border-0 border-b border-white/50 bg-transparent px-2 text-center text-base text-white outline-none transition duration-300 [color-scheme:dark] focus:border-[#f4bb52]"
                                 />
                               </label>
                               <label className="mt-4 flex flex-col gap-3">
@@ -950,7 +942,7 @@ export function ContactLanding({ initialAudience, journeySlug, onExit }: Contact
                                     setFieldAnswer(currentStep.id, 'whatsapp', event.target.value)
                                   }
                                   placeholder="+33 6 12 34 56 78"
-                                  className="placeholder:text-white/42 h-14 rounded-none border-0 border-b border-white/35 bg-transparent px-2 text-center text-base text-white outline-none transition duration-300 focus:border-[#f4bb52]"
+                                  className="h-14 rounded-none border-0 border-b border-white/50 bg-transparent px-2 text-center text-base text-white outline-none transition duration-300 placeholder:text-white/60 focus:border-[#f4bb52]"
                                 />
                               </label>
                               <label className="mt-5 flex items-start gap-3 text-left text-xs leading-relaxed text-white/70">
@@ -958,7 +950,7 @@ export function ContactLanding({ initialAudience, journeySlug, onExit }: Contact
                                   type="checkbox"
                                   checked={consentGiven}
                                   onChange={(event) => setConsentGiven(event.target.checked)}
-                                  className="mt-0.5 size-4 accent-[#f4bb52]"
+                                  className="mt-0.5 size-4 shrink-0 accent-[#f4bb52]"
                                 />
                                 <span>
                                   I agree to be contacted by Beeyondtheworld about this request and
@@ -998,7 +990,7 @@ export function ContactLanding({ initialAudience, journeySlug, onExit }: Contact
                     </p>
                   ) : null}
 
-                  <div className="mx-auto mb-12 flex w-full max-w-[44rem] items-center justify-between gap-3 sm:mb-0 sm:gap-4">
+                  <div className="mx-auto flex w-full max-w-[44rem] shrink-0 items-center justify-between gap-3 pb-[max(0rem,env(safe-area-inset-bottom))] sm:gap-4">
                     <BeeButton
                       onClick={goToPreviousStep}
                       size="md"

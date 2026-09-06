@@ -106,7 +106,7 @@ const RELEASE_WINDOW_BY_ID: Record<string, string> = {
   'craie-maroc': 'Spring Summer 2025',
   'craie-suisse': 'Spring Summer 2023 / 2024',
   'grace-mila-morocco': 'Fall Winter 2024 / Spring Summer 2024',
-  'veganboost-greece': 'Fall Winter 2023',
+  'veganboost-greece': 'Spring Summer 2024',
   'almaaz-new-york': 'Fall Winter / Summer 2024',
   'ange-new-york': 'Fall Winter 2024',
 };
@@ -117,7 +117,7 @@ const SEASON_BY_ID: Record<string, Campaign['season']> = {
   'craie-maroc': 'spring-summer',
   'craie-suisse': 'spring-summer',
   'grace-mila-morocco': 'fall-winter',
-  'veganboost-greece': 'fall-winter',
+  'veganboost-greece': 'spring-summer',
   'almaaz-new-york': 'fall-winter',
   'ange-new-york': 'fall-winter',
 };
@@ -158,8 +158,8 @@ const THUMBNAIL_BY_ID: Partial<Record<string, { src: string; alt: string }>> = {
     alt: 'Grace and Mila Fall Winter portrait in Morocco',
   },
   'veganboost-greece': {
-    src: '/assets/campaigns/veganboost-greece/veganboost-greece-gallery-02.webp',
-    alt: 'Veganboost portrait reflected in the clear waters of Milos',
+    src: '/assets/campaigns/veganboost-greece/feedback-20260906-carousel.webp',
+    alt: 'Veganboost portrait reflected in a mirror in Milos',
   },
   'almaaz-new-york': {
     src: '/assets/campaigns/almaaz-new-york/almaaz-new-york-gallery-02.webp',

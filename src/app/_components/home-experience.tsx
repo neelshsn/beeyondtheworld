@@ -69,11 +69,7 @@ function getDualSweepClips() {
   };
 }
 
-type HomeExperienceProps = {
-  coCreateHref: string;
-};
-
-export default function HomeExperience({ coCreateHref }: HomeExperienceProps) {
+export default function HomeExperience() {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const activeRef = useRef(0);
   const isAnimatingRef = useRef(false);
@@ -368,7 +364,7 @@ export default function HomeExperience({ coCreateHref }: HomeExperienceProps) {
 
       {/* Panel 2: Creative Visuals Production */}
       <div data-panel style={{ zIndex: 2 }}>
-        <HomeCreativePanel coCreateHref={coCreateHref} />
+        <HomeCreativePanel />
       </div>
 
       {/* Panel 3: Manifesto — full-screen video */}

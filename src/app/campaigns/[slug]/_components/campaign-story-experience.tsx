@@ -7,6 +7,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { useBodyScrollLock } from '@/app/concept/_hooks/use-body-scroll-lock';
 import { SmartVideo } from '@/components/primitives';
+import { getCampaignTaleImageLimit } from '@/data/campaign-tale-content';
 import { campaignShowcases, type CampaignShowcase } from '@/data/showcases';
 import { formatCampaignSeason } from '@/lib/format-campaign-season';
 import type { Campaign } from '@/types/campaign';
@@ -80,14 +81,15 @@ const MEDIA_OVERRIDES: Record<string, MediaOverride> = {
     ],
   },
   'veganboost-greece': {
-    heroVideo: '/assets/campaigns/veganboost-greece/veganboost-greece-hero.mp4',
-    storyVideo: '/assets/campaigns/veganboost-greece/veganboost-greece-story.mp4',
+    heroVideo: '/assets/campaigns/veganboost-greece/feedback-20260906-hero.mp4',
+    storyVideo: '/assets/campaigns/veganboost-greece/feedback-20260906-story.mp4',
     images: [
-      '/assets/campaigns/veganboost-greece/veganboost-greece-picture-02.webp',
-      '/assets/campaigns/veganboost-greece/veganboost-greece-gallery-02.webp',
-      '/assets/campaigns/veganboost-greece/veganboost-greece-editorial-01.webp',
-      '/assets/campaigns/veganboost-greece/veganboost-greece-editorial-02.webp',
-      '/assets/campaigns/veganboost-greece/veganboost-greece-gallery-01.webp',
+      '/assets/campaigns/veganboost-greece/feedback-20260906-photo-01.webp',
+      '/assets/campaigns/veganboost-greece/feedback-20260906-photo-02.webp',
+      '/assets/campaigns/veganboost-greece/feedback-20260906-photo-03.webp',
+      '/assets/campaigns/veganboost-greece/feedback-20260906-photo-04.webp',
+      '/assets/campaigns/veganboost-greece/feedback-20260906-photo-05.webp',
+      '/assets/campaigns/veganboost-greece/feedback-20260906-photo-06.webp',
     ],
   },
 };
@@ -99,9 +101,10 @@ function unique(items: Array<string | undefined>) {
 }
 
 function resolveMedia(campaign: CampaignShowcase, tale?: CampaignTaleContent) {
+  const imageLimit = getCampaignTaleImageLimit(campaign.slug);
   if (tale) {
     const videos = unique([tale.heroVideo, ...tale.videos, tale.storyVideo]).slice(0, 5);
-    const images = unique(tale.images).slice(0, 5);
+    const images = unique(tale.images).slice(0, imageLimit);
     const fallbackImage = campaign.hero.type === 'image' ? campaign.hero.src : campaign.hero.poster;
     return {
       heroVideo: tale.heroVideo ?? videos[0],
@@ -121,7 +124,7 @@ function resolveMedia(campaign: CampaignShowcase, tale?: CampaignTaleContent) {
   ]);
   const fallbackImage = campaign.hero.type === 'image' ? campaign.hero.src : campaign.hero.poster;
   const images = unique([...(override.images ?? []), ...galleryImages]);
-  const resolvedImages = (images.length ? images : unique([fallbackImage])).slice(0, 5);
+  const resolvedImages = (images.length ? images : unique([fallbackImage])).slice(0, imageLimit);
   const videos = unique([
     override.heroVideo,
     ...derivedVideos,
@@ -184,7 +187,7 @@ export function CampaignStoryExperience({
     campaignCatalog[(campaignIndex + 1) % campaignCatalog.length] ?? campaignCatalog[0] ?? campaign;
   const nextMedia = resolveMedia(nextCampaign);
   const client = meta?.client ?? campaign.title.split(' - ')[0] ?? campaign.title;
-  const splitVeganboostTitle = campaign.slug === 'veganboost-greece';
+  const isGreeceTale = campaign.slug === 'veganboost-greece';
   const detail = formatCampaignSeason(
     meta?.releaseWindow ?? campaign.hero.caption ?? campaign.destination
   );
@@ -306,20 +309,27 @@ export function CampaignStoryExperience({
         style={{ zIndex: 1 }}
       >
         <MediaBackground video={media.heroVideo} image={media.images[0]} priority />
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(4,4,3,0.12)_0%,rgba(4,4,3,0.02)_46%,rgba(4,4,3,0.72)_100%)]" />
+        <div
+          className={
+            isGreeceTale
+              ? 'absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-black/5'
+              : 'absolute inset-0 bg-[linear-gradient(180deg,rgba(4,4,3,0.12)_0%,rgba(4,4,3,0.02)_46%,rgba(4,4,3,0.72)_100%)]'
+          }
+        />
         <div className="absolute bottom-10 left-6 z-10 max-w-[90vw] text-left sm:bottom-14 sm:left-12 lg:bottom-20 lg:left-20">
-          <h1 className="font-title text-[clamp(3.5rem,10vw,10rem)] uppercase leading-[0.76] tracking-[-0.025em] text-white [text-shadow:0_14px_55px_rgba(0,0,0,0.52)]">
-            {splitVeganboostTitle ? (
-              <>
-                <span className="block">Vegan</span>
-                <span className="block">Boost</span>
-              </>
-            ) : (
-              client
-            )}
+          <h1
+            className={
+              isGreeceTale
+                ? 'whitespace-nowrap font-menu text-[clamp(2rem,4vw,4rem)] font-normal uppercase leading-none tracking-[-0.025em] text-white'
+                : 'font-title text-[clamp(3.5rem,10vw,10rem)] uppercase leading-[0.76] tracking-[-0.025em] text-white [text-shadow:0_14px_55px_rgba(0,0,0,0.52)]'
+            }
+          >
+            {client}
           </h1>
           <p className="mt-4 font-display text-[0.56rem] uppercase tracking-[0.34em] text-white/90 sm:text-[0.7rem]">
-            {campaign.destination} <span className="px-2 text-[#f6c452]">|</span> {detail}
+            {campaign.destination}{' '}
+            <span className={isGreeceTale ? 'px-2 text-white' : 'px-2 text-[#f6c452]'}>|</span>{' '}
+            {detail}
           </p>
         </div>
       </section>
@@ -346,18 +356,20 @@ export function CampaignStoryExperience({
         style={{ zIndex: 3 }}
       >
         <MediaBackground video={media.storyVideo} image={media.images[1] ?? media.images[0]} />
-        <div className="bg-black/42 absolute inset-0" />
+        <div
+          className={isGreeceTale ? 'absolute inset-0 bg-black/25' : 'bg-black/42 absolute inset-0'}
+        />
         <article className="relative z-10 flex h-full items-center justify-center px-6 pb-8 pt-20 sm:px-12 lg:px-20">
           <div className="mx-auto max-w-[58rem] text-center">
             <h2
-              className={`font-script text-[clamp(2.4rem,6vw,5.7rem)] normal-case leading-[0.92] text-white transition duration-1000 ${
+              className={`font-script ${isGreeceTale ? 'text-[clamp(2.1rem,3.3vw,3.3rem)]' : 'text-[clamp(2.4rem,6vw,5.7rem)]'} normal-case leading-[0.92] text-white transition duration-1000 ${
                 activeIndex === 2 ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'
               }`}
             >
               {copy.title}
             </h2>
             <p
-              className={`mx-auto mt-7 max-w-[54rem] font-sans text-[clamp(0.55rem,0.83vw,0.78rem)] uppercase leading-[1.82] tracking-[0.09em] text-white/90 transition delay-200 duration-1000 sm:mt-9 ${
+              className={`mx-auto mt-7 ${isGreeceTale ? 'max-w-[39rem]' : 'max-w-[54rem]'} font-sans text-[clamp(0.55rem,0.83vw,0.78rem)] uppercase leading-[1.82] tracking-[0.09em] text-white/90 transition delay-200 duration-1000 sm:mt-9 ${
                 activeIndex === 2 ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'
               }`}
             >
@@ -385,6 +397,13 @@ export function CampaignStoryExperience({
                 quality={100}
                 sizes="100vw"
                 className="object-cover"
+                style={
+                  isGreeceTale && item.src.endsWith('feedback-20260906-photo-02.webp')
+                    ? { objectPosition: '50% 85%' }
+                    : isGreeceTale && item.src.endsWith('feedback-20260906-photo-06.webp')
+                      ? { objectPosition: '50% 60%' }
+                      : undefined
+                }
               />
             ) : (
               <MediaBackground video={item.src} image={poster} />

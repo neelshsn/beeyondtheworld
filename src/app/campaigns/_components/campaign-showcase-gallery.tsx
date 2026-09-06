@@ -964,7 +964,10 @@ function JourneyHeadline({
             )}
           >
             <span>{destination}</span>
-            <span className="px-2 text-[#f6c452]" aria-hidden="true">
+            <span
+              className={clsx('px-2', splitVeganboostTitle ? 'text-white' : 'text-[#f6c452]')}
+              aria-hidden="true"
+            >
               |
             </span>
             <span>{season}</span>

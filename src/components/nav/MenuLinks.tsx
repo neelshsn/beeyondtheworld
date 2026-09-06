@@ -1,11 +1,11 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { AnimatePresence, MotionConfig, motion, useReducedMotion } from 'framer-motion';
 import * as React from 'react';
 
-import { MaskedIcon } from '@/components/primitives/masked-icon';
 import { mainNav } from '@/config/navigation';
 import { cn } from '@/lib/utils';
 
@@ -75,14 +75,18 @@ export function MenuLinks({ isOpen, onNavigate }: MenuLinksProps) {
                     )}
                   >
                     <span className="flex h-11 w-11 shrink-0 items-center justify-center">
-                      <MaskedIcon
+                      <Image
                         src={item.iconSrc}
-                        className="h-8 w-8 drop-shadow-[0_4px_14px_rgba(0,0,0,0.32)] md:h-9 md:w-9"
+                        alt=""
+                        width={36}
+                        height={36}
+                        className="h-8 w-8 object-contain drop-shadow-[0_4px_14px_rgba(0,0,0,0.32)] md:h-9 md:w-9"
+                        aria-hidden
                       />
                       <span className="sr-only">{item.index}</span>
                     </span>
                     <span className="relative flex h-11 w-full items-center">
-                      <span className="font-menu text-[clamp(30px,2vw,36px)] font-semibold uppercase leading-[0.95] tracking-[0em]">
+                      <span className="font-menu text-[clamp(30px,2vw,36px)] font-normal uppercase leading-[0.95] tracking-[0em]">
                         {item.label}
                       </span>
                       <span

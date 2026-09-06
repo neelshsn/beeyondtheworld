@@ -63,14 +63,15 @@ const MEDIA_OVERRIDES: Record<
     ],
   },
   'veganboost-greece': {
-    heroVideo: '/assets/campaigns/veganboost-greece/veganboost-greece-hero.mp4',
-    storyVideo: '/assets/campaigns/veganboost-greece/veganboost-greece-story.mp4',
+    heroVideo: '/assets/campaigns/veganboost-greece/feedback-20260906-hero.mp4',
+    storyVideo: '/assets/campaigns/veganboost-greece/feedback-20260906-story.mp4',
     images: [
-      '/assets/campaigns/veganboost-greece/veganboost-greece-picture-02.webp',
-      '/assets/campaigns/veganboost-greece/veganboost-greece-gallery-02.webp',
-      '/assets/campaigns/veganboost-greece/veganboost-greece-editorial-01.webp',
-      '/assets/campaigns/veganboost-greece/veganboost-greece-editorial-02.webp',
-      '/assets/campaigns/veganboost-greece/veganboost-greece-gallery-01.webp',
+      '/assets/campaigns/veganboost-greece/feedback-20260906-photo-01.webp',
+      '/assets/campaigns/veganboost-greece/feedback-20260906-photo-02.webp',
+      '/assets/campaigns/veganboost-greece/feedback-20260906-photo-03.webp',
+      '/assets/campaigns/veganboost-greece/feedback-20260906-photo-04.webp',
+      '/assets/campaigns/veganboost-greece/feedback-20260906-photo-05.webp',
+      '/assets/campaigns/veganboost-greece/feedback-20260906-photo-06.webp',
     ],
   },
 };
@@ -79,6 +80,10 @@ function unique(items: Array<string | undefined>) {
   return items.filter(
     (item, index, all): item is string => Boolean(item) && all.indexOf(item) === index
   );
+}
+
+export function getCampaignTaleImageLimit(slug: string) {
+  return slug === 'veganboost-greece' ? 6 : 5;
 }
 
 export function buildDefaultCampaignTale(campaign: CampaignShowcase): CampaignTaleContent {
@@ -92,7 +97,10 @@ export function buildDefaultCampaignTale(campaign: CampaignShowcase): CampaignTa
   ]);
   const fallbackImage = campaign.hero.type === 'image' ? campaign.hero.src : campaign.hero.poster;
   const images = unique([...(override.images ?? []), ...galleryImages]);
-  const resolvedImages = (images.length ? images : unique([fallbackImage])).slice(0, 5);
+  const resolvedImages = (images.length ? images : unique([fallbackImage])).slice(
+    0,
+    getCampaignTaleImageLimit(campaign.slug)
+  );
   const videos = unique([
     override.heroVideo,
     ...derivedVideos,
