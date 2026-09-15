@@ -3,6 +3,10 @@ import { NextResponse } from 'next/server';
 
 import { getDb, locations, type NewLocationRow } from '@/lib/db';
 import { rejectCrossSiteWrite, requireAdmin } from '@/lib/db/admin-guard';
+import {
+  getLegacyPortugalLocationImports,
+  markJourneyLocationsManaged,
+} from '@/lib/cms/journey-location-management';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -33,6 +37,10 @@ export async function PATCH(request: Request, context: RouteContext) {
     }
 
     const body = (await request.json()) as Partial<NewLocationRow>;
+    if ('name' in body && (typeof body.name !== 'string' || !body.name.trim())) {
+      return NextResponse.json({ error: 'Le nom de la Location est requis.' }, { status: 400 });
+    }
+    if (typeof body.name === 'string') body.name = body.name.trim();
     const updates: Record<string, unknown> = {};
     for (const field of EDITABLE_FIELDS) {
       if (field in body) {
@@ -45,11 +53,24 @@ export async function PATCH(request: Request, context: RouteContext) {
     updates.updatedAt = new Date();
 
     const db = getDb();
-    const [updated] = await db
+    const [existing] = await db
+      .select({ journeyId: locations.journeyId })
+      .from(locations)
+      .where(eq(locations.id, locationId))
+      .limit(1);
+    if (!existing) return NextResponse.json({ error: 'Location introuvable.' }, { status: 404 });
+    const imports = await getLegacyPortugalLocationImports(existing.journeyId);
+    const mutation = db
       .update(locations)
       .set(updates)
       .where(eq(locations.id, locationId))
       .returning();
+    const marker = markJourneyLocationsManaged(existing.journeyId);
+    const updatedRows =
+      imports.length > 0
+        ? (await db.batch([db.insert(locations).values(imports), mutation, marker]))[1]
+        : (await db.batch([mutation, marker]))[0];
+    const [updated] = updatedRows;
 
     if (!updated) {
       return NextResponse.json({ error: 'Location introuvable.' }, { status: 404 });
@@ -76,7 +97,20 @@ export async function DELETE(request: Request, context: RouteContext) {
     }
 
     const db = getDb();
-    const [deleted] = await db.delete(locations).where(eq(locations.id, locationId)).returning();
+    const [existing] = await db
+      .select({ journeyId: locations.journeyId })
+      .from(locations)
+      .where(eq(locations.id, locationId))
+      .limit(1);
+    if (!existing) return NextResponse.json({ error: 'Location introuvable.' }, { status: 404 });
+    const imports = await getLegacyPortugalLocationImports(existing.journeyId);
+    const mutation = db.delete(locations).where(eq(locations.id, locationId)).returning();
+    const marker = markJourneyLocationsManaged(existing.journeyId);
+    const deletedRows =
+      imports.length > 0
+        ? (await db.batch([db.insert(locations).values(imports), mutation, marker]))[1]
+        : (await db.batch([mutation, marker]))[0];
+    const [deleted] = deletedRows;
     if (!deleted) {
       return NextResponse.json({ error: 'Location introuvable.' }, { status: 404 });
     }

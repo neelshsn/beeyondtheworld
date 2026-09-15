@@ -52,25 +52,40 @@ export async function getJourneys(): Promise<Journey[]> {
 /** Répercute les champs éditables du Journey sur sa page détail et son SEO. */
 export async function getPublishedJourneyShowcase(slug: string): Promise<JourneyShowcase | null> {
   const fallback = journeyShowcases.find((item) => item.slug === slug) ?? null;
-  if (!fallback || !isDbConfigured()) return fallback;
+  if (!isDbConfigured()) return fallback;
 
   try {
     const [row] = await getDb().select().from(journeys).where(eq(journeys.slug, slug)).limit(1);
-    if (!row?.published) return fallback;
+    if (!row) return fallback;
+    if (!row.published) return null;
+    const base: JourneyShowcase = fallback ?? {
+      id: row.slug,
+      slug: row.slug,
+      title: row.title,
+      headline: '',
+      locale: row.location,
+      timeframe: row.dateLabel,
+      summary: '',
+      story: [],
+      highlights: [],
+      logistics: [],
+      hero: { id: `${row.slug}-hero`, type: 'image', src: row.image, alt: row.title },
+      gallery: [],
+    };
 
     return {
-      ...fallback,
-      title: row.title || fallback.title,
-      locale: row.location || fallback.locale,
-      timeframe: row.dateLabel || fallback.timeframe,
+      ...base,
+      title: row.title || base.title,
+      locale: row.location || base.locale,
+      timeframe: row.dateLabel || base.timeframe,
       hero: row.image
         ? {
-            ...fallback.hero,
+            ...base.hero,
             type: 'image',
             src: row.image,
             poster: undefined,
           }
-        : fallback.hero,
+        : base.hero,
     };
   } catch {
     return fallback;

@@ -5,6 +5,7 @@ import type {
   JourneyLocationView,
 } from '../../../types/journey-location';
 import { resolveJourneyLocationContent } from '../resolve-journey-locations';
+import { isJourneyLocationCollectionManaged } from '../journey-location-management';
 
 const fallbackLocations: JourneyLocationView[] = [
   {
@@ -30,6 +31,84 @@ const fallbackStories: JourneyLocationStoryView[] = [
 ];
 
 describe('resolveJourneyLocationContent', () => {
+  it('keeps intentionally hidden or deleted CMS collections empty', () => {
+    expect(
+      resolveJourneyLocationContent([], fallbackLocations, fallbackStories, { cmsManaged: true })
+    ).toEqual({ locations: [], stories: [] });
+  });
+
+  it('preserves legacy fallback before editing and remembers deletion of the final step', () => {
+    expect(isJourneyLocationCollectionManaged({}, 0)).toBe(false);
+    expect(isJourneyLocationCollectionManaged({}, 1)).toBe(true);
+    expect(isJourneyLocationCollectionManaged({ _cms: { locationsManaged: true } }, 0)).toBe(true);
+  });
+
+  it('does not copy another place’s Tale or season when a new step is added', () => {
+    const result = resolveJourneyLocationContent(
+      [
+        {
+          id: 72,
+          name: 'New place',
+          subtitle: null,
+          leftTitle: [],
+          narrative: '',
+          image: '/new-place.jpg',
+          video: null,
+          media: [],
+          position: 0,
+        },
+      ],
+      fallbackLocations,
+      fallbackStories
+    );
+    expect(result.locations[0].region).toBe('');
+    expect(result.locations[0].seasons).toEqual(['spring-summer', 'fall-winter']);
+    expect(result.stories[0].narrative).toBe('');
+    expect(result.stories[0].leftTitle).toEqual([]);
+    expect(result.stories[0].image).toBe('/new-place.jpg');
+  });
+
+  it('honors cleared Tale content and changed main imagery on an existing step', () => {
+    const result = resolveJourneyLocationContent(
+      [
+        {
+          id: 72,
+          name: 'Old title',
+          subtitle: null,
+          leftTitle: [],
+          narrative: '',
+          image: '/edited-main.jpg',
+          video: null,
+          media: [],
+          position: 0,
+        },
+      ],
+      fallbackLocations,
+      fallbackStories
+    );
+    expect(result.stories[0]).toMatchObject({
+      narrative: '',
+      leftTitle: [],
+      image: '/edited-main.jpg',
+    });
+  });
+
+  it('uses saved order for the next Tale after steps are reordered', () => {
+    const steps = ['Last', 'First'].map((name, index) => ({
+      id: index + 1,
+      name,
+      subtitle: null,
+      leftTitle: [name],
+      narrative: name,
+      image: '/place.jpg',
+      video: null,
+      media: [],
+      position: index,
+    }));
+    const result = resolveJourneyLocationContent(steps, fallbackLocations, fallbackStories);
+    expect(result.locations.map((location) => location.title)).toEqual(['Last', 'First']);
+    expect(result.stories.map((story) => story.nextLocation)).toEqual(['First', 'Last']);
+  });
   it('keeps the static content when the CMS has no published Locations', () => {
     expect(resolveJourneyLocationContent([], fallbackLocations, fallbackStories)).toEqual({
       locations: fallbackLocations,
@@ -67,6 +146,7 @@ describe('resolveJourneyLocationContent', () => {
       id: 'cms-story-42',
       locationId: 'cms-location-42',
       image: '/new-story.jpg',
+      media: [{ url: '/new-story.jpg', type: 'image', alt: 'New tale' }],
       leftTitle: ['New', 'Tale'],
       narrative: 'New narrative',
       nextLocationId: 'cms-location-42',

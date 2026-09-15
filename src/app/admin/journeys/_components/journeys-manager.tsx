@@ -249,6 +249,10 @@ function LocationEditor({
   }, [location.id, onActivityChange]);
 
   const save = async () => {
+    if (!draft.name?.trim()) {
+      setError('Donne un nom à cette Location avant de l’enregistrer.');
+      return;
+    }
     const incompleteMedia = draft.media.find((item) => !item.url.trim());
     if (incompleteMedia) {
       setError('Ajoute un fichier dans chaque ligne de galerie, ou supprime la ligne vide.');
@@ -355,7 +359,8 @@ function LocationEditor({
           <div>
             <p className="text-[10px] uppercase tracking-[0.3em] text-white/50">Galerie du Tale</p>
             <p className="mt-1 text-xs text-white/45">
-              La première image sert de grand visuel dans le Tale.
+              Les médias apparaissent dans le Tale, dans cet ordre. Tu peux y parcourir les images
+              et lire les vidéos.
             </p>
           </div>
           <Button
@@ -497,7 +502,7 @@ function LocationEditor({
           onClick={save}
           disabled={busy || uploading || !dirty}
         >
-          {busy ? 'Enregistrement…' : 'Enregistrer'}
+          {busy ? 'Enregistrement…' : 'Enregistrer cette Location'}
         </Button>
         <Button
           className="min-h-11"
@@ -542,6 +547,7 @@ function JourneyEditor({
   });
   const [dirty, setDirty] = useState(false);
   const [newLocationName, setNewLocationName] = useState('');
+  const [expandedLocationId, setExpandedLocationId] = useState<number | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
@@ -663,18 +669,45 @@ function JourneyEditor({
     setBusy(true);
     setError(null);
     try {
-      await api(`/api/admin/journeys/${journey.id}/locations`, {
-        method: 'POST',
-        body: JSON.stringify({
-          name: newLocationName.trim(),
-          position: journey.locations.length,
-          published: false,
-        }),
-      });
+      const result = await api<{ location: LocationRecord }>(
+        `/api/admin/journeys/${journey.id}/locations`,
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            name: newLocationName.trim(),
+            published: false,
+          }),
+        }
+      );
       setNewLocationName('');
       await onChanged();
+      setExpandedLocationId(result.location.id);
+      setNotice(
+        'Location créée en brouillon. Complète son contenu puis enregistre-la pour la publier.'
+      );
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'Erreur');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const importLocations = async () => {
+    setBusy(true);
+    setError(null);
+    try {
+      const result = await api<{ seededLocations: number }>('/api/admin/locations/seed', {
+        method: 'POST',
+        body: JSON.stringify({ journeyId: journey.id }),
+      });
+      await onChanged();
+      setNotice(
+        result.seededLocations > 0
+          ? 'Les étapes existantes sont maintenant modifiables ci-dessous.'
+          : 'Ce voyage n’a pas d’étapes à importer. Ajoute ta première Location.'
+      );
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : 'Import impossible.');
     } finally {
       setBusy(false);
     }
@@ -710,181 +743,79 @@ function JourneyEditor({
       disabled={busy}
       className="min-w-0 space-y-5 border-t border-white/10 p-4 sm:p-5"
     >
-      <div className="grid gap-3 md:grid-cols-2">
-        <Field
-          label="Slug"
-          value={draft.slug ?? ''}
-          onChange={(slug) => updateDraft((current) => ({ ...current, slug }))}
-        />
-        <Field
-          label="Titre"
-          value={draft.title ?? ''}
-          onChange={(title) => updateDraft((current) => ({ ...current, title }))}
-        />
-        <Field
-          label="Lieu"
-          value={draft.location ?? ''}
-          onChange={(location) => updateDraft((current) => ({ ...current, location }))}
-        />
-        <Field
-          label="Libellé de dates"
-          value={draft.dateLabel ?? ''}
-          onChange={(dateLabel) => updateDraft((current) => ({ ...current, dateLabel }))}
-          placeholder="From 1st May to 30th September"
-        />
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <Field
-            label="From"
-            value={draft.dateFrom ?? ''}
-            onChange={(dateFrom) => updateDraft((current) => ({ ...current, dateFrom }))}
-          />
-          <Field
-            label="To"
-            value={draft.dateTo ?? ''}
-            onChange={(dateTo) => updateDraft((current) => ({ ...current, dateTo }))}
-          />
-        </div>
-        <MediaUploadField
-          label="Image par défaut"
-          value={draft.image ?? ''}
-          onChange={(image) => updateDraft((current) => ({ ...current, image }))}
-          help="Utilisée si une saison n’a pas encore son propre visuel."
-          disabled={busy}
-          onBusyChange={(active) => setUploadState('journey-image', active)}
-        />
-        <MediaUploadField
-          label="Vidéo de fond par défaut"
-          kind="video"
-          value={draft.backgroundVideo ?? ''}
-          onChange={(backgroundVideo) =>
-            updateDraft((current) => ({ ...current, backgroundVideo }))
-          }
-          help="Utilisée si une saison n’a pas encore son propre fond."
-          disabled={busy}
-          onBusyChange={(active) => setUploadState('journey-background-video', active)}
-        />
-        <MediaUploadField
-          label="PDF Sustainable Impact"
-          kind="document"
-          value={draft.sustainablePdf ?? ''}
-          onChange={(sustainablePdf) => updateDraft((current) => ({ ...current, sustainablePdf }))}
-          disabled={busy}
-          onBusyChange={(active) => setUploadState('journey-sustainable-pdf', active)}
-        />
-      </div>
-      <section className="space-y-4 border border-[#f4bb52]/25 bg-[#f4bb52]/[0.04] p-4">
-        <div>
-          <h4 className="text-[11px] uppercase tracking-[0.3em] text-[#f4bb52]">
-            Saisons et miniatures
-          </h4>
-          <p className="mt-2 max-w-2xl text-xs leading-relaxed text-white/55">
-            Coche les saisons où ce Journey doit apparaître. Le site choisira automatiquement la
-            bonne miniature et le bon fond selon le filtre Spring Summer ou Fall Winter.
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {SEASONS.map((season) => {
-            const selected = (draft.seasonTags ?? []).includes(season.value);
-            return (
-              <button
-                key={season.value}
-                type="button"
-                aria-pressed={selected}
-                onClick={() => toggleSeason(season.value)}
-                className={cn(
-                  'min-h-11 border px-4 py-2 text-xs uppercase tracking-[0.2em] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f4bb52]',
-                  selected
-                    ? 'border-[#f4bb52] bg-[#f4bb52] text-black'
-                    : 'border-white/15 bg-white/5 text-white/55 hover:border-white/35'
-                )}
-              >
-                {selected ? '✓ ' : ''}
-                {season.label}
-              </button>
-            );
-          })}
-        </div>
-        <div className="grid gap-4 lg:grid-cols-2">
-          {SEASONS.filter((season) => (draft.seasonTags ?? []).includes(season.value)).map(
-            (season) => (
-              <div key={season.value} className="space-y-3 border border-white/10 bg-black/20 p-4">
-                <p className="text-xs uppercase tracking-[0.24em] text-white/75">{season.label}</p>
-                <MediaUploadField
-                  label={`Miniature ${season.label}`}
-                  value={draft.seasonVisuals?.[season.value]?.image ?? ''}
-                  onChange={(value) => updateSeasonVisual(season.value, 'image', value)}
-                  disabled={busy}
-                  onBusyChange={(active) => setUploadState(`${season.value}-image`, active)}
-                />
-                <MediaUploadField
-                  label={`Vidéo de fond ${season.label}`}
-                  kind="video"
-                  value={draft.seasonVisuals?.[season.value]?.backgroundVideo ?? ''}
-                  onChange={(value) => updateSeasonVisual(season.value, 'backgroundVideo', value)}
-                  disabled={busy}
-                  onBusyChange={(active) =>
-                    setUploadState(`${season.value}-background-video`, active)
-                  }
-                />
-              </div>
-            )
-          )}
-        </div>
-      </section>
-      <label className="flex min-h-11 items-center gap-3 text-sm text-white/70">
-        <input
-          type="checkbox"
-          checked={draft.published ?? false}
-          onChange={(event) =>
-            updateDraft((current) => ({ ...current, published: event.target.checked }))
-          }
-          className="size-4 accent-[#f4bb52]"
-        />
-        Voyage visible sur le site
-      </label>
-      <p className="text-xs leading-relaxed text-white/45">
-        Les changements d’un voyage déjà visible apparaissent après « Enregistrer le voyage ».
-        Décoche cette case avant une grosse modification si tu préfères le cacher temporairement.
-      </p>
-      {uploading ? (
-        <p className="text-xs text-[#f4bb52]" role="status">
-          Un fichier du voyage est en cours d’envoi. Attends avant d’enregistrer.
-        </p>
-      ) : null}
-      {dirty && !uploading ? (
-        <p className="text-xs text-[#f4bb52]" role="status">
-          Modifications du voyage non enregistrées.
-        </p>
-      ) : null}
       {error ? (
-        <p className="text-xs text-red-400" role="alert">
+        <p className="text-sm text-red-400" role="alert">
           {error}
         </p>
       ) : null}
       {notice ? (
-        <p className="text-xs text-emerald-300" role="status">
+        <p className="text-sm text-emerald-300" role="status">
           {notice}
         </p>
       ) : null}
-      <Button className="min-h-11" size="sm" onClick={save} disabled={busy || uploading || !dirty}>
-        {busy ? 'Enregistrement…' : 'Enregistrer le voyage'}
-      </Button>
-
       <div className="space-y-3">
         <div>
           <h4 className="text-[11px] uppercase tracking-[0.3em] text-white/60">
-            Locations / Tales ({journey.locations.length})
+            Étapes du voyage · Locations ({journey.locations.length})
           </h4>
           <p className="mt-2 text-xs leading-relaxed text-white/45">
             Chaque Location contient sa carte et son Tale : titre, texte, visuels, vidéo et galerie.
-            Enregistre la Location puis active « Visible sur la page Journey ».
+            Ouvre une étape pour modifier son contenu. Coche « Visible sur la page Journey » et
+            enregistre la Location pour la publier. Chaque étape s’enregistre séparément.
           </p>
         </div>
+        <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-end">
+          <label className="min-w-0 flex-1">
+            <span className={labelClass}>Nom de la nouvelle Location / Tale</span>
+            <input
+              className={fieldClass}
+              value={newLocationName}
+              placeholder="Nom de la nouvelle Location / Tale"
+              onChange={(event) => {
+                setNewLocationName(event.target.value);
+                setNotice(null);
+              }}
+            />
+          </label>
+          <Button
+            size="sm"
+            variant="outline"
+            className="min-h-11 w-full border-white/20 bg-transparent text-white hover:bg-white/10 hover:text-white sm:w-auto"
+            onClick={addLocation}
+            disabled={busy || hasActiveUpload || !newLocationName.trim()}
+          >
+            <Plus className="size-4" /> Ajouter une Location
+          </Button>
+        </div>
+        {journey.locations.length === 0 ? (
+          <div className="space-y-3 border border-white/15 bg-white/[0.03] p-4">
+            <p className="text-sm text-white/65">
+              Aucune Location enregistrée dans ce voyage. Pour modifier les étapes déjà sur le site,
+              importe leur contenu, puis ouvre la Location à modifier.
+            </p>
+            <Button
+              type="button"
+              size="sm"
+              className="min-h-11"
+              onClick={importLocations}
+              disabled={busy || hasActiveUpload}
+            >
+              <RefreshCw className="size-4" /> Rendre les étapes existantes modifiables
+            </Button>
+          </div>
+        ) : null}
         {journey.locations.map((location, index) => (
-          <div key={location.id} className="space-y-2">
+          <div
+            key={location.id}
+            id={`location-editor-${location.id}`}
+            className="space-y-2 border border-white/10 p-3"
+          >
             <div className="flex min-w-0 items-center gap-2 text-sm text-white/80">
               <span className="min-w-0 flex-1">
                 {index + 1}. {location.name}
+                <span className="ml-3 text-xs text-white/45">
+                  {location.published ? 'Visible' : 'Brouillon'}
+                </span>
               </span>
               <Button
                 size="sm"
@@ -912,38 +843,207 @@ function JourneyEditor({
                 <ArrowDown className="size-4" />
               </Button>
             </div>
-            <LocationEditor
-              location={location}
-              onSaved={onChanged}
-              onDeleted={onChanged}
-              onActivityChange={updateLocationActivity}
-            />
+            <details
+              open={expandedLocationId === location.id}
+              onToggle={(event) => {
+                if (event.currentTarget.open) setExpandedLocationId(location.id);
+                else setExpandedLocationId((current) => (current === location.id ? null : current));
+              }}
+            >
+              <summary className="flex min-h-11 cursor-pointer items-center gap-2 text-sm text-[#f4bb52] outline-none focus-visible:ring-2 focus-visible:ring-[#f4bb52]">
+                <ChevronDown className="size-4" /> Modifier cette Location
+              </summary>
+              <LocationEditor
+                location={location}
+                onSaved={onChanged}
+                onDeleted={onChanged}
+                onActivityChange={updateLocationActivity}
+              />
+            </details>
           </div>
         ))}
-        <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-end">
-          <label className="min-w-0 flex-1">
-            <span className={labelClass}>Nom de la nouvelle Location / Tale</span>
-            <input
-              className={fieldClass}
-              value={newLocationName}
-              placeholder="Nom de la nouvelle Location / Tale"
-              onChange={(event) => {
-                setNewLocationName(event.target.value);
-                setNotice(null);
-              }}
+      </div>
+      <details className="border-t border-white/10 pt-4">
+        <summary className="flex min-h-11 cursor-pointer items-center text-sm uppercase tracking-[0.2em] text-white/65 outline-none focus-visible:ring-2 focus-visible:ring-[#f4bb52]">
+          Réglages du voyage · dates, saisons et visuels
+        </summary>
+        <div className="mt-4 space-y-5">
+          <div className="grid gap-3 md:grid-cols-2">
+            <Field
+              label="Slug"
+              value={draft.slug ?? ''}
+              onChange={(slug) => updateDraft((current) => ({ ...current, slug }))}
             />
+            <Field
+              label="Titre"
+              value={draft.title ?? ''}
+              onChange={(title) => updateDraft((current) => ({ ...current, title }))}
+            />
+            <Field
+              label="Lieu"
+              value={draft.location ?? ''}
+              onChange={(location) => updateDraft((current) => ({ ...current, location }))}
+            />
+            <Field
+              label="Libellé de dates"
+              value={draft.dateLabel ?? ''}
+              onChange={(dateLabel) => updateDraft((current) => ({ ...current, dateLabel }))}
+              placeholder="From 1st May to 30th September"
+            />
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <Field
+                label="From"
+                value={draft.dateFrom ?? ''}
+                onChange={(dateFrom) => updateDraft((current) => ({ ...current, dateFrom }))}
+              />
+              <Field
+                label="To"
+                value={draft.dateTo ?? ''}
+                onChange={(dateTo) => updateDraft((current) => ({ ...current, dateTo }))}
+              />
+            </div>
+            <MediaUploadField
+              label="Image par défaut"
+              value={draft.image ?? ''}
+              onChange={(image) => updateDraft((current) => ({ ...current, image }))}
+              help="Utilisée si une saison n’a pas encore son propre visuel."
+              disabled={busy}
+              onBusyChange={(active) => setUploadState('journey-image', active)}
+            />
+            <MediaUploadField
+              label="Vidéo de fond par défaut"
+              kind="video"
+              value={draft.backgroundVideo ?? ''}
+              onChange={(backgroundVideo) =>
+                updateDraft((current) => ({ ...current, backgroundVideo }))
+              }
+              help="Utilisée si une saison n’a pas encore son propre fond."
+              disabled={busy}
+              onBusyChange={(active) => setUploadState('journey-background-video', active)}
+            />
+            <MediaUploadField
+              label="PDF Sustainable Impact"
+              kind="document"
+              value={draft.sustainablePdf ?? ''}
+              onChange={(sustainablePdf) =>
+                updateDraft((current) => ({ ...current, sustainablePdf }))
+              }
+              disabled={busy}
+              onBusyChange={(active) => setUploadState('journey-sustainable-pdf', active)}
+            />
+          </div>
+          <section className="space-y-4 border border-[#f4bb52]/25 bg-[#f4bb52]/[0.04] p-4">
+            <div>
+              <h4 className="text-[11px] uppercase tracking-[0.3em] text-[#f4bb52]">
+                Saisons et miniatures
+              </h4>
+              <p className="mt-2 max-w-2xl text-xs leading-relaxed text-white/55">
+                Coche les saisons où ce Journey doit apparaître. Le site choisira automatiquement la
+                bonne miniature et le bon fond selon le filtre Spring Summer ou Fall Winter.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {SEASONS.map((season) => {
+                const selected = (draft.seasonTags ?? []).includes(season.value);
+                return (
+                  <button
+                    key={season.value}
+                    type="button"
+                    aria-pressed={selected}
+                    onClick={() => toggleSeason(season.value)}
+                    className={cn(
+                      'min-h-11 border px-4 py-2 text-xs uppercase tracking-[0.2em] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f4bb52]',
+                      selected
+                        ? 'border-[#f4bb52] bg-[#f4bb52] text-black'
+                        : 'border-white/15 bg-white/5 text-white/55 hover:border-white/35'
+                    )}
+                  >
+                    {selected ? '✓ ' : ''}
+                    {season.label}
+                  </button>
+                );
+              })}
+            </div>
+            <div className="grid gap-4 lg:grid-cols-2">
+              {SEASONS.filter((season) => (draft.seasonTags ?? []).includes(season.value)).map(
+                (season) => (
+                  <div
+                    key={season.value}
+                    className="space-y-3 border border-white/10 bg-black/20 p-4"
+                  >
+                    <p className="text-xs uppercase tracking-[0.24em] text-white/75">
+                      {season.label}
+                    </p>
+                    <MediaUploadField
+                      label={`Miniature ${season.label}`}
+                      value={draft.seasonVisuals?.[season.value]?.image ?? ''}
+                      onChange={(value) => updateSeasonVisual(season.value, 'image', value)}
+                      disabled={busy}
+                      onBusyChange={(active) => setUploadState(`${season.value}-image`, active)}
+                    />
+                    <MediaUploadField
+                      label={`Vidéo de fond ${season.label}`}
+                      kind="video"
+                      value={draft.seasonVisuals?.[season.value]?.backgroundVideo ?? ''}
+                      onChange={(value) =>
+                        updateSeasonVisual(season.value, 'backgroundVideo', value)
+                      }
+                      disabled={busy}
+                      onBusyChange={(active) =>
+                        setUploadState(`${season.value}-background-video`, active)
+                      }
+                    />
+                  </div>
+                )
+              )}
+            </div>
+          </section>
+          <label className="flex min-h-11 items-center gap-3 text-sm text-white/70">
+            <input
+              type="checkbox"
+              checked={draft.published ?? false}
+              onChange={(event) =>
+                updateDraft((current) => ({ ...current, published: event.target.checked }))
+              }
+              className="size-4 accent-[#f4bb52]"
+            />
+            Voyage visible sur le site
           </label>
+          <p className="text-xs leading-relaxed text-white/45">
+            Les changements d’un voyage déjà visible apparaissent après « Enregistrer le voyage ».
+            Décoche cette case avant une grosse modification si tu préfères le cacher
+            temporairement.
+          </p>
+          {uploading ? (
+            <p className="text-xs text-[#f4bb52]" role="status">
+              Un fichier du voyage est en cours d’envoi. Attends avant d’enregistrer.
+            </p>
+          ) : null}
+          {dirty && !uploading ? (
+            <p className="text-xs text-[#f4bb52]" role="status">
+              Modifications du voyage non enregistrées.
+            </p>
+          ) : null}
+          {error ? (
+            <p className="text-xs text-red-400" role="alert">
+              {error}
+            </p>
+          ) : null}
+          {notice ? (
+            <p className="text-xs text-emerald-300" role="status">
+              {notice}
+            </p>
+          ) : null}
           <Button
+            className="min-h-11"
             size="sm"
-            variant="outline"
-            className="min-h-11 w-full border-white/20 bg-transparent text-white hover:bg-white/10 hover:text-white sm:w-auto"
-            onClick={addLocation}
-            disabled={busy || hasActiveUpload || !newLocationName.trim()}
+            onClick={save}
+            disabled={busy || uploading || !dirty}
           >
-            <Plus className="size-4" /> Ajouter
+            {busy ? 'Enregistrement…' : 'Enregistrer le voyage'}
           </Button>
         </div>
-      </div>
+      </details>
     </fieldset>
   );
 }
@@ -1138,8 +1238,8 @@ export function JourneysManager() {
           <p className="text-[11px] uppercase tracking-[0.4em] text-[#f4bb52]">Dashboard</p>
           <h1 className="font-display text-3xl uppercase tracking-[0.2em]">Journeys CMS</h1>
           <p className="text-sm text-white/60">
-            Créer et éditer les voyages & locations : textes, médias (URLs), dates, ordre
-            d&apos;affichage.{' '}
+            Ouvre « Modifier les Locations » pour ajouter ou modifier chaque étape d’un voyage.
+            Textes, visuels, vidéos et ordre d&apos;affichage.{' '}
             <Link
               href="/admin"
               className="inline-flex min-h-11 items-center rounded-sm underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c9a24a] focus-visible:ring-offset-2 focus-visible:ring-offset-black"
@@ -1269,6 +1369,17 @@ export function JourneysManager() {
                     )}
                   </span>
                 </button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="min-h-11 border-[#f4bb52]/40 bg-transparent text-[#f4bb52] hover:bg-[#f4bb52]/10 hover:text-[#f4bb52]"
+                  onClick={() => {
+                    if (expandedId !== journey.id) toggleJourney(journey.id);
+                  }}
+                  aria-controls={`journey-editor-${journey.id}`}
+                >
+                  Modifier les Locations ({journey.locations.length})
+                </Button>
                 <Button
                   size="sm"
                   variant="ghost"

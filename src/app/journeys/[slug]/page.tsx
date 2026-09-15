@@ -7,8 +7,9 @@ import { GlowTitle, ShowcaseMediaGallery } from '@/components/primitives';
 import { BeeButton } from '@/components/primitives/bee-button';
 import SplitText from '@/components/SplitText';
 import type { JourneyShowcase } from '@/data/showcases';
-import { getPublishedJourneyLocations } from '@/lib/cms/journey-locations';
+import { getPublishedJourneyLocationCollection } from '@/lib/cms/journey-locations';
 import { getPublishedJourneyShowcase } from '@/lib/cms/journeys';
+import type { CmsJourneyLocation } from '@/types/journey-location';
 
 import { IndiaJourneyLayout } from './_sections/india-journey-layout';
 import { PhilippinesJourneyLayout } from './_sections/philippines-journey-layout';
@@ -102,48 +103,93 @@ export async function generateMetadata({ params }: JourneyPageProps): Promise<Me
 
 export default async function JourneyPage({ params }: JourneyPageProps) {
   const { slug } = await params;
-  const [journey, cmsLocations] = await Promise.all([
+  const [journey, locationCollection] = await Promise.all([
     getPublishedJourneyShowcase(slug),
-    getPublishedJourneyLocations(slug),
+    getPublishedJourneyLocationCollection(slug),
   ]);
   if (!journey) notFound();
+  const cmsLocations = locationCollection.locations;
+  const cmsManaged = locationCollection.managed;
 
   if (slug === 'philippines') {
-    return <PhilippinesJourneyLayout journey={journey} cmsLocations={cmsLocations} />;
+    return (
+      <PhilippinesJourneyLayout
+        journey={journey}
+        cmsLocations={cmsLocations}
+        cmsManaged={cmsManaged}
+      />
+    );
   }
 
   if (slug === 'thailand') {
-    return <ThailandJourneyLayout journey={journey} cmsLocations={cmsLocations} />;
+    return (
+      <ThailandJourneyLayout
+        journey={journey}
+        cmsLocations={cmsLocations}
+        cmsManaged={cmsManaged}
+      />
+    );
   }
 
   if (slug === 'azores') {
-    return <AzoresJourneyLayout journey={journey} cmsLocations={cmsLocations} />;
+    return (
+      <AzoresJourneyLayout
+        journey={journey}
+        cmsLocations={cmsLocations}
+        cmsManaged={cmsManaged}
+        cmsEdited={locationCollection.edited === true}
+      />
+    );
   }
 
   if (slug === 'france') {
-    return <FranceJourneyLayout journey={journey} cmsLocations={cmsLocations} />;
+    return (
+      <FranceJourneyLayout journey={journey} cmsLocations={cmsLocations} cmsManaged={cmsManaged} />
+    );
   }
 
   if (slug === 'morocco') {
-    return <MoroccoJourneyLayout journey={journey} cmsLocations={cmsLocations} />;
+    return (
+      <MoroccoJourneyLayout journey={journey} cmsLocations={cmsLocations} cmsManaged={cmsManaged} />
+    );
   }
 
   if (slug === 'italy') {
-    return <ItalyJourneyLayout journey={journey} cmsLocations={cmsLocations} />;
+    return (
+      <ItalyJourneyLayout journey={journey} cmsLocations={cmsLocations} cmsManaged={cmsManaged} />
+    );
   }
 
   if (slug === 'balearic') {
-    return <BalearicJourneyLayout journey={journey} cmsLocations={cmsLocations} />;
+    return (
+      <BalearicJourneyLayout
+        journey={journey}
+        cmsLocations={cmsLocations}
+        cmsManaged={cmsManaged}
+      />
+    );
   }
 
   if (slug === 'india-january-2026') {
-    return <IndiaJourneyLayout journey={journey} cmsLocations={cmsLocations} />;
+    return (
+      <IndiaJourneyLayout journey={journey} cmsLocations={cmsLocations} cmsManaged={cmsManaged} />
+    );
   }
 
-  return <DefaultJourneyLayout journey={journey} />;
+  return (
+    <DefaultJourneyLayout journey={journey} cmsLocations={cmsLocations} cmsManaged={cmsManaged} />
+  );
 }
 
-function DefaultJourneyLayout({ journey }: { journey: JourneyShowcase }) {
+function DefaultJourneyLayout({
+  journey,
+  cmsLocations,
+  cmsManaged,
+}: {
+  journey: JourneyShowcase;
+  cmsLocations: CmsJourneyLocation[];
+  cmsManaged: boolean;
+}) {
   const storyBeats = journey.story.length > 0 ? journey.story : [journey.summary];
 
   return (
@@ -205,29 +251,80 @@ function DefaultJourneyLayout({ journey }: { journey: JourneyShowcase }) {
         </div>
       </section>
 
-      <section className="space-y-12 px-6 sm:px-10 lg:px-20">
-        <GlowTitle
-          eyebrow="Arc narratif"
-          title={`Les chapitres de ${journey.title}`}
-          description="Du lever du decor a l'epilogue impact, chaque sequence embarque votre equipe dans un voyage sensoriel."
-          align="left"
-          glowTone="dawn"
-        />
-        <ol className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-          {storyBeats.map((paragraph, index) => (
-            <li
-              key={`${journey.id}-story-${index}`}
-              className="flex h-full flex-col gap-5 rounded-3xl border border-foreground/15 bg-white/85 p-7 text-foreground shadow-[0_32px_120px_rgba(15,20,30,0.12)]"
-            >
-              <span className="flex items-center gap-3 text-xs uppercase tracking-[0.38em] text-foreground/60">
-                <Sparkles className="size-4" aria-hidden />
-                Acte {String(index + 1).padStart(2, '0')}
-              </span>
-              <p className="text-sm leading-relaxed text-foreground/75">{paragraph}</p>
-            </li>
+      {cmsManaged ? (
+        <section className="space-y-12 px-6 sm:px-10 lg:px-20" aria-label="Journey locations">
+          {cmsLocations.map((location) => (
+            <article key={location.id} id={`location-${location.id}`} className="space-y-6">
+              <GlowTitle
+                eyebrow={location.subtitle ?? 'Location'}
+                title={location.name}
+                align="left"
+                glowTone="dawn"
+              />
+              {location.leftTitle.length > 0 ? (
+                <h3 className="font-display text-xl">{location.leftTitle.join(' ')}</h3>
+              ) : null}
+              <p className="whitespace-pre-line text-sm leading-relaxed sm:text-base">
+                {location.narrative}
+              </p>
+              <ShowcaseMediaGallery
+                items={[
+                  ...(location.image
+                    ? [
+                        {
+                          id: `location-${location.id}-image`,
+                          type: 'image' as const,
+                          src: location.image,
+                          alt: location.name,
+                        },
+                      ]
+                    : []),
+                  ...(location.video
+                    ? [
+                        {
+                          id: `location-${location.id}-video`,
+                          type: 'video' as const,
+                          src: location.video,
+                          alt: location.name,
+                        },
+                      ]
+                    : []),
+                  ...location.media.map((media, index) => ({
+                    id: `location-${location.id}-media-${index}`,
+                    type: media.type,
+                    src: media.url,
+                    alt: media.alt ?? location.name,
+                  })),
+                ]}
+              />
+            </article>
           ))}
-        </ol>
-      </section>
+        </section>
+      ) : (
+        <section className="space-y-12 px-6 sm:px-10 lg:px-20">
+          <GlowTitle
+            eyebrow="Arc narratif"
+            title={`Les chapitres de ${journey.title}`}
+            description="Du lever du decor a l'epilogue impact, chaque sequence embarque votre equipe dans un voyage sensoriel."
+            align="left"
+            glowTone="dawn"
+          />
+          <ol className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+            {storyBeats.map((paragraph, index) => (
+              <li
+                key={`${journey.id}-story-${index}`}
+                className="flex h-full flex-col gap-5 rounded-3xl border border-foreground/15 bg-white/85 p-7 text-foreground shadow-[0_32px_120px_rgba(15,20,30,0.12)]"
+              >
+                <span className="flex items-center gap-3 text-xs uppercase tracking-[0.38em] text-foreground/60">
+                  <Sparkles className="size-4" aria-hidden />
+                  Acte {String(index + 1).padStart(2, '0')}
+                </span>
+                <p className="text-sm leading-relaxed text-foreground/75">{paragraph}</p>
+              </li>
+            ))}
+          </ol>
+        </section>
+      )}
 
       <section className="grid gap-10 px-6 sm:px-10 lg:grid-cols-[1.1fr_0.9fr] lg:px-20">
         <div className="space-y-8 rounded-3xl border border-foreground/15 bg-white/85 p-10 text-foreground shadow-[0_32px_120px_rgba(15,20,30,0.12)]">

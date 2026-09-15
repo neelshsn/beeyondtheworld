@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 
 import { getDb, journeys, type NewJourneyRow } from '@/lib/db';
@@ -45,6 +45,9 @@ export async function PATCH(request: Request, context: RouteContext) {
       if (field in body) {
         updates[field] = body[field];
       }
+    }
+    if ('seasonVisuals' in body) {
+      updates.seasonVisuals = sql`${JSON.stringify(body.seasonVisuals)}::jsonb || jsonb_build_object('_cms', coalesce(${journeys.seasonVisuals}->'_cms', '{}'::jsonb))`;
     }
     if (Object.keys(updates).length === 0) {
       return NextResponse.json({ error: 'Aucun champ à mettre à jour.' }, { status: 400 });

@@ -15,7 +15,9 @@ import type { JourneyShowcase } from '@/data/showcases';
 import { getSustainableImpactPdf } from '@/data/sustainable-impact';
 import { resolveJourneyLocationContent } from '@/lib/cms/resolve-journey-locations';
 import type { JourneySeason } from '@/types/journey';
-import type { CmsJourneyLocation } from '@/types/journey-location';
+import type { CmsJourneyLocation, JourneyLocationMedia } from '@/types/journey-location';
+
+import { JourneyTaleMedia } from './journey-tale-media';
 
 type IndiaLocation = {
   id: string;
@@ -43,6 +45,7 @@ type IndiaLocationStory = {
   id: string;
   locationId: IndiaLocation['id'];
   image: string;
+  media?: JourneyLocationMedia[];
   leftTitle: string[];
   narrative: string;
   nextLocationId: IndiaLocation['id'];
@@ -588,16 +591,20 @@ function getCardFadeProfile(forwardOffset: number, isMobileViewport: boolean) {
 export function BalearicJourneyLayout({
   journey,
   cmsLocations,
+  cmsManaged = false,
 }: {
   journey: JourneyShowcase;
   cmsLocations: CmsJourneyLocation[];
+  cmsManaged?: boolean;
 }) {
   useBodyScrollLock();
 
   const { locations: INDIA_LOCATIONS, stories: LOCATION_STORIES } = useMemo(
     () =>
-      resolveJourneyLocationContent(cmsLocations, FALLBACK_LOCATIONS, FALLBACK_LOCATION_STORIES),
-    [cmsLocations]
+      resolveJourneyLocationContent(cmsLocations, FALLBACK_LOCATIONS, FALLBACK_LOCATION_STORIES, {
+        cmsManaged,
+      }),
+    [cmsLocations, cmsManaged]
   );
   const router = useRouter();
   const prefersReducedMotion = usePrefersReducedMotion();
@@ -2464,7 +2471,7 @@ function BackToJourneysButton({
       />
       <span
         className={clsx(
-          'font-display whitespace-nowrap uppercase text-white transition-colors duration-300 [text-shadow:0_2px_0_rgba(0,0,0,0.3),0_8px_14px_rgba(0,0,0,0.24),0_16px_34px_rgba(0,0,0,0.24)] group-hover:text-[#f6c452]',
+          'whitespace-nowrap font-display uppercase text-white transition-colors duration-300 [text-shadow:0_2px_0_rgba(0,0,0,0.3),0_8px_14px_rgba(0,0,0,0.24),0_16px_34px_rgba(0,0,0,0.24)] group-hover:text-[#f6c452]',
           compact
             ? 'text-[0.68rem] tracking-[0.14em]'
             : 'text-[0.72rem] tracking-[0.16em] sm:text-[0.8rem]'
@@ -2927,15 +2934,15 @@ function LocationStoryBand({
                 maskImage: imageMask,
               }}
             >
-              <Image
-                src={story.image}
+              <JourneyTaleMedia
+                image={story.image}
+                media={story.media}
                 alt={currentLocationName ?? ''}
-                fill
-                className="object-contain"
-                sizes="(min-width: 1024px) 2240px, 1440px"
-                quality={100}
               />
-              <div className="absolute inset-0" style={{ backgroundImage: imageShade }} />
+              <div
+                className="pointer-events-none absolute inset-0"
+                style={{ backgroundImage: imageShade }}
+              />
             </div>
 
             {/* T-032 — le pavé narratif recouvre la fin (bord droit) de l'image. */}

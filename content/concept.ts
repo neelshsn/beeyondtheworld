@@ -62,8 +62,8 @@ export const conceptNodes: ConceptNode[] = [
   {
     kind: 'overview',
     id: 'overview',
-    title: 'One vision. Two ways to create with Beeyond.',
-    description: 'Choose the production model that best fits your campaign.',
+    title: 'One vision. Two production models.',
+    description: 'Choose your way to create',
     background: defaultBackground,
   },
   {

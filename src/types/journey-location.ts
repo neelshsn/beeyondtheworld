@@ -31,6 +31,7 @@ export type JourneyLocationStoryView = {
   id: string;
   locationId: string;
   image: string;
+  media?: JourneyLocationMedia[];
   leftTitle: string[];
   narrative: string;
   nextLocationId: string;

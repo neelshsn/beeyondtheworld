@@ -37,7 +37,7 @@ export function HomeCreativePanel() {
             <br />
             Through our Signature
             <br />
-            &amp; Shared Journeys.
+            <span className="font-script normal-case tracking-normal">&amp;</span> Shared Journeys.
           </h2>
         </div>
 

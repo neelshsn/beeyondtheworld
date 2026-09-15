@@ -9,6 +9,8 @@ const ALL_SEASONS = ['spring-summer', 'fall-winter'] as const;
 type ResolveJourneyLocationOptions = {
   appendMissingFallbacks?: boolean;
   preferFallbackMedia?: boolean;
+  /** Empty published results from an existing CMS collection must stay empty. */
+  cmsManaged?: boolean;
 };
 
 function normalizeLocationName(value: string) {
@@ -25,23 +27,19 @@ export function resolveJourneyLocationContent(
   fallbackStories: JourneyLocationStoryView[],
   options: ResolveJourneyLocationOptions = {}
 ) {
-  if (cmsLocations.length === 0) {
+  if (cmsLocations.length === 0 && !options.cmsManaged) {
     return { locations: fallbackLocations, stories: fallbackStories };
   }
 
   const claimedFallbackIds = new Set<string>();
-  const cmsEntries = cmsLocations.map((location, index) => {
+  const cmsEntries = cmsLocations.map((location) => {
     const namedFallback = fallbackLocations.find(
       (candidate) =>
         !claimedFallbackIds.has(candidate.id) &&
         normalizeLocationName(candidate.title) === normalizeLocationName(location.name)
     );
-    const positionalFallback = fallbackLocations[index];
-    const fallback =
-      namedFallback ??
-      (positionalFallback && !claimedFallbackIds.has(positionalFallback.id)
-        ? positionalFallback
-        : undefined);
+    // A new or reordered Location must never inherit the Tale of a different place.
+    const fallback = namedFallback;
     if (fallback) claimedFallbackIds.add(fallback.id);
 
     const view: JourneyLocationView = {
@@ -89,14 +87,15 @@ export function resolveJourneyLocationContent(
     const cmsStoryImage = cms.media.find((item) => item.type === 'image')?.url;
     const storyImage = options.preferFallbackMedia
       ? (fallback?.image ?? cmsStoryImage ?? current.image)
-      : (cmsStoryImage ?? fallback?.image ?? current.image);
+      : (cmsStoryImage ?? cms.image ?? fallback?.image ?? current.image);
 
     return {
       id: `cms-story-${cms.id}`,
       locationId: current.id,
       image: storyImage,
-      leftTitle: cms.leftTitle.length > 0 ? cms.leftTitle : (fallback?.leftTitle ?? []),
-      narrative: cms.narrative || fallback?.narrative || '',
+      ...(cms.media.length > 0 ? { media: cms.media } : {}),
+      leftTitle: cms.leftTitle,
+      narrative: cms.narrative,
       nextLocationId: next.id,
       nextLocation: next.title,
     };

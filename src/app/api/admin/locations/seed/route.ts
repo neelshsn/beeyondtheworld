@@ -18,8 +18,15 @@ export async function POST(request: Request) {
 
   try {
     const db = getDb();
+    const body = (await request.json().catch(() => ({}))) as { journeyId?: number };
+    if (
+      body.journeyId !== undefined &&
+      (!Number.isInteger(body.journeyId) || body.journeyId <= 0)
+    ) {
+      return NextResponse.json({ error: 'Identifiant du voyage invalide.' }, { status: 400 });
+    }
     const journeyRows = await db
-      .select({ id: journeys.id, slug: journeys.slug })
+      .select({ id: journeys.id, slug: journeys.slug, seasonVisuals: journeys.seasonVisuals })
       .from(journeys)
       .orderBy(asc(journeys.position), asc(journeys.id));
 
@@ -27,6 +34,9 @@ export async function POST(request: Request) {
     let seededLocations = 0;
 
     for (const journey of journeyRows) {
+      if (body.journeyId !== undefined && journey.id !== body.journeyId) continue;
+      const metadata = journey.seasonVisuals._cms as { locationsManaged?: boolean } | undefined;
+      if (metadata?.locationsManaged) continue;
       const seed = journeyLocationSeeds[journey.slug];
       if (!seed?.length) continue;
 
@@ -34,10 +44,9 @@ export async function POST(request: Request) {
         .select({ name: locations.name })
         .from(locations)
         .where(eq(locations.journeyId, journey.id));
-      const existingNames = new Set(existing.map((location) => location.name.trim().toLowerCase()));
-      const missingLocations = seed
-        .map((location, position) => ({ location, position }))
-        .filter(({ location }) => !existingNames.has(location.name.trim().toLowerCase()));
+      // Once editors manage this collection, never resurrect deleted or renamed steps.
+      if (existing.length > 0) continue;
+      const missingLocations = seed.map((location, position) => ({ location, position }));
       if (missingLocations.length === 0) continue;
 
       await db.insert(locations).values(

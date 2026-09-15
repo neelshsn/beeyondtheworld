@@ -15,7 +15,9 @@ import type { JourneyShowcase } from '@/data/showcases';
 import { getSustainableImpactPdf } from '@/data/sustainable-impact';
 import { resolveJourneyLocationContent } from '@/lib/cms/resolve-journey-locations';
 import type { JourneySeason } from '@/types/journey';
-import type { CmsJourneyLocation } from '@/types/journey-location';
+import type { CmsJourneyLocation, JourneyLocationMedia } from '@/types/journey-location';
+
+import { JourneyTaleMedia } from './journey-tale-media';
 
 type IndiaLocation = {
   id: string;
@@ -43,6 +45,7 @@ type IndiaLocationStory = {
   id: string;
   locationId: IndiaLocation['id'];
   image: string;
+  media?: JourneyLocationMedia[];
   leftTitle: string[];
   narrative: string;
   nextLocationId: IndiaLocation['id'];
@@ -616,35 +619,40 @@ function getCardFadeProfile(forwardOffset: number, isMobileViewport: boolean) {
 export function AzoresJourneyLayout({
   journey,
   cmsLocations,
+  cmsManaged = false,
+  cmsEdited = false,
 }: {
   journey: JourneyShowcase;
   cmsLocations: CmsJourneyLocation[];
+  cmsManaged?: boolean;
+  cmsEdited?: boolean;
 }) {
   useBodyScrollLock();
 
   const { locations: INDIA_LOCATIONS, stories: LOCATION_STORIES } = useMemo(() => {
     const portugalCmsLocations = cmsLocations.map(removeLegacyAzoresMedia);
-    const expectedPortugalLocations = new Set(
+    const expectedNames = new Set(
       FALLBACK_LOCATIONS.map((location) => location.title.toLowerCase())
     );
-    const cmsLocationNames = portugalCmsLocations.map((location) =>
-      location.name.trim().toLowerCase()
-    );
-    const isIncompletePortugalCms =
-      cmsLocationNames.length > 0 &&
-      cmsLocationNames.length < FALLBACK_LOCATIONS.length &&
-      cmsLocationNames.includes('azores') &&
-      cmsLocationNames.every((name) => expectedPortugalLocations.has(name));
+    const cmsNames = portugalCmsLocations.map((location) => location.name.trim().toLowerCase());
+    // Keep the accepted legacy Portugal page until an editor explicitly manages its steps.
+    const appendLegacyPortugalLocations =
+      !cmsEdited &&
+      cmsNames.length > 0 &&
+      cmsNames.length < FALLBACK_LOCATIONS.length &&
+      cmsNames.includes('azores') &&
+      cmsNames.every((name) => expectedNames.has(name));
 
     return resolveJourneyLocationContent(
       portugalCmsLocations,
       FALLBACK_LOCATIONS,
       FALLBACK_LOCATION_STORIES,
       {
-        appendMissingFallbacks: isIncompletePortugalCms,
+        cmsManaged,
+        appendMissingFallbacks: appendLegacyPortugalLocations,
       }
     );
-  }, [cmsLocations]);
+  }, [cmsLocations, cmsManaged, cmsEdited]);
   const router = useRouter();
   const prefersReducedMotion = usePrefersReducedMotion();
   const [isMobileViewport, setIsMobileViewport] = useState(false);
@@ -2511,7 +2519,7 @@ function BackToJourneysButton({
       />
       <span
         className={clsx(
-          'font-display whitespace-nowrap uppercase text-white transition-colors duration-300 [text-shadow:0_2px_0_rgba(0,0,0,0.3),0_8px_14px_rgba(0,0,0,0.24),0_16px_34px_rgba(0,0,0,0.24)] group-hover:text-[#f6c452]',
+          'whitespace-nowrap font-display uppercase text-white transition-colors duration-300 [text-shadow:0_2px_0_rgba(0,0,0,0.3),0_8px_14px_rgba(0,0,0,0.24),0_16px_34px_rgba(0,0,0,0.24)] group-hover:text-[#f6c452]',
           compact
             ? 'text-[0.68rem] tracking-[0.14em]'
             : 'text-[0.72rem] tracking-[0.16em] sm:text-[0.8rem]'
@@ -2979,15 +2987,15 @@ function LocationStoryBand({
                 maskImage: imageMask,
               }}
             >
-              <Image
-                src={story.image}
+              <JourneyTaleMedia
+                image={story.image}
+                media={story.media}
                 alt={currentLocationName ?? ''}
-                fill
-                className="object-contain"
-                sizes="(min-width: 1024px) 2240px, 1440px"
-                quality={100}
               />
-              <div className="absolute inset-0" style={{ backgroundImage: imageShade }} />
+              <div
+                className="pointer-events-none absolute inset-0"
+                style={{ backgroundImage: imageShade }}
+              />
             </div>
 
             {/* T-032 — le pavé narratif recouvre la fin (bord droit) de l'image. */}

@@ -622,42 +622,43 @@ function ConceptOverviewSlide({
       data-concept-scroll
       tabIndex={0}
       style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(246,196,82,0.5) transparent' }}
-      className="relative z-10 mx-auto max-h-full w-full max-w-5xl overflow-y-auto overscroll-y-contain py-4 text-center [touch-action:pan-y] focus-visible:outline focus-visible:outline-1 focus-visible:outline-white/40"
+      className="relative z-10 mx-auto max-h-full w-full max-w-6xl overflow-y-auto overscroll-y-contain py-4 text-center [touch-action:pan-y] focus-visible:outline focus-visible:outline-1 focus-visible:outline-white/40"
     >
-      <p className="font-display text-[10px] uppercase tracking-[0.24em] text-[#f6c452] sm:text-xs">
-        How Beeyond works
+      <p className="font-display text-[10px] uppercase tracking-[0.12em] text-white sm:text-xs">
+        {node.description}
       </p>
-      <h1 className="mt-7 font-title text-[clamp(2rem,3.4vw,3.8rem)] normal-case leading-[1.05] text-white">
+      <h1 className="mt-4 font-title text-[clamp(1.65rem,2.4vw,2.5rem)] normal-case leading-[1.12] text-white">
         {node.title}
       </h1>
-      <p className="mt-5 text-sm leading-relaxed text-white/85 sm:text-base">{node.description}</p>
-      <div className="mt-10 grid gap-4 text-left sm:mt-12 sm:grid-cols-2 sm:gap-7">
-        <div className="flex flex-col border border-[#f6c452]/65 bg-black/15 p-5 sm:p-7">
-          <h2 className="font-menu text-lg uppercase tracking-[0.06em] text-[#f6c452] sm:text-xl">
+      <div className="mt-8 grid gap-4 text-left sm:mt-12 sm:grid-cols-2 sm:gap-5">
+        <div className="flex flex-col bg-black/30 px-6 py-7 sm:min-h-[17rem] sm:px-8 sm:py-9 lg:px-12">
+          <h2 className="text-center font-menu text-[clamp(1.7rem,2.3vw,2.4rem)] uppercase leading-[1.1] tracking-[0.01em] text-white">
             Signature Journey
           </h2>
-          <p className="mb-7 mt-4 text-sm leading-relaxed text-white/85 sm:text-base">
-            A private, bespoke destination production for one brand.
+          <p className="mb-7 mt-6 font-sans text-[12px] font-light leading-[1.65] tracking-[0.12em] text-white sm:text-[13px]">
+            Bespoke destination production, created exclusively for one brand. Complete creative
+            freedom, dedicated production and a tailor-made impact layer.
           </p>
           <Link
             href="/contact"
-            className="mt-auto self-start py-2 font-display text-[9px] uppercase leading-relaxed tracking-[0.15em] text-[#f6c452] underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f6c452] sm:text-[10px]"
+            className="mt-auto self-start py-2 font-display text-[9px] uppercase leading-relaxed tracking-[0.08em] text-white underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white sm:text-[10px]"
           >
             Discuss a private production
           </Link>
         </div>
-        <div className="flex flex-col border border-[#f6c452]/65 bg-black/15 p-5 sm:p-7">
-          <h2 className="font-menu text-lg uppercase tracking-[0.06em] text-[#f6c452] sm:text-xl">
+        <div className="flex flex-col bg-black/30 px-6 py-7 sm:min-h-[17rem] sm:px-8 sm:py-9 lg:px-12">
+          <h2 className="text-center font-menu text-[clamp(1.7rem,2.3vw,2.4rem)] uppercase leading-[1.1] tracking-[0.01em] text-white">
             Shared Journeys
           </h2>
-          <p className="mb-7 mt-4 text-sm leading-relaxed text-white/85 sm:text-base">
-            A shared production journey for non-competing brands, with selected resources in common
-            and protected brand briefs.
+          <p className="mb-7 mt-6 font-sans text-[12px] font-light leading-[1.65] tracking-[0.12em] text-white sm:text-[13px]">
+            Shared resources. Environmental optimization. Unique campaigns. Non-competing brands
+            share selected production resources to optimize costs and environmental impact, while
+            every campaign remains creatively independent and entirely its own.
           </p>
           <button
             type="button"
             onClick={onExploreShared}
-            className="mt-auto self-start py-2 text-left font-display text-[9px] uppercase leading-relaxed tracking-[0.15em] text-[#f6c452] underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f6c452] sm:text-[10px]"
+            className="mt-auto self-start py-2 text-left font-display text-[9px] uppercase leading-relaxed tracking-[0.08em] text-white underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white sm:text-[10px]"
           >
             Explore Shared Journeys
           </button>

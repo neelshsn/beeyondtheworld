@@ -29,7 +29,7 @@ export function HomeConceptPanel() {
       <div className="relative flex h-full items-center justify-center px-8">
         <p
           data-animate-text
-          className="max-w-[90vw] text-center font-script text-[clamp(1.6rem,3vw,3rem)] leading-[1.5] tracking-[0.02em] text-white/90"
+          className="max-w-[90vw] text-center font-script text-[clamp(1.85rem,3.5vw,3rem)] leading-[1.5] tracking-[0.02em] text-white/90"
         >
           What if the way we create mattered as much as what we create?
         </p>
