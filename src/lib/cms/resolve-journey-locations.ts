@@ -3,6 +3,7 @@ import type {
   JourneyLocationStoryView,
   JourneyLocationView,
 } from '../../types/journey-location';
+import { isLocationSeasonSelection } from './journey-location-settings';
 
 const ALL_SEASONS = ['spring-summer', 'fall-winter'] as const;
 
@@ -52,7 +53,9 @@ export function resolveJourneyLocationContent(
       backgroundVideo: options.preferFallbackMedia
         ? (fallback?.backgroundVideo ?? location.video ?? undefined)
         : (location.video ?? fallback?.backgroundVideo),
-      seasons: fallback?.seasons ?? [...ALL_SEASONS],
+      seasons: isLocationSeasonSelection(location.seasonTags)
+        ? [...location.seasonTags]
+        : (fallback?.seasons ?? [...ALL_SEASONS]),
     };
 
     return { cms: location, fallback, view };

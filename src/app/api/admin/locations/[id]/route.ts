@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 
 import { getDb, locations, type NewLocationRow } from '@/lib/db';
 import { rejectCrossSiteWrite, requireAdmin } from '@/lib/db/admin-guard';
+import { isLocationSeasonSelection } from '@/lib/cms/journey-location-settings';
 import {
   getLegacyPortugalLocationImports,
   markJourneyLocationsManaged,
@@ -20,6 +21,7 @@ const EDITABLE_FIELDS = [
   'narrative',
   'image',
   'video',
+  'seasonTags',
   'media',
   'position',
   'published',
@@ -41,6 +43,12 @@ export async function PATCH(request: Request, context: RouteContext) {
       return NextResponse.json({ error: 'Le nom de la Location est requis.' }, { status: 400 });
     }
     if (typeof body.name === 'string') body.name = body.name.trim();
+    if ('seasonTags' in body && !isLocationSeasonSelection(body.seasonTags)) {
+      return NextResponse.json(
+        { error: 'Choisis SS, FW ou les deux pour cette Location.' },
+        { status: 400 }
+      );
+    }
     const updates: Record<string, unknown> = {};
     for (const field of EDITABLE_FIELDS) {
       if (field in body) {

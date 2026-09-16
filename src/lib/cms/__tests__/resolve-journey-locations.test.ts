@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import type {
+  CmsJourneyLocation,
   JourneyLocationStoryView,
   JourneyLocationView,
 } from '../../../types/journey-location';
@@ -30,7 +31,53 @@ const fallbackStories: JourneyLocationStoryView[] = [
   },
 ];
 
+const legacyLocation: CmsJourneyLocation = {
+  id: 42,
+  name: 'Old title',
+  subtitle: null,
+  leftTitle: [],
+  narrative: 'Existing story',
+  image: '/thumbnail.jpg',
+  video: null,
+  media: [],
+  position: 0,
+};
+
 describe('resolveJourneyLocationContent', () => {
+  it.each([undefined, null])(
+    'retains historical seasons and background without saved overrides (%s)',
+    (seasonTags) => {
+      const result = resolveJourneyLocationContent(
+        [{ ...legacyLocation, seasonTags }],
+        fallbackLocations,
+        fallbackStories
+      );
+      expect(result.locations[0].seasons).toEqual(['spring-summer']);
+      expect(result.locations[0].backgroundVideo).toBe('/old-background.mp4');
+    }
+  );
+
+  it('honors saved seasons and a photo background independently from the card and Tale', () => {
+    const result = resolveJourneyLocationContent(
+      [
+        {
+          ...legacyLocation,
+          seasonTags: ['fall-winter'],
+          video: '/new-background.webp',
+          media: [{ type: 'image', url: '/tale.jpg' }],
+        },
+      ],
+      fallbackLocations,
+      fallbackStories
+    );
+    expect(result.locations[0]).toMatchObject({
+      seasons: ['fall-winter'],
+      backgroundVideo: '/new-background.webp',
+      image: '/thumbnail.jpg',
+    });
+    expect(result.stories[0].image).toBe('/tale.jpg');
+  });
+
   it('keeps intentionally hidden or deleted CMS collections empty', () => {
     expect(
       resolveJourneyLocationContent([], fallbackLocations, fallbackStories, { cmsManaged: true })

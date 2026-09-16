@@ -14,6 +14,10 @@ import { MaskedIcon } from '@/components/primitives/masked-icon';
 import type { JourneyShowcase } from '@/data/showcases';
 import { getSustainableImpactPdf } from '@/data/sustainable-impact';
 import { resolveJourneyLocationContent } from '@/lib/cms/resolve-journey-locations';
+import {
+  getLegacyLocationSeasons,
+  isJourneyBackgroundVideo,
+} from '@/lib/cms/journey-location-settings';
 import type { JourneySeason } from '@/types/journey';
 import type { CmsJourneyLocation, JourneyLocationMedia } from '@/types/journey-location';
 
@@ -99,7 +103,7 @@ const FALLBACK_LOCATIONS: IndiaLocation[] = [
     region: 'Stone Gardens',
     image: '/assets/journeys/france-2026/france-location-provence-thumbnail.png',
     backgroundVideo: '/assets/journeys/france-2026/france-location-provence-background.png',
-    seasons: ['spring-summer'],
+    seasons: getLegacyLocationSeasons('france', 'Provence'),
   },
   {
     id: 'france-location-camargue',
@@ -107,7 +111,7 @@ const FALLBACK_LOCATIONS: IndiaLocation[] = [
     region: 'Salt Lagoons',
     image: '/assets/journeys/france-2026/france-location-camargue-thumbnail.png',
     backgroundVideo: '/assets/journeys/france-2026/france-location-camargue-background.png',
-    seasons: ['spring-summer', 'fall-winter'],
+    seasons: getLegacyLocationSeasons('france', 'Camargue'),
   },
   {
     id: 'france-location-avoriaz',
@@ -115,7 +119,7 @@ const FALLBACK_LOCATIONS: IndiaLocation[] = [
     region: 'Alpine Horizons',
     image: '/assets/journeys/france-2026/france-location-avoriaz-thumbnail.png',
     backgroundVideo: '/assets/journeys/france-2026/france-location-avoriaz-background.png',
-    seasons: ['fall-winter'],
+    seasons: getLegacyLocationSeasons('france', 'Avoriaz'),
   },
 ];
 
@@ -395,7 +399,7 @@ const CSR_CATEGORY_START_INDEX: Record<CsrImpactCategory, number> = {
 };
 
 function isVideoAsset(src?: string) {
-  return Boolean(src && /\.(mp4|webm|mov|ogg)$/i.test(src));
+  return isJourneyBackgroundVideo(src);
 }
 
 function getLocationBackgroundSource(location: IndiaLocation) {

@@ -16,6 +16,10 @@ import { BeeButton } from '@/components/primitives/bee-button';
 import type { JourneyShowcase } from '@/data/showcases';
 import { getSustainableImpactPdf } from '@/data/sustainable-impact';
 import { resolveJourneyLocationContent } from '@/lib/cms/resolve-journey-locations';
+import {
+  getLegacyLocationSeasons,
+  isJourneyBackgroundVideo,
+} from '@/lib/cms/journey-location-settings';
 import type { JourneySeason } from '@/types/journey';
 import type { CmsJourneyLocation, JourneyLocationMedia } from '@/types/journey-location';
 
@@ -102,7 +106,7 @@ const FALLBACK_LOCATIONS: IndiaLocation[] = [
     region: 'Twin Lagoon',
     image: '/assets/journeys/philippines-2026/philippines-location-palawan-thumbnail.jpg',
     backgroundVideo: '/assets/journeys/philippines-2026/philippines-spring-summer-thumbnail.png',
-    seasons: ['spring-summer'],
+    seasons: getLegacyLocationSeasons('philippines', 'Palawan'),
   },
   {
     id: 'philippines-location-bukidnon',
@@ -110,7 +114,7 @@ const FALLBACK_LOCATIONS: IndiaLocation[] = [
     region: 'Cloud Highlands',
     image: '/assets/journeys/philippines-2026/philippines-location-bukidnon-thumbnail.png',
     backgroundVideo: '/assets/journeys/philippines-2026/philippines-fall-winter-thumbnail.png',
-    seasons: ['fall-winter'],
+    seasons: getLegacyLocationSeasons('philippines', 'Bukidnon'),
   },
   {
     id: 'philippines-location-siargao',
@@ -118,7 +122,7 @@ const FALLBACK_LOCATIONS: IndiaLocation[] = [
     region: 'Surf & Lagoons',
     image: '/assets/journeys/philippines-2026/philippines-location-siargao-thumbnail.png',
     backgroundVideo: '/assets/journeys/philippines-2026/philippines-all-journeys-thumbnail.png',
-    seasons: ['spring-summer', 'fall-winter'],
+    seasons: getLegacyLocationSeasons('philippines', 'Siargao'),
   },
 ];
 
@@ -401,7 +405,7 @@ const CSR_CATEGORY_START_INDEX: Record<CsrImpactCategory, number> = {
 };
 
 function isVideoAsset(src?: string) {
-  return Boolean(src && /\.(mp4|webm|mov|ogg)$/i.test(src));
+  return isJourneyBackgroundVideo(src);
 }
 
 function getLocationBackgroundSource(location: IndiaLocation) {

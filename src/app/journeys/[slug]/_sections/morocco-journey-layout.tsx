@@ -14,6 +14,10 @@ import { MaskedIcon } from '@/components/primitives/masked-icon';
 import type { JourneyShowcase } from '@/data/showcases';
 import { getSustainableImpactPdf } from '@/data/sustainable-impact';
 import { resolveJourneyLocationContent } from '@/lib/cms/resolve-journey-locations';
+import {
+  getLegacyLocationSeasons,
+  isJourneyBackgroundVideo,
+} from '@/lib/cms/journey-location-settings';
 import type { JourneySeason } from '@/types/journey';
 import type { CmsJourneyLocation, JourneyLocationMedia } from '@/types/journey-location';
 
@@ -99,7 +103,7 @@ const FALLBACK_LOCATIONS: IndiaLocation[] = [
     region: 'Desert & Lake',
     image: '/assets/journeys/morocco-2026/morocco-location-ouarzazate-thumbnail.png',
     backgroundVideo: '/assets/journeys/morocco-2026/morocco-location-ouarzazate-background.png',
-    seasons: ['fall-winter'],
+    seasons: getLegacyLocationSeasons('morocco', 'Ouarzazate'),
   },
   {
     id: 'morocco-location-agafay',
@@ -107,7 +111,7 @@ const FALLBACK_LOCATIONS: IndiaLocation[] = [
     region: 'Stone Desert',
     image: '/assets/journeys/morocco-2026/morocco-location-agafay-thumbnail.png',
     backgroundVideo: '/assets/journeys/morocco-2026/morocco-location-agafay-background.png',
-    seasons: ['spring-summer'],
+    seasons: getLegacyLocationSeasons('morocco', 'Agafay'),
   },
   {
     id: 'morocco-location-dakhla',
@@ -115,7 +119,7 @@ const FALLBACK_LOCATIONS: IndiaLocation[] = [
     region: 'Lagoon Horizon',
     image: '/assets/journeys/morocco-2026/morocco-location-dakhla-thumbnail.jpg',
     backgroundVideo: '/assets/journeys/morocco-2026/morocco-location-dakhla-background.jpg',
-    seasons: ['spring-summer'],
+    seasons: getLegacyLocationSeasons('morocco', 'Dakhla'),
   },
   {
     id: 'morocco-location-taghazout',
@@ -123,7 +127,7 @@ const FALLBACK_LOCATIONS: IndiaLocation[] = [
     region: 'Atlantic Surfline',
     image: '/assets/journeys/morocco-2026/morocco-location-taghazout-thumbnail.png',
     backgroundVideo: '/assets/journeys/morocco-2026/morocco-location-taghazout-background.png',
-    seasons: ['spring-summer', 'fall-winter'],
+    seasons: getLegacyLocationSeasons('morocco', 'Taghazout'),
   },
   {
     id: 'morocco-location-essaouira',
@@ -131,7 +135,7 @@ const FALLBACK_LOCATIONS: IndiaLocation[] = [
     region: 'Wind Port',
     image: '/assets/journeys/morocco-2026/morocco-location-essaouira-thumbnail.png',
     backgroundVideo: '/assets/journeys/morocco-2026/morocco-location-essaouira-background.png',
-    seasons: ['spring-summer', 'fall-winter'],
+    seasons: getLegacyLocationSeasons('morocco', 'Essaouira'),
   },
 ];
 
@@ -431,7 +435,7 @@ const CSR_CATEGORY_START_INDEX: Record<CsrImpactCategory, number> = {
 };
 
 function isVideoAsset(src?: string) {
-  return Boolean(src && /\.(mp4|webm|mov|ogg)$/i.test(src));
+  return isJourneyBackgroundVideo(src);
 }
 
 function getLocationBackgroundSource(location: IndiaLocation) {

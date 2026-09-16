@@ -35,6 +35,7 @@ export async function getPublishedJourneyLocationCollection(
         narrative: row.narrative,
         image: row.image,
         video: row.video,
+        seasonTags: row.seasonTags,
         media: row.media,
         position: row.position,
       }));

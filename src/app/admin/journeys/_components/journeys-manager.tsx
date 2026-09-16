@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import type { JourneySeason } from '@/types/journey';
+import { getLegacyLocationSeasons } from '@/lib/cms/journey-location-settings';
 
 import { MediaUploadField } from '../../_components/media-upload-field';
 
@@ -39,6 +40,7 @@ type LocationRecord = {
   narrative: string;
   image: string | null;
   video: string | null;
+  seasonTags?: JourneySeason[] | null;
   media: LocationMedia[];
   position: number;
   published: boolean;
@@ -78,7 +80,7 @@ const SEASONS: { value: JourneySeason; label: string }[] = [
   { value: 'fall-winter', label: 'Fall Winter' },
 ];
 
-function createLocationDraft(location: LocationRecord): LocationDraft {
+function createLocationDraft(location: LocationRecord, journeySlug: string): LocationDraft {
   return {
     name: location.name,
     subtitle: location.subtitle ?? '',
@@ -86,6 +88,7 @@ function createLocationDraft(location: LocationRecord): LocationDraft {
     narrative: location.narrative,
     image: location.image ?? '',
     video: location.video ?? '',
+    seasonTags: location.seasonTags ?? getLegacyLocationSeasons(journeySlug, location.name),
     media: (location.media ?? []).map((item, index) => ({
       ...item,
       editorId: `saved-${location.id}-${index}`,
@@ -218,16 +221,20 @@ function Field({
 
 function LocationEditor({
   location,
+  journeySlug,
   onSaved,
   onDeleted,
   onActivityChange,
 }: {
   location: LocationRecord;
+  journeySlug: string;
   onSaved: () => void | Promise<void>;
   onDeleted: () => void | Promise<void>;
   onActivityChange: (locationId: number, activity: EditorActivity) => void;
 }) {
-  const [draft, setDraft] = useState<LocationDraft>(() => createLocationDraft(location));
+  const [draft, setDraft] = useState<LocationDraft>(() =>
+    createLocationDraft(location, journeySlug)
+  );
   const [dirty, setDirty] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -279,6 +286,7 @@ function LocationEditor({
           narrative: draft.narrative,
           image: draft.image || null,
           video: draft.video || null,
+          seasonTags: draft.seasonTags,
           media: draft.media.map(({ url, type, alt }) => ({
             url: url.trim(),
             type,
@@ -330,18 +338,56 @@ function LocationEditor({
           label="Image principale"
           value={draft.image ?? ''}
           onChange={(image) => updateDraft((current) => ({ ...current, image }))}
+          help="Image de la carte Location, également utilisée dans le Tale si la galerie est vide."
           disabled={busy}
           onBusyChange={(active) => setUploadState('location-image', active)}
         />
         <MediaUploadField
-          label="Vidéo principale"
-          kind="video"
+          label="Fond de la Location · photo ou vidéo"
+          kind="visual"
           value={draft.video ?? ''}
           onChange={(video) => updateDraft((current) => ({ ...current, video }))}
+          help="Visuel en plein écran derrière cette Location. Photo : 25 Mo max. Vidéo : 500 Mo max. Sans fichier, le fond d’origine est conservé."
           disabled={busy}
           onBusyChange={(active) => setUploadState('location-video', active)}
         />
       </div>
+      <fieldset className="space-y-2 border border-white/15 p-3">
+        <legend className="px-1 text-xs uppercase tracking-[0.18em] text-white/70">
+          Saisons de cette Location
+        </legend>
+        <p className="text-xs leading-relaxed text-white/55">
+          Choisis SS, FW ou les deux. Les saisons s’affichent sur la carte de cette Location.
+        </p>
+        <div className="flex flex-wrap gap-3">
+          {SEASONS.map((season) => {
+            const selected = (draft.seasonTags ?? []).includes(season.value);
+            return (
+              <label
+                key={season.value}
+                className="flex min-h-11 cursor-pointer items-center gap-2 text-sm text-white/80"
+              >
+                <input
+                  type="checkbox"
+                  className="size-4 accent-[#f4bb52]"
+                  checked={selected}
+                  disabled={busy || (selected && draft.seasonTags?.length === 1)}
+                  onChange={() =>
+                    updateDraft((current) => ({
+                      ...current,
+                      seasonTags: selected
+                        ? current.seasonTags?.filter((value) => value !== season.value)
+                        : [...(current.seasonTags ?? []), season.value],
+                    }))
+                  }
+                />
+                {season.value === 'spring-summer' ? 'SS · Spring Summer' : 'FW · Fall Winter'}
+              </label>
+            );
+          })}
+        </div>
+        <p className="text-xs text-white/45">Garde au moins une saison sélectionnée.</p>
+      </fieldset>
       <Field
         label="Titre gauche (1 ligne par entrée)"
         value={draft.leftTitleText ?? ''}
@@ -855,6 +901,7 @@ function JourneyEditor({
               </summary>
               <LocationEditor
                 location={location}
+                journeySlug={journey.slug}
                 onSaved={onChanged}
                 onDeleted={onChanged}
                 onActivityChange={updateLocationActivity}

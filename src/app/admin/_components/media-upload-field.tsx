@@ -6,8 +6,9 @@ import { useEffect, useId, useRef, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { isJourneyBackgroundVideo } from '@/lib/cms/journey-location-settings';
 
-type MediaKind = 'image' | 'video' | 'document';
+type MediaKind = 'image' | 'video' | 'visual' | 'document';
 
 const KIND_CONFIG: Record<
   MediaKind,
@@ -24,6 +25,13 @@ const KIND_CONFIG: Record<
     description: 'MP4, WebM ou MOV',
     maxSize: 500 * 1024 * 1024,
     folder: 'videos',
+  },
+  visual: {
+    accept:
+      'image/jpeg,image/png,image/webp,image/avif,image/gif,video/mp4,video/webm,video/quicktime',
+    description: 'Photo (JPG, PNG, WebP, AVIF, GIF) ou vidéo (MP4, WebM, MOV)',
+    maxSize: 500 * 1024 * 1024,
+    folder: 'backgrounds',
   },
   document: {
     accept: 'application/pdf',
@@ -88,6 +96,8 @@ export function MediaUploadField({
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const config = KIND_CONFIG[kind];
+  const previewKind =
+    kind === 'visual' ? (isJourneyBackgroundVideo(value) ? 'video' : 'image') : kind;
   const busy = progress !== null;
 
   useEffect(() => {
@@ -103,8 +113,10 @@ export function MediaUploadField({
       setError(`Choisis un fichier ${config.description}.`);
       return;
     }
-    if (file.size > config.maxSize) {
-      setError(`Ce fichier est trop lourd. Taille maximale : ${readableSize(config.maxSize)}.`);
+    const fileConfig =
+      kind === 'visual' ? KIND_CONFIG[file.type.startsWith('video/') ? 'video' : 'image'] : config;
+    if (file.size > fileConfig.maxSize) {
+      setError(`Ce fichier est trop lourd. Taille maximale : ${readableSize(fileConfig.maxSize)}.`);
       return;
     }
 
@@ -155,14 +167,14 @@ export function MediaUploadField({
 
       {value ? (
         <div className="overflow-hidden border border-white/15 bg-black/25">
-          {kind === 'image' ? (
+          {previewKind === 'image' ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={value}
               alt={`Aperçu du média choisi pour ${label}`}
               className="h-36 w-full object-cover"
             />
-          ) : kind === 'video' ? (
+          ) : previewKind === 'video' ? (
             <video
               src={value}
               className="h-36 w-full bg-black object-contain"

@@ -14,6 +14,7 @@ export type CmsJourneyLocation = {
   narrative: string;
   image: string | null;
   video: string | null;
+  seasonTags?: JourneySeason[] | null;
   media: JourneyLocationMedia[];
   position: number;
 };

@@ -14,6 +14,10 @@ import { MaskedIcon } from '@/components/primitives/masked-icon';
 import type { JourneyShowcase } from '@/data/showcases';
 import { getSustainableImpactPdf } from '@/data/sustainable-impact';
 import { resolveJourneyLocationContent } from '@/lib/cms/resolve-journey-locations';
+import {
+  getLegacyLocationSeasons,
+  isJourneyBackgroundVideo,
+} from '@/lib/cms/journey-location-settings';
 import type { JourneySeason } from '@/types/journey';
 import type { CmsJourneyLocation, JourneyLocationMedia } from '@/types/journey-location';
 
@@ -100,7 +104,7 @@ const FALLBACK_LOCATIONS: IndiaLocation[] = [
     region: 'Volcanic Lakes',
     image: '/assets/journeys/portugal-2026/portugal-azores.webp',
     backgroundVideo: '/assets/journeys/portugal-2026/portugal-azores.webp',
-    seasons: ['spring-summer', 'fall-winter'],
+    seasons: getLegacyLocationSeasons('azores', 'Azores'),
   },
   {
     id: 'portugal-location-madeira',
@@ -108,7 +112,7 @@ const FALLBACK_LOCATIONS: IndiaLocation[] = [
     region: 'Cloud Mountains',
     image: '/assets/journeys/portugal-2026/portugal-madeira.webp',
     backgroundVideo: '/assets/journeys/portugal-2026/portugal-madeira.webp',
-    seasons: ['spring-summer', 'fall-winter'],
+    seasons: getLegacyLocationSeasons('azores', 'Madeira'),
   },
   {
     id: 'portugal-location-lisboa',
@@ -116,7 +120,7 @@ const FALLBACK_LOCATIONS: IndiaLocation[] = [
     region: 'Tiled Light',
     image: '/assets/journeys/portugal-2026/portugal-lisboa.webp',
     backgroundVideo: '/assets/journeys/portugal-2026/portugal-lisboa.webp',
-    seasons: ['spring-summer', 'fall-winter'],
+    seasons: getLegacyLocationSeasons('azores', 'Lisboa'),
   },
 ];
 
@@ -423,7 +427,7 @@ const CSR_CATEGORY_START_INDEX: Record<CsrImpactCategory, number> = {
 };
 
 function isVideoAsset(src?: string) {
-  return Boolean(src && /\.(mp4|webm|mov|ogg)$/i.test(src));
+  return isJourneyBackgroundVideo(src);
 }
 
 function getLocationBackgroundSource(location: IndiaLocation) {

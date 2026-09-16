@@ -125,6 +125,7 @@ vi.mock('@/lib/db/admin-guard', () => ({
 import { POST } from '@/app/api/admin/journeys/[id]/locations/route';
 import { PATCH, DELETE } from '@/app/api/admin/locations/[id]/route';
 import { getPublishedJourneyLocationCollection } from '../journey-locations';
+import { resolveJourneyLocationContent } from '../resolve-journey-locations';
 
 function createLocation(body: Record<string, unknown>) {
   return POST(
@@ -283,4 +284,62 @@ describe('Journey Location storage through its API', () => {
       media: [{ type: 'image', url: '/tale.jpg' }],
     });
   });
+
+  it('creates new Locations in both seasons without forcing imported historical seasons', async () => {
+    await createLocation({ name: 'New place', published: true });
+    expect(store.locations.find((row) => row.name === 'New place')?.seasonTags).toEqual([
+      'spring-summer',
+      'fall-winter',
+    ]);
+    expect(store.locations.find((row) => row.name === 'Kerala')?.seasonTags).toBeUndefined();
+  });
+
+  it('round-trips photo backgrounds and seasons through a later text-only edit to the public view', async () => {
+    store.journey.slug = 'new-journey';
+    const created = await createLocation({
+      name: 'Actual place',
+      image: '/card.jpg',
+      published: true,
+    });
+    const { location } = await created.json();
+    expect(
+      (await editLocation(location.id, { video: '/background.webp', seasonTags: ['fall-winter'] }))
+        .status
+    ).toBe(200);
+    expect((await editLocation(location.id, { narrative: 'Revised story' })).status).toBe(200);
+    const collection = await getPublishedJourneyLocationCollection('new-journey');
+    expect(collection.locations[0]).toMatchObject({
+      video: '/background.webp',
+      seasonTags: ['fall-winter'],
+      narrative: 'Revised story',
+    });
+    const view = resolveJourneyLocationContent(collection.locations, [], []);
+    expect(view.locations[0]).toMatchObject({
+      image: '/card.jpg',
+      backgroundVideo: '/background.webp',
+      seasons: ['fall-winter'],
+    });
+  });
+
+  it('leaves a legacy Location’s missing season field and saved background untouched on a text edit', async () => {
+    partialPortugal();
+    store.locations[0].video = '/existing.mp4';
+    expect((await editLocation(1, { narrative: 'Edited text' })).status).toBe(200);
+    expect(store.locations[0].seasonTags).toBeUndefined();
+    expect(store.locations[0].video).toBe('/existing.mp4');
+  });
+
+  it.each(
+    [[], ['summer'], ['spring-summer', 'spring-summer'], null, 'fall-winter'].map((seasonTags) => ({
+      seasonTags,
+    }))
+  )(
+    'rejects an invalid season selection without storing changes: $seasonTags',
+    async ({ seasonTags }) => {
+      partialPortugal();
+      expect((await editLocation(1, { seasonTags })).status).toBe(400);
+      expect((await createLocation({ name: 'Invalid', seasonTags })).status).toBe(400);
+      expect(store.batches).toBe(0);
+    }
+  );
 });

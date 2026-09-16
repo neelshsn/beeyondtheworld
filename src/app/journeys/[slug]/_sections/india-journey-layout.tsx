@@ -14,6 +14,10 @@ import { MaskedIcon } from '@/components/primitives/masked-icon';
 import type { JourneyShowcase } from '@/data/showcases';
 import { getSustainableImpactPdf } from '@/data/sustainable-impact';
 import { resolveJourneyLocationContent } from '@/lib/cms/resolve-journey-locations';
+import {
+  getLegacyLocationSeasons,
+  isJourneyBackgroundVideo,
+} from '@/lib/cms/journey-location-settings';
 import type { JourneySeason } from '@/types/journey';
 import type { CmsJourneyLocation, JourneyLocationMedia } from '@/types/journey-location';
 
@@ -100,7 +104,7 @@ const FALLBACK_LOCATIONS: IndiaLocation[] = [
     region: 'Jaipur & Udaipur',
     image:
       '/assets/journeys/india-january-2026/india-january-2026-location-rajasthan-thumbnail.jpg',
-    seasons: ['spring-summer', 'fall-winter'],
+    seasons: getLegacyLocationSeasons('india-january-2026', 'Rajasthan'),
   },
   {
     id: 'india-location-kerala',
@@ -109,7 +113,7 @@ const FALLBACK_LOCATIONS: IndiaLocation[] = [
     image: '/assets/journeys/india-january-2026/india-january-2026-location-kerala-thumbnail.jpg',
     backgroundVideo:
       '/assets/journeys/india-january-2026/india-january-2026-location-kerala-background.mp4',
-    seasons: ['fall-winter'],
+    seasons: getLegacyLocationSeasons('india-january-2026', 'Kerala'),
   },
   {
     id: 'india-location-goa',
@@ -118,7 +122,7 @@ const FALLBACK_LOCATIONS: IndiaLocation[] = [
     image: '/assets/journeys/india-january-2026/india-january-2026-location-goa-thumbnail.jpg',
     backgroundVideo:
       '/assets/journeys/india-january-2026/india-january-2026-location-goa-background.mp4',
-    seasons: ['spring-summer'],
+    seasons: getLegacyLocationSeasons('india-january-2026', 'Goa'),
   },
 ];
 
@@ -2740,17 +2744,28 @@ function LocationBackground({
             exit={prefersReducedMotion ? { opacity: 1 } : { opacity: 0 }}
             transition={{ duration: backgroundDuration, ease: [0.22, 1, 0.36, 1] }}
           >
-            <video
-              ref={videoRef}
-              src={videoSrc}
-              poster={poster}
-              className="absolute inset-0 h-full w-full object-cover object-center"
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="auto"
-            />
+            {isJourneyBackgroundVideo(videoSrc) ? (
+              <video
+                ref={videoRef}
+                src={videoSrc}
+                poster={poster}
+                className="absolute inset-0 h-full w-full object-cover object-center"
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="auto"
+              />
+            ) : (
+              <Image
+                src={videoSrc}
+                alt=""
+                fill
+                priority
+                className="object-cover object-center"
+                sizes="100vw"
+              />
+            )}
           </motion.div>
         </AnimatePresence>
       </div>

@@ -59,6 +59,7 @@ const statements = [
     narrative text NOT NULL DEFAULT '',
     image text,
     video text,
+    season_tags jsonb,
     media jsonb NOT NULL DEFAULT '[]',
     position integer NOT NULL DEFAULT 0,
     published boolean NOT NULL DEFAULT true,
@@ -66,6 +67,7 @@ const statements = [
     updated_at timestamp NOT NULL DEFAULT now()
   )`,
   `CREATE INDEX IF NOT EXISTS locations_journey_id_idx ON locations(journey_id)`,
+  `ALTER TABLE locations ADD COLUMN IF NOT EXISTS season_tags jsonb`,
   `CREATE TABLE IF NOT EXISTS admin_users (
     id serial PRIMARY KEY,
     email text NOT NULL UNIQUE,

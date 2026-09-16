@@ -4,6 +4,7 @@ import { NextResponse } from 'next/server';
 import { getDb, journeys, locations, type LocationRow, type NewLocationRow } from '@/lib/db';
 import { rejectCrossSiteWrite, requireAdmin } from '@/lib/db/admin-guard';
 import { journeyLocationSeeds } from '@/data/journey-location-seeds';
+import { isLocationSeasonSelection, LOCATION_SEASONS } from '@/lib/cms/journey-location-settings';
 import {
   markJourneyLocationsManaged,
   planLegacyPortugalLocationImports,
@@ -56,6 +57,12 @@ export async function POST(request: Request, context: RouteContext) {
     if (typeof body.name !== 'string' || !body.name.trim()) {
       return NextResponse.json({ error: 'Le nom de la Location est requis.' }, { status: 400 });
     }
+    if ('seasonTags' in body && !isLocationSeasonSelection(body.seasonTags)) {
+      return NextResponse.json(
+        { error: 'Choisis SS, FW ou les deux pour cette Location.' },
+        { status: 400 }
+      );
+    }
 
     const db = getDb();
     const [journey] = await db.select().from(journeys).where(eq(journeys.id, journeyId)).limit(1);
@@ -100,6 +107,7 @@ export async function POST(request: Request, context: RouteContext) {
         narrative: body.narrative ?? '',
         image: body.image ?? null,
         video: body.video ?? null,
+        seasonTags: body.seasonTags ?? [...LOCATION_SEASONS],
         media: body.media ?? [],
         position: nextPosition,
         published: body.published ?? false,

@@ -8,6 +8,11 @@ import { BeeButton } from '@/components/primitives/bee-button';
 import SplitText from '@/components/SplitText';
 import type { JourneyShowcase } from '@/data/showcases';
 import { getPublishedJourneyLocationCollection } from '@/lib/cms/journey-locations';
+import {
+  isJourneyBackgroundVideo,
+  isLocationSeasonSelection,
+  LOCATION_SEASONS,
+} from '@/lib/cms/journey-location-settings';
 import { getPublishedJourneyShowcase } from '@/lib/cms/journeys';
 import type { CmsJourneyLocation } from '@/types/journey-location';
 
@@ -261,6 +266,19 @@ function DefaultJourneyLayout({
                 align="left"
                 glowTone="dawn"
               />
+              <p
+                className="text-xs uppercase tracking-[0.16em] text-white/65"
+                aria-label="Location seasons"
+              >
+                {(isLocationSeasonSelection(location.seasonTags)
+                  ? location.seasonTags
+                  : LOCATION_SEASONS
+                )
+                  .map((season) =>
+                    season === 'spring-summer' ? 'SS · Spring Summer' : 'FW · Fall Winter'
+                  )
+                  .join(' / ')}
+              </p>
               {location.leftTitle.length > 0 ? (
                 <h3 className="font-display text-xl">{location.leftTitle.join(' ')}</h3>
               ) : null}
@@ -282,8 +300,10 @@ function DefaultJourneyLayout({
                   ...(location.video
                     ? [
                         {
-                          id: `location-${location.id}-video`,
-                          type: 'video' as const,
+                          id: `location-${location.id}-background`,
+                          type: isJourneyBackgroundVideo(location.video)
+                            ? ('video' as const)
+                            : ('image' as const),
                           src: location.video,
                           alt: location.name,
                         },

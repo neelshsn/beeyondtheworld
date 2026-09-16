@@ -10,6 +10,7 @@ import {
 } from 'drizzle-orm/pg-core';
 
 import type { CampaignEditorContent } from '@/types/editorial-content';
+import type { JourneySeason } from '@/types/journey';
 
 /**
  * T-050 — schéma CMS voyages & locations (Neon PostgreSQL).
@@ -59,6 +60,8 @@ export const locations = pgTable('locations', {
   narrative: text('narrative').notNull().default(''),
   image: text('image'),
   video: text('video'),
+  // Null preserves a Location's historical seasons until an editor chooses them.
+  seasonTags: jsonb('season_tags').$type<JourneySeason[]>(),
   media: jsonb('media').$type<LocationMedia[]>().notNull().default([]),
   position: integer('position').notNull().default(0),
   published: boolean('published').notNull().default(true),

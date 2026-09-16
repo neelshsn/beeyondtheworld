@@ -14,6 +14,10 @@ import { MaskedIcon } from '@/components/primitives/masked-icon';
 import type { JourneyShowcase } from '@/data/showcases';
 import { getSustainableImpactPdf } from '@/data/sustainable-impact';
 import { resolveJourneyLocationContent } from '@/lib/cms/resolve-journey-locations';
+import {
+  getLegacyLocationSeasons,
+  isJourneyBackgroundVideo,
+} from '@/lib/cms/journey-location-settings';
 import type { JourneySeason } from '@/types/journey';
 import type { CmsJourneyLocation, JourneyLocationMedia } from '@/types/journey-location';
 
@@ -99,7 +103,7 @@ const FALLBACK_LOCATIONS: IndiaLocation[] = [
     region: 'Rainforest Lake',
     image: '/assets/journeys/thailand-2026/thailand-location-khao-sok-thumbnail.png',
     backgroundVideo: '/assets/journeys/thailand-2026/thailand-location-khao-sok-background.png',
-    seasons: ['spring-summer', 'fall-winter'],
+    seasons: getLegacyLocationSeasons('thailand', 'Khao Sok'),
   },
   {
     id: 'thailand-location-bangkok',
@@ -107,7 +111,7 @@ const FALLBACK_LOCATIONS: IndiaLocation[] = [
     region: 'Golden Chinatown',
     image: '/assets/journeys/thailand-2026/thailand-location-bangkok-thumbnail.png',
     backgroundVideo: '/assets/journeys/thailand-2026/thailand-location-bangkok-background.png',
-    seasons: ['fall-winter'],
+    seasons: getLegacyLocationSeasons('thailand', 'Bangkok'),
   },
   {
     id: 'thailand-location-koh-phi-phi',
@@ -115,7 +119,7 @@ const FALLBACK_LOCATIONS: IndiaLocation[] = [
     region: 'Turquoise Horizon',
     image: '/assets/journeys/thailand-2026/thailand-location-koh-phi-phi-thumbnail.png',
     backgroundVideo: '/assets/journeys/thailand-2026/thailand-location-koh-phi-phi-background.png',
-    seasons: ['spring-summer'],
+    seasons: getLegacyLocationSeasons('thailand', 'Koh Phi Phi'),
   },
 ];
 
@@ -395,7 +399,7 @@ const CSR_CATEGORY_START_INDEX: Record<CsrImpactCategory, number> = {
 };
 
 function isVideoAsset(src?: string) {
-  return Boolean(src && /\.(mp4|webm|mov|ogg)$/i.test(src));
+  return isJourneyBackgroundVideo(src);
 }
 
 function getLocationBackgroundSource(location: IndiaLocation) {

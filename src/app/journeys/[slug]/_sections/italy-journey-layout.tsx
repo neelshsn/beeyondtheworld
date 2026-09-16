@@ -14,6 +14,10 @@ import { MaskedIcon } from '@/components/primitives/masked-icon';
 import type { JourneyShowcase } from '@/data/showcases';
 import { getSustainableImpactPdf } from '@/data/sustainable-impact';
 import { resolveJourneyLocationContent } from '@/lib/cms/resolve-journey-locations';
+import {
+  getLegacyLocationSeasons,
+  isJourneyBackgroundVideo,
+} from '@/lib/cms/journey-location-settings';
 import type { JourneySeason } from '@/types/journey';
 import type { CmsJourneyLocation, JourneyLocationMedia } from '@/types/journey-location';
 
@@ -99,7 +103,7 @@ const FALLBACK_LOCATIONS: IndiaLocation[] = [
     region: 'Cypress Hills',
     image: '/assets/journeys/italy-2026/italy-location-tuscany-thumbnail.png',
     backgroundVideo: '/assets/journeys/italy-2026/italy-location-tuscany-background.jpg',
-    seasons: ['spring-summer', 'fall-winter'],
+    seasons: getLegacyLocationSeasons('italy', 'Tuscany'),
   },
   {
     id: 'italy-location-dolomites',
@@ -107,7 +111,7 @@ const FALLBACK_LOCATIONS: IndiaLocation[] = [
     region: 'Alpine Peaks',
     image: '/assets/journeys/italy-2026/italy-location-dolomites-thumbnail.png',
     backgroundVideo: '/assets/journeys/italy-2026/italy-location-dolomites-background.png',
-    seasons: ['fall-winter'],
+    seasons: getLegacyLocationSeasons('italy', 'Dolomites'),
   },
   {
     id: 'italy-location-sicily',
@@ -115,7 +119,7 @@ const FALLBACK_LOCATIONS: IndiaLocation[] = [
     region: 'Mediterranean Stone',
     image: '/assets/journeys/italy-2026/italy-location-sicily-thumbnail.png',
     backgroundVideo: '/assets/journeys/italy-2026/italy-location-sicily-background.png',
-    seasons: ['spring-summer'],
+    seasons: getLegacyLocationSeasons('italy', 'Sicily'),
   },
   {
     id: 'italy-location-amalfi',
@@ -123,7 +127,7 @@ const FALLBACK_LOCATIONS: IndiaLocation[] = [
     region: 'Coastal Terraces',
     image: '/assets/journeys/italy-2026/italy-location-amalfi-thumbnail.png',
     backgroundVideo: '/assets/journeys/italy-2026/italy-location-amalfi-background.jpg',
-    seasons: ['spring-summer', 'fall-winter'],
+    seasons: getLegacyLocationSeasons('italy', 'Amalfi'),
   },
 ];
 
@@ -413,7 +417,7 @@ const CSR_CATEGORY_START_INDEX: Record<CsrImpactCategory, number> = {
 };
 
 function isVideoAsset(src?: string) {
-  return Boolean(src && /\.(mp4|webm|mov|ogg)$/i.test(src));
+  return isJourneyBackgroundVideo(src);
 }
 
 function getLocationBackgroundSource(location: IndiaLocation) {

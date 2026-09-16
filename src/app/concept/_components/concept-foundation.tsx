@@ -631,16 +631,8 @@ function ConceptOverviewSlide({
         {node.title}
       </h1>
       <div className="mt-8 grid gap-4 text-left sm:mt-12 sm:grid-cols-2 sm:gap-5">
-        <div className="group/model relative isolate flex flex-col overflow-hidden bg-black/30 px-6 py-7 transition-colors duration-500 has-[:focus-visible]:bg-black/40 motion-reduce:transition-none sm:min-h-[17rem] sm:px-8 sm:py-9 lg:px-12 [@media(hover:hover)]:hover:bg-black/40">
-          <span
-            aria-hidden
-            className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_50%_15%,rgba(244,187,82,0.18),transparent_58%)] opacity-0 transition-opacity duration-500 group-has-[:focus-visible]/model:opacity-100 motion-reduce:transition-none [@media(hover:hover)]:group-hover/model:opacity-100"
-          />
-          <span
-            aria-hidden
-            className="absolute inset-x-0 bottom-0 h-px origin-center scale-x-0 bg-[#f4bb52]/80 shadow-[0_0_18px_rgba(244,187,82,0.5)] transition-transform duration-500 group-has-[:focus-visible]/model:scale-x-100 motion-reduce:transition-none [@media(hover:hover)]:group-hover/model:scale-x-100"
-          />
-          <h2 className="text-center font-menu text-[clamp(1.7rem,2.3vw,2.4rem)] uppercase leading-[1.1] tracking-[0.01em] text-white transition-colors duration-300 group-has-[:focus-visible]/model:text-[#f4bb52] group-has-[:focus-visible]/model:[text-shadow:0_0_16px_rgba(244,187,82,0.4),0_0_30px_rgba(244,187,82,0.14)] motion-reduce:transition-none [@media(hover:hover)]:group-hover/model:text-[#f4bb52] [@media(hover:hover)]:group-hover/model:[text-shadow:0_0_16px_rgba(244,187,82,0.4),0_0_30px_rgba(244,187,82,0.14)]">
+        <div className="group/model flex flex-col px-6 py-7 sm:min-h-[17rem] sm:px-8 sm:py-9 lg:px-12">
+          <h2 className="max-w-full self-center border-b border-transparent pb-2 text-center font-menu text-[clamp(1.7rem,2.3vw,2.4rem)] uppercase leading-[1.1] tracking-[0.01em] text-white transition-[color,border-color,text-shadow] duration-300 group-has-[:focus-visible]/model:border-[#f4bb52]/80 group-has-[:focus-visible]/model:text-[#f4bb52] group-has-[:focus-visible]/model:[text-shadow:0_0_16px_rgba(244,187,82,0.4),0_0_30px_rgba(244,187,82,0.14)] motion-reduce:transition-none [@media(hover:hover)]:group-hover/model:border-[#f4bb52]/80 [@media(hover:hover)]:group-hover/model:text-[#f4bb52] [@media(hover:hover)]:group-hover/model:[text-shadow:0_0_16px_rgba(244,187,82,0.4),0_0_30px_rgba(244,187,82,0.14)]">
             Signature Journey
           </h2>
           <p className="mb-7 mt-6 font-sans text-[12px] font-light leading-[1.65] tracking-[0.12em] text-white sm:text-[13px]">
@@ -654,16 +646,8 @@ function ConceptOverviewSlide({
             Discuss a private production
           </Link>
         </div>
-        <div className="group/model relative isolate flex flex-col overflow-hidden bg-black/30 px-6 py-7 transition-colors duration-500 has-[:focus-visible]:bg-black/40 motion-reduce:transition-none sm:min-h-[17rem] sm:px-8 sm:py-9 lg:px-12 [@media(hover:hover)]:hover:bg-black/40">
-          <span
-            aria-hidden
-            className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_50%_15%,rgba(244,187,82,0.18),transparent_58%)] opacity-0 transition-opacity duration-500 group-has-[:focus-visible]/model:opacity-100 motion-reduce:transition-none [@media(hover:hover)]:group-hover/model:opacity-100"
-          />
-          <span
-            aria-hidden
-            className="absolute inset-x-0 bottom-0 h-px origin-center scale-x-0 bg-[#f4bb52]/80 shadow-[0_0_18px_rgba(244,187,82,0.5)] transition-transform duration-500 group-has-[:focus-visible]/model:scale-x-100 motion-reduce:transition-none [@media(hover:hover)]:group-hover/model:scale-x-100"
-          />
-          <h2 className="text-center font-menu text-[clamp(1.7rem,2.3vw,2.4rem)] uppercase leading-[1.1] tracking-[0.01em] text-white transition-colors duration-300 group-has-[:focus-visible]/model:text-[#f4bb52] group-has-[:focus-visible]/model:[text-shadow:0_0_16px_rgba(244,187,82,0.4),0_0_30px_rgba(244,187,82,0.14)] motion-reduce:transition-none [@media(hover:hover)]:group-hover/model:text-[#f4bb52] [@media(hover:hover)]:group-hover/model:[text-shadow:0_0_16px_rgba(244,187,82,0.4),0_0_30px_rgba(244,187,82,0.14)]">
+        <div className="group/model flex flex-col px-6 py-7 sm:min-h-[17rem] sm:px-8 sm:py-9 lg:px-12">
+          <h2 className="max-w-full self-center border-b border-transparent pb-2 text-center font-menu text-[clamp(1.7rem,2.3vw,2.4rem)] uppercase leading-[1.1] tracking-[0.01em] text-white transition-[color,border-color,text-shadow] duration-300 group-has-[:focus-visible]/model:border-[#f4bb52]/80 group-has-[:focus-visible]/model:text-[#f4bb52] group-has-[:focus-visible]/model:[text-shadow:0_0_16px_rgba(244,187,82,0.4),0_0_30px_rgba(244,187,82,0.14)] motion-reduce:transition-none [@media(hover:hover)]:group-hover/model:border-[#f4bb52]/80 [@media(hover:hover)]:group-hover/model:text-[#f4bb52] [@media(hover:hover)]:group-hover/model:[text-shadow:0_0_16px_rgba(244,187,82,0.4),0_0_30px_rgba(244,187,82,0.14)]">
             Shared Journeys
           </h2>
           <p className="mb-7 mt-6 font-sans text-[12px] font-light leading-[1.65] tracking-[0.12em] text-white sm:text-[13px]">
