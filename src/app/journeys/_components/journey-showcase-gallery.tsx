@@ -7,7 +7,7 @@ import Image from 'next/image';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { useBodyScrollLock } from '@/app/concept/_hooks/use-body-scroll-lock';
+import { applyBodyScrollLock } from '@/app/concept/_hooks/use-body-scroll-lock';
 import { usePrefersReducedMotion } from '@/app/concept/_hooks/use-prefers-reduced-motion';
 import { BeeButton } from '@/components/primitives/bee-button';
 import { MaskedIcon } from '@/components/primitives/masked-icon';
@@ -281,8 +281,6 @@ type JourneyShowcaseGalleryProps = {
 export function JourneyShowcaseGallery({
   journeys = staticJourneys,
 }: JourneyShowcaseGalleryProps = {}) {
-  useBodyScrollLock();
-
   const prefersReducedMotion = usePrefersReducedMotion();
   const router = useRouter();
   const pathname = usePathname();
@@ -293,6 +291,23 @@ export function JourneyShowcaseGallery({
   );
   const [isMobileViewport, setIsMobileViewport] = useState(false);
   const [useLiteEffects, setUseLiteEffects] = useState(false);
+
+  useEffect(() => {
+    const desktopQuery = window.matchMedia('(min-width: 768px)');
+    let releaseScrollLock = () => {};
+
+    const syncBodyScrollLock = () => {
+      releaseScrollLock();
+      releaseScrollLock = desktopQuery.matches ? applyBodyScrollLock(document) : () => {};
+    };
+
+    syncBodyScrollLock();
+    desktopQuery.addEventListener('change', syncBodyScrollLock);
+    return () => {
+      desktopQuery.removeEventListener('change', syncBodyScrollLock);
+      releaseScrollLock();
+    };
+  }, []);
 
   useEffect(() => {
     if (typeof window === 'undefined') {
@@ -712,6 +727,12 @@ export function JourneyShowcaseGallery({
         return;
       }
 
+      // A short mobile viewport can extend below the fold. Vertical wheel/trackpad
+      // movement must keep scrolling the document; horizontal movement still drives Embla.
+      if (isMobileViewport && Math.abs(event.deltaY) > Math.abs(event.deltaX)) {
+        return;
+      }
+
       const primaryDelta =
         Math.abs(event.deltaY) > Math.abs(event.deltaX) ? event.deltaY : event.deltaX;
       if (!primaryDelta) {
@@ -738,12 +759,12 @@ export function JourneyShowcaseGallery({
     return () => {
       node.removeEventListener('wheel', handleWheel);
     };
-  }, [emblaApi, safeLength, scrollNext, scrollPrev]);
+  }, [emblaApi, isMobileViewport, safeLength, scrollNext, scrollPrev]);
 
   return (
     <section
       ref={rootRef}
-      className="relative flex min-h-[100svh] flex-col overflow-hidden border-b border-[#f4bb52]/70 bg-black text-white"
+      className="relative flex min-h-[100svh] flex-col overflow-x-clip overflow-y-visible border-b border-[#f4bb52]/70 bg-black text-white md:overflow-hidden"
       tabIndex={0}
       aria-label="Journey carousel"
     >
@@ -787,7 +808,7 @@ export function JourneyShowcaseGallery({
               >
                 <motion.div
                   key={renderedIdsSignature}
-                  className="embla__container flex touch-pan-x items-center gap-3 sm:gap-4 md:ml-0 md:gap-[var(--journey-gap)] md:[--journey-gap:clamp(14px,1.7vw,28px)]"
+                  className="embla__container flex touch-pan-y items-center gap-3 sm:gap-4 md:ml-0 md:touch-pan-x md:gap-[var(--journey-gap)] md:[--journey-gap:clamp(14px,1.7vw,28px)]"
                   initial={prefersReducedMotion ? undefined : { opacity: 0 }}
                   animate={prefersReducedMotion ? undefined : { opacity: 1 }}
                   transition={{ duration: 1.08, ease: [0.22, 1, 0.36, 1] }}
@@ -844,21 +865,26 @@ export function JourneyShowcaseGallery({
               </div>
             )}
 
-            <div className="pointer-events-none relative z-40 mt-8 flex flex-col items-center gap-3 pb-5 md:hidden">
+            <div className="pointer-events-none relative z-40 mt-10 flex flex-col items-center pb-[max(1.5rem,env(safe-area-inset-bottom))] md:hidden">
               <JourneyHeadline currentJourney={currentJourney} compact centered />
-              <div className="pointer-events-auto flex flex-col items-center gap-3">
+              <div className="pointer-events-auto flex w-full flex-col items-center">
                 {sustainableImpactPdf ? (
                   <BeeButton
                     href={sustainableImpactPdf}
                     download
                     size="sm"
                     align="center"
-                    className="opacity-80"
+                    className="mt-6 opacity-80"
                   >
                     Sustainable Impacts
                   </BeeButton>
                 ) : null}
-                <div className="flex items-center justify-center gap-6">
+                <div
+                  className={clsx(
+                    'flex items-center justify-center gap-6',
+                    sustainableImpactPdf ? 'mt-9' : 'mt-11'
+                  )}
+                >
                   {SEASON_MENU_OPTIONS.map((option) => (
                     <BeeButton
                       key={option.value}
