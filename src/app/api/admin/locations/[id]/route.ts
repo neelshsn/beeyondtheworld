@@ -68,17 +68,16 @@ export async function PATCH(request: Request, context: RouteContext) {
       .limit(1);
     if (!existing) return NextResponse.json({ error: 'Location introuvable.' }, { status: 404 });
     const imports = await getLegacyPortugalLocationImports(existing.journeyId);
-    const mutation = db
-      .update(locations)
-      .set(updates)
-      .where(eq(locations.id, locationId))
-      .returning();
-    const marker = markJourneyLocationsManaged(existing.journeyId);
-    const updatedRows =
-      imports.length > 0
-        ? (await db.batch([db.insert(locations).values(imports), mutation, marker]))[1]
-        : (await db.batch([mutation, marker]))[0];
-    const [updated] = updatedRows;
+    const updated = await db.transaction(async (tx) => {
+      if (imports.length > 0) await tx.insert(locations).values(imports);
+      const [updated] = await tx
+        .update(locations)
+        .set(updates)
+        .where(eq(locations.id, locationId))
+        .returning();
+      await markJourneyLocationsManaged(existing.journeyId, tx);
+      return updated;
+    });
 
     if (!updated) {
       return NextResponse.json({ error: 'Location introuvable.' }, { status: 404 });
@@ -112,13 +111,12 @@ export async function DELETE(request: Request, context: RouteContext) {
       .limit(1);
     if (!existing) return NextResponse.json({ error: 'Location introuvable.' }, { status: 404 });
     const imports = await getLegacyPortugalLocationImports(existing.journeyId);
-    const mutation = db.delete(locations).where(eq(locations.id, locationId)).returning();
-    const marker = markJourneyLocationsManaged(existing.journeyId);
-    const deletedRows =
-      imports.length > 0
-        ? (await db.batch([db.insert(locations).values(imports), mutation, marker]))[1]
-        : (await db.batch([mutation, marker]))[0];
-    const [deleted] = deletedRows;
+    const deleted = await db.transaction(async (tx) => {
+      if (imports.length > 0) await tx.insert(locations).values(imports);
+      const [deleted] = await tx.delete(locations).where(eq(locations.id, locationId)).returning();
+      await markJourneyLocationsManaged(existing.journeyId, tx);
+      return deleted;
+    });
     if (!deleted) {
       return NextResponse.json({ error: 'Location introuvable.' }, { status: 404 });
     }

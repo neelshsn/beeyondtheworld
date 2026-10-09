@@ -6,7 +6,7 @@
  */
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { neon } from '@neondatabase/serverless';
+import { createSql } from '../config/postgres.mjs';
 
 export const LOCATION_SEASONS_SQL =
   'ALTER TABLE public.locations ADD COLUMN IF NOT EXISTS season_tags jsonb';
@@ -50,7 +50,7 @@ if (process.argv[1] && pathToFileURL(resolve(process.argv[1])).href === import.m
       throw new Error('Apply is only allowed during an authorized production release.');
     }
     if (!process.env.DATABASE_URL) throw new Error('Server DATABASE_URL is required.');
-    const sql = neon(process.env.DATABASE_URL);
+    const sql = createSql(process.env.DATABASE_URL);
     const result = await migrateLocationSeasons({
       apply,
       environment: process.env.VERCEL_ENV,

@@ -3,7 +3,7 @@
  * Usage : node scripts/db-push.mjs  (lit DATABASE_URL depuis .env.local)
  */
 import { readFileSync } from 'node:fs';
-import { neon } from '@neondatabase/serverless';
+import { createSql } from '../config/postgres.mjs';
 
 function loadEnvLocal() {
   if (process.env.DATABASE_URL) return;
@@ -26,7 +26,7 @@ if (!url) {
   process.exit(1);
 }
 
-const sql = neon(url);
+const sql = createSql(url);
 
 const statements = [
   `CREATE TABLE IF NOT EXISTS journeys (

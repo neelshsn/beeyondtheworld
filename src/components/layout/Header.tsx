@@ -15,7 +15,7 @@ const SAFE_AREA_STYLES: CSSProperties = {
 export function Header() {
   const pathname = usePathname();
 
-  if (pathname.startsWith('/admin')) return null;
+  if (pathname.startsWith('/admin') || pathname.startsWith('/community')) return null;
 
   return (
     <div className="pointer-events-none fixed inset-x-0 top-0 z-40">

@@ -8,7 +8,7 @@
  */
 import { createHash, randomBytes } from 'node:crypto';
 import { readFileSync } from 'node:fs';
-import { neon } from '@neondatabase/serverless';
+import { createSql } from '../config/postgres.mjs';
 
 function loadEnvLocal() {
   if (process.env.DATABASE_URL) return;
@@ -36,7 +36,7 @@ if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
   process.exit(1);
 }
 
-const sql = neon(url);
+const sql = createSql(url);
 const token = randomBytes(32).toString('hex');
 const tokenDigest = createHash('sha256').update(token).digest('hex');
 const expiresAt = new Date(Date.now() + 72 * 60 * 60 * 1000);

@@ -48,7 +48,14 @@ vi.mock('@/lib/db', async () => {
     },
     insert: (table: unknown) => ({
       values: (values: unknown) => {
-        const query = { kind: 'insert', table, values, returning: () => query };
+        const query = {
+          kind: 'insert',
+          table,
+          values,
+          returning: () => query,
+          then: (resolve: (rows: unknown[]) => unknown): Promise<unknown> =>
+            db.batch([query]).then((rows) => resolve(rows[0])),
+        };
         return query;
       },
     }),
@@ -61,6 +68,8 @@ vi.mock('@/lib/db', async () => {
             values,
             locationId: locationIdFrom(condition),
             returning: () => query,
+            then: (resolve: (rows: unknown[]) => unknown): Promise<unknown> =>
+              db.batch([query]).then((rows) => resolve(rows[0])),
           };
           return query;
         },
@@ -74,20 +83,32 @@ vi.mock('@/lib/db', async () => {
           values: {},
           locationId: locationIdFrom(condition),
           returning: () => query,
+          then: (resolve: (rows: unknown[]) => unknown): Promise<unknown> =>
+            db.batch([query]).then((rows) => resolve(rows[0])),
         };
         return query;
       },
     }),
+    transaction: async (callback: (tx: unknown) => Promise<unknown>): Promise<unknown> => {
+      store.batches += 1;
+      if (store.failBatch) throw new Error('Storage unavailable');
+      const before = structuredClone({ journey: store.journey, locations: store.locations });
+      try {
+        return await callback(db);
+      } catch (error) {
+        store.journey = before.journey;
+        store.locations = before.locations;
+        throw error;
+      }
+    },
     batch: async (
       queries: {
         kind: string;
         table: unknown;
-        values: Record<string, unknown> | Record<string, unknown>[];
+        values: unknown;
         locationId?: number;
       }[]
     ) => {
-      store.batches += 1;
-      if (store.failBatch) throw new Error('Storage unavailable');
       return queries.map((query) => {
         if (query.kind === 'update' && query.table === actual.journeys) {
           store.journey.seasonVisuals = {
@@ -106,7 +127,10 @@ vi.mock('@/lib/db', async () => {
           store.locations = store.locations.filter((row) => row.id !== query.locationId);
           return rows;
         }
-        const values = Array.isArray(query.values) ? query.values : [query.values];
+        const values = (Array.isArray(query.values) ? query.values : [query.values]) as Record<
+          string,
+          unknown
+        >[];
         const firstId = Math.max(0, ...store.locations.map((row) => row.id as number)) + 1;
         const rows = values.map((value, index) => ({ ...value, id: firstId + index }));
         store.locations.push(...rows);

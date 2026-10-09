@@ -1,7 +1,7 @@
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
-if (process.env.VERCEL_ENV === 'production') {
+if (process.env.VERCEL_ENV === 'production' && process.env.DATABASE_SCHEMA_MANAGED !== 'true') {
   for (const name of [
     './migrate-location-seasons-20260916.mjs',
     './migrate-greece-feedback-20260906.mjs',

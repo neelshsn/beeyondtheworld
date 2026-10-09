@@ -1,7 +1,7 @@
 import { asc, eq } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 
-import { getDb, journeys, locations, type LocationRow, type NewLocationRow } from '@/lib/db';
+import { getDb, journeys, locations, type NewLocationRow } from '@/lib/db';
 import { rejectCrossSiteWrite, requireAdmin } from '@/lib/db/admin-guard';
 import { journeyLocationSeeds } from '@/data/journey-location-seeds';
 import { isLocationSeasonSelection, LOCATION_SEASONS } from '@/lib/cms/journey-location-settings';
@@ -97,35 +97,28 @@ export async function POST(request: Request, context: RouteContext) {
         ...existing.map((location) => location.position),
         ...imports.map((location) => location.position ?? 0)
       ) + 1;
-    const createQuery = db
-      .insert(locations)
-      .values({
-        journeyId,
-        name: body.name.trim(),
-        subtitle: body.subtitle ?? null,
-        leftTitle: body.leftTitle ?? [],
-        narrative: body.narrative ?? '',
-        image: body.image ?? null,
-        video: body.video ?? null,
-        seasonTags: body.seasonTags ?? [...LOCATION_SEASONS],
-        media: body.media ?? [],
-        position: nextPosition,
-        published: body.published ?? false,
-      })
-      .returning();
-    const markQuery = markJourneyLocationsManaged(journeyId);
-    let created: LocationRow;
-    if (imports.length > 0) {
-      const [, createdRows] = await db.batch([
-        db.insert(locations).values(imports),
-        createQuery,
-        markQuery,
-      ]);
-      [created] = createdRows;
-    } else {
-      const [createdRows] = await db.batch([createQuery, markQuery]);
-      [created] = createdRows;
-    }
+    const locationName = body.name.trim();
+    const created = await db.transaction(async (tx) => {
+      if (imports.length > 0) await tx.insert(locations).values(imports);
+      const [created] = await tx
+        .insert(locations)
+        .values({
+          journeyId,
+          name: locationName,
+          subtitle: body.subtitle ?? null,
+          leftTitle: body.leftTitle ?? [],
+          narrative: body.narrative ?? '',
+          image: body.image ?? null,
+          video: body.video ?? null,
+          seasonTags: body.seasonTags ?? [...LOCATION_SEASONS],
+          media: body.media ?? [],
+          position: nextPosition,
+          published: body.published ?? false,
+        })
+        .returning();
+      await markJourneyLocationsManaged(journeyId, tx);
+      return created;
+    });
 
     return NextResponse.json({ location: created }, { status: 201 });
   } catch (error) {

@@ -31,7 +31,7 @@ export const mainNav = [
   {
     label: 'Community',
     labelKey: 'navigation.community',
-    href: '/contact',
+    href: '/community',
     index: '13',
     iconSrc: '/assets/icones/Ico Gold BEE-13.svg',
   },

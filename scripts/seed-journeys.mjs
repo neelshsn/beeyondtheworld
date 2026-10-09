@@ -4,7 +4,7 @@
  * les voyages dans Neon. Ré-exécutable. Usage : node scripts/seed-journeys.mjs
  */
 import { readFileSync } from 'node:fs';
-import { neon } from '@neondatabase/serverless';
+import { createSql } from '../config/postgres.mjs';
 
 function loadEnvLocal() {
   if (process.env.DATABASE_URL) return;
@@ -36,7 +36,7 @@ const SUSTAINABLE_PDFS = {
   philippines: '/pdfs/philippines-lighting-oceans-wonders.pdf',
 };
 
-const sql = neon(url);
+const sql = createSql(url);
 let seeded = 0;
 
 for (const [index, journey] of journeys.entries()) {

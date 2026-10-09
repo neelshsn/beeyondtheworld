@@ -4,8 +4,11 @@ import { getDb, journeys, locations, type NewLocationRow } from '@/lib/db';
 import { journeyLocationSeeds } from '@/data/journey-location-seeds';
 
 /** A reserved key in existing JSON preserves an intentionally empty collection. */
-export function markJourneyLocationsManaged(journeyId: number | SQL) {
-  return getDb()
+export function markJourneyLocationsManaged(
+  journeyId: number | SQL,
+  db: Pick<ReturnType<typeof getDb>, 'update'> = getDb()
+) {
+  return db
     .update(journeys)
     .set({
       seasonVisuals: sql`jsonb_set(${journeys.seasonVisuals}, '{_cms}', '{"locationsManaged":true}'::jsonb, true)`,

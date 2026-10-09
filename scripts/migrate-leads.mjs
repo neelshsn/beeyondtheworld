@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 
-import { neon } from '@neondatabase/serverless';
+import { createSql } from '../config/postgres.mjs';
 
 const databaseUrl = process.env.DATABASE_URL;
 if (!databaseUrl) {
@@ -10,6 +10,6 @@ if (!databaseUrl) {
 
 const migrationUrl = new URL('../drizzle/0001_lead_submissions.sql', import.meta.url);
 const migration = await readFile(fileURLToPath(migrationUrl), 'utf8');
-const sql = neon(databaseUrl);
+const sql = createSql(databaseUrl);
 await sql.query(migration);
 console.info('Lead inbox migration applied.');

@@ -10,7 +10,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { resolve } from 'node:path';
 import { isDeepStrictEqual } from 'node:util';
 
-import { neon } from '@neondatabase/serverless';
+import { createSql } from '../config/postgres.mjs';
 
 export const MIGRATION_KEY = 'campaign:veganboost-greece:eugenie-feedback:2026-09-06:v1';
 export const SLUG = 'veganboost-greece';
@@ -301,7 +301,7 @@ export async function runMigration({
   let result;
   try {
     result = await sql.transaction(
-      [sql.query(LEDGER_DDL), sql.query(LEDGER_GUARD), sql.query(statement.text, statement.params)],
+      [{ text: LEDGER_DDL }, { text: LEDGER_GUARD }, statement],
       { isolationLevel: 'Serializable' }
     );
   } catch {
