@@ -6,6 +6,7 @@ import { createHash, randomBytes, scrypt as scryptCallback, timingSafeEqual } fr
 import { promisify } from 'node:util';
 import { canRead } from './model';
 import type { CommunityRecord, Project, User, Workspace, Member, Event } from './types';
+import { DEMO_ROLE_COOKIE, readDemoRole } from './demo-role';
 const scrypt = promisify(scryptCallback);
 export const COOKIE = 'bee-community-session';
 export const digest = (s: string) => createHash('sha256').update(s).digest('hex');
@@ -34,15 +35,38 @@ export async function createSession(userId: string) {
   return token;
 }
 export async function workspace(projectId?: string): Promise<Workspace | null> {
-  const user = await currentUser();
+  let user = await currentUser();
   if (!user) return null;
   const sql = sqlClient();
   const projects = (await sql.query(
     'SELECT p.*,m.role FROM bee_community_projects p JOIN bee_community_members m ON m.project_id=p.id WHERE m.user_id=$1 ORDER BY p.created_at,p.id',
     [user.id]
   )) as Project[];
-  const project = projectId ? projects.find((p) => p.id === projectId) : projects[0];
+  let project = projectId ? projects.find((p) => p.id === projectId) : projects[0];
   if (!project) return null;
+  let testRoles: Project['role'][] = [];
+  if (user.is_test && project.is_demo) {
+    const candidates = await sql.query(
+      `SELECT u.id,u.email,u.name,u.organization,u.is_test,m.role
+      FROM bee_community_members m JOIN bee_community_users u ON u.id=m.user_id
+      WHERE m.project_id=$1 AND u.is_test AND NOT u.disabled ORDER BY u.id`,
+      [project.id]
+    );
+    testRoles = [...new Set(candidates.map((c) => c.role as Project['role']))];
+    const jar = await cookies();
+    const role = readDemoRole(jar.get(DEMO_ROLE_COOKIE)?.value, jar.get(COOKIE)?.value, project.id);
+    const target = role && candidates.find((c) => c.role === role);
+    if (target) {
+      user = {
+        id: target.id,
+        email: target.email,
+        name: target.name,
+        organization: target.organization,
+        is_test: true,
+      };
+      project = { ...project, role: target.role };
+    }
+  }
   const allRecords = (await sql.query(
     'SELECT * FROM bee_community_records WHERE project_id=$1 ORDER BY created_at,id',
     [project.id]
@@ -67,5 +91,5 @@ export async function workspace(projectId?: string): Promise<Workspace | null> {
   )) as Member[];
   if (project.role === 'ngo' || project.role === 'expert')
     members = members.filter((m) => m.organization === user.organization || m.role === 'bee');
-  return { user, projects, project, records, members, events };
+  return { user, projects, project, records, members, events, testRoles };
 }

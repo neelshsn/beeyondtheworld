@@ -37,6 +37,7 @@ import {
 import { availableTransitions, canEdit, kinds, statusLabel } from '@/lib/community/model';
 import { calculateMetrics, factors } from '@/lib/community/metrics';
 import { roleNames, type CommunityRecord, type Workspace, type Field } from '@/lib/community/types';
+import { EditorialWorkspace } from './editorial-workspace';
 
 const art = '/assets/community/namibia.webp';
 const garden = '/assets/community/garden.webp';
@@ -60,6 +61,12 @@ const viewInfo: Record<
   string,
   { title: string; kicker: string; description: string; kinds: string[] }
 > = {
+  projects: {
+    title: 'Your productions',
+    kicker: 'YOUR PROJECTS',
+    description: 'Every shared journey, in one place.',
+    kinds: [],
+  },
   overview: {
     title: 'Namibia',
     kicker: 'YOUR SHARED JOURNEY',
@@ -223,12 +230,12 @@ async function api(url: string, init?: RequestInit) {
   return data;
 }
 
-export function CommunityApp() {
+export function CommunityApp({ experimental = false }: { experimental?: boolean }) {
   const [w, setW] = useState<Workspace | null>(null);
   const [loading, setLoading] = useState(true);
   const [loginNeeded, setLoginNeeded] = useState(false);
   const [error, setError] = useState('');
-  const [view, setView] = useState('overview');
+  const [view, setView] = useState(experimental ? 'projects' : 'overview');
   const [query, setQuery] = useState('');
   const [status, setStatus] = useState('all');
   const [mobile, setMobile] = useState(false);
@@ -291,7 +298,11 @@ export function CommunityApp() {
     setStatus('all');
     setMobile(false);
     setNotifications(false);
-    window.history.replaceState(null, '', `/community?project=${activeId.current}&view=${next}`);
+    window.history.replaceState(
+      null,
+      '',
+      `/community${experimental ? '/test' : ''}?project=${activeId.current}&view=${next}`
+    );
     window.scrollTo({ top: 0, behavior: 'instant' });
   };
   async function logout() {
@@ -302,6 +313,58 @@ export function CommunityApp() {
       setSelected(null);
     } catch (e) {
       setError(String(e));
+    }
+  }
+  async function switchRole(role: string) {
+    if (!w || busy) return;
+    setBusy(true);
+    setSelected(null);
+    setEditing(null);
+    setCreating('');
+    setNotifications(false);
+    try {
+      await api('/api/community/demo-role', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ projectId: w.project.id, role }),
+      });
+      await load(w.project.id);
+      navigate(
+        view === 'projects' ||
+          view === 'overview' ||
+          view === 'activity' ||
+          viewInfo[view].kinds.some((k) =>
+            kinds[k].read.includes(role as Workspace['project']['role'])
+          )
+          ? view
+          : 'overview'
+      );
+      setToast('Test role updated. You are now viewing this role’s project access.');
+    } catch (e) {
+      setToast(e instanceof Error ? e.message : 'Could not switch role.');
+    } finally {
+      setBusy(false);
+    }
+  }
+  async function selectProject(projectId: string) {
+    if (!w || busy) return;
+    setBusy(true);
+    setSelected(null);
+    setEditing(null);
+    setCreating('');
+    try {
+      if (w.user.is_test && w.projects.find((p) => p.id === projectId)?.is_demo)
+        await api('/api/community/demo-role', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ projectId, role: w.project.role }),
+        });
+      await load(projectId);
+      navigate('overview');
+    } catch (e) {
+      setToast(e instanceof Error ? e.message : 'Could not open project.');
+    } finally {
+      setBusy(false);
     }
   }
   async function changeRecord(r: CommunityRecord, to: string, comment = '') {
@@ -425,6 +488,7 @@ export function CommunityApp() {
       </div>
     );
   const ngo = w.project.role === 'ngo';
+  const editorial = experimental && w.user.is_test && w.project.is_demo;
   const info = viewInfo[view];
   const allowed = (key: string) =>
     key === 'overview' ||
@@ -452,666 +516,719 @@ export function CommunityApp() {
     view === 'evidence';
   return (
     <div
-      className={`bee-app ${isHoney ? 'bee-warm' : ''}`}
+      className={`bee-app ${isHoney ? 'bee-warm' : ''} ${editorial ? 'bee-editorial' : ''}`}
+      aria-busy={busy}
       style={{ '--bee-scene': `url("${isHoney ? garden : art}")` } as React.CSSProperties}
     >
-      <a className="bee-skip" href="#bee-main">
-        Skip to workspace
-      </a>
-      <aside className={`bee-sidebar ${mobile ? 'open' : ''}`} aria-label="Workspace navigation">
-        <Link className="bee-wordmark" href="/" aria-label="Beeyondtheworld home">
-          <Image width={960} height={640} src="/assets/icones/Ico Gold BEE-13.svg" alt="" />
-          <span>
-            BEE<span>BEYONDTHEWORLD</span>
-          </span>
-        </Link>
-        <button
-          className={`bee-overview-link ${view === 'overview' ? 'active' : ''}`}
-          onClick={() => navigate('overview')}
-        >
-          <span className="bee-project-dot" />
-          My journey
-          <ArrowUpRight size={15} />
-        </button>
-        <nav>
-          {navGroups.map((g) => {
-            const items = g.items.filter(([key]) => allowed(key));
-            if (!items.length) return null;
-            return (
-              <div className="bee-nav-group" key={g.name}>
-                <p>
-                  <g.icon />
-                  <span>
-                    {g.name}
-                    <small>{g.subtitle}</small>
-                  </span>
-                </p>
-                {items.map(([key, label]) => (
-                  <button
-                    key={key}
-                    className={view === key ? 'active' : ''}
-                    aria-current={view === key ? 'page' : undefined}
-                    onClick={() => navigate(key)}
-                  >
-                    {label}
-                    {view === key && <span />}
-                  </button>
-                ))}
-              </div>
-            );
-          })}
-        </nav>
-        <div className="bee-sidebar-bottom">
-          <button onClick={() => navigate('activity')}>
-            <Clock />
-            Project history
-          </button>
-          <button onClick={logout}>
-            <LogOut />
-            Sign out
-          </button>
-          <p>FROM INTENTION TO BLOOM.</p>
-        </div>
-      </aside>
-      {mobile && (
-        <button
-          className="bee-backdrop"
-          aria-label="Close navigation"
-          onClick={() => setMobile(false)}
+      {editorial ? (
+        <EditorialWorkspace
+          key={w.project.id}
+          w={w}
+          view={view}
+          info={info}
+          groups={navGroups}
+          nextActions={nextActions}
+          busy={busy}
+          error={error}
+          onNavigate={navigate}
+          onOpen={setSelected}
+          onCreate={setCreating}
+          onSwitchRole={switchRole}
+          onProject={selectProject}
+          onLogout={logout}
+          onExport={exportReport}
+          onRetry={() => void load(activeId.current)}
         />
-      )}
-      <div className="bee-workspace">
-        <header className="bee-topbar">
-          <button
-            className="bee-icon-button bee-mobile-menu"
-            aria-label="Open navigation"
-            aria-expanded={mobile}
-            onClick={() => setMobile(!mobile)}
+      ) : (
+        <>
+          <a className="bee-skip" href="#bee-main">
+            Skip to workspace
+          </a>
+          <aside
+            className={`bee-sidebar ${mobile ? 'open' : ''}`}
+            aria-label="Workspace navigation"
           >
-            <Menu />
-          </button>
-          <div className="bee-project-switch">
-            <MapPin size={15} />
-            <label className="sr-only" htmlFor="bee-project">
-              Project
-            </label>
-            <select
-              id="bee-project"
-              value={w.project.id}
-              onChange={(e) => {
-                setSelected(null);
-                void load(e.target.value);
-              }}
-            >
-              {w.projects.map((p) => (
-                <option value={p.id} key={p.id}>
-                  {p.title} · {p.season}
-                </option>
-              ))}
-            </select>
-            <ChevronDown size={13} />
-          </div>
-          <div className="bee-topbar-right">
-            <span className="bee-demo">
-              {w.project.is_demo ? 'DEMO WORKSPACE' : w.project.territory}
-            </span>
+            <Link className="bee-wordmark" href="/" aria-label="Beeyondtheworld home">
+              <Image width={960} height={640} src="/assets/icones/Ico Gold BEE-13.svg" alt="" />
+              <span>
+                BEE<span>BEYONDTHEWORLD</span>
+              </span>
+            </Link>
             <button
-              className="bee-icon-button bee-notify"
-              aria-label={`Notifications: ${nextActions.length} ${nextActions.length === 1 ? 'item needs' : 'items need'} attention`}
-              onClick={() => setNotifications(!notifications)}
+              className={`bee-overview-link ${view === 'overview' ? 'active' : ''}`}
+              onClick={() => navigate('overview')}
             >
-              <Bell size={19} />
-              {nextActions.length > 0 && <span />}
+              <span className="bee-project-dot" />
+              My journey
+              <ArrowUpRight size={15} />
             </button>
-            <div className="bee-avatar" title={w.user.name}>
-              {w.user.name
-                .split(' ')
-                .map((n) => n[0])
-                .slice(0, 2)
-                .join('')}
+            <nav>
+              {navGroups.map((g) => {
+                const items = g.items.filter(([key]) => allowed(key));
+                if (!items.length) return null;
+                return (
+                  <div className="bee-nav-group" key={g.name}>
+                    <p>
+                      <g.icon />
+                      <span>
+                        {g.name}
+                        <small>{g.subtitle}</small>
+                      </span>
+                    </p>
+                    {items.map(([key, label]) => (
+                      <button
+                        key={key}
+                        className={view === key ? 'active' : ''}
+                        aria-current={view === key ? 'page' : undefined}
+                        onClick={() => navigate(key)}
+                      >
+                        {label}
+                        {view === key && <span />}
+                      </button>
+                    ))}
+                  </div>
+                );
+              })}
+            </nav>
+            <div className="bee-sidebar-bottom">
+              <button onClick={() => navigate('activity')}>
+                <Clock />
+                Project history
+              </button>
+              <button onClick={logout}>
+                <LogOut />
+                Sign out
+              </button>
+              <p>FROM INTENTION TO BLOOM.</p>
             </div>
-            <div className="bee-user">
-              <strong>{w.user.name}</strong>
-              <small>{roleNames[w.project.role]}</small>
-            </div>
-          </div>
-        </header>
-        {notifications && (
-          <section className="bee-notifications" aria-label="Items needing attention">
-            <h2>Your next steps</h2>
-            {nextActions.length ? (
-              nextActions.slice(0, 7).map((r) => (
-                <button
-                  key={r.id}
-                  onClick={() => {
-                    setSelected(r);
-                    setNotifications(false);
+          </aside>
+          {mobile && (
+            <button
+              className="bee-backdrop"
+              aria-label="Close navigation"
+              onClick={() => setMobile(false)}
+            />
+          )}
+          <div className="bee-workspace">
+            <header className="bee-topbar">
+              <button
+                className="bee-icon-button bee-mobile-menu"
+                aria-label="Open navigation"
+                aria-expanded={mobile}
+                onClick={() => setMobile(!mobile)}
+              >
+                <Menu />
+              </button>
+              <div className="bee-project-switch">
+                <MapPin size={15} />
+                <label className="sr-only" htmlFor="bee-project">
+                  Project
+                </label>
+                <select
+                  id="bee-project"
+                  value={w.project.id}
+                  onChange={(e) => {
+                    setSelected(null);
+                    void load(e.target.value);
                   }}
                 >
-                  <span>
-                    {r.title}
-                    <small>
-                      {statusLabel(r.status)} · {kinds[r.kind].label}
-                    </small>
-                  </span>
-                  <ArrowUpRight size={16} />
+                  {w.projects.map((p) => (
+                    <option value={p.id} key={p.id}>
+                      {p.title} · {p.season}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown size={13} />
+              </div>
+              <div className="bee-topbar-right">
+                {!!w.testRoles?.length && (
+                  <a className="bee-link" href="/community/test">
+                    Explore new test UI <ArrowUpRight size={14} />
+                  </a>
+                )}
+                <span className="bee-demo">
+                  {w.project.is_demo ? 'DEMO WORKSPACE' : w.project.territory}
+                </span>
+                <button
+                  className="bee-icon-button bee-notify"
+                  aria-label={`Notifications: ${nextActions.length} ${nextActions.length === 1 ? 'item needs' : 'items need'} attention`}
+                  onClick={() => setNotifications(!notifications)}
+                >
+                  <Bell size={19} />
+                  {nextActions.length > 0 && <span />}
                 </button>
-              ))
-            ) : (
-              <p>You are up to date.</p>
-            )}
-          </section>
-        )}
-        <main id="bee-main" className="bee-main">
-          {error && (
-            <div role="alert" className="bee-error">
-              {error}
-              <button onClick={() => void load(activeId.current)}>Retry</button>
-            </div>
-          )}
-          {view === 'overview' ? (
-            <>
-              <section className="bee-hero">
-                <div className="bee-hero-copy">
-                  <Eyebrow>
-                    {ngo ? 'YOUR IMPACT JOURNEY' : 'ONE PROJECT. A WORLD OF POSSIBILITIES.'}
-                  </Eyebrow>
-                  <h1>{ngo ? 'A living legacy.' : w.project.title}</h1>
-                  <p className="bee-hero-subtitle">
-                    {ngo
-                      ? 'From shared intentions to lasting local value.'
-                      : 'Where intention becomes creation.'}
-                  </p>
-                  <div className="bee-meta">
-                    <span>
-                      <MapPin />
-                      {w.project.territory}
-                    </span>
-                    <span>
-                      <CalendarDays />
-                      {w.project.season}
-                    </span>
-                    <span>
-                      {date(w.project.starts_on)} — {date(w.project.ends_on)}
-                    </span>
-                  </div>
-                  <button
-                    className="bee-button"
-                    onClick={() =>
-                      nextActions[0]
-                        ? setSelected(nextActions[0])
-                        : navigate(ngo ? 'field' : 'creatives')
-                    }
-                  >
-                    {ngo ? 'Continue your bloom' : 'Continue the journey'}
-                    <ArrowRight size={16} />
-                  </button>
+                <div className="bee-avatar" title={w.user.name}>
+                  {w.user.name
+                    .split(' ')
+                    .map((n) => n[0])
+                    .slice(0, 2)
+                    .join('')}
                 </div>
-                <div className="bee-hero-art" aria-hidden>
-                  <Image width={960} height={640} src={ngo ? garden : art} alt="" />
-                  <div className="bee-art-caption">
-                    {ngo ? 'THE BLOOMING GARDEN' : 'NAMIB DESERT'}
-                    <span>Creative landscape · illustrative</span>
-                  </div>
+                <div className="bee-user">
+                  <strong>{w.user.name}</strong>
+                  <small>{roleNames[w.project.role]}</small>
                 </div>
-              </section>
-              <section className="bee-phase-path" aria-label="Journey stages">
-                {[
-                  {
-                    phase: 'bee',
-                    name: 'Bee',
-                    text: 'Imagine & prepare',
-                    dest: ngo ? 'bloom' : 'creatives',
-                  },
-                  {
-                    phase: 'flower',
-                    name: 'Flower',
-                    text: 'Make & act',
-                    dest: ngo ? 'field' : 'production',
-                  },
-                  { phase: 'honey', name: 'Honey', text: 'Reveal & grow', dest: 'honey' },
-                ].map((p, i) => (
-                  <button key={p.phase} onClick={() => navigate(p.dest)}>
-                    <span className="bee-phase-number">0{i + 1}</span>
-                    <Symbol phase={p.phase as 'bee' | 'flower' | 'honey'} />
-                    <span>
-                      <strong>{p.name}</strong>
-                      <small>{p.text}</small>
-                    </span>
-                    <ArrowUpRight />
-                  </button>
-                ))}
-              </section>
-              <div className="bee-overview-grid">
-                <section>
-                  <div className="bee-section-heading">
-                    <div>
-                      <Eyebrow>THE JOURNEY, AT A GLANCE</Eyebrow>
-                      <h2>{ngo ? 'Your bloom in motion' : 'A shared creative world'}</h2>
-                    </div>
+              </div>
+            </header>
+            {notifications && (
+              <section className="bee-notifications" aria-label="Items needing attention">
+                <h2>Your next steps</h2>
+                {nextActions.length ? (
+                  nextActions.slice(0, 7).map((r) => (
                     <button
-                      className="bee-link"
-                      onClick={() => navigate(ngo ? 'field' : 'scouting')}
+                      key={r.id}
+                      onClick={() => {
+                        setSelected(r);
+                        setNotifications(false);
+                      }}
                     >
-                      Explore
-                      <ArrowUpRight size={15} />
+                      <span>
+                        {r.title}
+                        <small>
+                          {statusLabel(r.status)} · {kinds[r.kind].label}
+                        </small>
+                      </span>
+                      <ArrowUpRight size={16} />
                     </button>
-                  </div>
-                  <div className="bee-story-grid">
-                    {(ngo
-                      ? [
-                          {
-                            image: garden,
-                            title: 'Field actions',
-                            sub: 'Make your intentions tangible',
-                            dest: 'field',
-                          },
-                          {
-                            image: art,
-                            title: 'Proof & evidence',
-                            sub: 'Attach context to every action',
-                            dest: 'evidence',
-                          },
-                          {
-                            image: garden,
-                            title: 'Honey',
-                            sub: 'See what has been validated',
-                            dest: 'honey',
-                          },
-                        ]
-                      : [
-                          {
-                            image: art,
-                            title: 'The places',
-                            sub: 'Light, landscape & possibilities',
-                            dest: 'scouting',
-                          },
-                          {
-                            image: photo,
-                            title: 'The creative direction',
-                            sub: 'A visual language, together',
-                            dest: 'creatives',
-                          },
-                          {
-                            image: photo2,
-                            title: 'The visual tales',
-                            sub: 'From the first frame to delivery',
-                            dest: 'assets',
-                          },
-                        ]
-                    ).map((c, i) => (
-                      <button key={c.title} className="bee-story" onClick={() => navigate(c.dest)}>
-                        <Image width={960} height={640} src={c.image} alt="" />
-                        <span className="bee-story-index">0{i + 1}</span>
-                        <span className="bee-story-title">
-                          <strong>{c.title}</strong>
-                          <small>{c.sub}</small>
+                  ))
+                ) : (
+                  <p>You are up to date.</p>
+                )}
+              </section>
+            )}
+            <main id="bee-main" className="bee-main">
+              {error && (
+                <div role="alert" className="bee-error">
+                  {error}
+                  <button onClick={() => void load(activeId.current)}>Retry</button>
+                </div>
+              )}
+              {view === 'overview' ? (
+                <>
+                  <section className="bee-hero">
+                    <div className="bee-hero-copy">
+                      <Eyebrow>
+                        {ngo ? 'YOUR IMPACT JOURNEY' : 'ONE PROJECT. A WORLD OF POSSIBILITIES.'}
+                      </Eyebrow>
+                      <h1>{ngo ? 'A living legacy.' : w.project.title}</h1>
+                      <p className="bee-hero-subtitle">
+                        {ngo
+                          ? 'From shared intentions to lasting local value.'
+                          : 'Where intention becomes creation.'}
+                      </p>
+                      <div className="bee-meta">
+                        <span>
+                          <MapPin />
+                          {w.project.territory}
+                        </span>
+                        <span>
+                          <CalendarDays />
+                          {w.project.season}
+                        </span>
+                        <span>
+                          {date(w.project.starts_on)} — {date(w.project.ends_on)}
+                        </span>
+                      </div>
+                      <button
+                        className="bee-button"
+                        onClick={() =>
+                          nextActions[0]
+                            ? setSelected(nextActions[0])
+                            : navigate(ngo ? 'field' : 'creatives')
+                        }
+                      >
+                        {ngo ? 'Continue your bloom' : 'Continue the journey'}
+                        <ArrowRight size={16} />
+                      </button>
+                    </div>
+                    <div className="bee-hero-art" aria-hidden>
+                      <Image width={960} height={640} src={ngo ? garden : art} alt="" />
+                      <div className="bee-art-caption">
+                        {ngo ? 'THE BLOOMING GARDEN' : 'NAMIB DESERT'}
+                        <span>Creative landscape · illustrative</span>
+                      </div>
+                    </div>
+                  </section>
+                  <section className="bee-phase-path" aria-label="Journey stages">
+                    {[
+                      {
+                        phase: 'bee',
+                        name: 'Bee',
+                        text: 'Imagine & prepare',
+                        dest: ngo ? 'bloom' : 'creatives',
+                      },
+                      {
+                        phase: 'flower',
+                        name: 'Flower',
+                        text: 'Make & act',
+                        dest: ngo ? 'field' : 'production',
+                      },
+                      { phase: 'honey', name: 'Honey', text: 'Reveal & grow', dest: 'honey' },
+                    ].map((p, i) => (
+                      <button key={p.phase} onClick={() => navigate(p.dest)}>
+                        <span className="bee-phase-number">0{i + 1}</span>
+                        <Symbol phase={p.phase as 'bee' | 'flower' | 'honey'} />
+                        <span>
+                          <strong>{p.name}</strong>
+                          <small>{p.text}</small>
                         </span>
                         <ArrowUpRight />
                       </button>
                     ))}
-                  </div>
-                </section>
-                <section className="bee-next-panel">
-                  <Eyebrow>YOUR NEXT MEANINGFUL STEP</Eyebrow>
-                  <h2>{nextActions[0]?.title || 'Everything is in place.'}</h2>
-                  <p>
-                    {nextActions[0]
-                      ? `${kinds[nextActions[0].kind].label} · ${statusLabel(nextActions[0].status)}`
-                      : 'Explore the project or prepare the next chapter.'}
-                  </p>
-                  {nextActions[0] && (
-                    <button
-                      className="bee-button outline"
-                      onClick={() => setSelected(nextActions[0])}
-                    >
-                      Open & review
-                      <ArrowRight size={16} />
-                    </button>
-                  )}
-                  <div className="bee-mini-stats">
-                    <span>
-                      <strong>
-                        {w.records.filter((r) => r.kind === (ngo ? 'evidence' : 'asset')).length}
-                      </strong>
-                      {ngo ? 'Evidence records' : 'Creative assets'}
-                    </span>
-                    <span>
-                      <strong>{w.records.filter((r) => r.kind === 'action').length}</strong>Field
-                      actions
-                    </span>
-                    <span>
-                      <strong>{stats.validated.length}</strong>Validated indicators
-                    </span>
-                  </div>
-                </section>
-              </div>
-              <section className="bee-recent">
-                <div className="bee-section-heading">
-                  <h2>The latest in your journey</h2>
-                  <button className="bee-link" onClick={() => navigate('activity')}>
-                    View history
-                    <ArrowUpRight size={15} />
-                  </button>
-                </div>
-                {w.events.slice(0, 3).map((e) => (
-                  <button
-                    key={e.id}
-                    onClick={() => setSelected(w.records.find((r) => r.id === e.record_id) || null)}
-                  >
-                    <span className="bee-event-dot" />
-                    <span>
-                      <strong>{w.records.find((r) => r.id === e.record_id)?.title}</strong>
-                      <small>
-                        {e.actor} · {statusLabel(e.action)} · {statusLabel(e.new_state)}
-                      </small>
-                    </span>
-                    <time>{date(e.created_at)}</time>
-                    <ArrowUpRight size={16} />
-                  </button>
-                ))}
-                {!w.events.length && (
-                  <p className="bee-empty-inline">
-                    Your project history will appear here as the team contributes.
-                  </p>
-                )}
-              </section>
-            </>
-          ) : (
-            <>
-              <section className="bee-page-heading">
-                <div>
-                  <Eyebrow>{info.kicker}</Eyebrow>
-                  <h1>{view === 'capital' && ngo ? 'Impact Capital.' : info.title}</h1>
-                  <p>{info.description}</p>
-                </div>
-                <div className="bee-heading-actions">
-                  {view === 'honey' && (
-                    <button className="bee-button outline" onClick={exportReport}>
-                      <Download size={16} />
-                      Export report
-                    </button>
-                  )}
-                  {info.kinds
-                    .filter((k) => kinds[k].roles.includes(w.project.role))
-                    .map((k) => (
-                      <button
-                        className="bee-button"
-                        key={k}
-                        onClick={() => {
-                          setEditing(null);
-                          setCreating(k);
-                        }}
-                      >
-                        <Plus size={16} />
-                        {kinds[k].label}
-                      </button>
-                    ))}
-                </div>
-              </section>
-              {view === 'team' && (
-                <section className="bee-hive">
-                  {w.members.map((m) => (
-                    <div key={m.id}>
-                      <span className="bee-member-avatar">
-                        {m.name
-                          .split(' ')
-                          .map((n) => n[0])
-                          .slice(0, 2)
-                          .join('')}
-                      </span>
-                      <h3>{m.name}</h3>
-                      <p>{roleNames[m.role]}</p>
-                      <small>{m.organization}</small>
-                    </div>
-                  ))}
-                </section>
-              )}
-              {view === 'scouting' && (
-                <div className="bee-scout-banner">
-                  <Image
-                    width={960}
-                    height={640}
-                    src={art}
-                    alt="Illustrative Namib desert landscape"
-                  />
-                  <div>
-                    <Eyebrow>SCOUTING AT GOLDEN HOUR</Eyebrow>
-                    <h2>Every place has a story.</h2>
-                    <p>
-                      Capture the location, light, permits and creative possibilities before the
-                      shoot.
-                    </p>
-                  </div>
-                </div>
-              )}
-              {view === 'production' && (
-                <section className="bee-production-stages">
-                  {['Planning', 'Ready to produce', 'On set', 'Post-production', 'Delivery'].map(
-                    (s, i) => (
-                      <div key={s}>
-                        <span>0{i + 1}</span>
-                        {s}
-                      </div>
-                    )
-                  )}
-                </section>
-              )}
-              {view === 'capital' && (
-                <section className="bee-capital-strip">
-                  <Metric
-                    icon={<Coins />}
-                    value={money(
-                      w.records
-                        .filter(
-                          (r) => r.kind === 'allocation' && (ngo ? r.data.layer === 'Impact' : true)
-                        )
-                        .reduce((a, r) => a + Number(r.data.amount || 0), 0)
-                    )}
-                    label={ngo ? 'Impact Capital allocated' : 'Visible allocations'}
-                  />
-                  <Metric
-                    icon={<ArrowUpRight />}
-                    value={money(stats.spent)}
-                    label="Approved impact expenses"
-                  />
-                  <Metric
-                    icon={<ShieldCheck />}
-                    value={stats.coverage === null ? '—' : Math.round(stats.coverage * 100) + '%'}
-                    label="Expense evidence coverage"
-                  />
-                </section>
-              )}
-              {view === 'bookings' && (
-                <div className="bee-note">
-                  <Leaf />
-                  <div>
-                    <strong>Production footprint · {stats.footprint.toFixed(1)} kgCO₂e</strong>
-                    <p>
-                      Planning estimate from {stats.bookings} approved bookings. Activity × factor,
-                      from the supplied Bee carbon framework. Positive impact is reported
-                      separately.
-                    </p>
-                  </div>
-                </div>
-              )}
-              {view === 'honey' && (
-                <>
-                  <section className="bee-pillar-grid">
-                    {[
-                      {
-                        title: 'Social',
-                        icon: Users,
-                        sub: 'People, culture, stronger communities.',
-                      },
-                      {
-                        title: 'Environmental',
-                        icon: Leaf,
-                        sub: 'Care for the places that inspire us.',
-                      },
-                      { title: 'Economic', icon: Coins, sub: 'Creating long-term local value.' },
-                    ].map((p, i) => {
-                      const vals = stats.validated.filter((r) => r.data.pillar === p.title);
-                      return (
-                        <button
-                          key={p.title}
-                          className="bee-pillar"
-                          onClick={() => setQuery(query === p.title ? '' : p.title)}
-                          style={{
-                            backgroundImage: `linear-gradient(0deg,rgba(29,18,10,.97),rgba(40,32,20,.08)),url('${i === 1 ? art : garden}')`,
-                          }}
-                        >
-                          <p>
-                            <p.icon />
-                            <span>0{i + 1}</span>
-                          </p>
-                          <h2>{p.title}</h2>
-                          <small>{p.sub}</small>
-                          <div>
-                            <strong>{vals.length}</strong>validated indicators
-                            <ArrowRight size={16} />
-                          </div>
-                        </button>
-                      );
-                    })}
                   </section>
-                  <div className="bee-note">
-                    <ShieldCheck />
-                    <div>
-                      <strong>Evidence before claims.</strong>
-                      <p>
-                        {w.project.is_demo
-                          ? 'This workspace contains fictional test data. It is not a report of actual project performance.'
-                          : 'Only indicators with a completed human review count as validated results.'}{' '}
-                        Financial value, production footprint and local impact are shown separately.
-                        A Bee review is not a sustainability certification.
-                      </p>
-                    </div>
-                  </div>
-                </>
-              )}
-              {view === 'activity' ? (
-                <section className="bee-history">
-                  {w.events.map((e) => (
-                    <article key={e.id}>
-                      <span className="bee-event-dot" />
-                      <time>{new Date(e.created_at).toLocaleString('en-GB')}</time>
-                      <div>
-                        <h3>{w.records.find((r) => r.id === e.record_id)?.title}</h3>
-                        <p>
-                          {e.actor} · {statusLabel(e.action)} ·{' '}
-                          {e.previous_state ? statusLabel(e.previous_state) + ' → ' : ''}
-                          {statusLabel(e.new_state)}
-                        </p>
-                        {e.comment && <blockquote>{e.comment}</blockquote>}
+                  <div className="bee-overview-grid">
+                    <section>
+                      <div className="bee-section-heading">
+                        <div>
+                          <Eyebrow>THE JOURNEY, AT A GLANCE</Eyebrow>
+                          <h2>{ngo ? 'Your bloom in motion' : 'A shared creative world'}</h2>
+                        </div>
+                        <button
+                          className="bee-link"
+                          onClick={() => navigate(ngo ? 'field' : 'scouting')}
+                        >
+                          Explore
+                          <ArrowUpRight size={15} />
+                        </button>
                       </div>
+                      <div className="bee-story-grid">
+                        {(ngo
+                          ? [
+                              {
+                                image: garden,
+                                title: 'Field actions',
+                                sub: 'Make your intentions tangible',
+                                dest: 'field',
+                              },
+                              {
+                                image: art,
+                                title: 'Proof & evidence',
+                                sub: 'Attach context to every action',
+                                dest: 'evidence',
+                              },
+                              {
+                                image: garden,
+                                title: 'Honey',
+                                sub: 'See what has been validated',
+                                dest: 'honey',
+                              },
+                            ]
+                          : [
+                              {
+                                image: art,
+                                title: 'The places',
+                                sub: 'Light, landscape & possibilities',
+                                dest: 'scouting',
+                              },
+                              {
+                                image: photo,
+                                title: 'The creative direction',
+                                sub: 'A visual language, together',
+                                dest: 'creatives',
+                              },
+                              {
+                                image: photo2,
+                                title: 'The visual tales',
+                                sub: 'From the first frame to delivery',
+                                dest: 'assets',
+                              },
+                            ]
+                        ).map((c, i) => (
+                          <button
+                            key={c.title}
+                            className="bee-story"
+                            onClick={() => navigate(c.dest)}
+                          >
+                            <Image width={960} height={640} src={c.image} alt="" />
+                            <span className="bee-story-index">0{i + 1}</span>
+                            <span className="bee-story-title">
+                              <strong>{c.title}</strong>
+                              <small>{c.sub}</small>
+                            </span>
+                            <ArrowUpRight />
+                          </button>
+                        ))}
+                      </div>
+                    </section>
+                    <section className="bee-next-panel">
+                      <Eyebrow>YOUR NEXT MEANINGFUL STEP</Eyebrow>
+                      <h2>{nextActions[0]?.title || 'Everything is in place.'}</h2>
+                      <p>
+                        {nextActions[0]
+                          ? `${kinds[nextActions[0].kind].label} · ${statusLabel(nextActions[0].status)}`
+                          : 'Explore the project or prepare the next chapter.'}
+                      </p>
+                      {nextActions[0] && (
+                        <button
+                          className="bee-button outline"
+                          onClick={() => setSelected(nextActions[0])}
+                        >
+                          Open & review
+                          <ArrowRight size={16} />
+                        </button>
+                      )}
+                      <div className="bee-mini-stats">
+                        <span>
+                          <strong>
+                            {
+                              w.records.filter((r) => r.kind === (ngo ? 'evidence' : 'asset'))
+                                .length
+                            }
+                          </strong>
+                          {ngo ? 'Evidence records' : 'Creative assets'}
+                        </span>
+                        <span>
+                          <strong>{w.records.filter((r) => r.kind === 'action').length}</strong>
+                          Field actions
+                        </span>
+                        <span>
+                          <strong>{stats.validated.length}</strong>Validated indicators
+                        </span>
+                      </div>
+                    </section>
+                  </div>
+                  <section className="bee-recent">
+                    <div className="bee-section-heading">
+                      <h2>The latest in your journey</h2>
+                      <button className="bee-link" onClick={() => navigate('activity')}>
+                        View history
+                        <ArrowUpRight size={15} />
+                      </button>
+                    </div>
+                    {w.events.slice(0, 3).map((e) => (
                       <button
-                        className="bee-icon-button"
-                        aria-label="Open record"
+                        key={e.id}
                         onClick={() =>
                           setSelected(w.records.find((r) => r.id === e.record_id) || null)
                         }
                       >
-                        <ArrowUpRight />
+                        <span className="bee-event-dot" />
+                        <span>
+                          <strong>{w.records.find((r) => r.id === e.record_id)?.title}</strong>
+                          <small>
+                            {e.actor} · {statusLabel(e.action)} · {statusLabel(e.new_state)}
+                          </small>
+                        </span>
+                        <time>{date(e.created_at)}</time>
+                        <ArrowUpRight size={16} />
                       </button>
-                    </article>
-                  ))}
-                </section>
-              ) : (
-                <>
-                  <div className="bee-filterbar">
-                    <div className="bee-search">
-                      <Search size={17} />
-                      <input
-                        aria-label="Search records"
-                        placeholder="Find in this chapter…"
-                        value={query}
-                        onChange={(e) => setQuery(e.target.value)}
-                      />
-                      {query && (
-                        <button aria-label="Clear search" onClick={() => setQuery('')}>
-                          <X size={14} />
-                        </button>
-                      )}
-                    </div>
-                    <label>
-                      <span className="sr-only">Filter by status</span>
-                      <select value={status} onChange={(e) => setStatus(e.target.value)}>
-                        <option value="all">All statuses</option>
-                        {Array.from(
-                          new Set(
-                            w.records
-                              .filter((r) => info.kinds.includes(r.kind))
-                              .map((r) => r.status)
-                          )
-                        ).map((s) => (
-                          <option key={s} value={s}>
-                            {statusLabel(s)}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-                    <span>
-                      {visibleRecords.length} {visibleRecords.length === 1 ? 'record' : 'records'}
-                    </span>
-                  </div>
-                  <section
-                    className={`bee-records ${['scouting', 'assets', 'bloom'].includes(view) ? 'visual' : ''}`}
-                    aria-label={info.title}
-                  >
-                    {visibleRecords.map((r) => (
-                      <RecordCard
-                        key={r.id}
-                        r={r}
-                        onClick={() => setSelected(r)}
-                        visual={['scouting', 'assets', 'bloom'].includes(view)}
-                      />
                     ))}
-                    {!visibleRecords.length && (
-                      <div className="bee-empty">
-                        <Flower2 />
-                        <h2>
-                          {query || status !== 'all'
-                            ? 'No matching records.'
-                            : 'A new chapter is waiting.'}
-                        </h2>
-                        <p>
-                          {query || status !== 'all'
-                            ? 'Try another search or status.'
-                            : 'Start with the action above. Your team will see the same project as it takes shape.'}
-                        </p>
-                        {(query || status !== 'all') && (
-                          <button
-                            className="bee-button outline"
-                            onClick={() => {
-                              setQuery('');
-                              setStatus('all');
-                            }}
-                          >
-                            Clear filters
-                          </button>
-                        )}
-                      </div>
+                    {!w.events.length && (
+                      <p className="bee-empty-inline">
+                        Your project history will appear here as the team contributes.
+                      </p>
                     )}
                   </section>
                 </>
+              ) : (
+                <>
+                  <section className="bee-page-heading">
+                    <div>
+                      <Eyebrow>{info.kicker}</Eyebrow>
+                      <h1>{view === 'capital' && ngo ? 'Impact Capital.' : info.title}</h1>
+                      <p>{info.description}</p>
+                    </div>
+                    <div className="bee-heading-actions">
+                      {view === 'honey' && (
+                        <button className="bee-button outline" onClick={exportReport}>
+                          <Download size={16} />
+                          Export report
+                        </button>
+                      )}
+                      {info.kinds
+                        .filter((k) => kinds[k].roles.includes(w.project.role))
+                        .map((k) => (
+                          <button
+                            className="bee-button"
+                            key={k}
+                            onClick={() => {
+                              setEditing(null);
+                              setCreating(k);
+                            }}
+                          >
+                            <Plus size={16} />
+                            {kinds[k].label}
+                          </button>
+                        ))}
+                    </div>
+                  </section>
+                  {view === 'team' && (
+                    <section className="bee-hive">
+                      {w.members.map((m) => (
+                        <div key={m.id}>
+                          <span className="bee-member-avatar">
+                            {m.name
+                              .split(' ')
+                              .map((n) => n[0])
+                              .slice(0, 2)
+                              .join('')}
+                          </span>
+                          <h3>{m.name}</h3>
+                          <p>{roleNames[m.role]}</p>
+                          <small>{m.organization}</small>
+                        </div>
+                      ))}
+                    </section>
+                  )}
+                  {view === 'scouting' && (
+                    <div className="bee-scout-banner">
+                      <Image
+                        width={960}
+                        height={640}
+                        src={art}
+                        alt="Illustrative Namib desert landscape"
+                      />
+                      <div>
+                        <Eyebrow>SCOUTING AT GOLDEN HOUR</Eyebrow>
+                        <h2>Every place has a story.</h2>
+                        <p>
+                          Capture the location, light, permits and creative possibilities before the
+                          shoot.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                  {view === 'production' && (
+                    <section className="bee-production-stages">
+                      {[
+                        'Planning',
+                        'Ready to produce',
+                        'On set',
+                        'Post-production',
+                        'Delivery',
+                      ].map((s, i) => (
+                        <div key={s}>
+                          <span>0{i + 1}</span>
+                          {s}
+                        </div>
+                      ))}
+                    </section>
+                  )}
+                  {view === 'capital' && (
+                    <section className="bee-capital-strip">
+                      <Metric
+                        icon={<Coins />}
+                        value={money(
+                          w.records
+                            .filter(
+                              (r) =>
+                                r.kind === 'allocation' && (ngo ? r.data.layer === 'Impact' : true)
+                            )
+                            .reduce((a, r) => a + Number(r.data.amount || 0), 0)
+                        )}
+                        label={ngo ? 'Impact Capital allocated' : 'Visible allocations'}
+                      />
+                      <Metric
+                        icon={<ArrowUpRight />}
+                        value={money(stats.spent)}
+                        label="Approved impact expenses"
+                      />
+                      <Metric
+                        icon={<ShieldCheck />}
+                        value={
+                          stats.coverage === null ? '—' : Math.round(stats.coverage * 100) + '%'
+                        }
+                        label="Expense evidence coverage"
+                      />
+                    </section>
+                  )}
+                  {view === 'bookings' && (
+                    <div className="bee-note">
+                      <Leaf />
+                      <div>
+                        <strong>Production footprint · {stats.footprint.toFixed(1)} kgCO₂e</strong>
+                        <p>
+                          Planning estimate from {stats.bookings} approved bookings. Activity ×
+                          factor, from the supplied Bee carbon framework. Positive impact is
+                          reported separately.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                  {view === 'honey' && (
+                    <>
+                      <section className="bee-pillar-grid">
+                        {[
+                          {
+                            title: 'Social',
+                            icon: Users,
+                            sub: 'People, culture, stronger communities.',
+                          },
+                          {
+                            title: 'Environmental',
+                            icon: Leaf,
+                            sub: 'Care for the places that inspire us.',
+                          },
+                          {
+                            title: 'Economic',
+                            icon: Coins,
+                            sub: 'Creating long-term local value.',
+                          },
+                        ].map((p, i) => {
+                          const vals = stats.validated.filter((r) => r.data.pillar === p.title);
+                          return (
+                            <button
+                              key={p.title}
+                              className="bee-pillar"
+                              onClick={() => setQuery(query === p.title ? '' : p.title)}
+                              style={{
+                                backgroundImage: `linear-gradient(0deg,rgba(29,18,10,.97),rgba(40,32,20,.08)),url('${i === 1 ? art : garden}')`,
+                              }}
+                            >
+                              <p>
+                                <p.icon />
+                                <span>0{i + 1}</span>
+                              </p>
+                              <h2>{p.title}</h2>
+                              <small>{p.sub}</small>
+                              <div>
+                                <strong>{vals.length}</strong>validated indicators
+                                <ArrowRight size={16} />
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </section>
+                      <div className="bee-note">
+                        <ShieldCheck />
+                        <div>
+                          <strong>Evidence before claims.</strong>
+                          <p>
+                            {w.project.is_demo
+                              ? 'This workspace contains fictional test data. It is not a report of actual project performance.'
+                              : 'Only indicators with a completed human review count as validated results.'}{' '}
+                            Financial value, production footprint and local impact are shown
+                            separately. A Bee review is not a sustainability certification.
+                          </p>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                  {view === 'activity' ? (
+                    <section className="bee-history">
+                      {w.events.map((e) => (
+                        <article key={e.id}>
+                          <span className="bee-event-dot" />
+                          <time>{new Date(e.created_at).toLocaleString('en-GB')}</time>
+                          <div>
+                            <h3>{w.records.find((r) => r.id === e.record_id)?.title}</h3>
+                            <p>
+                              {e.actor} · {statusLabel(e.action)} ·{' '}
+                              {e.previous_state ? statusLabel(e.previous_state) + ' → ' : ''}
+                              {statusLabel(e.new_state)}
+                            </p>
+                            {e.comment && <blockquote>{e.comment}</blockquote>}
+                          </div>
+                          <button
+                            className="bee-icon-button"
+                            aria-label="Open record"
+                            onClick={() =>
+                              setSelected(w.records.find((r) => r.id === e.record_id) || null)
+                            }
+                          >
+                            <ArrowUpRight />
+                          </button>
+                        </article>
+                      ))}
+                    </section>
+                  ) : (
+                    <>
+                      <div className="bee-filterbar">
+                        <div className="bee-search">
+                          <Search size={17} />
+                          <input
+                            aria-label="Search records"
+                            placeholder="Find in this chapter…"
+                            value={query}
+                            onChange={(e) => setQuery(e.target.value)}
+                          />
+                          {query && (
+                            <button aria-label="Clear search" onClick={() => setQuery('')}>
+                              <X size={14} />
+                            </button>
+                          )}
+                        </div>
+                        <label>
+                          <span className="sr-only">Filter by status</span>
+                          <select value={status} onChange={(e) => setStatus(e.target.value)}>
+                            <option value="all">All statuses</option>
+                            {Array.from(
+                              new Set(
+                                w.records
+                                  .filter((r) => info.kinds.includes(r.kind))
+                                  .map((r) => r.status)
+                              )
+                            ).map((s) => (
+                              <option key={s} value={s}>
+                                {statusLabel(s)}
+                              </option>
+                            ))}
+                          </select>
+                        </label>
+                        <span>
+                          {visibleRecords.length}{' '}
+                          {visibleRecords.length === 1 ? 'record' : 'records'}
+                        </span>
+                      </div>
+                      <section
+                        className={`bee-records ${['scouting', 'assets', 'bloom'].includes(view) ? 'visual' : ''}`}
+                        aria-label={info.title}
+                      >
+                        {visibleRecords.map((r) => (
+                          <RecordCard
+                            key={r.id}
+                            r={r}
+                            onClick={() => setSelected(r)}
+                            visual={['scouting', 'assets', 'bloom'].includes(view)}
+                          />
+                        ))}
+                        {!visibleRecords.length && (
+                          <div className="bee-empty">
+                            <Flower2 />
+                            <h2>
+                              {query || status !== 'all'
+                                ? 'No matching records.'
+                                : 'A new chapter is waiting.'}
+                            </h2>
+                            <p>
+                              {query || status !== 'all'
+                                ? 'Try another search or status.'
+                                : 'Start with the action above. Your team will see the same project as it takes shape.'}
+                            </p>
+                            {(query || status !== 'all') && (
+                              <button
+                                className="bee-button outline"
+                                onClick={() => {
+                                  setQuery('');
+                                  setStatus('all');
+                                }}
+                              >
+                                Clear filters
+                              </button>
+                            )}
+                          </div>
+                        )}
+                      </section>
+                    </>
+                  )}
+                </>
               )}
-            </>
-          )}
-          <footer className="bee-footer">
-            <span>BEEYONDTHEWORLD</span>
-            <p>
-              The Bee carries an intention. The Flower gives it life. The Honey is what remains.
-            </p>
-            <small>
-              {w.project.is_demo
-                ? 'Demonstration · fictional project data'
-                : 'Private project workspace'}{' '}
-              · Ambient visuals are illustrative.
-            </small>
-          </footer>
-        </main>
-      </div>
+              <footer className="bee-footer">
+                <span>BEEYONDTHEWORLD</span>
+                <p>
+                  The Bee carries an intention. The Flower gives it life. The Honey is what remains.
+                </p>
+                <small>
+                  {w.project.is_demo
+                    ? 'Demonstration · fictional project data'
+                    : 'Private project workspace'}{' '}
+                  · Ambient visuals are illustrative.
+                </small>
+              </footer>
+            </main>
+          </div>
+        </>
+      )}
       {toast && (
         <div className="bee-toast" role="status">
           <span>{toast}</span>

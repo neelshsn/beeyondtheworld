@@ -441,7 +441,7 @@ export const kinds: Record<string, Kind> = {
         key: 'ai',
         label: 'AI involvement',
         type: 'select',
-        options: ['None declared', 'AI assisted', 'AI generated'],
+        options: ['Not documented', 'None declared', 'AI assisted', 'AI generated'],
         required: true,
       },
       reference,

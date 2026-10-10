@@ -1,0 +1,192 @@
+[
+  {
+    "id": "b0000000-0000-4000-8000-000000000101",
+    "slug": "maradji-ibiza",
+    "brand": "Maradji",
+    "territory": "Ibiza",
+    "stage": "Brief & intention",
+    "view": "creatives",
+    "action": "Review the brief",
+    "index": 0,
+    "title": "Maradji · Ibiza",
+    "source": "https://beeyondtheworld.com/campaigns/maradji-ibiza",
+    "cover": "/assets/campaigns/maradji-ibiza/maradji-ibiza-cover.jpg",
+    "frames": [
+      {
+        "image": "/assets/campaigns/maradji-ibiza/maradji-ibiza-cover.jpg",
+        "label": "Campaign archive 01",
+        "place": "Ibiza"
+      },
+      {
+        "image": "/assets/campaigns/maradji-ibiza/maradji-ibiza-gallery-02.jpg",
+        "label": "Campaign archive 02",
+        "place": "Ibiza"
+      },
+      {
+        "image": "/assets/campaigns/maradji-ibiza/maradji-ibiza-carousel-02.jpg",
+        "label": "Campaign archive 03",
+        "place": "Ibiza"
+      },
+      {
+        "image": "/assets/campaigns/maradji-ibiza/maradji-ibiza-gallery-03.jpg",
+        "label": "Campaign archive 04",
+        "place": "Ibiza"
+      },
+      {
+        "image": "/assets/campaigns/maradji-ibiza/maradji-ibiza-gallery-01.jpg",
+        "label": "Campaign archive 05",
+        "place": "Ibiza"
+      }
+    ]
+  },
+  {
+    "id": "b0000000-0000-4000-8000-000000000102",
+    "slug": "craie-suisse",
+    "brand": "Craie Studio",
+    "territory": "Switzerland",
+    "stage": "Pre-production",
+    "view": "scouting",
+    "action": "Prepare the places & team",
+    "index": 1,
+    "title": "Craie Studio · Switzerland",
+    "source": "https://beeyondtheworld.com/campaigns/craie-suisse",
+    "cover": "/assets/campaigns/craie-suisse/craie-suisse-cover.jpg",
+    "frames": [
+      {
+        "image": "/assets/campaigns/craie-suisse/craie-suisse-cover.jpg",
+        "label": "Campaign archive 01",
+        "place": "Switzerland"
+      },
+      {
+        "image": "/assets/campaigns/craie-suisse/craie-suisse-spring-04.jpg",
+        "label": "Campaign archive 02",
+        "place": "Switzerland"
+      },
+      {
+        "image": "/assets/campaigns/craie-suisse/craie-suisse-spring-02.jpg",
+        "label": "Campaign archive 03",
+        "place": "Switzerland"
+      },
+      {
+        "image": "/assets/campaigns/craie-suisse/craie-suisse-spring-03.jpg",
+        "label": "Campaign archive 04",
+        "place": "Switzerland"
+      },
+      {
+        "image": "/assets/campaigns/craie-suisse/swiss3.jpg",
+        "label": "Campaign archive 05",
+        "place": "Switzerland"
+      }
+    ]
+  },
+  {
+    "id": "b0000000-0000-4000-8000-000000000103",
+    "slug": "craie-maroc",
+    "brand": "Craie Studio",
+    "territory": "Morocco",
+    "stage": "On set",
+    "view": "production",
+    "action": "Coordinate the shoot",
+    "index": 2,
+    "title": "Craie Studio · Morocco",
+    "source": "https://beeyondtheworld.com/campaigns/craie-maroc",
+    "cover": "/assets/campaigns/craie-maroc/craie-maroc-gallery-01.jpg",
+    "frames": [
+      {
+        "image": "/assets/campaigns/craie-maroc/craie-maroc-gallery-01.jpg",
+        "label": "Campaign archive 01",
+        "place": "Morocco"
+      },
+      {
+        "image": "/assets/campaigns/craie-maroc/craie-maroc-gallery-02.jpg",
+        "label": "Campaign archive 02",
+        "place": "Morocco"
+      },
+      {
+        "image": "/assets/campaigns/craie-maroc/craie-maroc-carousel-01.jpg",
+        "label": "Campaign archive 03",
+        "place": "Morocco"
+      },
+      {
+        "image": "/assets/campaigns/craie-maroc/craie-maroc-gallery-04.jpg",
+        "label": "Campaign archive 04",
+        "place": "Morocco"
+      },
+      {
+        "image": "/assets/campaigns/craie-maroc/craie-maroc-gallery-05.jpg",
+        "label": "Campaign archive 05",
+        "place": "Morocco"
+      }
+    ]
+  },
+  {
+    "id": "b0000000-0000-4000-8000-000000000104",
+    "slug": "veganboost-greece",
+    "brand": "Veganboost",
+    "territory": "Greece",
+    "stage": "Creative review",
+    "view": "assets",
+    "action": "Review the selected version",
+    "index": 3,
+    "title": "Veganboost · Greece",
+    "source": "https://beeyondtheworld.com/campaigns/veganboost-greece",
+    "cover": "/assets/campaigns/veganboost-greece/feedback-20260906-hero-poster.webp",
+    "frames": [
+      {
+        "image": "/assets/campaigns/veganboost-greece/feedback-20260906-hero-poster.webp",
+        "label": "Campaign archive 01",
+        "place": "Greece"
+      },
+      {
+        "image": "/assets/campaigns/veganboost-greece/veganboost-greece-gallery-01.webp",
+        "label": "Campaign archive 02",
+        "place": "Greece"
+      },
+      {
+        "image": "/assets/campaigns/veganboost-greece/veganboost-greece-gallery-02.webp",
+        "label": "Campaign archive 03",
+        "place": "Greece"
+      }
+    ]
+  },
+  {
+    "id": "b0000000-0000-4000-8000-000000000105",
+    "slug": "almaaz-kenya",
+    "brand": "Almaaz",
+    "territory": "Kenya",
+    "stage": "Delivery & archive",
+    "view": "assets",
+    "action": "Explore the delivered campaign",
+    "index": 4,
+    "title": "Almaaz · Kenya",
+    "source": "https://beeyondtheworld.com/campaigns/almaaz-kenya",
+    "cover": "/assets/campaigns/almaaz-kenya/almaaz-kenya-cover.jpg",
+    "frames": [
+      {
+        "image": "/assets/campaigns/almaaz-kenya/almaaz-kenya-cover.jpg",
+        "label": "Campaign archive 01",
+        "place": "Kenya"
+      },
+      {
+        "image": "/assets/campaigns/almaaz-kenya/almaaz-kenya-carousel-02.jpg",
+        "label": "Campaign archive 02",
+        "place": "Kenya"
+      },
+      {
+        "image": "/assets/campaigns/almaaz-kenya/almaaz-kenya-gallery-03.jpg",
+        "label": "Campaign archive 03",
+        "place": "Kenya"
+      },
+      {
+        "image": "/assets/campaigns/almaaz-kenya/almaaz-kenya-gallery-05.jpg",
+        "label": "Campaign archive 04",
+        "place": "Kenya"
+      },
+      {
+        "image": "/assets/campaigns/almaaz-kenya/almaaz-kenya-gallery-07.jpg",
+        "label": "Campaign archive 05",
+        "place": "Kenya"
+      }
+    ]
+  }
+]

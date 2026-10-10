@@ -69,6 +69,7 @@ export type Event = {
   created_at: string;
 };
 export type Workspace = {
+  testRoles?: Role[];
   user: User;
   projects: Project[];
   project: Project;
