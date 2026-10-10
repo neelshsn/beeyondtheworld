@@ -253,6 +253,9 @@ export function CommunityApp({ experimental = false }: { experimental?: boolean 
         '/api/community/workspace' + (project ? '?project=' + encodeURIComponent(project) : '')
       );
       setW(data);
+      setView((old) =>
+        old === 'projects' && (!data.user.is_test || !data.project.is_demo) ? 'overview' : old
+      );
       activeId.current = data.project.id;
       setLoginNeeded(false);
       setSelected((old) =>
