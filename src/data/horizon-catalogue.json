@@ -1,0 +1,5072 @@
+{
+  "version": 1,
+  "created": "2026-10-10",
+  "roles": {
+    "brand": {
+      "fr": "Marque",
+      "en": "Brand",
+      "purpose": "Brief, choix créatifs, réception des livrables."
+    },
+    "bee": {
+      "fr": "Bee / coordination",
+      "en": "Bee Core",
+      "purpose": "Coordination, validation interne, budgets et publication des résultats."
+    },
+    "art": {
+      "fr": "Direction artistique",
+      "en": "Art director",
+      "purpose": "Concept, direction visuelle et cohérence des images."
+    },
+    "production": {
+      "fr": "Direction de production",
+      "en": "Producer",
+      "purpose": "Équipe, faisabilité, planning, logistique et remise des fichiers."
+    },
+    "stylist": {
+      "fr": "Stylisme",
+      "en": "Stylist",
+      "purpose": "Produits, looks, essayages et raccords."
+    },
+    "photo": {
+      "fr": "Photographie",
+      "en": "Photographer",
+      "purpose": "Plans photo, lumière, sélection et sources."
+    },
+    "film": {
+      "fr": "Film / réalisation",
+      "en": "Filmmaker",
+      "purpose": "Plans film, son, rushes et intentions de montage."
+    },
+    "beauty": {
+      "fr": "Maquillage / coiffure",
+      "en": "Beauty artist",
+      "purpose": "Références beauté, préparation et continuité."
+    },
+    "editor": {
+      "fr": "Montage / retouche",
+      "en": "Editor",
+      "purpose": "Versions, retouches, formats et exports."
+    },
+    "model": {
+      "fr": "Mannequin / talent",
+      "en": "Talent",
+      "purpose": "Disponibilités, accord, essayage et feuille de service personnelle."
+    },
+    "ngo": {
+      "fr": "ONG / partenaire local",
+      "en": "Local partner",
+      "purpose": "Confiance, actions terrain, dépenses et preuves."
+    },
+    "expert": {
+      "fr": "Expert indépendant",
+      "en": "Independent expert",
+      "purpose": "Examen des seuls dossiers attribués selon le risque."
+    }
+  },
+  "pages": [
+    {
+      "id": "projects",
+      "phase": "Accueil",
+      "title": "My journeys",
+      "fr": "Tous mes projets",
+      "kind": "projects",
+      "fields": [],
+      "roles": {
+        "brand": "edit",
+        "bee": "edit",
+        "art": "edit",
+        "production": "edit",
+        "stylist": "edit",
+        "photo": "edit",
+        "film": "edit",
+        "beauty": "edit",
+        "editor": "edit",
+        "model": "edit",
+        "ngo": "edit",
+        "expert": "edit"
+      },
+      "source": [
+        30,
+        52,
+        78
+      ],
+      "note": "Un portefeuille par métier. Tous les projets attribués sont accessibles sans changer de métier.",
+      "action": "Open journey",
+      "number": 1,
+      "secondary": "View details",
+      "projectType": "production"
+    },
+    {
+      "id": "project",
+      "phase": "Accueil",
+      "title": "The journey",
+      "fr": "Vue du projet",
+      "kind": "overview",
+      "fields": [],
+      "roles": {
+        "brand": "read",
+        "bee": "edit",
+        "art": "read",
+        "production": "edit",
+        "stylist": "read",
+        "photo": "read",
+        "film": "read",
+        "beauty": "read",
+        "editor": "read",
+        "model": "read",
+        "ngo": "read",
+        "expert": "read"
+      },
+      "source": [
+        62,
+        78
+      ],
+      "note": "Un projet partagé : l’action suivante et les validations visibles changent selon le rôle.",
+      "action": "Continue journey",
+      "number": 2,
+      "secondary": "View details",
+      "projectType": "production"
+    },
+    {
+      "id": "inbox",
+      "phase": "Accueil",
+      "title": "Your next steps",
+      "fr": "À traiter",
+      "kind": "tasks",
+      "fields": [
+        {
+          "label": "Brief received",
+          "value": "Intention ready for review",
+          "icon": "feather",
+          "type": "text",
+          "options": [],
+          "id": "inbox-0"
+        },
+        {
+          "label": "Location review",
+          "value": "Awaiting Bee review",
+          "icon": "pin",
+          "type": "text",
+          "options": [],
+          "id": "inbox-1"
+        },
+        {
+          "label": "Next handoff",
+          "value": "Creative direction",
+          "icon": "arrow",
+          "type": "text",
+          "options": [],
+          "id": "inbox-2"
+        }
+      ],
+      "roles": {
+        "brand": "edit",
+        "bee": "edit",
+        "art": "edit",
+        "production": "edit",
+        "stylist": "edit",
+        "photo": "edit",
+        "film": "edit",
+        "beauty": "edit",
+        "editor": "edit",
+        "model": "edit",
+        "ngo": "edit",
+        "expert": "edit"
+      },
+      "source": [
+        37,
+        78
+      ],
+      "note": "Seulement les tâches qui concernent le métier et ses projets.",
+      "action": "Open task",
+      "number": 3,
+      "secondary": "View details",
+      "projectType": "production"
+    },
+    {
+      "id": "calendar",
+      "phase": "Accueil",
+      "title": "Shared rhythm",
+      "fr": "Calendrier commun",
+      "kind": "calendar",
+      "fields": [
+        {
+          "label": "Day 01",
+          "value": "Scout & align",
+          "icon": "pin",
+          "type": "text",
+          "options": [],
+          "id": "calendar-0"
+        },
+        {
+          "label": "Day 02",
+          "value": "Fittings & preparation",
+          "icon": "hanger",
+          "type": "text",
+          "options": [],
+          "id": "calendar-1"
+        },
+        {
+          "label": "Day 03",
+          "value": "Shoot",
+          "icon": "camera",
+          "type": "text",
+          "options": [],
+          "id": "calendar-2"
+        },
+        {
+          "label": "Day 04",
+          "value": "First selects",
+          "icon": "image",
+          "type": "text",
+          "options": [],
+          "id": "calendar-3"
+        }
+      ],
+      "roles": {
+        "brand": "read",
+        "bee": "edit",
+        "art": "read",
+        "production": "edit",
+        "stylist": "read",
+        "photo": "read",
+        "film": "read",
+        "beauty": "read",
+        "editor": "read",
+        "model": "read",
+        "ngo": "read",
+        "expert": "read"
+      },
+      "source": [
+        3,
+        78,
+        79
+      ],
+      "note": "Les événements visibles dépendent des missions. Les dates restent indicatives dans ces maquettes.",
+      "action": "Add milestone",
+      "number": 4,
+      "secondary": "View details",
+      "projectType": "production"
+    },
+    {
+      "id": "login",
+      "phase": "Accès",
+      "title": "Welcome to Bee",
+      "fr": "Connexion",
+      "kind": "form",
+      "fields": [
+        {
+          "label": "Work email",
+          "value": "you@yourstudio.com",
+          "icon": "mail",
+          "type": "text",
+          "options": [],
+          "id": "login-0"
+        },
+        {
+          "label": "Password",
+          "value": "••••••••••••",
+          "icon": "lock",
+          "type": "text",
+          "options": [],
+          "id": "login-1"
+        }
+      ],
+      "roles": {
+        "brand": "edit",
+        "bee": "edit",
+        "art": "edit",
+        "production": "edit",
+        "stylist": "edit",
+        "photo": "edit",
+        "film": "edit",
+        "beauty": "edit",
+        "editor": "edit",
+        "model": "edit",
+        "ngo": "edit",
+        "expert": "edit"
+      },
+      "source": [
+        63
+      ],
+      "note": "Connexion commune. Aucun changement de rôle depuis le compte réel.",
+      "action": "Sign in",
+      "number": 5,
+      "secondary": "Add a nuance",
+      "projectType": "production"
+    },
+    {
+      "id": "invite",
+      "phase": "Accès",
+      "title": "A place in the hive",
+      "fr": "Accepter une invitation",
+      "kind": "form",
+      "fields": [
+        {
+          "label": "Organization",
+          "value": "Your organization",
+          "icon": "home",
+          "type": "text",
+          "options": [],
+          "id": "invite-0"
+        },
+        {
+          "label": "Your assignment",
+          "value": "Assigned by Bee",
+          "icon": "users",
+          "type": "text",
+          "options": [],
+          "id": "invite-1"
+        },
+        {
+          "label": "Availability",
+          "value": "Available",
+          "icon": "calendar",
+          "type": "choices",
+          "options": [
+            "Available",
+            "Discuss dates"
+          ],
+          "id": "invite-2"
+        }
+      ],
+      "roles": {
+        "brand": "edit",
+        "bee": "edit",
+        "art": "edit",
+        "production": "edit",
+        "stylist": "edit",
+        "photo": "edit",
+        "film": "edit",
+        "beauty": "edit",
+        "editor": "edit",
+        "model": "edit",
+        "ngo": "edit",
+        "expert": "edit"
+      },
+      "source": [
+        63,
+        51
+      ],
+      "note": "Le rôle vient de l’invitation. Les obligations contractuelles sont examinées dans un écran séparé.",
+      "action": "Accept invitation",
+      "number": 6,
+      "secondary": "Add a nuance",
+      "projectType": "production"
+    },
+    {
+      "id": "profile",
+      "phase": "Accès",
+      "title": "Your presence",
+      "fr": "Profil professionnel",
+      "kind": "form",
+      "fields": [
+        {
+          "label": "Display name",
+          "value": "Your name",
+          "icon": "user",
+          "type": "text",
+          "options": [],
+          "id": "profile-0"
+        },
+        {
+          "label": "Based in",
+          "value": "City, country",
+          "icon": "pin",
+          "type": "text",
+          "options": [],
+          "id": "profile-1"
+        },
+        {
+          "label": "Contact",
+          "value": "Your professional contact",
+          "icon": "mail",
+          "type": "text",
+          "options": [],
+          "id": "profile-2"
+        },
+        {
+          "label": "Portfolio",
+          "value": "Add a portfolio link",
+          "icon": "link",
+          "type": "upload",
+          "options": [],
+          "id": "profile-3"
+        }
+      ],
+      "roles": {
+        "brand": "edit",
+        "bee": "edit",
+        "art": "edit",
+        "production": "edit",
+        "stylist": "edit",
+        "photo": "edit",
+        "film": "edit",
+        "beauty": "edit",
+        "editor": "edit",
+        "model": "edit",
+        "ngo": "edit",
+        "expert": "edit"
+      },
+      "source": [
+        6,
+        63
+      ],
+      "note": "Le contact personnel n’est partagé qu’avec les personnes ayant besoin de le connaître.",
+      "action": "Save profile",
+      "number": 7,
+      "secondary": "Add a nuance",
+      "projectType": "production"
+    },
+    {
+      "id": "brief-scope",
+      "phase": "Brief",
+      "title": "Craft your brief",
+      "fr": "Périmètre du brief",
+      "kind": "choice",
+      "fields": [
+        {
+          "label": "Scope",
+          "value": "This journey",
+          "icon": "compass",
+          "type": "choices",
+          "options": [
+            "This journey",
+            "A new journey"
+          ],
+          "id": "brief-scope-0"
+        }
+      ],
+      "roles": {
+        "bee": "read",
+        "art": "read",
+        "production": "read",
+        "brand": "edit"
+      },
+      "source": [
+        52,
+        78
+      ],
+      "note": "Le brief est rattaché au voyage choisi, ou reste global jusqu’à son rattachement.",
+      "action": "Start brief",
+      "number": 8,
+      "secondary": "Add a nuance",
+      "projectType": "production"
+    },
+    {
+      "id": "brief-intention",
+      "phase": "Brief",
+      "title": "Essence of intentions",
+      "fr": "01 · Intention et émotion",
+      "kind": "choice",
+      "fields": [
+        {
+          "label": "What should this campaign reveal?",
+          "value": "The craft",
+          "icon": "feather",
+          "type": "choices",
+          "options": [
+            "The collection",
+            "The craft",
+            "A story"
+          ],
+          "id": "brief-intention-0"
+        },
+        {
+          "label": "The feeling",
+          "value": "Freedom",
+          "icon": "sun",
+          "type": "choices",
+          "options": [
+            "Freedom",
+            "Intimacy",
+            "Curiosity"
+          ],
+          "id": "brief-intention-1"
+        }
+      ],
+      "roles": {
+        "bee": "read",
+        "art": "read",
+        "production": "read",
+        "brand": "edit"
+      },
+      "source": [
+        16,
+        78
+      ],
+      "note": "Choix visuels puis une nuance facultative. Étape 1/12 du brief.",
+      "action": "Continue",
+      "detail": "Add a nuance",
+      "number": 9,
+      "secondary": "Add a nuance",
+      "projectType": "production"
+    },
+    {
+      "id": "brief-message",
+      "phase": "Brief",
+      "title": "Words that remain",
+      "fr": "02 · Message et identité",
+      "kind": "form",
+      "fields": [
+        {
+          "label": "The message",
+          "value": "Objects made to travel, stories made to last.",
+          "icon": "message",
+          "type": "text",
+          "options": [],
+          "id": "brief-message-0"
+        },
+        {
+          "label": "Your brand in three words",
+          "value": "Playful / Crafted / Free",
+          "icon": "spark",
+          "type": "chips",
+          "options": [],
+          "id": "brief-message-1"
+        }
+      ],
+      "roles": {
+        "bee": "read",
+        "art": "read",
+        "production": "read",
+        "brand": "edit"
+      },
+      "source": [
+        78
+      ],
+      "note": "Le message et les trois mots décrivent le même objet brief. Étape 2/12.",
+      "action": "Continue",
+      "number": 10,
+      "secondary": "Add a nuance",
+      "projectType": "production"
+    },
+    {
+      "id": "brief-people",
+      "phase": "Brief",
+      "title": "Essence of humans",
+      "fr": "03 · Casting souhaité",
+      "kind": "form",
+      "fields": [
+        {
+          "label": "Number of talents",
+          "value": "2",
+          "icon": "users",
+          "type": "number",
+          "options": [],
+          "id": "brief-people-0"
+        },
+        {
+          "label": "Gender representation",
+          "value": "Open casting",
+          "icon": "user",
+          "type": "select",
+          "options": [],
+          "id": "brief-people-1"
+        },
+        {
+          "label": "Age range",
+          "value": "Adults · 25–40",
+          "icon": "calendar",
+          "type": "select",
+          "options": [],
+          "id": "brief-people-2"
+        }
+      ],
+      "roles": {
+        "bee": "read",
+        "art": "read",
+        "production": "read",
+        "brand": "edit"
+      },
+      "source": [
+        78
+      ],
+      "note": "Les besoins de casting sont déclarés par la marque, sans déduire de critères depuis une photo. Étape 3/12.",
+      "action": "Continue",
+      "number": 11,
+      "secondary": "Add a nuance",
+      "projectType": "production"
+    },
+    {
+      "id": "brief-casting-details",
+      "phase": "Brief",
+      "title": "Faces & presence",
+      "fr": "04 · Références de casting",
+      "kind": "form",
+      "fields": [
+        {
+          "label": "Face references",
+          "value": "Add your references",
+          "icon": "image",
+          "type": "upload",
+          "options": [],
+          "id": "brief-casting-details-0"
+        },
+        {
+          "label": "Representation preferences",
+          "value": "Describe the intended representation",
+          "icon": "users",
+          "type": "text",
+          "options": [],
+          "id": "brief-casting-details-1"
+        },
+        {
+          "label": "Fit requirements",
+          "value": "Relevant garment measurements only",
+          "icon": "ruler",
+          "type": "text",
+          "options": [],
+          "id": "brief-casting-details-2"
+        }
+      ],
+      "roles": {
+        "bee": "read",
+        "art": "read",
+        "production": "read",
+        "brand": "edit"
+      },
+      "source": [
+        78
+      ],
+      "note": "Détails de casting au niveau utile. Pièces et mesures privées restent dans le dossier autorisé. Étape 4/12.",
+      "action": "Continue",
+      "number": 12,
+      "secondary": "Add a nuance",
+      "projectType": "production"
+    },
+    {
+      "id": "brief-aesthetic",
+      "phase": "Brief",
+      "title": "Art of blooming",
+      "fr": "05 · Références visuelles",
+      "kind": "gallery",
+      "fields": [
+        {
+          "label": "Campaign references",
+          "value": "Movement & material",
+          "icon": "image",
+          "type": "text",
+          "options": [],
+          "id": "brief-aesthetic-0"
+        },
+        {
+          "label": "Collection influences",
+          "value": "Earth, light, craftsmanship",
+          "icon": "feather",
+          "type": "text",
+          "options": [],
+          "id": "brief-aesthetic-1"
+        }
+      ],
+      "roles": {
+        "bee": "read",
+        "art": "read",
+        "production": "read",
+        "brand": "edit"
+      },
+      "source": [
+        16,
+        78
+      ],
+      "note": "Références accompagnées d’une courte intention plutôt qu’un long texte. Étape 5/12.",
+      "action": "Add reference",
+      "number": 13,
+      "secondary": "View details",
+      "projectType": "production"
+    },
+    {
+      "id": "brief-collection",
+      "phase": "Brief",
+      "title": "The collection",
+      "fr": "06 · Produits et looks",
+      "kind": "form",
+      "fields": [
+        {
+          "label": "Items",
+          "value": "12",
+          "icon": "bag",
+          "type": "number",
+          "options": [],
+          "id": "brief-collection-0"
+        },
+        {
+          "label": "Looks",
+          "value": "6",
+          "icon": "hanger",
+          "type": "number",
+          "options": [],
+          "id": "brief-collection-1"
+        },
+        {
+          "label": "Accessories",
+          "value": "4",
+          "icon": "spark",
+          "type": "number",
+          "options": [],
+          "id": "brief-collection-2"
+        },
+        {
+          "label": "Collection overview",
+          "value": "Add collection images",
+          "icon": "image",
+          "type": "upload",
+          "options": [],
+          "id": "brief-collection-3"
+        }
+      ],
+      "roles": {
+        "bee": "read",
+        "art": "read",
+        "production": "read",
+        "brand": "edit"
+      },
+      "source": [
+        78
+      ],
+      "note": "Quantités illustratives, libellés adaptables à la catégorie de marque. Étape 6/12.",
+      "action": "Continue",
+      "number": 14,
+      "secondary": "Add a nuance",
+      "projectType": "production"
+    },
+    {
+      "id": "brief-dates",
+      "phase": "Brief",
+      "title": "A rhythm for the journey",
+      "fr": "07 · Disponibilités",
+      "kind": "form",
+      "fields": [
+        {
+          "label": "Preferred shooting window",
+          "value": "Choose a date range",
+          "icon": "calendar",
+          "type": "date",
+          "options": [],
+          "id": "brief-dates-0"
+        },
+        {
+          "label": "Flexibility",
+          "value": "A few days",
+          "icon": "clock",
+          "type": "choices",
+          "options": [
+            "Fixed dates",
+            "A few days",
+            "Flexible"
+          ],
+          "id": "brief-dates-1"
+        }
+      ],
+      "roles": {
+        "bee": "read",
+        "art": "read",
+        "production": "read",
+        "brand": "edit"
+      },
+      "source": [
+        78
+      ],
+      "note": "Fenêtre souhaitée, jamais une réservation confirmée. Étape 7/12.",
+      "action": "Continue",
+      "number": 15,
+      "secondary": "Add a nuance",
+      "projectType": "production"
+    },
+    {
+      "id": "brief-destination",
+      "phase": "Brief",
+      "title": "A sense of place",
+      "fr": "08 · Destinations",
+      "kind": "gallery",
+      "fields": [
+        {
+          "label": "Preferred place",
+          "value": "Morocco",
+          "icon": "pin",
+          "type": "text",
+          "options": [],
+          "id": "brief-destination-0"
+        },
+        {
+          "label": "Alternative",
+          "value": "Open to a Bee proposal",
+          "icon": "compass",
+          "type": "text",
+          "options": [],
+          "id": "brief-destination-1"
+        }
+      ],
+      "roles": {
+        "bee": "read",
+        "art": "read",
+        "production": "read",
+        "brand": "edit"
+      },
+      "source": [
+        78
+      ],
+      "note": "Le lieu est une préférence ; le scouting et la faisabilité viendront ensuite. Étape 8/12.",
+      "action": "Continue",
+      "number": 16,
+      "secondary": "View details",
+      "projectType": "production"
+    },
+    {
+      "id": "brief-photo",
+      "phase": "Brief",
+      "title": "Still stories",
+      "fr": "09 · Livrables photo",
+      "kind": "form",
+      "fields": [
+        {
+          "label": "Aesthetic",
+          "value": "Editorial",
+          "icon": "image",
+          "type": "choices",
+          "options": [
+            "Editorial",
+            "Lifestyle",
+            "Lookbook"
+          ],
+          "id": "brief-photo-0"
+        },
+        {
+          "label": "Quantity",
+          "value": "12 photographs",
+          "icon": "layers",
+          "type": "number",
+          "options": [],
+          "id": "brief-photo-1"
+        },
+        {
+          "label": "Capture",
+          "value": "Pro camera",
+          "icon": "camera",
+          "type": "choices",
+          "options": [
+            "Pro camera",
+            "Phone"
+          ],
+          "id": "brief-photo-2"
+        }
+      ],
+      "roles": {
+        "bee": "read",
+        "art": "read",
+        "production": "read",
+        "photo": "read",
+        "editor": "read",
+        "brand": "edit"
+      },
+      "source": [
+        78
+      ],
+      "note": "Les options backstage et close-up restent accessibles en détail. Étape 9/12.",
+      "action": "Continue",
+      "detail": "Backstage & close-up options",
+      "number": 17,
+      "secondary": "Add a nuance",
+      "projectType": "production"
+    },
+    {
+      "id": "brief-film",
+      "phase": "Brief",
+      "title": "Moving stories",
+      "fr": "10 · Livrables vidéo",
+      "kind": "form",
+      "fields": [
+        {
+          "label": "Aesthetic",
+          "value": "Lifestyle",
+          "icon": "film",
+          "type": "choices",
+          "options": [
+            "Editorial",
+            "Lifestyle",
+            "Backstage"
+          ],
+          "id": "brief-film-0"
+        },
+        {
+          "label": "Quantity & duration",
+          "value": "3 films · 15 seconds",
+          "icon": "clock",
+          "type": "text",
+          "options": [],
+          "id": "brief-film-1"
+        },
+        {
+          "label": "Capture",
+          "value": "Pro camera",
+          "icon": "camera",
+          "type": "choices",
+          "options": [
+            "Pro camera",
+            "Phone"
+          ],
+          "id": "brief-film-2"
+        }
+      ],
+      "roles": {
+        "bee": "read",
+        "art": "read",
+        "production": "read",
+        "film": "read",
+        "editor": "read",
+        "brand": "edit"
+      },
+      "source": [
+        78
+      ],
+      "note": "Le tournage photo et vidéo partage les lieux sans confondre les livrables. Étape 10/12.",
+      "action": "Continue",
+      "number": 18,
+      "secondary": "Add a nuance",
+      "projectType": "production"
+    },
+    {
+      "id": "brief-usage",
+      "phase": "Brief",
+      "title": "Where stories live",
+      "fr": "11 · Diffusion et droits",
+      "kind": "form",
+      "fields": [
+        {
+          "label": "Channels",
+          "value": "Digital",
+          "icon": "globe",
+          "type": "choices",
+          "options": [
+            "Digital",
+            "Print",
+            "Retail"
+          ],
+          "id": "brief-usage-0"
+        },
+        {
+          "label": "Territory",
+          "value": "France / Europe",
+          "icon": "pin",
+          "type": "select",
+          "options": [],
+          "id": "brief-usage-1"
+        },
+        {
+          "label": "Duration",
+          "value": "12 months · to agree",
+          "icon": "clock",
+          "type": "select",
+          "options": [],
+          "id": "brief-usage-2"
+        }
+      ],
+      "roles": {
+        "bee": "read",
+        "art": "read",
+        "production": "read",
+        "brand": "edit"
+      },
+      "source": [
+        78
+      ],
+      "note": "Périmètre demandé, à contractualiser ; aucun droit n’est accordé par cette maquette. Étape 11/12.",
+      "action": "Continue",
+      "number": 19,
+      "secondary": "Add a nuance",
+      "projectType": "production"
+    },
+    {
+      "id": "brief-deadline",
+      "phase": "Brief",
+      "title": "The right moment",
+      "fr": "12 · Livraison attendue",
+      "kind": "form",
+      "fields": [
+        {
+          "label": "Preferred delivery",
+          "value": "Choose delivery date",
+          "icon": "calendar",
+          "type": "date",
+          "options": [],
+          "id": "brief-deadline-0"
+        },
+        {
+          "label": "Launch milestone",
+          "value": "Choose campaign launch",
+          "icon": "flag",
+          "type": "date",
+          "options": [],
+          "id": "brief-deadline-1"
+        }
+      ],
+      "roles": {
+        "bee": "read",
+        "art": "read",
+        "production": "read",
+        "editor": "read",
+        "brand": "edit"
+      },
+      "source": [
+        78
+      ],
+      "note": "Distinguer livraison, validation et date de diffusion. Étape 12/12.",
+      "action": "Review brief",
+      "number": 20,
+      "secondary": "Add a nuance",
+      "projectType": "production"
+    },
+    {
+      "id": "brief-review",
+      "phase": "Brief",
+      "title": "The intention, together",
+      "fr": "Relire et transmettre",
+      "kind": "review",
+      "fields": [
+        {
+          "label": "Intention",
+          "value": "Craft & freedom",
+          "icon": "feather",
+          "type": "text",
+          "options": [],
+          "id": "brief-review-0"
+        },
+        {
+          "label": "People & collection",
+          "value": "2 talents · 12 items",
+          "icon": "users",
+          "type": "text",
+          "options": [],
+          "id": "brief-review-1"
+        },
+        {
+          "label": "Content",
+          "value": "12 photos · 3 films",
+          "icon": "image",
+          "type": "text",
+          "options": [],
+          "id": "brief-review-2"
+        },
+        {
+          "label": "Usage",
+          "value": "Digital · Europe · 12 months",
+          "icon": "globe",
+          "type": "text",
+          "options": [],
+          "id": "brief-review-3"
+        }
+      ],
+      "roles": {
+        "art": "read",
+        "production": "read",
+        "brand": "edit",
+        "bee": "approve"
+      },
+      "source": [
+        78,
+        37
+      ],
+      "note": "La marque soumet. Bee vérifie la complétude ; ce n’est pas encore la validation de la proposition créative.",
+      "action": "Send to Bee",
+      "number": 21,
+      "secondary": "View details",
+      "projectType": "production"
+    },
+    {
+      "id": "trust-start",
+      "phase": "Confiance",
+      "title": "Partner with impact",
+      "fr": "Entrer dans le parcours de confiance",
+      "kind": "choice",
+      "fields": [
+        {
+          "label": "Your contribution",
+          "value": "Local action",
+          "icon": "leaf",
+          "type": "choices",
+          "options": [
+            "Local action",
+            "Knowledge",
+            "Community"
+          ],
+          "id": "trust-start-0"
+        }
+      ],
+      "roles": {
+        "bee": "read",
+        "ngo": "edit"
+      },
+      "source": [
+        51,
+        53
+      ],
+      "note": "Branche partenaire locale autonome. Ce scénario ONG est fictif et n’est pas attribué à Craie.",
+      "action": "Begin trust journey",
+      "number": 22,
+      "secondary": "Add a nuance",
+      "projectType": "impact"
+    },
+    {
+      "id": "trust-human",
+      "phase": "Confiance",
+      "title": "Human connection",
+      "fr": "01 · L’interlocuteur",
+      "kind": "form",
+      "fields": [
+        {
+          "label": "Your name",
+          "value": "Local partner representative",
+          "icon": "user",
+          "type": "text",
+          "options": [],
+          "id": "trust-human-0"
+        },
+        {
+          "label": "Role in the community",
+          "value": "Project coordinator",
+          "icon": "users",
+          "type": "text",
+          "options": [],
+          "id": "trust-human-1"
+        },
+        {
+          "label": "Contact",
+          "value": "Add a professional contact",
+          "icon": "mail",
+          "type": "text",
+          "options": [],
+          "id": "trust-human-2"
+        }
+      ],
+      "roles": {
+        "bee": "read",
+        "ngo": "edit"
+      },
+      "source": [
+        51
+      ],
+      "note": "Accès au dossier sensible réservé au partenaire et à Bee ; aucune exposition générique aux marques.",
+      "action": "Continue",
+      "number": 23,
+      "secondary": "Add a nuance",
+      "projectType": "impact"
+    },
+    {
+      "id": "trust-identity",
+      "phase": "Confiance",
+      "title": "Identity",
+      "fr": "02 · Identité",
+      "kind": "form",
+      "fields": [
+        {
+          "label": "Legal name",
+          "value": "Organization representative",
+          "icon": "user",
+          "type": "text",
+          "options": [],
+          "id": "trust-identity-0"
+        },
+        {
+          "label": "Country",
+          "value": "Select country",
+          "icon": "globe",
+          "type": "select",
+          "options": [],
+          "id": "trust-identity-1"
+        },
+        {
+          "label": "Identity evidence",
+          "value": "Private · Bee review only",
+          "icon": "lock",
+          "type": "upload",
+          "options": [],
+          "id": "trust-identity-2"
+        }
+      ],
+      "roles": {
+        "bee": "read",
+        "ngo": "edit"
+      },
+      "source": [
+        53
+      ],
+      "note": "Accès au dossier sensible réservé au partenaire et à Bee ; aucune exposition générique aux marques.",
+      "action": "Continue",
+      "number": 24,
+      "secondary": "Add a nuance",
+      "projectType": "impact"
+    },
+    {
+      "id": "trust-organization",
+      "phase": "Confiance",
+      "title": "The organization",
+      "fr": "03 · Structure",
+      "kind": "form",
+      "fields": [
+        {
+          "label": "Organization name",
+          "value": "Example local partner",
+          "icon": "home",
+          "type": "text",
+          "options": [],
+          "id": "trust-organization-0"
+        },
+        {
+          "label": "Legal form",
+          "value": "Select status",
+          "icon": "file",
+          "type": "select",
+          "options": [],
+          "id": "trust-organization-1"
+        },
+        {
+          "label": "Registration document",
+          "value": "Private document",
+          "icon": "lock",
+          "type": "upload",
+          "options": [],
+          "id": "trust-organization-2"
+        }
+      ],
+      "roles": {
+        "bee": "read",
+        "ngo": "edit"
+      },
+      "source": [
+        51
+      ],
+      "note": "Accès au dossier sensible réservé au partenaire et à Bee ; aucune exposition générique aux marques.",
+      "action": "Continue",
+      "number": 25,
+      "secondary": "Add a nuance",
+      "projectType": "impact"
+    },
+    {
+      "id": "trust-integrity",
+      "phase": "Confiance",
+      "title": "Integrity",
+      "fr": "04 · Gouvernance",
+      "kind": "form",
+      "fields": [
+        {
+          "label": "Governance",
+          "value": "Add governance evidence",
+          "icon": "shield",
+          "type": "upload",
+          "options": [],
+          "id": "trust-integrity-0"
+        },
+        {
+          "label": "Financial traceability",
+          "value": "Add supporting document",
+          "icon": "file",
+          "type": "upload",
+          "options": [],
+          "id": "trust-integrity-1"
+        },
+        {
+          "label": "Conflict of interest",
+          "value": "To declare",
+          "icon": "shield",
+          "type": "choices",
+          "options": [
+            "None declared",
+            "To declare"
+          ],
+          "id": "trust-integrity-2"
+        }
+      ],
+      "roles": {
+        "bee": "read",
+        "ngo": "edit"
+      },
+      "source": [
+        53
+      ],
+      "note": "Accès au dossier sensible réservé au partenaire et à Bee ; aucune exposition générique aux marques.",
+      "action": "Continue",
+      "number": 26,
+      "secondary": "Add a nuance",
+      "projectType": "impact"
+    },
+    {
+      "id": "trust-expertise",
+      "phase": "Confiance",
+      "title": "Your expertise",
+      "fr": "05 · Expérience",
+      "kind": "form",
+      "fields": [
+        {
+          "label": "Area of action",
+          "value": "Community & biodiversity",
+          "icon": "leaf",
+          "type": "text",
+          "options": [],
+          "id": "trust-expertise-0"
+        },
+        {
+          "label": "Past work",
+          "value": "Documented references",
+          "icon": "image",
+          "type": "upload",
+          "options": [],
+          "id": "trust-expertise-1"
+        },
+        {
+          "label": "Reference contact",
+          "value": "Add an authorized reference",
+          "icon": "users",
+          "type": "text",
+          "options": [],
+          "id": "trust-expertise-2"
+        }
+      ],
+      "roles": {
+        "bee": "read",
+        "ngo": "edit"
+      },
+      "source": [
+        51
+      ],
+      "note": "Accès au dossier sensible réservé au partenaire et à Bee ; aucune exposition générique aux marques.",
+      "action": "Continue",
+      "number": 27,
+      "secondary": "Add a nuance",
+      "projectType": "impact"
+    },
+    {
+      "id": "trust-presence",
+      "phase": "Confiance",
+      "title": "Local presence",
+      "fr": "06 · Ancrage local",
+      "kind": "form",
+      "fields": [
+        {
+          "label": "Operating area",
+          "value": "Region, country",
+          "icon": "pin",
+          "type": "text",
+          "options": [],
+          "id": "trust-presence-0"
+        },
+        {
+          "label": "Field presence",
+          "value": "Add dated evidence",
+          "icon": "image",
+          "type": "upload",
+          "options": [],
+          "id": "trust-presence-1"
+        },
+        {
+          "label": "Community relationship",
+          "value": "Describe local involvement",
+          "icon": "users",
+          "type": "text",
+          "options": [],
+          "id": "trust-presence-2"
+        }
+      ],
+      "roles": {
+        "bee": "read",
+        "ngo": "edit"
+      },
+      "source": [
+        51
+      ],
+      "note": "Accès au dossier sensible réservé au partenaire et à Bee ; aucune exposition générique aux marques.",
+      "action": "Continue",
+      "number": 28,
+      "secondary": "Add a nuance",
+      "projectType": "impact"
+    },
+    {
+      "id": "trust-review",
+      "phase": "Confiance",
+      "title": "A human review",
+      "fr": "07 · Vérification Bee",
+      "kind": "review",
+      "fields": [
+        {
+          "label": "Identity",
+          "value": "Evidence received",
+          "icon": "user",
+          "type": "text",
+          "options": [],
+          "id": "trust-review-0"
+        },
+        {
+          "label": "Organization",
+          "value": "Evidence received",
+          "icon": "home",
+          "type": "text",
+          "options": [],
+          "id": "trust-review-1"
+        },
+        {
+          "label": "Integrity",
+          "value": "Clarification requested",
+          "icon": "shield",
+          "type": "text",
+          "options": [],
+          "id": "trust-review-2"
+        },
+        {
+          "label": "Local presence",
+          "value": "Review in progress",
+          "icon": "pin",
+          "type": "text",
+          "options": [],
+          "id": "trust-review-3"
+        }
+      ],
+      "roles": {
+        "ngo": "edit",
+        "bee": "approve"
+      },
+      "source": [
+        51,
+        53
+      ],
+      "note": "Bee demande les compléments et rend une décision traçable. Un expert ne reçoit que le dossier explicitement attribué.",
+      "action": "Submit for review",
+      "number": 29,
+      "secondary": "View details",
+      "projectType": "impact"
+    },
+    {
+      "id": "trust-verified",
+      "phase": "Confiance",
+      "title": "A trusted beginning",
+      "fr": "08 · Statut de confiance",
+      "kind": "status",
+      "fields": [
+        {
+          "label": "Partner review",
+          "value": "Pending final Bee decision",
+          "icon": "shield",
+          "type": "text",
+          "options": [],
+          "id": "trust-verified-0"
+        },
+        {
+          "label": "Next",
+          "value": "Create an action proposal",
+          "icon": "leaf",
+          "type": "text",
+          "options": [],
+          "id": "trust-verified-1"
+        }
+      ],
+      "roles": {
+        "ngo": "read",
+        "bee": "approve"
+      },
+      "source": [
+        51
+      ],
+      "note": "Aucun label vérifié attribué automatiquement. Ce statut reste en attente dans la maquette.",
+      "action": "Open review",
+      "number": 30,
+      "secondary": "View details",
+      "projectType": "impact"
+    },
+    {
+      "id": "proposal",
+      "phase": "Création Bee",
+      "title": "A creative proposal",
+      "fr": "Proposition créative",
+      "kind": "gallery",
+      "fields": [
+        {
+          "label": "Concept",
+          "value": "Movement, material, place",
+          "icon": "feather",
+          "type": "text",
+          "options": [],
+          "id": "proposal-0"
+        },
+        {
+          "label": "Status",
+          "value": "Draft · internal review first",
+          "icon": "shield",
+          "type": "text",
+          "options": [],
+          "id": "proposal-1"
+        }
+      ],
+      "roles": {
+        "brand": "read",
+        "production": "read",
+        "art": "edit",
+        "stylist": "read",
+        "photo": "read",
+        "film": "read",
+        "beauty": "read",
+        "editor": "read",
+        "model": "read",
+        "bee": "approve"
+      },
+      "source": [
+        5,
+        78
+      ],
+      "note": "La DA prépare ; Bee valide avant toute demande d’approbation à la marque.",
+      "action": "Send to Bee review",
+      "number": 31,
+      "secondary": "View details",
+      "projectType": "production"
+    },
+    {
+      "id": "moodboard",
+      "phase": "Création Bee",
+      "title": "The visual language",
+      "fr": "Moodboard",
+      "kind": "board",
+      "fields": [
+        {
+          "label": "Light",
+          "value": "Natural & directional",
+          "icon": "sun",
+          "type": "text",
+          "options": [],
+          "id": "moodboard-0"
+        },
+        {
+          "label": "Attitude",
+          "value": "Movement & ease",
+          "icon": "user",
+          "type": "text",
+          "options": [],
+          "id": "moodboard-1"
+        },
+        {
+          "label": "Texture",
+          "value": "Earth & material",
+          "icon": "layers",
+          "type": "text",
+          "options": [],
+          "id": "moodboard-2"
+        }
+      ],
+      "roles": {
+        "brand": "read",
+        "bee": "read",
+        "art": "edit",
+        "production": "read",
+        "stylist": "read",
+        "photo": "read",
+        "film": "read",
+        "beauty": "read",
+        "editor": "read"
+      },
+      "source": [
+        5,
+        44,
+        58
+      ],
+      "note": "Une intention par référence. Les métiers apportent leurs références de spécialité sans dupliquer la direction commune.",
+      "action": "Add reference",
+      "number": 32,
+      "secondary": "View details",
+      "projectType": "production"
+    },
+    {
+      "id": "casting",
+      "phase": "Création Bee",
+      "title": "Faces of the journey",
+      "fr": "Sélection du casting",
+      "kind": "gallery",
+      "fields": [
+        {
+          "label": "Talent 01",
+          "value": "Available · sample profile",
+          "icon": "user",
+          "type": "text",
+          "options": [],
+          "id": "casting-0"
+        },
+        {
+          "label": "Talent 02",
+          "value": "Availability requested",
+          "icon": "user",
+          "type": "text",
+          "options": [],
+          "id": "casting-1"
+        }
+      ],
+      "roles": {
+        "brand": "read",
+        "stylist": "read",
+        "beauty": "read",
+        "art": "edit",
+        "production": "edit",
+        "bee": "approve"
+      },
+      "source": [
+        19,
+        36,
+        78
+      ],
+      "note": "Les photos illustrent la composition, pas un casting réel confirmé.",
+      "action": "Review shortlist",
+      "number": 33,
+      "secondary": "View details",
+      "projectType": "production"
+    },
+    {
+      "id": "items",
+      "phase": "Création Bee",
+      "title": "Objects in motion",
+      "fr": "Catalogue des produits",
+      "kind": "gallery",
+      "fields": [
+        {
+          "label": "Collection",
+          "value": "12 items · sample inventory",
+          "icon": "bag",
+          "type": "text",
+          "options": [],
+          "id": "items-0"
+        },
+        {
+          "label": "Allocation",
+          "value": "4 looks to compose",
+          "icon": "hanger",
+          "type": "text",
+          "options": [],
+          "id": "items-1"
+        }
+      ],
+      "roles": {
+        "bee": "read",
+        "art": "read",
+        "production": "read",
+        "photo": "read",
+        "film": "read",
+        "brand": "edit",
+        "stylist": "edit"
+      },
+      "source": [
+        7,
+        78
+      ],
+      "note": "La marque dépose les produits ; le stylisme construit les looks à partir du même inventaire.",
+      "action": "Add item",
+      "number": 34,
+      "secondary": "View details",
+      "projectType": "production"
+    },
+    {
+      "id": "item",
+      "phase": "Création Bee",
+      "title": "The detail",
+      "fr": "Fiche produit",
+      "kind": "asset",
+      "fields": [
+        {
+          "label": "Reference",
+          "value": "Item 01 · sample",
+          "icon": "bag",
+          "type": "text",
+          "options": [],
+          "id": "item-0"
+        },
+        {
+          "label": "Material",
+          "value": "Add composition",
+          "icon": "layers",
+          "type": "text",
+          "options": [],
+          "id": "item-1"
+        },
+        {
+          "label": "Colour",
+          "value": "Sand / black",
+          "icon": "palette",
+          "type": "text",
+          "options": [],
+          "id": "item-2"
+        },
+        {
+          "label": "Fit",
+          "value": "Size & measurements",
+          "icon": "ruler",
+          "type": "text",
+          "options": [],
+          "id": "item-3"
+        }
+      ],
+      "roles": {
+        "bee": "read",
+        "art": "read",
+        "production": "read",
+        "brand": "edit",
+        "stylist": "edit"
+      },
+      "source": [
+        7
+      ],
+      "note": "Référence, vues, détail matière et mesures ; les variantes du même article restent liées.",
+      "action": "Save item",
+      "number": 35,
+      "secondary": "View details",
+      "projectType": "production"
+    },
+    {
+      "id": "shipments",
+      "phase": "Création Bee",
+      "title": "Follow the collection",
+      "fr": "Envois et retours produits",
+      "kind": "table",
+      "fields": [
+        {
+          "label": "Brand → Production",
+          "value": "In preparation",
+          "icon": "bag",
+          "type": "text",
+          "options": [],
+          "id": "shipments-0"
+        },
+        {
+          "label": "Styling → Location",
+          "value": "Awaiting dispatch",
+          "icon": "hanger",
+          "type": "text",
+          "options": [],
+          "id": "shipments-1"
+        },
+        {
+          "label": "Production → Brand",
+          "value": "Return to plan",
+          "icon": "arrow",
+          "type": "text",
+          "options": [],
+          "id": "shipments-2"
+        }
+      ],
+      "roles": {
+        "bee": "read",
+        "brand": "edit",
+        "production": "edit",
+        "stylist": "edit"
+      },
+      "source": [
+        78
+      ],
+      "note": "Chaque envoi a un transporteur, un suivi et une réception ; le retour est distinct de la livraison des images.",
+      "action": "Add shipment",
+      "columns": [
+        "Shipment",
+        "Status",
+        "Tracking"
+      ],
+      "number": 36,
+      "secondary": "View details",
+      "projectType": "production"
+    },
+    {
+      "id": "team",
+      "phase": "Création Bee",
+      "title": "Shape your hive",
+      "fr": "Équipe et affectations",
+      "kind": "team",
+      "fields": [
+        {
+          "label": "Art direction",
+          "value": "Assigned",
+          "icon": "feather",
+          "type": "text",
+          "options": [],
+          "id": "team-0"
+        },
+        {
+          "label": "Production",
+          "value": "Assigned",
+          "icon": "compass",
+          "type": "text",
+          "options": [],
+          "id": "team-1"
+        },
+        {
+          "label": "Photography",
+          "value": "To confirm",
+          "icon": "camera",
+          "type": "text",
+          "options": [],
+          "id": "team-2"
+        },
+        {
+          "label": "Styling",
+          "value": "To confirm",
+          "icon": "hanger",
+          "type": "text",
+          "options": [],
+          "id": "team-3"
+        }
+      ],
+      "roles": {
+        "art": "read",
+        "production": "edit",
+        "bee": "edit"
+      },
+      "source": [
+        6,
+        10,
+        56,
+        69
+      ],
+      "note": "Les métiers consultent les contacts utiles dans leur feuille de service, pas les tarifs et contrats de toute l’équipe.",
+      "action": "Add a member",
+      "number": 37,
+      "secondary": "View details",
+      "projectType": "production"
+    },
+    {
+      "id": "team-invite",
+      "phase": "Création Bee",
+      "title": "A new connection",
+      "fr": "Ajouter un membre",
+      "kind": "form",
+      "fields": [
+        {
+          "label": "Job",
+          "value": "Photographer",
+          "icon": "camera",
+          "type": "choices",
+          "options": [
+            "Photographer",
+            "Filmmaker",
+            "Stylist"
+          ],
+          "id": "team-invite-0"
+        },
+        {
+          "label": "Artist name",
+          "value": "Name",
+          "icon": "user",
+          "type": "text",
+          "options": [],
+          "id": "team-invite-1"
+        },
+        {
+          "label": "Current location",
+          "value": "City, country",
+          "icon": "pin",
+          "type": "text",
+          "options": [],
+          "id": "team-invite-2"
+        },
+        {
+          "label": "WhatsApp / portfolio",
+          "value": "Contact and portfolio link",
+          "icon": "link",
+          "type": "text",
+          "options": [],
+          "id": "team-invite-3"
+        }
+      ],
+      "roles": {
+        "production": "edit",
+        "bee": "edit"
+      },
+      "source": [
+        6,
+        79
+      ],
+      "note": "Ajout d’un profil séparé de l’envoi réel de l’invitation ; métiers supplémentaires accessibles dans le sélecteur.",
+      "action": "Prepare invitation",
+      "number": 38,
+      "secondary": "Add a nuance",
+      "projectType": "production"
+    },
+    {
+      "id": "agreements",
+      "phase": "Création Bee",
+      "title": "A clear agreement",
+      "fr": "Contrats et charte",
+      "kind": "review",
+      "fields": [
+        {
+          "label": "Project agreement",
+          "value": "Review required",
+          "icon": "file",
+          "type": "text",
+          "options": [],
+          "id": "agreements-0"
+        },
+        {
+          "label": "Quality charter",
+          "value": "Review required",
+          "icon": "shield",
+          "type": "text",
+          "options": [],
+          "id": "agreements-1"
+        },
+        {
+          "label": "Usage rights",
+          "value": "Scope to confirm",
+          "icon": "globe",
+          "type": "text",
+          "options": [],
+          "id": "agreements-2"
+        }
+      ],
+      "roles": {
+        "brand": "read",
+        "art": "read",
+        "production": "edit",
+        "stylist": "read",
+        "photo": "read",
+        "film": "read",
+        "beauty": "read",
+        "editor": "read",
+        "model": "read",
+        "bee": "edit"
+      },
+      "source": [
+        25,
+        79
+      ],
+      "note": "Chaque talent ne voit que son contrat. La réservation devient confirmable après les accords requis.",
+      "action": "Review agreement",
+      "number": 39,
+      "secondary": "View details",
+      "projectType": "production"
+    },
+    {
+      "id": "budget",
+      "phase": "Création Bee",
+      "title": "Creative capital",
+      "fr": "Budget et répartition",
+      "kind": "capital",
+      "fields": [
+        {
+          "label": "Production",
+          "value": "Amount to confirm",
+          "icon": "camera",
+          "type": "text",
+          "options": [],
+          "id": "budget-0"
+        },
+        {
+          "label": "Creation",
+          "value": "Amount to confirm",
+          "icon": "feather",
+          "type": "text",
+          "options": [],
+          "id": "budget-1"
+        },
+        {
+          "label": "Impact allocation",
+          "value": "Amount to confirm",
+          "icon": "leaf",
+          "type": "text",
+          "options": [],
+          "id": "budget-2"
+        }
+      ],
+      "roles": {
+        "brand": "read",
+        "production": "edit",
+        "bee": "approve"
+      },
+      "source": [
+        61,
+        37
+      ],
+      "note": "Bee tranche le budget. La marque voit une synthèse, la production son enveloppe ; les frais Bee internes restent privés.",
+      "action": "Submit budget",
+      "number": 40,
+      "secondary": "View details",
+      "projectType": "production"
+    },
+    {
+      "id": "scouting",
+      "phase": "Scouting · Bee → Flower",
+      "title": "Find the frame",
+      "fr": "Repérages : vue d’ensemble",
+      "kind": "gallery",
+      "fields": [
+        {
+          "label": "Location 01",
+          "value": "Explore & document",
+          "icon": "pin",
+          "type": "text",
+          "options": [],
+          "id": "scouting-0"
+        },
+        {
+          "label": "Location 02",
+          "value": "Creative review",
+          "icon": "sun",
+          "type": "text",
+          "options": [],
+          "id": "scouting-1"
+        },
+        {
+          "label": "Location 03",
+          "value": "Feasibility to check",
+          "icon": "compass",
+          "type": "text",
+          "options": [],
+          "id": "scouting-2"
+        }
+      ],
+      "roles": {
+        "brand": "read",
+        "bee": "read",
+        "photo": "read",
+        "film": "read",
+        "stylist": "read",
+        "beauty": "read",
+        "production": "edit",
+        "art": "edit"
+      },
+      "source": [
+        49,
+        20,
+        21
+      ],
+      "note": "Le scouting relie Bee et Flower : intention, terrain, faisabilité, puis validation.",
+      "action": "Add a location",
+      "number": 41,
+      "secondary": "View details",
+      "projectType": "production"
+    },
+    {
+      "id": "location",
+      "phase": "Scouting · Bee → Flower",
+      "title": "A sense of light",
+      "fr": "Fiche lieu",
+      "kind": "scout",
+      "fields": [
+        {
+          "label": "Coordinates",
+          "value": "Pin to confirm on site",
+          "icon": "pin",
+          "type": "text",
+          "options": [],
+          "id": "location-0"
+        },
+        {
+          "label": "Light window",
+          "value": "Sunrise · verify locally",
+          "icon": "sun",
+          "type": "text",
+          "options": [],
+          "id": "location-1"
+        },
+        {
+          "label": "Access & permission",
+          "value": "Awaiting location clearance",
+          "icon": "shield",
+          "type": "text",
+          "options": [],
+          "id": "location-2"
+        }
+      ],
+      "roles": {
+        "brand": "read",
+        "bee": "read",
+        "photo": "read",
+        "film": "read",
+        "stylist": "read",
+        "beauty": "read",
+        "production": "edit",
+        "art": "edit"
+      },
+      "source": [
+        1,
+        2,
+        4,
+        20
+      ],
+      "note": "GPS, lumière, autorisations et vues terrain sont documentés ; une belle image ne vaut pas autorisation.",
+      "action": "Add a frame",
+      "number": 42,
+      "secondary": "View details",
+      "projectType": "production"
+    },
+    {
+      "id": "location-add",
+      "phase": "Scouting · Bee → Flower",
+      "title": "Pin a place",
+      "fr": "Ajouter un lieu",
+      "kind": "form",
+      "fields": [
+        {
+          "label": "Location name",
+          "value": "Name this place",
+          "icon": "pin",
+          "type": "text",
+          "options": [],
+          "id": "location-add-0"
+        },
+        {
+          "label": "Coordinates",
+          "value": "Latitude / longitude",
+          "icon": "compass",
+          "type": "text",
+          "options": [],
+          "id": "location-add-1"
+        },
+        {
+          "label": "Scouting images",
+          "value": "Add dated photographs",
+          "icon": "camera",
+          "type": "upload",
+          "options": [],
+          "id": "location-add-2"
+        },
+        {
+          "label": "Access & permission",
+          "value": "Status, owner and constraints",
+          "icon": "shield",
+          "type": "text",
+          "options": [],
+          "id": "location-add-3"
+        }
+      ],
+      "roles": {
+        "production": "edit",
+        "art": "edit"
+      },
+      "source": [
+        79
+      ],
+      "note": "Le repérage se prépare dans Bee et se met à jour sur place à la transition Flower.",
+      "action": "Save location",
+      "number": 43,
+      "secondary": "Add a nuance",
+      "projectType": "production"
+    },
+    {
+      "id": "frame",
+      "phase": "Scouting · Bee → Flower",
+      "title": "The chosen frame",
+      "fr": "Frame : angle et lumière",
+      "kind": "scout",
+      "fields": [
+        {
+          "label": "Frame 01",
+          "value": "Wide / movement",
+          "icon": "camera",
+          "type": "text",
+          "options": [],
+          "id": "frame-0"
+        },
+        {
+          "label": "Date & light",
+          "value": "Day 01 · first light",
+          "icon": "sun",
+          "type": "text",
+          "options": [],
+          "id": "frame-1"
+        },
+        {
+          "label": "Notes",
+          "value": "Keep the subject in motion",
+          "icon": "message",
+          "type": "text",
+          "options": [],
+          "id": "frame-2"
+        }
+      ],
+      "roles": {
+        "brand": "read",
+        "bee": "read",
+        "stylist": "read",
+        "beauty": "read",
+        "art": "edit",
+        "photo": "edit",
+        "film": "edit",
+        "production": "edit"
+      },
+      "source": [
+        44,
+        58,
+        71
+      ],
+      "note": "Une frame porte un angle et ses besoins ; les photos terrain sont séparées des références d’intention.",
+      "action": "Save frame",
+      "number": 44,
+      "secondary": "View details",
+      "projectType": "production"
+    },
+    {
+      "id": "allocation",
+      "phase": "Scouting · Bee → Flower",
+      "title": "Compose the moment",
+      "fr": "Allocation créative par frame",
+      "kind": "allocation",
+      "fields": [
+        {
+          "id": "allocation-0",
+          "label": "Look",
+          "value": "Look 01",
+          "icon": "bag",
+          "type": "text",
+          "options": []
+        },
+        {
+          "id": "allocation-1",
+          "label": "Styling",
+          "value": "Natural layers",
+          "icon": "hanger",
+          "type": "text",
+          "options": []
+        },
+        {
+          "id": "allocation-2",
+          "label": "Set",
+          "value": "Earth & shadow",
+          "icon": "layers",
+          "type": "text",
+          "options": []
+        },
+        {
+          "id": "allocation-3",
+          "label": "Attitude",
+          "value": "Movement",
+          "icon": "user",
+          "type": "text",
+          "options": []
+        },
+        {
+          "id": "allocation-4",
+          "label": "Beauty",
+          "value": "Natural texture",
+          "icon": "spark",
+          "type": "text",
+          "options": []
+        },
+        {
+          "id": "allocation-5",
+          "label": "Direction",
+          "value": "Wide & close",
+          "icon": "camera",
+          "type": "text",
+          "options": []
+        },
+        {
+          "id": "allocation-6",
+          "label": "Talent",
+          "value": "Talent 01",
+          "icon": "users",
+          "type": "text",
+          "options": []
+        }
+      ],
+      "roles": {
+        "brand": "read",
+        "bee": "read",
+        "production": "read",
+        "art": "edit",
+        "stylist": "edit",
+        "beauty": "edit",
+        "photo": "edit",
+        "film": "edit"
+      },
+      "source": [
+        44,
+        58,
+        71,
+        72,
+        79
+      ],
+      "note": "DA coordonne. Chaque métier modifie sa rubrique ; les looks, casting, lumière et réalisation appartiennent à la même frame.",
+      "action": "Save allocation",
+      "number": 45,
+      "secondary": "View details",
+      "projectType": "production"
+    },
+    {
+      "id": "creative-lock",
+      "phase": "Scouting · Bee → Flower",
+      "title": "Ready to become real",
+      "fr": "Valider la direction finale",
+      "kind": "review",
+      "fields": [
+        {
+          "label": "Scouting & frames",
+          "value": "Ready for internal review",
+          "icon": "pin",
+          "type": "text",
+          "options": [],
+          "id": "creative-lock-0"
+        },
+        {
+          "label": "Casting & looks",
+          "value": "Ready for internal review",
+          "icon": "hanger",
+          "type": "text",
+          "options": [],
+          "id": "creative-lock-1"
+        },
+        {
+          "label": "Bee review",
+          "value": "Required before brand review",
+          "icon": "shield",
+          "type": "text",
+          "options": [],
+          "id": "creative-lock-2"
+        },
+        {
+          "label": "Brand decision",
+          "value": "Not requested yet",
+          "icon": "user",
+          "type": "text",
+          "options": [],
+          "id": "creative-lock-3"
+        }
+      ],
+      "roles": {
+        "art": "read",
+        "production": "read",
+        "bee": "approve",
+        "brand": "approve"
+      },
+      "source": [
+        78,
+        79,
+        37
+      ],
+      "note": "Ordre explicite : Bee, puis marque. Une modification importante rouvre la validation concernée.",
+      "action": "Review direction",
+      "number": 46,
+      "secondary": "View details",
+      "projectType": "production"
+    },
+    {
+      "id": "itinerary",
+      "phase": "Préparation",
+      "title": "Craft the itinerance",
+      "fr": "Itinéraire et déplacements",
+      "kind": "map",
+      "fields": [
+        {
+          "label": "Day 01",
+          "value": "Arrival & scouting",
+          "icon": "pin",
+          "type": "text",
+          "options": [],
+          "id": "itinerary-0"
+        },
+        {
+          "label": "Day 02",
+          "value": "Preparation",
+          "icon": "hanger",
+          "type": "text",
+          "options": [],
+          "id": "itinerary-1"
+        },
+        {
+          "label": "Day 03",
+          "value": "Production",
+          "icon": "camera",
+          "type": "text",
+          "options": [],
+          "id": "itinerary-2"
+        }
+      ],
+      "roles": {
+        "bee": "read",
+        "art": "read",
+        "photo": "read",
+        "film": "read",
+        "stylist": "read",
+        "beauty": "read",
+        "model": "read",
+        "production": "edit"
+      },
+      "source": [
+        65,
+        33
+      ],
+      "note": "Carte schématique de planning, pas un itinéraire GPS calculé. Déplacements et temps de repos font partie du plan.",
+      "action": "Add a stop",
+      "number": 47,
+      "secondary": "View details",
+      "projectType": "production"
+    },
+    {
+      "id": "bookings",
+      "phase": "Préparation",
+      "title": "A place for everyone",
+      "fr": "Réservations de l’équipe",
+      "kind": "bookings",
+      "fields": [
+        {
+          "label": "Travel",
+          "value": "To arrange",
+          "icon": "plane",
+          "type": "text",
+          "options": [],
+          "id": "bookings-0"
+        },
+        {
+          "label": "Stay",
+          "value": "To arrange",
+          "icon": "moon",
+          "type": "text",
+          "options": [],
+          "id": "bookings-1"
+        },
+        {
+          "label": "Table",
+          "value": "To arrange",
+          "icon": "leaf",
+          "type": "text",
+          "options": [],
+          "id": "bookings-2"
+        },
+        {
+          "label": "Transfers",
+          "value": "To arrange",
+          "icon": "car",
+          "type": "text",
+          "options": [],
+          "id": "bookings-3"
+        }
+      ],
+      "roles": {
+        "bee": "read",
+        "art": "read",
+        "production": "edit",
+        "stylist": "read",
+        "photo": "read",
+        "film": "read",
+        "beauty": "read",
+        "editor": "read",
+        "model": "read"
+      },
+      "source": [
+        57,
+        69,
+        79
+      ],
+      "note": "Chaque membre consulte ses réservations ; le producteur organise l’ensemble. Les coûts restent dans la vue autorisée.",
+      "action": "Open booking",
+      "number": 48,
+      "secondary": "View details",
+      "projectType": "production"
+    },
+    {
+      "id": "transport",
+      "phase": "Préparation",
+      "title": "Wind of the world",
+      "fr": "Transport",
+      "kind": "form",
+      "fields": [
+        {
+          "label": "Travel mode",
+          "value": "Shared van",
+          "icon": "car",
+          "type": "choices",
+          "options": [
+            "Train",
+            "Shared van",
+            "Flight"
+          ],
+          "id": "transport-0"
+        },
+        {
+          "label": "From / to",
+          "value": "Origin → destination",
+          "icon": "pin",
+          "type": "text",
+          "options": [],
+          "id": "transport-1"
+        },
+        {
+          "label": "Passengers & date",
+          "value": "Team · select date",
+          "icon": "users",
+          "type": "text",
+          "options": [],
+          "id": "transport-2"
+        }
+      ],
+      "roles": {
+        "bee": "read",
+        "art": "read",
+        "production": "edit",
+        "stylist": "read",
+        "photo": "read",
+        "film": "read",
+        "beauty": "read",
+        "editor": "read",
+        "model": "read"
+      },
+      "source": [
+        79,
+        57
+      ],
+      "note": "La production réserve. Le membre consulte seulement ses informations. Aucun facteur carbone non vérifié n’est affiché.",
+      "action": "Save booking",
+      "number": 49,
+      "secondary": "Add a nuance",
+      "projectType": "production"
+    },
+    {
+      "id": "stay",
+      "phase": "Préparation",
+      "title": "Nights by the moon",
+      "fr": "Hébergement",
+      "kind": "form",
+      "fields": [
+        {
+          "label": "Stay type",
+          "value": "Local stay",
+          "icon": "moon",
+          "type": "choices",
+          "options": [
+            "Local stay",
+            "Eco-lodge",
+            "Small hotel"
+          ],
+          "id": "stay-0"
+        },
+        {
+          "label": "Nights & rooms",
+          "value": "Select dates and rooms",
+          "icon": "calendar",
+          "type": "text",
+          "options": [],
+          "id": "stay-1"
+        },
+        {
+          "label": "Local provider",
+          "value": "Name and booking reference",
+          "icon": "home",
+          "type": "text",
+          "options": [],
+          "id": "stay-2"
+        }
+      ],
+      "roles": {
+        "bee": "read",
+        "art": "read",
+        "production": "edit",
+        "stylist": "read",
+        "photo": "read",
+        "film": "read",
+        "beauty": "read",
+        "editor": "read",
+        "model": "read"
+      },
+      "source": [
+        79,
+        57
+      ],
+      "note": "La production réserve. Le membre consulte seulement ses informations. Aucun facteur carbone non vérifié n’est affiché.",
+      "action": "Save booking",
+      "number": 50,
+      "secondary": "Add a nuance",
+      "projectType": "production"
+    },
+    {
+      "id": "catering",
+      "phase": "Préparation",
+      "title": "From the living table",
+      "fr": "Restauration",
+      "kind": "form",
+      "fields": [
+        {
+          "label": "Meal",
+          "value": "Local meal",
+          "icon": "leaf",
+          "type": "choices",
+          "options": [
+            "Local meal",
+            "Plant-based",
+            "Breakfast"
+          ],
+          "id": "catering-0"
+        },
+        {
+          "label": "People & date",
+          "value": "Crew · select date",
+          "icon": "users",
+          "type": "text",
+          "options": [],
+          "id": "catering-1"
+        },
+        {
+          "label": "Dietary requirements",
+          "value": "Only shared with the provider as needed",
+          "icon": "shield",
+          "type": "text",
+          "options": [],
+          "id": "catering-2"
+        }
+      ],
+      "roles": {
+        "bee": "read",
+        "art": "read",
+        "production": "edit",
+        "stylist": "read",
+        "photo": "read",
+        "film": "read",
+        "beauty": "read",
+        "editor": "read",
+        "model": "read"
+      },
+      "source": [
+        79,
+        57
+      ],
+      "note": "La production réserve. Le membre consulte seulement ses informations. Aucun facteur carbone non vérifié n’est affiché.",
+      "action": "Save booking",
+      "number": 51,
+      "secondary": "Add a nuance",
+      "projectType": "production"
+    },
+    {
+      "id": "equipment",
+      "phase": "Préparation",
+      "title": "Tools for the vision",
+      "fr": "Matériel et besoins",
+      "kind": "table",
+      "fields": [
+        {
+          "label": "Camera & lenses",
+          "value": "Requested",
+          "icon": "camera",
+          "type": "text",
+          "options": [],
+          "id": "equipment-0"
+        },
+        {
+          "label": "Lighting & power",
+          "value": "To confirm",
+          "icon": "sun",
+          "type": "text",
+          "options": [],
+          "id": "equipment-1"
+        },
+        {
+          "label": "Sound & storage",
+          "value": "To confirm",
+          "icon": "film",
+          "type": "text",
+          "options": [],
+          "id": "equipment-2"
+        }
+      ],
+      "roles": {
+        "bee": "read",
+        "art": "read",
+        "photo": "edit",
+        "film": "edit",
+        "production": "edit"
+      },
+      "source": [
+        62,
+        37
+      ],
+      "note": "Les demandes photo et film sont rapprochées pour éviter doublons et incompatibilités.",
+      "action": "Add a requirement",
+      "number": 52,
+      "secondary": "View details",
+      "projectType": "production"
+    },
+    {
+      "id": "styling",
+      "phase": "Préparation",
+      "title": "Looks in place",
+      "fr": "Looks et frames",
+      "kind": "allocation",
+      "fields": [
+        {
+          "label": "Look 01",
+          "value": "Frame 01",
+          "icon": "hanger",
+          "type": "text",
+          "options": [],
+          "id": "styling-0"
+        },
+        {
+          "label": "Look 02",
+          "value": "Frame 02",
+          "icon": "hanger",
+          "type": "text",
+          "options": [],
+          "id": "styling-1"
+        },
+        {
+          "label": "Accessories",
+          "value": "Assigned to looks",
+          "icon": "bag",
+          "type": "text",
+          "options": [],
+          "id": "styling-2"
+        }
+      ],
+      "roles": {
+        "art": "read",
+        "production": "read",
+        "brand": "read",
+        "bee": "read",
+        "beauty": "read",
+        "model": "read",
+        "stylist": "edit"
+      },
+      "source": [
+        72
+      ],
+      "note": "Le stylisme relie articles, looks et frames. Le mannequin consulte son affectation, pas celles de tous les talents.",
+      "action": "Compose a look",
+      "number": 53,
+      "secondary": "View details",
+      "projectType": "production"
+    },
+    {
+      "id": "fitting",
+      "phase": "Préparation",
+      "title": "The fitting",
+      "fr": "Essayages et raccords",
+      "kind": "asset",
+      "fields": [
+        {
+          "label": "Look 01",
+          "value": "Talent 01",
+          "icon": "hanger",
+          "type": "text",
+          "options": [],
+          "id": "fitting-0"
+        },
+        {
+          "label": "Fit",
+          "value": "Adjustment needed",
+          "icon": "ruler",
+          "type": "text",
+          "options": [],
+          "id": "fitting-1"
+        },
+        {
+          "label": "Continuity",
+          "value": "Add front / back details",
+          "icon": "camera",
+          "type": "text",
+          "options": [],
+          "id": "fitting-2"
+        }
+      ],
+      "roles": {
+        "art": "read",
+        "production": "read",
+        "beauty": "read",
+        "model": "read",
+        "stylist": "edit"
+      },
+      "source": [
+        42
+      ],
+      "note": "Les images d’essayage sont accessibles aux personnes concernées. Le mannequin voit ses propres informations.",
+      "action": "Save fitting",
+      "number": 54,
+      "secondary": "View details",
+      "projectType": "production"
+    },
+    {
+      "id": "beauty",
+      "phase": "Préparation",
+      "title": "The quiet detail",
+      "fr": "Direction beauté",
+      "kind": "gallery",
+      "fields": [
+        {
+          "label": "Makeup",
+          "value": "Natural texture",
+          "icon": "spark",
+          "type": "text",
+          "options": [],
+          "id": "beauty-0"
+        },
+        {
+          "label": "Hair",
+          "value": "Soft movement",
+          "icon": "user",
+          "type": "text",
+          "options": [],
+          "id": "beauty-1"
+        },
+        {
+          "label": "Continuity",
+          "value": "One reference per look",
+          "icon": "camera",
+          "type": "text",
+          "options": [],
+          "id": "beauty-2"
+        }
+      ],
+      "roles": {
+        "art": "read",
+        "production": "read",
+        "stylist": "read",
+        "model": "read",
+        "bee": "read",
+        "beauty": "edit"
+      },
+      "source": [
+        44,
+        79
+      ],
+      "note": "Les références créatives restent liées au look. Les détails personnels ne sont pas exposés au reste de l’équipe.",
+      "action": "Add beauty reference",
+      "number": 55,
+      "secondary": "View details",
+      "projectType": "production"
+    },
+    {
+      "id": "ready",
+      "phase": "Préparation",
+      "title": "Ready to produce",
+      "fr": "Passage au tournage",
+      "kind": "review",
+      "fields": [
+        {
+          "label": "Creative approval",
+          "value": "Bee then brand",
+          "icon": "shield",
+          "type": "text",
+          "options": [],
+          "id": "ready-0"
+        },
+        {
+          "label": "Team & agreements",
+          "value": "Pending confirmations",
+          "icon": "users",
+          "type": "text",
+          "options": [],
+          "id": "ready-1"
+        },
+        {
+          "label": "Locations & bookings",
+          "value": "Pending clearances",
+          "icon": "pin",
+          "type": "text",
+          "options": [],
+          "id": "ready-2"
+        },
+        {
+          "label": "Budget",
+          "value": "Bee sign-off required",
+          "icon": "wallet",
+          "type": "text",
+          "options": [],
+          "id": "ready-3"
+        }
+      ],
+      "roles": {
+        "art": "read",
+        "brand": "read",
+        "production": "edit",
+        "bee": "approve"
+      },
+      "source": [
+        37,
+        62
+      ],
+      "note": "La production ne passe pas prête uniquement parce que le planning existe : les dépendances bloquantes restent visibles.",
+      "action": "Review readiness",
+      "number": 56,
+      "secondary": "View details",
+      "projectType": "production"
+    },
+    {
+      "id": "call-sheet",
+      "phase": "Flower · Production",
+      "title": "Today, together",
+      "fr": "Feuille de service",
+      "kind": "calendar",
+      "fields": [
+        {
+          "label": "06:30",
+          "value": "Crew call",
+          "icon": "sun",
+          "type": "text",
+          "options": [],
+          "id": "call-sheet-0"
+        },
+        {
+          "label": "07:00",
+          "value": "Beauty & styling",
+          "icon": "hanger",
+          "type": "text",
+          "options": [],
+          "id": "call-sheet-1"
+        },
+        {
+          "label": "08:00",
+          "value": "Frame 01",
+          "icon": "camera",
+          "type": "text",
+          "options": [],
+          "id": "call-sheet-2"
+        },
+        {
+          "label": "12:30",
+          "value": "Break & local table",
+          "icon": "leaf",
+          "type": "text",
+          "options": [],
+          "id": "call-sheet-3"
+        }
+      ],
+      "roles": {
+        "bee": "read",
+        "brand": "read",
+        "art": "read",
+        "production": "edit",
+        "stylist": "read",
+        "photo": "read",
+        "film": "read",
+        "beauty": "read",
+        "editor": "read",
+        "model": "read"
+      },
+      "source": [
+        45
+      ],
+      "note": "Un horaire, un lieu, un contact utile. La marque suit le déroulé ; chaque talent voit son appel personnel.",
+      "action": "Open today’s plan",
+      "number": 57,
+      "secondary": "View details",
+      "projectType": "production"
+    },
+    {
+      "id": "shoot",
+      "phase": "Flower · Production",
+      "title": "Make the moment",
+      "fr": "Suivi des plans",
+      "kind": "scout",
+      "fields": [
+        {
+          "label": "Frame 01",
+          "value": "Ready to shoot",
+          "icon": "camera",
+          "type": "text",
+          "options": [],
+          "id": "shoot-0"
+        },
+        {
+          "label": "Look 01",
+          "value": "Prepared",
+          "icon": "hanger",
+          "type": "text",
+          "options": [],
+          "id": "shoot-1"
+        },
+        {
+          "label": "Light",
+          "value": "Check on set",
+          "icon": "sun",
+          "type": "text",
+          "options": [],
+          "id": "shoot-2"
+        }
+      ],
+      "roles": {
+        "bee": "read",
+        "stylist": "read",
+        "beauty": "read",
+        "model": "read",
+        "art": "edit",
+        "production": "edit",
+        "photo": "edit",
+        "film": "edit"
+      },
+      "source": [
+        45,
+        58
+      ],
+      "note": "Photo et film marquent leurs prises. La production suit l’avancement du plan partagé.",
+      "action": "Mark take complete",
+      "number": 58,
+      "secondary": "View details",
+      "projectType": "production"
+    },
+    {
+      "id": "previews",
+      "phase": "Flower · Production",
+      "title": "First glimpses",
+      "fr": "Aperçus pendant le tournage",
+      "kind": "gallery",
+      "fields": [
+        {
+          "label": "Preview selection",
+          "value": "Watermarked review copies",
+          "icon": "image",
+          "type": "text",
+          "options": [],
+          "id": "previews-0"
+        },
+        {
+          "label": "Feedback",
+          "value": "Creative notes",
+          "icon": "message",
+          "type": "text",
+          "options": [],
+          "id": "previews-1"
+        }
+      ],
+      "roles": {
+        "brand": "read",
+        "bee": "read",
+        "art": "read",
+        "production": "read",
+        "editor": "read",
+        "photo": "edit",
+        "film": "edit"
+      },
+      "source": [
+        78
+      ],
+      "note": "Les aperçus ne sont pas des masters livrés. Les retours nourrissent la sélection sans remplacer la validation finale.",
+      "action": "Share preview",
+      "number": 59,
+      "secondary": "View details",
+      "projectType": "production"
+    },
+    {
+      "id": "backstage",
+      "phase": "Flower · Production",
+      "title": "Behind the moment",
+      "fr": "Backstage",
+      "kind": "gallery",
+      "fields": [
+        {
+          "label": "Collection",
+          "value": "Behind the scenes",
+          "icon": "film",
+          "type": "text",
+          "options": [],
+          "id": "backstage-0"
+        },
+        {
+          "label": "Permission",
+          "value": "Check before sharing",
+          "icon": "shield",
+          "type": "text",
+          "options": [],
+          "id": "backstage-1"
+        }
+      ],
+      "roles": {
+        "brand": "read",
+        "bee": "read",
+        "art": "read",
+        "editor": "read",
+        "production": "edit",
+        "photo": "edit",
+        "film": "edit"
+      },
+      "source": [
+        78
+      ],
+      "note": "Les fichiers ne sont diffusables que si leurs droits le permettent.",
+      "action": "Add backstage",
+      "number": 60,
+      "secondary": "View details",
+      "projectType": "production"
+    },
+    {
+      "id": "expenses",
+      "phase": "Flower · Production",
+      "title": "Every detail accounted for",
+      "fr": "Dépenses de production",
+      "kind": "table",
+      "fields": [
+        {
+          "label": "Local transport",
+          "value": "Receipt required",
+          "icon": "car",
+          "type": "text",
+          "options": [],
+          "id": "expenses-0"
+        },
+        {
+          "label": "Catering",
+          "value": "Submitted for review",
+          "icon": "leaf",
+          "type": "text",
+          "options": [],
+          "id": "expenses-1"
+        },
+        {
+          "label": "Equipment",
+          "value": "Draft",
+          "icon": "camera",
+          "type": "text",
+          "options": [],
+          "id": "expenses-2"
+        }
+      ],
+      "roles": {
+        "production": "edit",
+        "bee": "approve"
+      },
+      "source": [
+        68
+      ],
+      "note": "Les coûts de production sont séparés du capital d’impact. Les pièces justifient chaque dépense.",
+      "action": "Add expense",
+      "number": 61,
+      "secondary": "View details",
+      "projectType": "production"
+    },
+    {
+      "id": "expense-add",
+      "phase": "Flower · Production",
+      "title": "A trace of the spend",
+      "fr": "Saisir une dépense",
+      "kind": "form",
+      "fields": [
+        {
+          "label": "Category & supplier",
+          "value": "Transport · local provider",
+          "icon": "car",
+          "type": "text",
+          "options": [],
+          "id": "expense-add-0"
+        },
+        {
+          "label": "Amount & currency",
+          "value": "Enter amount",
+          "icon": "wallet",
+          "type": "number",
+          "options": [],
+          "id": "expense-add-1"
+        },
+        {
+          "label": "Date & project",
+          "value": "Select date · current project",
+          "icon": "calendar",
+          "type": "text",
+          "options": [],
+          "id": "expense-add-2"
+        },
+        {
+          "label": "Receipt",
+          "value": "Attach the original receipt",
+          "icon": "file",
+          "type": "upload",
+          "options": [],
+          "id": "expense-add-3"
+        }
+      ],
+      "roles": {
+        "bee": "read",
+        "production": "edit"
+      },
+      "source": [
+        68
+      ],
+      "note": "Date, devise, fournisseur et pièce sont nécessaires. Aucun remboursement n’est déclenché depuis cette maquette.",
+      "action": "Submit expense",
+      "number": 62,
+      "secondary": "Add a nuance",
+      "projectType": "production"
+    },
+    {
+      "id": "raws",
+      "phase": "Flower · Production",
+      "title": "Rushes & raw files",
+      "fr": "Sources et sauvegardes",
+      "kind": "table",
+      "fields": [
+        {
+          "label": "Photo sources",
+          "value": "Transfer to confirm",
+          "icon": "camera",
+          "type": "text",
+          "options": [],
+          "id": "raws-0"
+        },
+        {
+          "label": "Film rushes",
+          "value": "Transfer to confirm",
+          "icon": "film",
+          "type": "text",
+          "options": [],
+          "id": "raws-1"
+        },
+        {
+          "label": "Backup copy",
+          "value": "Verification required",
+          "icon": "shield",
+          "type": "text",
+          "options": [],
+          "id": "raws-2"
+        }
+      ],
+      "roles": {
+        "editor": "read",
+        "art": "read",
+        "bee": "read",
+        "photo": "edit",
+        "film": "edit",
+        "production": "edit"
+      },
+      "source": [
+        66
+      ],
+      "note": "Transféré, sauvegardé et vérifié sont trois états distincts. La marque n’a pas accès par défaut aux sources brutes.",
+      "action": "Add source batch",
+      "number": 63,
+      "secondary": "View details",
+      "projectType": "production"
+    },
+    {
+      "id": "handoff",
+      "phase": "Flower · Production",
+      "title": "Pass the vision on",
+      "fr": "Brief de postproduction",
+      "kind": "form",
+      "fields": [
+        {
+          "label": "Approved selection",
+          "value": "Attach the selects",
+          "icon": "image",
+          "type": "upload",
+          "options": [],
+          "id": "handoff-0"
+        },
+        {
+          "label": "Edit / retouch intention",
+          "value": "Preserve movement and texture",
+          "icon": "feather",
+          "type": "text",
+          "options": [],
+          "id": "handoff-1"
+        },
+        {
+          "label": "Colour & references",
+          "value": "Natural warmth",
+          "icon": "palette",
+          "type": "text",
+          "options": [],
+          "id": "handoff-2"
+        },
+        {
+          "label": "Formats & deadline",
+          "value": "Use the approved brief",
+          "icon": "calendar",
+          "type": "text",
+          "options": [],
+          "id": "handoff-3"
+        }
+      ],
+      "roles": {
+        "editor": "read",
+        "bee": "read",
+        "art": "edit",
+        "production": "edit",
+        "photo": "edit",
+        "film": "edit"
+      },
+      "source": [
+        23
+      ],
+      "note": "Le monteur reçoit les sources, références et objectifs, avec formats et échéance.",
+      "action": "Send to post-production",
+      "number": 64,
+      "secondary": "Add a nuance",
+      "projectType": "production"
+    },
+    {
+      "id": "post-calendar",
+      "phase": "Postproduction",
+      "title": "Post-production calendar",
+      "fr": "Planning de postproduction",
+      "kind": "calendar",
+      "fields": [
+        {
+          "label": "Day 04",
+          "value": "Selects to Bee",
+          "icon": "image",
+          "type": "text",
+          "options": [],
+          "id": "post-calendar-0"
+        },
+        {
+          "label": "Day 05",
+          "value": "Internal review",
+          "icon": "shield",
+          "type": "text",
+          "options": [],
+          "id": "post-calendar-1"
+        },
+        {
+          "label": "Day 06",
+          "value": "Brand selection",
+          "icon": "user",
+          "type": "text",
+          "options": [],
+          "id": "post-calendar-2"
+        },
+        {
+          "label": "Day 08",
+          "value": "Final delivery",
+          "icon": "download",
+          "type": "text",
+          "options": [],
+          "id": "post-calendar-3"
+        }
+      ],
+      "roles": {
+        "brand": "read",
+        "bee": "read",
+        "art": "read",
+        "photo": "read",
+        "film": "read",
+        "production": "edit",
+        "editor": "edit"
+      },
+      "source": [
+        3,
+        43
+      ],
+      "note": "Le calendrier distingue préparation créative, validation client et exécution postproduction.",
+      "action": "Open milestone",
+      "number": 65,
+      "secondary": "View details",
+      "projectType": "production"
+    },
+    {
+      "id": "selects",
+      "phase": "Postproduction",
+      "title": "The selection",
+      "fr": "Sélection des images",
+      "kind": "gallery",
+      "fields": [
+        {
+          "label": "Selects",
+          "value": "Review copies",
+          "icon": "image",
+          "type": "text",
+          "options": [],
+          "id": "selects-0"
+        },
+        {
+          "label": "Selection status",
+          "value": "Bee review first",
+          "icon": "shield",
+          "type": "text",
+          "options": [],
+          "id": "selects-1"
+        }
+      ],
+      "roles": {
+        "production": "read",
+        "art": "edit",
+        "photo": "edit",
+        "film": "edit",
+        "editor": "edit",
+        "bee": "approve",
+        "brand": "approve"
+      },
+      "source": [
+        23,
+        78
+      ],
+      "note": "La marque ne reçoit que la sélection passée par Bee. Les retours portent sur des versions identifiées.",
+      "action": "Save selection",
+      "number": 66,
+      "secondary": "View details",
+      "projectType": "production"
+    },
+    {
+      "id": "version",
+      "phase": "Postproduction",
+      "title": "Refine the story",
+      "fr": "Version et retouches",
+      "kind": "asset",
+      "fields": [
+        {
+          "label": "Version",
+          "value": "V02 · work in progress",
+          "icon": "layers",
+          "type": "text",
+          "options": [],
+          "id": "version-0"
+        },
+        {
+          "label": "Retouch",
+          "value": "Preserve the texture",
+          "icon": "feather",
+          "type": "text",
+          "options": [],
+          "id": "version-1"
+        },
+        {
+          "label": "Format",
+          "value": "4:5 · working copy",
+          "icon": "ruler",
+          "type": "text",
+          "options": [],
+          "id": "version-2"
+        }
+      ],
+      "roles": {
+        "art": "read",
+        "photo": "read",
+        "film": "read",
+        "production": "read",
+        "bee": "read",
+        "editor": "edit"
+      },
+      "source": [
+        43,
+        23
+      ],
+      "note": "Chaque export est une nouvelle version. La comparaison conserve l’historique et les commentaires.",
+      "action": "Submit version",
+      "number": 67,
+      "secondary": "View details",
+      "projectType": "production"
+    },
+    {
+      "id": "bee-review",
+      "phase": "Postproduction",
+      "title": "A considered eye",
+      "fr": "Revue créative Bee",
+      "kind": "review",
+      "fields": [
+        {
+          "label": "Image / film",
+          "value": "V02",
+          "icon": "image",
+          "type": "text",
+          "options": [],
+          "id": "bee-review-0"
+        },
+        {
+          "label": "Creative direction",
+          "value": "Check against approved frame",
+          "icon": "feather",
+          "type": "text",
+          "options": [],
+          "id": "bee-review-1"
+        },
+        {
+          "label": "Decision",
+          "value": "Pending Bee review",
+          "icon": "shield",
+          "type": "text",
+          "options": [],
+          "id": "bee-review-2"
+        }
+      ],
+      "roles": {
+        "art": "read",
+        "editor": "read",
+        "production": "read",
+        "bee": "approve"
+      },
+      "source": [
+        37,
+        23
+      ],
+      "note": "Bee peut demander des modifications. L’accord interne débloque la revue marque.",
+      "action": "Approve for brand review",
+      "number": 68,
+      "secondary": "View details",
+      "projectType": "production"
+    },
+    {
+      "id": "brand-review",
+      "phase": "Postproduction",
+      "title": "The final feeling",
+      "fr": "Validation de la marque",
+      "kind": "review",
+      "fields": [
+        {
+          "label": "Version",
+          "value": "V02 · Bee reviewed",
+          "icon": "image",
+          "type": "text",
+          "options": [],
+          "id": "brand-review-0"
+        },
+        {
+          "label": "Your decision",
+          "value": "Awaiting brand review",
+          "icon": "shield",
+          "type": "text",
+          "options": [],
+          "id": "brand-review-1"
+        },
+        {
+          "label": "Feedback",
+          "value": "Add a precise note",
+          "icon": "message",
+          "type": "text",
+          "options": [],
+          "id": "brand-review-2"
+        }
+      ],
+      "roles": {
+        "bee": "read",
+        "art": "read",
+        "production": "read",
+        "editor": "read",
+        "brand": "approve"
+      },
+      "source": [
+        78,
+        37
+      ],
+      "note": "La marque valide cette version ou demande une correction. Une nouvelle version doit repasser les étapes applicables.",
+      "action": "Approve this version",
+      "number": 69,
+      "secondary": "View details",
+      "projectType": "production"
+    },
+    {
+      "id": "delivery",
+      "phase": "Livraison",
+      "title": "Stories to keep",
+      "fr": "Livraison des masters",
+      "kind": "gallery",
+      "fields": [
+        {
+          "label": "Photos",
+          "value": "Approved masters",
+          "icon": "image",
+          "type": "text",
+          "options": [],
+          "id": "delivery-0"
+        },
+        {
+          "label": "Films",
+          "value": "Approved exports",
+          "icon": "film",
+          "type": "text",
+          "options": [],
+          "id": "delivery-1"
+        },
+        {
+          "label": "Manifest",
+          "value": "Formats & version list",
+          "icon": "file",
+          "type": "text",
+          "options": [],
+          "id": "delivery-2"
+        }
+      ],
+      "roles": {
+        "brand": "read",
+        "bee": "read",
+        "art": "read",
+        "photo": "read",
+        "film": "read",
+        "editor": "edit",
+        "production": "edit"
+      },
+      "source": [
+        78
+      ],
+      "note": "La remise des masters est distincte de la diffusion publique. Les sources sont incluses seulement si le contrat le prévoit.",
+      "action": "Download delivery",
+      "number": 70,
+      "secondary": "View details",
+      "projectType": "production"
+    },
+    {
+      "id": "rights",
+      "phase": "Livraison",
+      "title": "A life beyond the frame",
+      "fr": "Droits et extensions",
+      "kind": "form",
+      "fields": [
+        {
+          "label": "Channels",
+          "value": "Digital · sample scope",
+          "icon": "globe",
+          "type": "text",
+          "options": [],
+          "id": "rights-0"
+        },
+        {
+          "label": "Territory",
+          "value": "Europe · to confirm",
+          "icon": "pin",
+          "type": "text",
+          "options": [],
+          "id": "rights-1"
+        },
+        {
+          "label": "Validity",
+          "value": "Contractual dates required",
+          "icon": "calendar",
+          "type": "text",
+          "options": [],
+          "id": "rights-2"
+        },
+        {
+          "label": "Agreement",
+          "value": "Open the rights document",
+          "icon": "file",
+          "type": "upload",
+          "options": [],
+          "id": "rights-3"
+        }
+      ],
+      "roles": {
+        "brand": "read",
+        "model": "read",
+        "photo": "read",
+        "film": "read",
+        "bee": "edit",
+        "production": "edit"
+      },
+      "source": [
+        78,
+        63
+      ],
+      "note": "Une extension est une demande, jamais un droit accordé automatiquement. Chaque talent voit ses propres accords.",
+      "action": "Request an extension",
+      "number": 71,
+      "secondary": "Add a nuance",
+      "projectType": "production"
+    },
+    {
+      "id": "archive",
+      "phase": "Livraison",
+      "title": "What we keep",
+      "fr": "Archives et enseignements",
+      "kind": "gallery",
+      "fields": [
+        {
+          "label": "Final assets",
+          "value": "Approved collection",
+          "icon": "image",
+          "type": "text",
+          "options": [],
+          "id": "archive-0"
+        },
+        {
+          "label": "Production record",
+          "value": "Decisions & receipts",
+          "icon": "file",
+          "type": "text",
+          "options": [],
+          "id": "archive-1"
+        },
+        {
+          "label": "Next journey",
+          "value": "Lessons to carry forward",
+          "icon": "compass",
+          "type": "text",
+          "options": [],
+          "id": "archive-2"
+        }
+      ],
+      "roles": {
+        "brand": "read",
+        "art": "read",
+        "editor": "read",
+        "photo": "read",
+        "film": "read",
+        "bee": "edit",
+        "production": "edit"
+      },
+      "source": [
+        78,
+        37
+      ],
+      "note": "Les accès restent ceux du projet après clôture. Les leçons ne modifient pas rétroactivement les décisions.",
+      "action": "Open archive",
+      "number": 72,
+      "secondary": "View details",
+      "projectType": "production"
+    },
+    {
+      "id": "co-intentions",
+      "phase": "Impact · Bee",
+      "title": "Co-intentions",
+      "fr": "Intention commune ONG / Bee",
+      "kind": "choice",
+      "fields": [
+        {
+          "label": "What should grow?",
+          "value": "Local livelihoods",
+          "icon": "leaf",
+          "type": "choices",
+          "options": [
+            "Biodiversity",
+            "Local livelihoods",
+            "Culture"
+          ],
+          "id": "co-intentions-0"
+        }
+      ],
+      "roles": {
+        "expert": "read",
+        "ngo": "edit",
+        "bee": "edit"
+      },
+      "source": [
+        28,
+        8
+      ],
+      "note": "Scénario d’impact illustratif distinct des campagnes réelles. L’expert intervient en amont si la méthode le nécessite.",
+      "action": "Shape an action",
+      "number": 73,
+      "secondary": "Add a nuance",
+      "projectType": "impact"
+    },
+    {
+      "id": "action-design",
+      "phase": "Impact · Bee",
+      "title": "Design an action",
+      "fr": "Concevoir une action",
+      "kind": "form",
+      "fields": [
+        {
+          "label": "Action",
+          "value": "Local nursery · illustrative",
+          "icon": "leaf",
+          "type": "text",
+          "options": [],
+          "id": "action-design-0"
+        },
+        {
+          "label": "Intended result",
+          "value": "Define the measurable change",
+          "icon": "flag",
+          "type": "text",
+          "options": [],
+          "id": "action-design-1"
+        },
+        {
+          "label": "People & place",
+          "value": "Local partners · territory",
+          "icon": "users",
+          "type": "text",
+          "options": [],
+          "id": "action-design-2"
+        },
+        {
+          "label": "Duration",
+          "value": "Select a realistic period",
+          "icon": "calendar",
+          "type": "text",
+          "options": [],
+          "id": "action-design-3"
+        }
+      ],
+      "roles": {
+        "bee": "read",
+        "expert": "read",
+        "ngo": "edit"
+      },
+      "source": [
+        9
+      ],
+      "note": "Relier besoin local, activité et résultat ; éviter de confondre nombre d’actions et impact démontré.",
+      "action": "Save action design",
+      "number": 74,
+      "secondary": "Add a nuance",
+      "projectType": "impact"
+    },
+    {
+      "id": "impact-plan",
+      "phase": "Impact · Bee",
+      "title": "Agree the plan",
+      "fr": "Validation du plan d’action",
+      "kind": "review",
+      "fields": [
+        {
+          "label": "Local alignment",
+          "value": "To document",
+          "icon": "users",
+          "type": "text",
+          "options": [],
+          "id": "impact-plan-0"
+        },
+        {
+          "label": "Budget & resources",
+          "value": "Bee approval required",
+          "icon": "wallet",
+          "type": "text",
+          "options": [],
+          "id": "impact-plan-1"
+        },
+        {
+          "label": "Measurement plan",
+          "value": "Method & risk to review",
+          "icon": "ruler",
+          "type": "text",
+          "options": [],
+          "id": "impact-plan-2"
+        },
+        {
+          "label": "Timeline",
+          "value": "Milestones to confirm",
+          "icon": "calendar",
+          "type": "text",
+          "options": [],
+          "id": "impact-plan-3"
+        }
+      ],
+      "roles": {
+        "expert": "read",
+        "ngo": "edit",
+        "bee": "approve"
+      },
+      "source": [
+        48
+      ],
+      "note": "Bee valide le budget. L’expertise indépendante dépend du type d’indicateur et du niveau de risque.",
+      "action": "Submit plan",
+      "number": 75,
+      "secondary": "View details",
+      "projectType": "impact"
+    },
+    {
+      "id": "impact-capital",
+      "phase": "Impact · Bee",
+      "title": "Impact capital",
+      "fr": "Capital affecté à l’impact",
+      "kind": "capital",
+      "fields": [
+        {
+          "label": "Committed",
+          "value": "To confirm",
+          "icon": "wallet",
+          "type": "text",
+          "options": [],
+          "id": "impact-capital-0"
+        },
+        {
+          "label": "Allocated",
+          "value": "To confirm",
+          "icon": "layers",
+          "type": "text",
+          "options": [],
+          "id": "impact-capital-1"
+        },
+        {
+          "label": "Released",
+          "value": "Not released",
+          "icon": "arrow",
+          "type": "text",
+          "options": [],
+          "id": "impact-capital-2"
+        }
+      ],
+      "roles": {
+        "ngo": "read",
+        "brand": "read",
+        "bee": "approve"
+      },
+      "source": [
+        55,
+        37
+      ],
+      "note": "L’ONG voit son enveloppe d’impact, jamais le Creative Capital total ni la marge Bee. La marque voit une synthèse.",
+      "action": "Review allocation",
+      "number": 76,
+      "secondary": "View details",
+      "projectType": "impact"
+    },
+    {
+      "id": "field-actions",
+      "phase": "Impact · Flower",
+      "title": "Actions in the field",
+      "fr": "Actions terrain",
+      "kind": "tasks",
+      "fields": [
+        {
+          "label": "Prepare the nursery",
+          "value": "Planned",
+          "icon": "leaf",
+          "type": "text",
+          "options": [],
+          "id": "field-actions-0"
+        },
+        {
+          "label": "Community session",
+          "value": "To schedule",
+          "icon": "users",
+          "type": "text",
+          "options": [],
+          "id": "field-actions-1"
+        },
+        {
+          "label": "Baseline observation",
+          "value": "Evidence needed",
+          "icon": "ruler",
+          "type": "text",
+          "options": [],
+          "id": "field-actions-2"
+        }
+      ],
+      "roles": {
+        "bee": "read",
+        "expert": "read",
+        "ngo": "edit"
+      },
+      "source": [
+        67,
+        70
+      ],
+      "note": "Une action appartient à un Bloom, un budget, un responsable et un lieu. Les experts voient les seuls dossiers attribués.",
+      "action": "Open action",
+      "number": 77,
+      "secondary": "View details",
+      "projectType": "impact"
+    },
+    {
+      "id": "field-action",
+      "phase": "Impact · Flower",
+      "title": "A living action",
+      "fr": "Mettre à jour une action",
+      "kind": "form",
+      "fields": [
+        {
+          "label": "Action status",
+          "value": "In progress",
+          "icon": "flag",
+          "type": "select",
+          "options": [],
+          "id": "field-action-0"
+        },
+        {
+          "label": "Date & place",
+          "value": "Add date and location",
+          "icon": "pin",
+          "type": "text",
+          "options": [],
+          "id": "field-action-1"
+        },
+        {
+          "label": "What happened",
+          "value": "Short field update",
+          "icon": "message",
+          "type": "text",
+          "options": [],
+          "id": "field-action-2"
+        },
+        {
+          "label": "Evidence",
+          "value": "Add a dated record",
+          "icon": "camera",
+          "type": "upload",
+          "options": [],
+          "id": "field-action-3"
+        }
+      ],
+      "roles": {
+        "bee": "read",
+        "expert": "read",
+        "ngo": "edit"
+      },
+      "source": [
+        67
+      ],
+      "note": "Saisie courte utilisable sur le terrain ; preuves et mesures détaillées restent rattachées à l’action.",
+      "action": "Save field update",
+      "number": 78,
+      "secondary": "Add a nuance",
+      "projectType": "impact"
+    },
+    {
+      "id": "impact-expense",
+      "phase": "Impact · Flower",
+      "title": "Use with purpose",
+      "fr": "Dépense liée à une action",
+      "kind": "form",
+      "fields": [
+        {
+          "label": "Action & allocation",
+          "value": "Nursery · assigned envelope",
+          "icon": "leaf",
+          "type": "text",
+          "options": [],
+          "id": "impact-expense-0"
+        },
+        {
+          "label": "Supplier & amount",
+          "value": "Enter local supplier and amount",
+          "icon": "wallet",
+          "type": "text",
+          "options": [],
+          "id": "impact-expense-1"
+        },
+        {
+          "label": "Date & currency",
+          "value": "Choose date and currency",
+          "icon": "calendar",
+          "type": "text",
+          "options": [],
+          "id": "impact-expense-2"
+        },
+        {
+          "label": "Invoice",
+          "value": "Attach original document",
+          "icon": "file",
+          "type": "upload",
+          "options": [],
+          "id": "impact-expense-3"
+        }
+      ],
+      "roles": {
+        "ngo": "edit",
+        "bee": "approve"
+      },
+      "source": [
+        37,
+        64
+      ],
+      "note": "La pièce est reliée à l’action et au capital d’impact ; elle ne prouve pas à elle seule un résultat.",
+      "action": "Submit expense",
+      "number": 79,
+      "secondary": "Add a nuance",
+      "projectType": "impact"
+    },
+    {
+      "id": "evidence",
+      "phase": "Impact · Flower",
+      "title": "Proof of the moment",
+      "fr": "Dossier de preuves",
+      "kind": "gallery",
+      "fields": [
+        {
+          "label": "Field images",
+          "value": "Dates & consent to document",
+          "icon": "camera",
+          "type": "text",
+          "options": [],
+          "id": "evidence-0"
+        },
+        {
+          "label": "Measurements",
+          "value": "Method & period required",
+          "icon": "ruler",
+          "type": "text",
+          "options": [],
+          "id": "evidence-1"
+        },
+        {
+          "label": "Documents",
+          "value": "Linked to the action",
+          "icon": "file",
+          "type": "text",
+          "options": [],
+          "id": "evidence-2"
+        }
+      ],
+      "roles": {
+        "bee": "read",
+        "expert": "read",
+        "ngo": "edit"
+      },
+      "source": [
+        64
+      ],
+      "note": "L’ONG dépose, Bee vérifie, l’expert examine le sous-ensemble attribué. Les preuves sensibles ne sont pas publiées.",
+      "action": "Add evidence",
+      "number": 80,
+      "secondary": "View details",
+      "projectType": "impact"
+    },
+    {
+      "id": "evidence-add",
+      "phase": "Impact · Flower",
+      "title": "Keep the proof close",
+      "fr": "Ajouter une preuve",
+      "kind": "form",
+      "fields": [
+        {
+          "label": "Original evidence",
+          "value": "Photo, record or document",
+          "icon": "camera",
+          "type": "upload",
+          "options": [],
+          "id": "evidence-add-0"
+        },
+        {
+          "label": "Date & location",
+          "value": "Record the observation",
+          "icon": "pin",
+          "type": "text",
+          "options": [],
+          "id": "evidence-add-1"
+        },
+        {
+          "label": "Related indicator",
+          "value": "Select indicator",
+          "icon": "ruler",
+          "type": "select",
+          "options": [],
+          "id": "evidence-add-2"
+        },
+        {
+          "label": "Sharing permission",
+          "value": "Restricted",
+          "icon": "shield",
+          "type": "choices",
+          "options": [
+            "Restricted",
+            "Approved excerpt"
+          ],
+          "id": "evidence-add-3"
+        }
+      ],
+      "roles": {
+        "bee": "read",
+        "expert": "read",
+        "ngo": "edit"
+      },
+      "source": [
+        64
+      ],
+      "note": "Origine, date, périmètre de partage et lien à l’indicateur sont conservés ; aucune vérification automatique proclamée.",
+      "action": "Submit evidence",
+      "number": 81,
+      "secondary": "Add a nuance",
+      "projectType": "impact"
+    },
+    {
+      "id": "indicator",
+      "phase": "Impact · Honey",
+      "title": "Measure with care",
+      "fr": "Indicateur et méthode",
+      "kind": "form",
+      "fields": [
+        {
+          "label": "Indicator",
+          "value": "Native plant survival",
+          "icon": "leaf",
+          "type": "text",
+          "options": [],
+          "id": "indicator-0"
+        },
+        {
+          "label": "Method & period",
+          "value": "Field count · defined interval",
+          "icon": "ruler",
+          "type": "text",
+          "options": [],
+          "id": "indicator-1"
+        },
+        {
+          "label": "Baseline / observed value",
+          "value": "Enter measurements",
+          "icon": "layers",
+          "type": "text",
+          "options": [],
+          "id": "indicator-2"
+        },
+        {
+          "label": "Supporting evidence",
+          "value": "Attach dated records",
+          "icon": "file",
+          "type": "upload",
+          "options": [],
+          "id": "indicator-3"
+        }
+      ],
+      "roles": {
+        "expert": "read",
+        "ngo": "edit",
+        "bee": "approve"
+      },
+      "source": [
+        54,
+        46,
+        27,
+        37
+      ],
+      "note": "Valeurs absentes = non documenté, jamais zéro. Une valeur déclarée reste distincte d’une valeur validée.",
+      "action": "Submit measurement",
+      "number": 82,
+      "secondary": "Add a nuance",
+      "projectType": "impact"
+    },
+    {
+      "id": "expert-review",
+      "phase": "Impact · Honey",
+      "title": "An independent eye",
+      "fr": "Revue experte ciblée",
+      "kind": "review",
+      "fields": [
+        {
+          "label": "Assigned indicator",
+          "value": "Native plant survival",
+          "icon": "leaf",
+          "type": "text",
+          "options": [],
+          "id": "expert-review-0"
+        },
+        {
+          "label": "Method & evidence",
+          "value": "Ready for assessment",
+          "icon": "ruler",
+          "type": "text",
+          "options": [],
+          "id": "expert-review-1"
+        },
+        {
+          "label": "Risk & scope",
+          "value": "Review the assigned scope",
+          "icon": "shield",
+          "type": "text",
+          "options": [],
+          "id": "expert-review-2"
+        }
+      ],
+      "roles": {
+        "bee": "read",
+        "ngo": "read",
+        "expert": "edit"
+      },
+      "source": [
+        37
+      ],
+      "note": "L’expert rend un avis sur le périmètre attribué ; Bee gère le statut final et la publication. Pas d’accès global aux projets.",
+      "action": "Submit expert opinion",
+      "number": 83,
+      "secondary": "View details",
+      "projectType": "impact"
+    },
+    {
+      "id": "impact-overview",
+      "phase": "Impact · Honey",
+      "title": "What remains",
+      "fr": "Vue d’ensemble impact",
+      "kind": "metrics",
+      "fields": [
+        {
+          "label": "Social",
+          "value": "Not yet validated",
+          "icon": "users",
+          "type": "text",
+          "options": [],
+          "id": "impact-overview-0"
+        },
+        {
+          "label": "Environmental",
+          "value": "Not yet validated",
+          "icon": "leaf",
+          "type": "text",
+          "options": [],
+          "id": "impact-overview-1"
+        },
+        {
+          "label": "Economic",
+          "value": "Not yet validated",
+          "icon": "wallet",
+          "type": "text",
+          "options": [],
+          "id": "impact-overview-2"
+        }
+      ],
+      "roles": {
+        "ngo": "read",
+        "brand": "read",
+        "expert": "read",
+        "bee": "approve"
+      },
+      "source": [
+        11,
+        26,
+        59
+      ],
+      "note": "Seuls les résultats validés peuvent être repris dans un rapport ; ce scénario ne certifie aucune campagne réelle.",
+      "action": "Explore evidence",
+      "number": 84,
+      "secondary": "View details",
+      "projectType": "impact"
+    },
+    {
+      "id": "impact-social",
+      "phase": "Impact · Honey",
+      "title": "People & community",
+      "fr": "Impact social",
+      "kind": "metrics",
+      "fields": [
+        {
+          "label": "Participation",
+          "value": "Evidence pending",
+          "icon": "users",
+          "type": "text",
+          "options": [],
+          "id": "impact-social-0"
+        },
+        {
+          "label": "Skills shared",
+          "value": "Evidence pending",
+          "icon": "book",
+          "type": "text",
+          "options": [],
+          "id": "impact-social-1"
+        },
+        {
+          "label": "Community feedback",
+          "value": "Review pending",
+          "icon": "message",
+          "type": "text",
+          "options": [],
+          "id": "impact-social-2"
+        }
+      ],
+      "roles": {
+        "ngo": "read",
+        "brand": "read",
+        "expert": "read",
+        "bee": "approve"
+      },
+      "source": [
+        46
+      ],
+      "note": "Trois mesures essentielles, chacune reliée à sa méthode, période, statut et pièces ; aucune valeur inventée.",
+      "action": "Open indicator",
+      "number": 85,
+      "secondary": "View details",
+      "projectType": "impact"
+    },
+    {
+      "id": "impact-environment",
+      "phase": "Impact · Honey",
+      "title": "The living world",
+      "fr": "Impact environnemental",
+      "kind": "metrics",
+      "fields": [
+        {
+          "label": "Restoration area",
+          "value": "Method required",
+          "icon": "leaf",
+          "type": "text",
+          "options": [],
+          "id": "impact-environment-0"
+        },
+        {
+          "label": "Survival rate",
+          "value": "Observation required",
+          "icon": "ruler",
+          "type": "text",
+          "options": [],
+          "id": "impact-environment-1"
+        },
+        {
+          "label": "Biodiversity",
+          "value": "Expert scope to assess",
+          "icon": "spark",
+          "type": "text",
+          "options": [],
+          "id": "impact-environment-2"
+        }
+      ],
+      "roles": {
+        "ngo": "read",
+        "brand": "read",
+        "expert": "read",
+        "bee": "approve"
+      },
+      "source": [
+        54
+      ],
+      "note": "Trois mesures essentielles, chacune reliée à sa méthode, période, statut et pièces ; aucune valeur inventée.",
+      "action": "Open indicator",
+      "number": 86,
+      "secondary": "View details",
+      "projectType": "impact"
+    },
+    {
+      "id": "impact-economic",
+      "phase": "Impact · Honey",
+      "title": "Local value",
+      "fr": "Impact économique",
+      "kind": "metrics",
+      "fields": [
+        {
+          "label": "Local income",
+          "value": "Source records required",
+          "icon": "wallet",
+          "type": "text",
+          "options": [],
+          "id": "impact-economic-0"
+        },
+        {
+          "label": "Jobs supported",
+          "value": "Definitions required",
+          "icon": "users",
+          "type": "text",
+          "options": [],
+          "id": "impact-economic-1"
+        },
+        {
+          "label": "Supplier value",
+          "value": "Evidence required",
+          "icon": "home",
+          "type": "text",
+          "options": [],
+          "id": "impact-economic-2"
+        }
+      ],
+      "roles": {
+        "ngo": "read",
+        "brand": "read",
+        "expert": "read",
+        "bee": "approve"
+      },
+      "source": [
+        27
+      ],
+      "note": "Trois mesures essentielles, chacune reliée à sa méthode, période, statut et pièces ; aucune valeur inventée.",
+      "action": "Open indicator",
+      "number": 87,
+      "secondary": "View details",
+      "projectType": "impact"
+    },
+    {
+      "id": "next-bloom",
+      "phase": "Impact · Honey",
+      "title": "The next bloom",
+      "fr": "Suivi et prochaine action",
+      "kind": "form",
+      "fields": [
+        {
+          "label": "Monitoring date",
+          "value": "Choose the next observation",
+          "icon": "calendar",
+          "type": "text",
+          "options": [],
+          "id": "next-bloom-0"
+        },
+        {
+          "label": "What we learned",
+          "value": "Document the lesson",
+          "icon": "book",
+          "type": "text",
+          "options": [],
+          "id": "next-bloom-1"
+        },
+        {
+          "label": "Next intention",
+          "value": "Draft the next action",
+          "icon": "leaf",
+          "type": "text",
+          "options": [],
+          "id": "next-bloom-2"
+        }
+      ],
+      "roles": {
+        "brand": "read",
+        "expert": "read",
+        "ngo": "edit",
+        "bee": "edit"
+      },
+      "source": [
+        26,
+        37
+      ],
+      "note": "Le suivi mesure la durée du résultat. Un nouveau Bloom nécessite son propre plan et son propre budget.",
+      "action": "Save next step",
+      "number": 88,
+      "secondary": "Add a nuance",
+      "projectType": "impact"
+    },
+    {
+      "id": "bee-label",
+      "phase": "Bilan · Honey",
+      "title": "The production trace",
+      "fr": "Bilan de production",
+      "kind": "metrics",
+      "fields": [
+        {
+          "label": "People",
+          "value": "Crew & local partners",
+          "icon": "users",
+          "type": "text",
+          "options": [],
+          "id": "bee-label-0"
+        },
+        {
+          "label": "Environment",
+          "value": "Travel, stays & resources",
+          "icon": "leaf",
+          "type": "text",
+          "options": [],
+          "id": "bee-label-1"
+        },
+        {
+          "label": "Local value",
+          "value": "Documented local spending",
+          "icon": "wallet",
+          "type": "text",
+          "options": [],
+          "id": "bee-label-2"
+        }
+      ],
+      "roles": {
+        "brand": "read",
+        "art": "read",
+        "production": "edit",
+        "bee": "approve"
+      },
+      "source": [
+        73
+      ],
+      "note": "Le bilan de production décrit les pratiques et données documentées ; il ne certifie pas une marque durable.",
+      "action": "Explore the record",
+      "number": 89,
+      "secondary": "View details",
+      "projectType": "production"
+    },
+    {
+      "id": "production-social",
+      "phase": "Bilan · Honey",
+      "title": "People, together",
+      "fr": "Bilan social de production",
+      "kind": "metrics",
+      "fields": [
+        {
+          "label": "Local crew",
+          "value": "Source records needed",
+          "icon": "users",
+          "type": "text",
+          "options": [],
+          "id": "production-social-0"
+        },
+        {
+          "label": "Working conditions",
+          "value": "Production log needed",
+          "icon": "shield",
+          "type": "text",
+          "options": [],
+          "id": "production-social-1"
+        },
+        {
+          "label": "Skills & collaboration",
+          "value": "Documentation needed",
+          "icon": "book",
+          "type": "text",
+          "options": [],
+          "id": "production-social-2"
+        }
+      ],
+      "roles": {
+        "brand": "read",
+        "production": "edit",
+        "bee": "approve"
+      },
+      "source": [
+        60
+      ],
+      "note": "Les pièces opérationnelles fondent le bilan. Pas de pourcentages ni de facteurs d’émission repris sans vérification.",
+      "action": "Open the evidence",
+      "number": 90,
+      "secondary": "View details",
+      "projectType": "production"
+    },
+    {
+      "id": "production-environment",
+      "phase": "Bilan · Honey",
+      "title": "Lighter choices",
+      "fr": "Bilan environnemental de production",
+      "kind": "metrics",
+      "fields": [
+        {
+          "label": "Travel",
+          "value": "Bookings to reconcile",
+          "icon": "car",
+          "type": "text",
+          "options": [],
+          "id": "production-environment-0"
+        },
+        {
+          "label": "Nights & meals",
+          "value": "Activity data required",
+          "icon": "moon",
+          "type": "text",
+          "options": [],
+          "id": "production-environment-1"
+        },
+        {
+          "label": "Footprint",
+          "value": "Method and factors required",
+          "icon": "leaf",
+          "type": "text",
+          "options": [],
+          "id": "production-environment-2"
+        }
+      ],
+      "roles": {
+        "brand": "read",
+        "production": "edit",
+        "bee": "approve"
+      },
+      "source": [
+        22
+      ],
+      "note": "Les pièces opérationnelles fondent le bilan. Pas de pourcentages ni de facteurs d’émission repris sans vérification.",
+      "action": "Open the evidence",
+      "number": 91,
+      "secondary": "View details",
+      "projectType": "production"
+    },
+    {
+      "id": "production-economic",
+      "phase": "Bilan · Honey",
+      "title": "Value close to home",
+      "fr": "Bilan économique de production",
+      "kind": "metrics",
+      "fields": [
+        {
+          "label": "Local suppliers",
+          "value": "Documented spend",
+          "icon": "home",
+          "type": "text",
+          "options": [],
+          "id": "production-economic-0"
+        },
+        {
+          "label": "Crew remuneration",
+          "value": "Approved records",
+          "icon": "users",
+          "type": "text",
+          "options": [],
+          "id": "production-economic-1"
+        },
+        {
+          "label": "Shared resources",
+          "value": "Comparable baseline required",
+          "icon": "layers",
+          "type": "text",
+          "options": [],
+          "id": "production-economic-2"
+        }
+      ],
+      "roles": {
+        "brand": "read",
+        "production": "edit",
+        "bee": "approve"
+      },
+      "source": [
+        12
+      ],
+      "note": "Les pièces opérationnelles fondent le bilan. Pas de pourcentages ni de facteurs d’émission repris sans vérification.",
+      "action": "Open the evidence",
+      "number": 92,
+      "secondary": "View details",
+      "projectType": "production"
+    },
+    {
+      "id": "capital-report",
+      "phase": "Bilan · Honey",
+      "title": "The value of a journey",
+      "fr": "Synthèse du capital créatif",
+      "kind": "capital",
+      "fields": [
+        {
+          "label": "Creative work",
+          "value": "Approved deliverables",
+          "icon": "feather",
+          "type": "text",
+          "options": [],
+          "id": "capital-report-0"
+        },
+        {
+          "label": "Production",
+          "value": "Documented allocation",
+          "icon": "camera",
+          "type": "text",
+          "options": [],
+          "id": "capital-report-1"
+        },
+        {
+          "label": "Impact",
+          "value": "Separate validated record",
+          "icon": "leaf",
+          "type": "text",
+          "options": [],
+          "id": "capital-report-2"
+        }
+      ],
+      "roles": {
+        "brand": "read",
+        "production": "read",
+        "bee": "approve"
+      },
+      "source": [
+        61,
+        39
+      ],
+      "note": "Production limitée à son périmètre ; la marque consulte la synthèse. Les comparaisons financières nécessitent une base documentée.",
+      "action": "Open allocation detail",
+      "number": 93,
+      "secondary": "View details",
+      "projectType": "production"
+    },
+    {
+      "id": "report",
+      "phase": "Bilan · Honey",
+      "title": "A story with evidence",
+      "fr": "Rapport et diffusion",
+      "kind": "review",
+      "fields": [
+        {
+          "label": "Visual tales",
+          "value": "Approved assets & rights",
+          "icon": "image",
+          "type": "text",
+          "options": [],
+          "id": "report-0"
+        },
+        {
+          "label": "Production trace",
+          "value": "Bee review required",
+          "icon": "camera",
+          "type": "text",
+          "options": [],
+          "id": "report-1"
+        },
+        {
+          "label": "Impact results",
+          "value": "Only validated results",
+          "icon": "leaf",
+          "type": "text",
+          "options": [],
+          "id": "report-2"
+        },
+        {
+          "label": "Publication",
+          "value": "Not published",
+          "icon": "shield",
+          "type": "text",
+          "options": [],
+          "id": "report-3"
+        }
+      ],
+      "roles": {
+        "brand": "read",
+        "production": "read",
+        "ngo": "read",
+        "expert": "read",
+        "bee": "approve"
+      },
+      "source": [
+        50,
+        78,
+        37
+      ],
+      "note": "Un rapport ne mélange pas preuve créative, pratiques de production et impact ONG. La publication est une décision explicite.",
+      "action": "Prepare the report",
+      "number": 94,
+      "secondary": "View details",
+      "projectType": "production"
+    }
+  ],
+  "projects": [
+    {
+      "id": "craie-maroc",
+      "brand": "Craie Studio",
+      "place": "Morocco",
+      "title": "Craie Studio · Morocco",
+      "stage": "On set",
+      "source": "https://beeyondtheworld.com/campaigns/craie-maroc",
+      "images": [
+        "assets/morocco-landscape.webp",
+        "assets/morocco-fashion.webp",
+        "assets/morocco-craft.webp",
+        "assets/morocco-product.webp"
+      ],
+      "imageProvenance": "AI design concepts, not historical campaign assets"
+    }
+  ],
+  "assets": {
+    "landscape": "assets/morocco-landscape.webp",
+    "craft": "assets/morocco-craft.webp",
+    "fashion": "assets/morocco-fashion.webp",
+    "product": "assets/morocco-product.webp",
+    "field": "assets/morocco-field.webp",
+    "frame-arch": "assets/morocco-frame-arch.webp",
+    "frame-shadow": "assets/morocco-frame-shadow.webp",
+    "beauty": "assets/morocco-beauty.webp",
+    "talent": "assets/morocco-talent.webp"
+  },
+  "sources": {
+    "1": {
+      "path": "sources/001.png",
+      "title": "BEEYONDTHEWORLD Community/IN-HOUSE TEAM/Production director Visual Tales - Report/PRODUCTION (Flowers)/Copie de Copie de Interface de repérage désertique élégant.png"
+    },
+    "2": {
+      "path": "sources/002.png",
+      "title": "BEEYONDTHEWORLD Community/IN-HOUSE TEAM/Artistic Director/FLOWERS (on set)/Interface de repérage désertique élégant.png"
+    },
+    "3": {
+      "path": "sources/003.png",
+      "title": "BEEYONDTHEWORLD Community/IN-HOUSE TEAM/Editor - post production photos /Calendrier de postproduction minimaliste.png"
+    },
+    "4": {
+      "path": "sources/004.png",
+      "title": "BEEYONDTHEWORLD Community/IN-HOUSE TEAM/Production director Visual Tales - Report/CREATIVES (Menu Bee_s) Pre-production /Copie de Interface de repérage désertique élégant.png"
+    },
+    "5": {
+      "path": "sources/005.png",
+      "title": "BEEYONDTHEWORLD Community/IN-HOUSE TEAM/Artistic Director/BEE_S (Pre-prod)/Tableau de bord cinématographique Namibie.png"
+    },
+    "6": {
+      "path": "sources/006.png",
+      "title": "BEEYONDTHEWORLD Community/IN-HOUSE TEAM/Production director Visual Tales - Report/CREATIVES (Menu Bee_s) Pre-production /Interface désertique élégante et dorée.png"
+    },
+    "7": {
+      "path": "sources/007.png",
+      "title": "BEEYONDTHEWORLD Community/IN-HOUSE TEAM/Editor - post production photos /Image ChatGPT 1 oct. 2026, 15_43_30.png"
+    },
+    "8": {
+      "path": "sources/008.png",
+      "title": "BEEYONDTHEWORLD Community/NGO_S/STEP # 2 CREATIVES (BEE)/NGO_s x CONCEPTION_.png"
+    },
+    "9": {
+      "path": "sources/009.png",
+      "title": "BEEYONDTHEWORLD Community/NGO_S/STEP # 2 CREATIVES (BEE)/CONCEPTION Step #2.png"
+    },
+    "10": {
+      "path": "sources/010.jpg",
+      "title": "BEEYONDTHEWORLD Community/IN-HOUSE TEAM/Production director Visual Tales - Report/CREATIVES (Menu Bee_s) Pre-production /Beeyondtheworld_Voyage.jpg"
+    },
+    "11": {
+      "path": "sources/011.png",
+      "title": "BEEYONDTHEWORLD Community/IN-HOUSE TEAM/Production director Visual Tales - Report/IMPACTS (honey Visual tales part) /CSR Capital _ NGO_S DASHBOARD/Impact Menu + Click dev durable.png"
+    },
+    "12": {
+      "path": "sources/012.png",
+      "title": "BEEYONDTHEWORLD Community/IN-HOUSE TEAM/Production director Visual Tales - Report/IMPACTS (honey Visual tales part) /Creatif Capital _ PROD metrics /Visual Tales x ECONOMIC PILLARS.png"
+    },
+    "16": {
+      "path": "sources/016.png",
+      "title": "BEEYONDTHEWORLD Community/MARQUES /Tableau de bord créatif en Namibie (1).png"
+    },
+    "19": {
+      "path": "sources/019.png",
+      "title": "BEEYONDTHEWORLD Community/IN-HOUSE TEAM/Production director Visual Tales - Report/CREATIVES (Menu Bee_s) Pre-production /Tableau de bord créatif en Namibie.png"
+    },
+    "20": {
+      "path": "sources/020.png",
+      "title": "BEEYONDTHEWORLD Community/IN-HOUSE TEAM/Artistic Director/FLOWERS (on set)/Image ChatGPT 4 oct. 2026, 15_37_06.png"
+    },
+    "21": {
+      "path": "sources/021.png",
+      "title": "BEEYONDTHEWORLD Community/IN-HOUSE TEAM/Production director Visual Tales - Report/CREATIVES (Menu Bee_s) Pre-production /Copie de Image ChatGPT 4 oct. 2026, 15_37_06.png"
+    },
+    "22": {
+      "path": "sources/022.png",
+      "title": "BEEYONDTHEWORLD Community/IN-HOUSE TEAM/Production director Visual Tales - Report/IMPACTS (honey Visual tales part) /Creatif Capital _ PROD metrics /Visual Tales x ENVIRONEMENTAL PILLARS.png"
+    },
+    "23": {
+      "path": "sources/023.png",
+      "title": "BEEYONDTHEWORLD Community/IN-HOUSE TEAM/Production director Visual Tales - Report/PRODUCTION (Flowers)/Tableau de bord post-production Namibia.png"
+    },
+    "25": {
+      "path": "sources/025.png",
+      "title": "BEEYONDTHEWORLD Community/IN-HOUSE TEAM/Production director Visual Tales - Report/CREATIVES (Menu Bee_s) Pre-production /Guide durable pour une campagne en Namibie.png"
+    },
+    "26": {
+      "path": "sources/026.png",
+      "title": "BEEYONDTHEWORLD Community/NGO_S/STEP #3 JOURNEYS /VALIDATION & OVERVIEW.png"
+    },
+    "27": {
+      "path": "sources/027.png",
+      "title": "BEEYONDTHEWORLD Community/NGO_S/STEP # 4 IMPACTS (HONEY)/#ECONOMICS PILLARS.png"
+    },
+    "28": {
+      "path": "sources/028.png",
+      "title": "BEEYONDTHEWORLD Community/NGO_S/STEP # 2 CREATIVES (BEE)/CONCEPTION Step #1.png"
+    },
+    "30": {
+      "path": "sources/030.jpg",
+      "title": "BEEYONDTHEWORLD Community/IN-HOUSE TEAM/Production director Visual Tales - Report/CREATIVES (Menu Bee_s) Pre-production /Beeyondtheworld_dAshboard DIR PROD.jpg"
+    },
+    "33": {
+      "path": "sources/033.png",
+      "title": "BEEYONDTHEWORLD Community/IN-HOUSE TEAM/Production director Visual Tales - Report/PRODUCTION (Flowers)/Tableau de bord Journey of Creation dans le désert namibien.png"
+    },
+    "36": {
+      "path": "sources/036.jpg",
+      "title": "BEEYONDTHEWORLD Community/IN-HOUSE TEAM/Production director Visual Tales - Report/CREATIVES (Menu Bee_s) Pre-production /Beeyondtheworld_13.jpg"
+    },
+    "37": {
+      "path": "sources/037.pdf",
+      "title": "BEEYONDTHEWORLD Community/GLOBAL ECOSYSTEM CSR/BEE_ECOSYSTEM_MASTER_BRIEF_V2.pdf"
+    },
+    "39": {
+      "path": "sources/039.png",
+      "title": "BEEYONDTHEWORLD Community/MARQUES /Visual Tale CSR report.png"
+    },
+    "42": {
+      "path": "sources/042.png",
+      "title": "BEEYONDTHEWORLD Community/IN-HOUSE TEAM/Talents Freelance /Styliste/Tableau de bord des essayages en Namibie.png"
+    },
+    "43": {
+      "path": "sources/043.png",
+      "title": "BEEYONDTHEWORLD Community/IN-HOUSE TEAM/Editor - post production photos /Tableau de bord créatif du désert.png"
+    },
+    "44": {
+      "path": "sources/044.png",
+      "title": "BEEYONDTHEWORLD Community/IN-HOUSE TEAM/Production director Visual Tales - Report/PRODUCTION (Flowers)/Copie de Copie de Screenshot 2569-10-04 at 16.41.30.png"
+    },
+    "45": {
+      "path": "sources/045.png",
+      "title": "BEEYONDTHEWORLD Community/IN-HOUSE TEAM/Production director Visual Tales - Report/PRODUCTION (Flowers)/Tableau de bord production en Namibie.png"
+    },
+    "46": {
+      "path": "sources/046.png",
+      "title": "BEEYONDTHEWORLD Community/NGO_S/STEP # 4 IMPACTS (HONEY)/IMPACT MENU #SOCIAL PILLARS.png"
+    },
+    "48": {
+      "path": "sources/048.png",
+      "title": "BEEYONDTHEWORLD Community/NGO_S/STEP # 2 CREATIVES (BEE)/Tableau de bord créatif au coucher du soleil (3).png"
+    },
+    "49": {
+      "path": "sources/049.png",
+      "title": "BEEYONDTHEWORLD Community/IN-HOUSE TEAM/Production director Visual Tales - Report/CREATIVES (Menu Bee_s) Pre-production /Tableau de bord de repérage en Namibie (2).png"
+    },
+    "50": {
+      "path": "sources/050.png",
+      "title": "BEEYONDTHEWORLD Community/IN-HOUSE TEAM/Production director Visual Tales - Report/IMPACTS (honey Visual tales part) /V2 with IN-STORE engagement/Tableau de bord Namibia — Impact.png"
+    },
+    "51": {
+      "path": "sources/051.png",
+      "title": "BEEYONDTHEWORLD Community/NGO_S/STEP # 1  BEE VERIFIED/Parcours d’onboarding Beeyond pour ONG.png"
+    },
+    "52": {
+      "path": "sources/052.png",
+      "title": "BEEYONDTHEWORLD Community/MARQUES /Luxe voyage désertique _ créer son brief.png"
+    },
+    "53": {
+      "path": "sources/053.png",
+      "title": "BEEYONDTHEWORLD Community/BEE VERIFIED/NGO_s/Trust_KYC.png"
+    },
+    "54": {
+      "path": "sources/054.png",
+      "title": "BEEYONDTHEWORLD Community/NGO_S/STEP # 4 IMPACTS (HONEY)/#ENVIRONMENT PILLARS.png"
+    },
+    "55": {
+      "path": "sources/055.png",
+      "title": "BEEYONDTHEWORLD Community/IN-HOUSE TEAM/Production director Visual Tales - Report/IMPACTS (honey Visual tales part) /CSR Capital _ NGO_S DASHBOARD/CSR CAPITAL.png"
+    },
+    "56": {
+      "path": "sources/056.png",
+      "title": "BEEYONDTHEWORLD Community/IN-HOUSE TEAM/Production director Visual Tales - Report/PRODUCTION (Flowers)/Tableau de bord désertique de voyage.png"
+    },
+    "57": {
+      "path": "sources/057.png",
+      "title": "BEEYONDTHEWORLD Community/IN-HOUSE TEAM/Production director Visual Tales - Report/CREATIVES (Menu Bee_s) Pre-production /Image ChatGPT 4 oct. 2026, 14_45_32.png"
+    },
+    "58": {
+      "path": "sources/058.png",
+      "title": "BEEYONDTHEWORLD Community/IN-HOUSE TEAM/Artistic Director/FLOWERS (on set)/Screenshot 2569-10-04 at 16.41.30.png"
+    },
+    "59": {
+      "path": "sources/059.png",
+      "title": "BEEYONDTHEWORLD Community/NGO_S/STEP #3 JOURNEYS /Tableau de bord ONG au coucher du soleil (3).png"
+    },
+    "60": {
+      "path": "sources/060.png",
+      "title": "BEEYONDTHEWORLD Community/IN-HOUSE TEAM/Production director Visual Tales - Report/IMPACTS (honey Visual tales part) /Creatif Capital _ PROD metrics /Visual Tales x SOCIAL PILLARS.png"
+    },
+    "61": {
+      "path": "sources/061.png",
+      "title": "BEEYONDTHEWORLD Community/IN-HOUSE TEAM/Production director Visual Tales - Report/IMPACTS (honey Visual tales part) /Creatif Capital _ PROD metrics /Creative Capital.png"
+    },
+    "62": {
+      "path": "sources/062.png",
+      "title": "BEEYONDTHEWORLD Community/IN-HOUSE TEAM/Production director Visual Tales - Report/PRODUCTION (Flowers)/Tableau de bord de production namibien.png"
+    },
+    "63": {
+      "path": "sources/063.png",
+      "title": "BEEYONDTHEWORLD Community/MARQUES /CONNECTION/Parcours UX Bee Authenticator désertique.png"
+    },
+    "64": {
+      "path": "sources/064.png",
+      "title": "BEEYONDTHEWORLD Community/NGO_S/STEP #3 JOURNEYS /Tableau de bord des preuves terrain.png"
+    },
+    "65": {
+      "path": "sources/065.png",
+      "title": "BEEYONDTHEWORLD Community/IN-HOUSE TEAM/Production director Visual Tales - Report/CREATIVES (Menu Bee_s) Pre-production /Planificateur d’itinéraire en Namibie.png"
+    },
+    "66": {
+      "path": "sources/066.png",
+      "title": "BEEYONDTHEWORLD Community/IN-HOUSE TEAM/Production director Visual Tales - Report/PRODUCTION (Flowers)/Tableau de production namibien五分彩.png"
+    },
+    "67": {
+      "path": "sources/067.png",
+      "title": "BEEYONDTHEWORLD Community/NGO_S/STEP #3 JOURNEYS /Tableau de bord des actions terrain.png"
+    },
+    "68": {
+      "path": "sources/068.png",
+      "title": "BEEYONDTHEWORLD Community/IN-HOUSE TEAM/Production director Visual Tales - Report/PRODUCTION (Flowers)/Image ChatGPT 3 oct. 2026, 07_43_03.png"
+    },
+    "69": {
+      "path": "sources/069.png",
+      "title": "BEEYONDTHEWORLD Community/IN-HOUSE TEAM/Production director Visual Tales - Report/CREATIVES (Menu Bee_s) Pre-production /Tableau de bord Namibie _ équipe et réservations.png"
+    },
+    "70": {
+      "path": "sources/070.png",
+      "title": "BEEYONDTHEWORLD Community/NGO_S/STEP #3 JOURNEYS /Tableau de bord des parcours ONG.png"
+    },
+    "71": {
+      "path": "sources/071.png",
+      "title": "BEEYONDTHEWORLD Community/IN-HOUSE TEAM/Production director Visual Tales - Report/CREATIVES (Menu Bee_s) Pre-production /Copie de Screenshot 2569-10-04 at 16.41.30.png"
+    },
+    "72": {
+      "path": "sources/072.png",
+      "title": "BEEYONDTHEWORLD Community/IN-HOUSE TEAM/Talents Freelance /Styliste/Tableau de bord stylisme désertique.png"
+    },
+    "73": {
+      "path": "sources/073.png",
+      "title": "BEEYONDTHEWORLD Community/IN-HOUSE TEAM/Production director Visual Tales - Report/IMPACTS (honey Visual tales part) /Creatif Capital _ PROD metrics /Impact Menu + Click Visual Tales.png"
+    },
+    "78": {
+      "path": "sources/078.pdf",
+      "title": "BEEYONDTHEWORLD Community/MARQUES /Beeyondtheworld_dashboards_Brands.pdf"
+    },
+    "79": {
+      "path": "sources/079.pdf",
+      "title": "BEEYONDTHEWORLD Community/IN-HOUSE TEAM/Production director Visual Tales - Report/Beeyondtheworld_dashboards_dirprod.pdf"
+    }
+  },
+  "directions": {
+    "A": {
+      "name": "Horizon",
+      "desc": "Immersion, grandes images, verre bleu et gestes discrets.",
+      "tradeoff": "La plus proche des vues désert. Le détail se découvre dans un panneau."
+    },
+    "B": {
+      "name": "Folio",
+      "desc": "Un diptyque image / contenu, papier ivoire et typographie éditoriale.",
+      "tradeoff": "Lecture très calme. L’image reste présente dans une colonne dédiée."
+    },
+    "C": {
+      "name": "Focus",
+      "desc": "Une action à la fois, galerie centrale et navigation compacte.",
+      "tradeoff": "La plus dépouillée. Les informations secondaires demandent une ouverture."
+    }
+  },
+  "scope": "One Morocco design study only. Other journey art directions will be created after selection.",
+  "study": {
+    "brand": "Craie Studio",
+    "place": "Morocco",
+    "impactLabel": "MOROCCO / LOCAL ACTION STUDY",
+    "assets": {
+      "landscape": "/assets/community/horizon/morocco-landscape.webp",
+      "craft": "/assets/community/horizon/morocco-craft.webp",
+      "fashion": "/assets/community/horizon/morocco-fashion.webp",
+      "product": "/assets/community/horizon/morocco-product.webp",
+      "field": "/assets/community/horizon/morocco-field.webp",
+      "frame-arch": "/assets/community/horizon/morocco-frame-arch.webp",
+      "frame-shadow": "/assets/community/horizon/morocco-frame-shadow.webp",
+      "beauty": "/assets/community/horizon/morocco-beauty.webp",
+      "talent": "/assets/community/horizon/morocco-talent.webp"
+    },
+    "artDirectionStatus": "Horizon approved for every page and role on 2026-10-10"
+  }
+}

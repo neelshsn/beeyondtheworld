@@ -1,0 +1,601 @@
+.horizon .production-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 0 28px;
+  gap: 24px;
+}
+.horizon .production-heading h1 {
+  font-size: 60px;
+  margin: 9px 0;
+}
+.horizon .production-heading p {
+  font-size: 13px;
+  letter-spacing: 1px;
+}
+.horizon .production-heading-actions {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+.horizon .production-heading-actions button {
+  font-size: 11px;
+}
+.horizon .production-layout {
+  display: grid;
+  grid-template-columns: 210px minmax(0, 1fr);
+  gap: 28px;
+}
+.horizon .production-rail {
+  border-right: 1px solid var(--line);
+  padding-right: 25px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.horizon .production-rail h2 {
+  text-transform: uppercase;
+  font-size: 30px;
+  margin-bottom: 16px;
+}
+.horizon .production-rail > button {
+  display: flex;
+  align-items: flex-start;
+  gap: 13px;
+  min-height: 68px;
+  padding: 9px 0;
+  font-size: 14px;
+  text-align: left;
+}
+.horizon .production-rail > button[aria-current] {
+  color: var(--gold);
+}
+.horizon .production-rail img {
+  height: 140px;
+  margin-top: auto;
+  border-radius: 4px;
+}
+.horizon .production-main {
+  min-width: 0;
+}
+.horizon .production-days {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.horizon .production-days > button {
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  padding: 10px;
+  background: #31536544;
+}
+.horizon .production-days-viewport {
+  overflow: hidden;
+  min-width: 0;
+  flex: 1;
+  touch-action: pan-y pinch-zoom;
+}
+.horizon .production-days-viewport > div {
+  display: flex;
+  gap: 12px;
+}
+.horizon .production-days-viewport button {
+  flex: 0 0 205px;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  padding: 7px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  background: #31536588;
+  gap: 12px;
+  text-align: left;
+  font-size: 11px;
+}
+.horizon .production-days-viewport button.selected {
+  border-color: var(--gold);
+  box-shadow: inset 0 0 9px #dcba7925;
+}
+.horizon .production-days-viewport img {
+  width: 70px;
+  height: 70px;
+  border-radius: 3px;
+}
+.horizon .production-days-viewport span {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+.horizon .production-days-viewport small {
+  font-size: 10px;
+  letter-spacing: 0;
+}
+.horizon .production-schedule-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 265px;
+  gap: 18px;
+  align-items: start;
+}
+.horizon .production-schedule {
+  padding: 0 20px 20px;
+}
+.horizon .production-schedule .studio-tabs {
+  justify-content: space-between;
+  gap: 18px;
+  margin-top: 2px;
+}
+.horizon .production-schedule .studio-tabs button {
+  font-size: 10px;
+  letter-spacing: 0.5px;
+}
+.horizon .production-schedule [role='tabpanel'] > header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 20px 0;
+}
+.horizon .production-schedule [role='tabpanel'] > header h2 {
+  font-size: 27px;
+}
+.horizon .production-timeline {
+  display: flex;
+  flex-direction: column;
+}
+.horizon .production-timeline > button {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  text-align: left;
+  padding: 18px 8px;
+  border-top: 1px solid #f5f0e614;
+  width: 100%;
+}
+.horizon .production-hour {
+  font-size: 12px;
+  width: 60px;
+  flex-shrink: 0;
+}
+.horizon .production-time-dot {
+  width: 8px;
+  height: 8px;
+  border: 1px solid var(--gold);
+  border-radius: 50%;
+  flex-shrink: 0;
+  position: relative;
+}
+.horizon .production-time-dot:after {
+  content: '';
+  height: 70px;
+  position: absolute;
+  top: 7px;
+  left: 3px;
+  border-left: 1px solid var(--line);
+}
+.horizon .production-timeline > button:last-child .production-time-dot:after {
+  display: none;
+}
+.horizon .production-timeline strong {
+  font-size: 13px;
+  font-weight: 400;
+}
+.horizon .production-timeline small {
+  display: block;
+  font-size: 10px;
+  letter-spacing: 0;
+  color: var(--muted);
+  margin-top: 5px;
+}
+.horizon .production-event-state {
+  margin-left: auto;
+  white-space: nowrap;
+}
+.horizon .production-timeline > button > .icon:last-child {
+  width: 16px;
+  height: 16px;
+  flex-basis: 16px;
+}
+.horizon .production-side {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.horizon .production-side > section {
+  padding: 17px;
+}
+.horizon .production-side h3 {
+  font:
+    23px Cannia,
+    Georgia,
+    serif;
+  margin-bottom: 14px;
+}
+.horizon .production-side p {
+  font-size: 11px;
+  margin-bottom: 15px;
+}
+.horizon .production-side .main-action {
+  width: 100%;
+  font-size: 11px !important;
+  padding: 12px !important;
+  min-width: 0;
+}
+.horizon .production-side section > button:not(.main-action) {
+  display: flex;
+  gap: 12px;
+  padding: 13px 0;
+  align-items: center;
+  width: 100%;
+  text-align: left;
+  font-size: 11px;
+}
+.horizon .production-side section > button small {
+  display: block;
+  margin-top: 5px;
+  font-size: 10px;
+  letter-spacing: 0;
+}
+.horizon .production-resource-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.horizon .production-resource-list > button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+  font-size: 12px;
+  padding: 15px 0;
+  border-bottom: 1px solid var(--line);
+  width: 100%;
+}
+.horizon .production-resource-list strong {
+  font-weight: 400;
+}
+.horizon .production-resource-list small {
+  display: block;
+  font-size: 10px;
+  margin-top: 5px;
+  letter-spacing: 0;
+  color: var(--muted);
+}
+.horizon .production-resource-list > button > .icon:last-child {
+  margin-left: auto;
+}
+.horizon .production-campaign-banner {
+  display: grid;
+  grid-template-columns: 200px minmax(0, 1fr) 250px auto;
+  gap: 25px;
+  align-items: center;
+  padding: 18px;
+  margin-bottom: 30px;
+}
+.horizon .production-campaign-banner > img {
+  height: 125px;
+  border-radius: 5px;
+}
+.horizon .production-campaign-banner h2 {
+  font-size: 30px;
+  margin-bottom: 10px;
+}
+.horizon .production-campaign-banner label {
+  font-size: 11px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.horizon .production-campaign-banner input,
+.horizon .production-campaign-banner select {
+  border: 1px solid var(--line);
+  padding: 9px 12px;
+  background: #244555;
+  color: var(--ink);
+  border-radius: 4px;
+  font:
+    12px Avenir,
+    Arial;
+  width: 100%;
+}
+.horizon .production-team-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 12px;
+}
+.horizon .production-person {
+  padding: 14px;
+  min-width: 0;
+}
+.horizon .production-person > header {
+  display: flex;
+  align-items: start;
+  gap: 12px;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+.horizon .production-person h3 {
+  font:
+    17px Cannia,
+    Georgia,
+    serif;
+  text-transform: uppercase;
+}
+.horizon .production-person > header > small {
+  white-space: nowrap;
+  font-size: 10px;
+}
+.horizon .production-person-name {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 11px;
+  min-height: 60px;
+}
+.horizon .production-person-name small {
+  display: block;
+  color: var(--muted);
+  font-size: 9px;
+  letter-spacing: 0;
+  margin-top: 6px;
+}
+.horizon .production-avatar {
+  width: 37px;
+  height: 37px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: #d5c7a311;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.horizon .production-person ul {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.horizon .production-person li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 10px;
+}
+.horizon .production-person li .icon {
+  width: 16px;
+  height: 16px;
+  flex-basis: 16px;
+}
+.horizon .production-person li small {
+  margin-left: auto;
+  font-size: 9px;
+  letter-spacing: 0;
+}
+.horizon .production-person > .text-link {
+  font-size: 11px;
+  border: 1px solid var(--line);
+  padding: 10px;
+  width: 100%;
+  justify-content: center;
+}
+.horizon .production-schedule .production-team-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  padding-bottom: 15px;
+}
+.horizon .production-booking-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+}
+.horizon .production-booking-grid > section {
+  padding: 24px;
+}
+.horizon .production-booking-grid > section > .icon {
+  width: 35px;
+  height: 35px;
+}
+.horizon .production-booking-grid h2 {
+  margin: 20px 0;
+}
+@media (max-width: 1350px) {
+  .horizon .production-team-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .horizon .production-campaign-banner {
+    grid-template-columns: 150px 1fr 220px;
+  }
+  .horizon .production-campaign-banner > .studio-add {
+    grid-column: 3;
+  }
+  .horizon .production-layout {
+    grid-template-columns: 155px minmax(0, 1fr);
+    gap: 18px;
+  }
+  .horizon .production-schedule-grid {
+    grid-template-columns: minmax(0, 1fr) 235px;
+    gap: 12px;
+  }
+  .horizon .production-timeline > button {
+    gap: 12px;
+  }
+  .horizon .production-schedule {
+    padding: 0 14px 15px;
+  }
+  .horizon .production-schedule .studio-tabs {
+    gap: 9px;
+  }
+  .horizon .production-schedule .studio-tabs button {
+    font-size: 9px;
+  }
+}
+@media (max-width: 1000px) {
+  .horizon .production-rail {
+    display: none;
+  }
+  .horizon .production-layout {
+    display: block;
+  }
+  .horizon .production-booking-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .horizon .production-heading h1 {
+    font-size: 48px;
+  }
+  .horizon .production-heading-actions {
+    flex-direction: column;
+    gap: 12px;
+  }
+  .horizon .production-campaign-banner {
+    grid-template-columns: 120px 1fr;
+  }
+  .horizon .production-campaign-banner > .studio-add {
+    grid-column: auto;
+  }
+  .horizon .production-campaign-banner > div:last-of-type {
+    grid-column: 1/-1;
+    display: flex;
+    gap: 20px;
+    align-items: end;
+  }
+  .horizon .production-campaign-banner label {
+    flex: 1;
+  }
+  .horizon .production-campaign-banner select {
+    width: 45%;
+  }
+}
+@media (max-width: 650px) {
+  .horizon .production-heading {
+    align-items: flex-start;
+    padding: 12px 0 22px;
+    gap: 15px;
+  }
+  .horizon .production-heading h1 {
+    font-size: 36px;
+  }
+  .horizon .production-heading p {
+    font-size: 11px;
+    letter-spacing: 0;
+  }
+  .horizon .production-heading-actions {
+    max-width: 115px;
+  }
+  .horizon .production-heading-actions .main-action {
+    min-width: 0;
+    font-size: 9px;
+    padding: 9px !important;
+    gap: 5px;
+  }
+  .horizon .production-heading-actions > button:first-child {
+    font-size: 9px;
+  }
+  .horizon .production-heading-actions .icon {
+    width: 17px;
+    height: 17px;
+    flex-basis: 17px;
+  }
+  .horizon .production-schedule-grid {
+    display: flex;
+    flex-direction: column;
+  }
+  .horizon .production-schedule {
+    width: 100%;
+    padding: 0 10px 15px;
+  }
+  .horizon .production-days > button {
+    padding: 5px;
+  }
+  .horizon .production-days-viewport button {
+    flex-basis: 215px;
+  }
+  .horizon .production-schedule .studio-tabs {
+    gap: 10px;
+    overflow: auto;
+    justify-content: flex-start;
+  }
+  .horizon .production-schedule .studio-tabs button {
+    font-size: 9px;
+  }
+  .horizon .production-hour {
+    width: 43px;
+    font-size: 10px;
+  }
+  .horizon .production-timeline > button {
+    gap: 9px;
+    padding: 17px 0;
+  }
+  .horizon .production-timeline > button > .icon {
+    width: 18px;
+    height: 18px;
+    flex-basis: 18px;
+  }
+  .horizon .production-timeline strong {
+    font-size: 12px;
+  }
+  .horizon .production-timeline small {
+    font-size: 9px;
+  }
+  .horizon .production-event-state {
+    display: none !important;
+  }
+  .horizon .production-timeline > button > .icon:last-child {
+    margin-left: auto;
+  }
+  .horizon .production-side {
+    width: 100%;
+  }
+  .horizon .production-team-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .horizon .production-person {
+    padding: 12px;
+  }
+  .horizon .production-person h3 {
+    font-size: 14px;
+  }
+  .horizon .production-person-name {
+    flex-direction: column;
+    align-items: start;
+    gap: 7px;
+  }
+  .horizon .production-person li {
+    font-size: 9px;
+    gap: 5px;
+  }
+  .horizon .production-person li small {
+    font-size: 8px;
+  }
+  .horizon .production-campaign-banner {
+    grid-template-columns: 90px minmax(0, 1fr);
+    gap: 15px;
+    padding: 13px;
+  }
+  .horizon .production-campaign-banner h2 {
+    font-size: 23px;
+  }
+  .horizon .production-campaign-banner p {
+    font-size: 10px;
+  }
+  .horizon .production-campaign-banner > img {
+    height: 105px;
+  }
+  .horizon .production-campaign-banner > div:last-of-type {
+    display: block;
+  }
+  .horizon .production-campaign-banner select {
+    width: 100%;
+  }
+  .horizon .production-campaign-banner > .studio-add {
+    grid-column: 1/-1;
+  }
+  .horizon .production-booking-grid {
+    grid-template-columns: 1fr;
+  }
+  .horizon .production-schedule .production-team-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,6 +1,10 @@
 import type { CommunityRecord, Workspace } from './types';
 import { factors } from './metrics';
+import { horizonTransitionError } from './horizon';
+import { studioTransitionError } from './studio';
 export function transitionError(r: CommunityRecord, to: string, w: Workspace): string | null {
+  if (r.kind.startsWith('studio:')) return studioTransitionError(r, to, w);
+  if (r.kind.startsWith('horizon:')) return horizonTransitionError(r, to, w);
   const find = (key: string) => w.records.find((x) => x.id === r.data[key]);
   if (r.kind === 'expense' && ['submitted', 'approved'].includes(to)) {
     const allocation = find('allocationId');
@@ -45,13 +49,25 @@ export function transitionError(r: CommunityRecord, to: string, w: Workspace): s
     !r.files?.length
   )
     return 'Attach a source file or a shared HTTPS source link first.';
+  if (
+    r.kind === 'result' &&
+    ['submitted', 'validated'].includes(to) &&
+    (r.data.actual === undefined || r.data.actual === '')
+  )
+    return 'Record the observed value before submitting this result.';
   if (r.kind === 'result' && to === 'validated') {
     const evidence = find('evidenceId');
     if (!evidence || !['bee_reviewed', 'expert_validated'].includes(evidence.status))
       return 'The linked evidence needs Bee review first.';
     if (evidence.data.actionId !== r.data.actionId)
       return 'The result and its evidence must refer to the same action.';
-    if (r.data.expertRequired === 'Yes' && evidence.status !== 'expert_validated')
+    if (
+      (r.data.expertRequired === 'Yes' ||
+        r.data.risk === 'High' ||
+        r.data.indicatorType === 'Public claim' ||
+        (r.data.risk === 'Medium' && r.data.indicatorType === 'Estimate')) &&
+      evidence.status !== 'expert_validated'
+    )
       return 'Expert validation is required for this indicator.';
   }
   if (

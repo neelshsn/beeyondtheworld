@@ -1,4 +1,4 @@
-import { CommunityApp } from './workspace';
+import { HorizonApp } from './horizon-app';
 export default function CommunityPage() {
-  return <CommunityApp experimental />;
+  return <HorizonApp />;
 }

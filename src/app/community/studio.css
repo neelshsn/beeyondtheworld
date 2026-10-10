@@ -1,0 +1,1871 @@
+.horizon.source-layout {
+  min-height: 100vh;
+}
+.source-layout .global-nav {
+  display: none;
+}
+.source-layout > main {
+  margin: 0;
+  padding: 0 32px 30px;
+}
+.source-layout > main > .page-meta,
+.source-layout > main > .heading,
+.source-layout > main > .page-action {
+  display: none;
+}
+.source-layout .topbar {
+  height: 72px;
+  border: 0;
+  padding: 0 34px;
+}
+.source-layout .wordmark {
+  font-size: 15px;
+  letter-spacing: 3px;
+}
+.source-layout .ambient:after {
+  background: linear-gradient(
+    180deg,
+    rgba(30, 64, 85, 0.68),
+    rgba(35, 69, 86, 0.73) 45%,
+    rgba(29, 46, 49, 0.4)
+  );
+}
+.source-layout .study-footer {
+  position: relative;
+  padding: 12px 32px;
+  border-top: 1px solid var(--line);
+}
+.horizon .studio {
+  --glass: rgba(39, 75, 93, 0.77);
+  --gold: #dcba79;
+  --line: rgba(235, 216, 174, 0.29);
+  color: #f5f0e6;
+}
+.horizon .studio small {
+  font-size: 11px;
+  letter-spacing: 1.2px;
+  color: var(--gold);
+}
+.horizon .studio button,
+.horizon .studio a {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.horizon .studio .main-action {
+  min-width: 180px;
+  justify-content: center;
+}
+.horizon .studio-glass,
+.horizon .studio-allocation-tray {
+  background: var(--glass);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  backdrop-filter: blur(12px);
+}
+.horizon .studio-hero-heading {
+  text-align: center;
+  padding: 12px 0 15px;
+}
+.horizon .studio-hero-heading > p {
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  font-size: 13px;
+}
+.horizon .studio-hero-heading h1 {
+  font-size: clamp(44px, 5vw, 76px);
+  margin: 8px 0;
+}
+.horizon .studio-phase-nav {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-top: 12px;
+}
+.horizon .studio-phase-nav button {
+  font-size: 15px;
+  letter-spacing: 2px;
+  padding: 8px 0;
+}
+.horizon .studio-phase-nav button[aria-current] {
+  color: var(--gold);
+  border-bottom: 1px solid var(--gold);
+}
+.horizon .studio-coverflow {
+  position: relative;
+  margin: 0 -32px;
+}
+.horizon .studio-cover-viewport {
+  overflow: hidden;
+  padding: 24px 0 6px;
+  touch-action: pan-y pinch-zoom;
+}
+.horizon .studio-cover-track {
+  display: flex;
+  align-items: center;
+}
+.horizon .studio-cover-slide {
+  flex: 0 0 32%;
+  min-width: 0;
+  padding: 0 8px;
+  perspective: 1200px;
+}
+.horizon .studio-cover-card {
+  position: relative;
+  width: 100%;
+  height: 340px;
+  border: 1px solid rgba(245, 240, 230, 0.25);
+  border-radius: 4px;
+  overflow: hidden;
+  transform: scale(0.86) rotateY(13deg);
+  transition:
+    transform 0.5s ease,
+    border-color 0.3s ease;
+  box-shadow: 0 20px 30px #14283233;
+}
+.horizon .studio-cover-card > img {
+  position: absolute;
+  inset: 0;
+}
+.horizon .studio-cover-card > span {
+  position: absolute;
+  inset: 50% 0 0;
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  text-align: left;
+  padding: 25px;
+  background: linear-gradient(transparent, #122326b3);
+}
+.horizon .studio-cover-card > span > span {
+  display: flex;
+  flex-direction: column;
+}
+.horizon .studio-cover-card small {
+  font-size: 11px;
+  color: var(--ink);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+.horizon .studio-cover-card strong {
+  font:
+    24px Cannia,
+    Georgia,
+    serif;
+  letter-spacing: 1px;
+  font-weight: 400;
+}
+.horizon .studio-cover-slide.is-current {
+  z-index: 2;
+}
+.horizon .studio-cover-slide.is-current .studio-cover-card {
+  transform: scale(1.08);
+  border: 2px solid var(--gold);
+  box-shadow: 0 0 16px #dcba7944;
+}
+.horizon .studio-cover-slide.is-current ~ .studio-cover-slide .studio-cover-card {
+  transform: scale(0.86) rotateY(-13deg);
+}
+.horizon .studio-round {
+  position: absolute;
+  top: 45%;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  justify-content: center;
+  background: #244455b3;
+  z-index: 3;
+}
+.horizon .studio-round.prev {
+  left: 28px;
+}
+.horizon .studio-round.next {
+  right: 28px;
+}
+.horizon .studio-dots {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  padding: 22px 0;
+}
+.horizon .studio-dots button {
+  width: 28px;
+  height: 16px;
+  position: relative;
+}
+.horizon .studio-dots button:after {
+  content: '';
+  height: 2px;
+  background: #f5f0e666;
+  position: absolute;
+  inset: 7px 0;
+}
+.horizon .studio-dots button[aria-current]:after {
+  background: var(--gold);
+  box-shadow: 0 0 8px var(--gold);
+}
+.horizon .studio-allocation-tray {
+  margin: 6px 0 14px;
+  padding: 15px 18px;
+}
+.horizon .studio-allocation-tray > header {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 0 0 13px;
+  border-bottom: 1px solid var(--line);
+  letter-spacing: 3px;
+  font-size: 13px;
+  text-transform: uppercase;
+}
+.horizon .studio-allocation-tray > header small {
+  margin-left: auto;
+  text-transform: none;
+  letter-spacing: 0.6px;
+  color: var(--ink);
+}
+.horizon .studio-disciplines {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  padding-top: 12px;
+}
+.horizon .studio-disciplines section {
+  padding: 0 12px;
+  border-right: 1px solid var(--line);
+  min-width: 0;
+}
+.horizon .studio-disciplines section:first-child {
+  padding-left: 0;
+}
+.horizon .studio-disciplines section:last-child {
+  border: 0;
+  padding-right: 0;
+}
+.horizon .studio-disciplines h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1.8px;
+  font-size: 10px;
+  margin-bottom: 10px;
+}
+.horizon .studio-disciplines section > div {
+  display: flex;
+  gap: 5px;
+  overflow-x: auto;
+}
+.horizon .studio-disciplines section > div > button {
+  flex: 0 0 54px;
+  height: 65px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.horizon .studio-disciplines .studio-add-reference {
+  flex-basis: 30px;
+  justify-content: center;
+}
+.horizon .studio-bottom-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+}
+.horizon .studio-bottom-actions > span {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  font-size: 13px;
+  letter-spacing: 1px;
+}
+.horizon .studio-immersive {
+  display: grid;
+  grid-template-columns: 190px minmax(0, 1fr);
+  gap: 34px;
+  margin-left: -32px;
+}
+.horizon .studio-scenic-rail {
+  position: relative;
+  min-height: 800px;
+  margin-top: -72px;
+  padding-top: 100px;
+}
+.horizon .studio-scenic-rail > img {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: 0.55;
+}
+.horizon .studio-scenic-rail > div {
+  padding: 15px 20px;
+}
+.horizon .studio-scenic-rail h2 {
+  font-size: 32px;
+  text-transform: uppercase;
+}
+.horizon .studio-scenic-rail .studio-phase-nav {
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 30px;
+}
+.horizon .studio-scenic-rail .studio-phase-nav button {
+  border: 0;
+  font-size: 11px;
+  letter-spacing: 1px;
+}
+.horizon .studio-scenic-rail .studio-phase-nav button span {
+  height: 6px;
+  width: 6px;
+  border-radius: 50%;
+  background: #ffffff60;
+  margin-right: 8px;
+}
+.horizon .studio-scenic-rail .studio-phase-nav button[aria-current] span {
+  background: var(--gold);
+  box-shadow: 0 0 8px var(--gold);
+}
+.horizon .studio-location-main > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 0 23px;
+  gap: 20px;
+}
+.horizon .studio-location-main h1 {
+  font-size: clamp(35px, 4vw, 56px);
+  margin: 8px 0;
+}
+.horizon .studio-location-main header p {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 8px;
+  max-width: 620px;
+}
+.horizon .studio-location-main header p .icon {
+  width: 17px;
+  height: 17px;
+  flex-basis: 17px;
+}
+.horizon .studio-add {
+  border: 1px dashed var(--line);
+  padding: 17px 20px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 11px !important;
+  justify-content: center;
+}
+.horizon .studio-add .icon {
+  border: 1px solid var(--gold);
+  border-radius: 50%;
+  padding: 5px;
+  width: 34px;
+  height: 34px;
+  flex-basis: 34px;
+}
+.horizon .studio-add small {
+  display: block;
+  text-transform: none;
+  letter-spacing: 0;
+  margin-top: 4px;
+  color: var(--muted);
+}
+.horizon .studio-panorama {
+  position: relative;
+  width: 100%;
+  height: 310px;
+  border-radius: 5px;
+  overflow: hidden;
+}
+.horizon .studio-panorama > img {
+  position: absolute;
+  inset: 0;
+}
+.horizon .studio-panorama > span {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 18px 22px;
+  background: linear-gradient(transparent, #122326ad);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+.horizon .studio-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--line);
+  gap: 25px;
+  margin: 16px 0;
+  padding: 0 6px;
+}
+.horizon .studio-tabs button {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 12px 0;
+  border-bottom: 2px solid transparent;
+  justify-content: center;
+  white-space: nowrap;
+}
+.horizon .studio-tabs [data-state='active'] {
+  color: var(--gold);
+  border-color: var(--gold);
+}
+.horizon .studio-thumbnails {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 14px;
+}
+.horizon .studio-frame-card {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  background: #264a5dcc;
+  min-width: 0;
+}
+.horizon .studio-frame-card.selected {
+  border-color: var(--gold);
+  box-shadow: 0 0 12px #dcba792e;
+}
+.horizon .studio-frame-photo {
+  position: relative;
+  width: 100%;
+  height: 155px;
+}
+.horizon .studio-frame-photo > img {
+  position: absolute;
+  inset: 0;
+}
+.horizon .studio-frame-photo > span {
+  position: absolute;
+  bottom: 8px;
+  left: 10px;
+  color: #fff;
+  font-size: 13px;
+  text-shadow: 0 1px 3px #000;
+}
+.horizon .studio-quick-actions {
+  display: flex;
+  justify-content: center;
+  gap: 7px;
+  padding: 9px 4px;
+}
+.horizon .studio-quick-actions button {
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  padding: 4px;
+  gap: 0;
+}
+.horizon .studio-quick-actions .icon {
+  width: 13px;
+  height: 13px;
+  flex-basis: 13px;
+}
+.horizon .studio-notes {
+  padding: 25px 10px;
+  white-space: pre-wrap;
+}
+.horizon .studio-files {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px 0;
+}
+.horizon .studio-files > a,
+.horizon .studio-files > button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid var(--line);
+  padding: 12px;
+  font-size: 13px;
+}
+.horizon .studio-workbench-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 0 20px;
+  gap: 20px;
+}
+.horizon .studio-workbench-heading h1 {
+  font-size: 62px;
+  margin: 6px 0;
+}
+.horizon .studio-workbench-heading p {
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  font-size: 11px;
+}
+.horizon .studio-workbench-heading > div:last-child:not(:first-child) {
+  display: flex;
+  gap: 22px;
+}
+.horizon .studio-workbench-heading button {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.horizon .studio-scout-grid {
+  display: grid;
+  grid-template-columns: 110px 210px minmax(400px, 1fr) 280px;
+  gap: 13px;
+  align-items: start;
+}
+.horizon .studio-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 15px;
+}
+.horizon .studio-steps button {
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 12px 12px 15px 21px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-left: 1px solid var(--line);
+  position: relative;
+}
+.horizon .studio-steps button:before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #f5f0e650;
+  position: absolute;
+  top: 16px;
+  left: -3px;
+}
+.horizon .studio-steps button.selected:before {
+  background: var(--gold);
+  box-shadow: 0 0 9px var(--gold);
+}
+.horizon .studio-location-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 9px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  background: #31536577;
+}
+.horizon .studio-location-list > button:not(.studio-add) {
+  width: 100%;
+  min-height: 95px;
+  padding: 7px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  text-align: left;
+  align-items: stretch;
+  gap: 12px;
+}
+.horizon .studio-location-list .selected {
+  border-color: var(--gold) !important;
+  background: #f5f0e608;
+  box-shadow: 0 0 12px #dcba7933;
+}
+.horizon .studio-location-list img {
+  width: 64px;
+  height: 89px;
+  border-radius: 3px;
+}
+.horizon .studio-location-list > button > span {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 10px;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+  padding: 7px 0;
+}
+.horizon .studio-location-list > button small:last-child {
+  text-transform: none;
+  color: var(--muted);
+  letter-spacing: 0;
+  font-size: 11px;
+}
+.horizon .studio-frame-workbench {
+  padding: 12px;
+}
+.horizon .studio-frame-workbench > header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+.horizon .studio-frame-workbench h2 {
+  text-transform: uppercase;
+  font-size: 27px;
+}
+.horizon .studio-frame-workbench > header button {
+  font-size: 9px;
+  white-space: nowrap;
+}
+.horizon .studio-frame-workbench > header button .icon {
+  width: 14px;
+  height: 14px;
+}
+.horizon .studio-frame-workbench .studio-tabs {
+  gap: 14px;
+  justify-content: space-between;
+  padding: 0;
+}
+.horizon .studio-frame-workbench .studio-tabs button {
+  font-size: 9px;
+  letter-spacing: 0.3px;
+}
+.horizon .studio-detailed-frames {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 9px;
+}
+.horizon .studio-detailed-frames .studio-frame-photo {
+  height: 185px;
+}
+.horizon .studio-frame-copy {
+  padding: 10px;
+}
+.horizon .studio-frame-copy h3 {
+  font-size: 12px;
+  margin: 4px 0;
+}
+.horizon .studio-frame-copy p {
+  font-size: 11px;
+  line-height: 1.5;
+  min-height: 60px;
+}
+.horizon .studio-frame-copy dl {
+  font-size: 10px;
+  margin: 16px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+}
+.horizon .studio-frame-copy dl > div {
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+  align-items: center;
+}
+.horizon .studio-frame-copy dt {
+  font-size: 0;
+}
+.horizon .studio-frame-copy dd {
+  font-size: 10px;
+  flex: 1;
+}
+.horizon .studio-frame-copy .text-link {
+  font-size: 10px;
+  justify-content: space-between;
+  width: 100%;
+}
+.horizon .studio-frame-paging {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 13px 0;
+  font-size: 11px;
+}
+.horizon .studio-frame-paging button:disabled {
+  opacity: 0.3;
+}
+.horizon .studio-add.wide {
+  width: 100%;
+  margin-top: 10px;
+  padding: 11px;
+}
+.horizon .studio-review-column {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.horizon .studio-review-column > .studio-glass {
+  padding: 14px;
+}
+.horizon .studio-review-column h3 {
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+}
+.horizon .studio-map-preview {
+  width: 100%;
+  height: 90px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 4px;
+}
+.horizon .studio-map-preview img {
+  position: absolute;
+  inset: 0;
+  opacity: 0.8;
+}
+.horizon .studio-map-preview > span {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: #17344244;
+  font-size: 10px;
+}
+.horizon .studio-metadata {
+  font-size: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 15px 0 8px;
+}
+.horizon .studio-metadata > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+.horizon .studio-metadata dt {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-transform: uppercase;
+}
+.horizon .studio-metadata .icon {
+  width: 17px;
+  height: 17px;
+  flex-basis: 17px;
+}
+.horizon .studio-metadata dd {
+  max-width: 55%;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+.horizon .studio-review-line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 11px !important;
+  margin: 8px 0 !important;
+}
+.horizon .studio-review-line span {
+  margin-left: auto;
+  font-size: 10px;
+}
+.horizon .studio-review-column .main-action {
+  width: 100%;
+  font-size: 11px;
+  padding: 10px;
+  margin-top: 6px;
+}
+.horizon .studio-review-column .text-link {
+  font-size: 11px;
+  padding-top: 12px;
+}
+.horizon .studio-process {
+  display: flex;
+  justify-content: center;
+  gap: 70px;
+  margin: 24px 0 3px;
+}
+.horizon .studio-process button {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  flex-direction: column;
+  gap: 6px;
+}
+.horizon .studio-process span {
+  color: var(--gold);
+  border-top: 1px solid var(--line);
+  padding-top: 9px;
+  width: 70px;
+  text-align: center;
+}
+.horizon .studio-styling-grid {
+  display: grid;
+  grid-template-columns: 250px minmax(400px, 1fr) 360px;
+  gap: 18px;
+  align-items: start;
+}
+.horizon .studio-styling-location,
+.horizon .studio-look-detail {
+  padding: 16px;
+}
+.horizon .studio-styling-location h3,
+.horizon .studio-look-detail h3 {
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 1px;
+  margin-bottom: 15px;
+}
+.horizon .studio-style-place {
+  position: relative;
+  width: 100%;
+  height: 180px;
+  overflow: hidden;
+  border-radius: 4px;
+}
+.horizon .studio-style-place img {
+  position: absolute;
+  inset: 0;
+}
+.horizon .studio-style-place span {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 10px;
+  background: #17344277;
+  font-size: 11px;
+}
+.horizon .studio-mini-places {
+  display: flex;
+  gap: 6px;
+  margin: 10px 0 18px;
+}
+.horizon .studio-mini-places > button {
+  height: 53px;
+  flex: 1;
+  overflow: hidden;
+  border: 1px solid transparent;
+}
+.horizon .studio-mini-places > button[aria-pressed='true'] {
+  border-color: var(--gold);
+}
+.horizon .studio-frame-row {
+  width: 100%;
+  padding: 15px 0;
+  border-top: 1px solid var(--line);
+  text-align: left;
+  font-size: 11px !important;
+}
+.horizon .studio-frame-row > span {
+  color: var(--gold);
+  margin-right: 10px;
+}
+.horizon .studio-frame-row .icon {
+  margin-left: auto;
+}
+.horizon .studio-style-assignments > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 3px 0 18px;
+}
+.horizon .studio-style-assignments > header button {
+  font-size: 12px;
+}
+.horizon .studio-style-frame {
+  display: grid;
+  grid-template-columns: 44% 1fr;
+  margin-bottom: 14px;
+  padding: 10px;
+  gap: 12px;
+  min-height: 172px;
+}
+.horizon .studio-style-shot {
+  position: relative;
+  overflow: hidden;
+  border-radius: 4px;
+  min-height: 160px;
+}
+.horizon .studio-style-shot img {
+  position: absolute;
+  inset: 0;
+}
+.horizon .studio-style-shot > span {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 10px;
+  background: #14293288;
+  font-size: 10px;
+}
+.horizon .studio-look-links {
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+  overflow-x: auto;
+}
+.horizon .studio-look-links > button:not(.studio-add) {
+  flex: 0 0 90px;
+  display: flex;
+  flex-direction: column;
+  font-size: 10px;
+  gap: 5px;
+}
+.horizon .studio-look-links img {
+  height: 130px;
+  border-radius: 3px;
+}
+.horizon .studio-look-links > .studio-add {
+  flex: 0 0 90px;
+  flex-direction: column;
+  letter-spacing: 0;
+  padding: 8px;
+  text-transform: none;
+}
+.horizon .studio-look-detail > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.horizon .studio-look-detail > header button {
+  font-size: 10px;
+}
+.horizon .studio-look-select {
+  display: flex;
+  gap: 13px;
+  margin: 12px 0;
+  overflow: auto;
+}
+.horizon .studio-look-select button {
+  font-size: 10px;
+  padding: 4px 0;
+  border-bottom: 1px solid transparent;
+  white-space: nowrap;
+}
+.horizon .studio-look-select button[aria-pressed='true'] {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+.horizon .studio-look-hero {
+  height: 250px;
+  width: 100%;
+  border-radius: 5px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+.horizon .studio-look-hero img {
+  object-position: center 32%;
+}
+.horizon .studio-look-detail > .studio-metadata {
+  margin: 20px 0;
+}
+.horizon .studio-product-strip {
+  display: flex;
+  gap: 7px;
+  overflow: auto;
+  margin: 12px 0 20px;
+}
+.horizon .studio-product-strip > button {
+  flex: 0 0 75px;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 9px;
+  align-items: flex-start;
+}
+.horizon .studio-product-strip img {
+  height: 78px;
+  border-radius: 3px;
+}
+.horizon .studio-product-strip > .studio-add {
+  align-items: center;
+  text-align: center;
+  padding: 7px;
+}
+.horizon .studio-look-detail > .main-action {
+  width: 100%;
+  font-size: 12px;
+}
+.horizon .studio-products {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 22px;
+}
+.horizon .studio-products > button {
+  flex-direction: column;
+  align-items: flex-start;
+  overflow: hidden;
+  padding: 14px;
+  text-align: left;
+}
+.horizon .studio-products img {
+  height: 280px;
+  border-radius: 3px;
+}
+.horizon .studio-products h2 {
+  font-size: 25px;
+}
+.horizon .studio-products > button > span {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  font-size: 11px;
+}
+.horizon .studio-empty {
+  text-align: center;
+  padding: 70px 25px;
+}
+.horizon .studio-empty > .icon {
+  margin: auto;
+  width: 40px;
+  height: 40px;
+}
+.horizon .studio-empty h2 {
+  margin: 20px 0 10px;
+}
+.horizon .studio-empty button {
+  margin: 25px auto 0;
+}
+.studio-overlay {
+  position: fixed;
+  inset: 0;
+  background: #10232ab8;
+  backdrop-filter: blur(8px);
+  z-index: 200;
+}
+.horizon.studio-dialog {
+  position: fixed;
+  z-index: 201;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(760px, calc(100vw - 28px));
+  min-height: 0;
+  max-height: 90dvh;
+  overflow: auto;
+  background: #284b5b;
+  padding: 26px;
+  border: 1px solid #dcba7966;
+  border-radius: 10px;
+  box-shadow: 0 20px 100px #10232a88;
+}
+.horizon.studio-dialog-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: center;
+  margin-bottom: 22px;
+}
+.horizon.studio-dialog-heading h2 {
+  font:
+    28px Cannia,
+    Georgia,
+    serif;
+}
+.horizon.studio-dialog-heading button {
+  font-size: 12px;
+  white-space: nowrap;
+  display: flex;
+  gap: 10px;
+}
+.horizon.studio-dialog form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 17px;
+}
+.horizon.studio-dialog label {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  font-size: 12px;
+  color: #e0d4b6;
+  min-width: 0;
+}
+.horizon.studio-dialog input,
+.horizon.studio-dialog textarea,
+.horizon.studio-dialog select {
+  border: 1px solid #e0d4b633;
+  background: #1e3c4c;
+  color: #f5f0e6;
+  border-radius: 4px;
+  padding: 12px;
+  width: 100%;
+  font-size: 13px;
+}
+.horizon.studio-dialog label:has(textarea),
+.horizon.studio-dialog label:has(.studio-asset-choices) {
+  grid-column: 1/-1;
+}
+.horizon.studio-dialog .main-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 13px;
+  min-height: 44px;
+}
+.horizon .studio-record-preview {
+  height: 130px;
+  position: relative;
+  margin-bottom: 20px;
+  border-radius: 5px;
+  overflow: hidden;
+}
+.horizon .studio-record-preview img {
+  opacity: 0.6;
+}
+.horizon .studio-record-preview > span {
+  position: absolute;
+  bottom: 12px;
+  left: 15px;
+  font-size: 12px;
+}
+.horizon .studio-asset-choices {
+  display: flex;
+  gap: 7px;
+  overflow: auto;
+}
+.horizon .studio-asset-choices button {
+  height: 70px;
+  flex: 0 0 70px;
+  border: 2px solid transparent;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.horizon .studio-asset-choices button[aria-pressed='true'] {
+  border-color: #dcba79;
+}
+.horizon .studio-upload {
+  padding: 20px 0;
+}
+.horizon .studio-upload input {
+  font-size: 11px;
+}
+.horizon .studio-review-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding-top: 22px;
+  border-top: 1px solid #dcba7933;
+}
+.horizon .studio-review-actions button {
+  display: flex;
+  justify-content: center;
+}
+.horizon .studio-error {
+  color: #ffd7b3 !important;
+  background: #602f2555;
+  border: 1px solid #ffd7b344;
+  padding: 12px;
+  margin-top: 18px !important;
+}
+.horizon.studio-dialog [role='status'] {
+  padding-top: 12px;
+  color: #e5d5ac;
+}
+.horizon .studio-lightbox {
+  height: 60vh;
+}
+.horizon .studio-lightbox img {
+  object-fit: contain;
+}
+.horizon.studio-dialog button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+@media (min-width: 1800px) {
+  .horizon .studio-cover-card {
+    height: 430px;
+  }
+  .horizon .studio-scout-grid {
+    grid-template-columns: 130px 260px minmax(500px, 1fr) 330px;
+  }
+  .horizon .studio-detailed-frames .studio-frame-photo {
+    height: 240px;
+  }
+  .horizon .studio-styling-grid {
+    grid-template-columns: 300px minmax(500px, 1fr) 420px;
+  }
+}
+@media (max-width: 1250px) {
+  .horizon .studio-scout-grid {
+    grid-template-columns: 165px minmax(360px, 1fr) 240px;
+  }
+  .horizon .studio-steps {
+    display: none;
+  }
+  .horizon .studio-location-list img {
+    width: 48px;
+    height: 75px;
+  }
+  .horizon .studio-location-list > button > span {
+    font-size: 9px;
+  }
+  .horizon .studio-workbench-heading h1 {
+    font-size: 50px;
+  }
+  .horizon .studio-disciplines section {
+    padding: 0 7px;
+  }
+  .horizon .studio-disciplines h3 {
+    letter-spacing: 0;
+    font-size: 9px;
+    gap: 5px;
+  }
+  .horizon .studio-disciplines h3 .icon {
+    width: 18px;
+    height: 18px;
+    flex-basis: 18px;
+  }
+  .horizon .studio-styling-grid {
+    grid-template-columns: 190px minmax(300px, 1fr) 280px;
+  }
+  .horizon .studio-styling-location,
+  .horizon .studio-look-detail {
+    padding: 12px;
+  }
+  .horizon .studio-style-frame {
+    grid-template-columns: 40% 1fr;
+  }
+  .horizon .studio-immersive {
+    grid-template-columns: 160px minmax(0, 1fr);
+    gap: 25px;
+  }
+  .horizon .studio-tabs {
+    gap: 20px;
+  }
+  .horizon .studio-cover-card {
+    height: 300px;
+  }
+}
+@media (max-width: 1000px) {
+  .source-layout > main {
+    padding: 0 20px 24px;
+  }
+  .horizon .studio-scout-grid {
+    grid-template-columns: 170px minmax(0, 1fr);
+  }
+  .horizon .studio-review-column {
+    grid-column: 1/-1;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .horizon .studio-coverflow {
+    margin: 0 -20px;
+  }
+  .horizon .studio-cover-slide {
+    flex-basis: 48%;
+  }
+  .horizon .studio-disciplines {
+    display: flex;
+    overflow: auto;
+  }
+  .horizon .studio-disciplines section {
+    flex: 0 0 150px;
+  }
+  .horizon .studio-styling-grid {
+    grid-template-columns: 180px minmax(0, 1fr);
+  }
+  .horizon .studio-look-detail {
+    grid-column: 1/-1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .horizon .studio-look-hero {
+    grid-row: 2/5;
+  }
+  .horizon .studio-look-detail > header {
+    grid-column: 1/-1;
+  }
+  .horizon .studio-products {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .horizon .studio-immersive {
+    margin-left: -20px;
+    grid-template-columns: 140px minmax(0, 1fr);
+    gap: 20px;
+  }
+  .horizon .studio-scenic-rail h2 {
+    font-size: 25px;
+  }
+  .horizon .studio-thumbnails {
+    display: flex;
+    overflow-x: auto;
+    padding: 3px;
+  }
+  .horizon .studio-thumbnails > .studio-frame-card {
+    flex: 0 0 150px;
+  }
+  .horizon .studio-process {
+    gap: 25px;
+  }
+  .horizon .studio-hero-heading h1 {
+    font-size: 54px;
+  }
+}
+@media (max-width: 650px) {
+  .source-layout .topbar {
+    height: 70px;
+    padding: 12px 17px;
+    gap: 8px;
+  }
+  .source-layout .wordmark {
+    display: none;
+  }
+  .source-layout .profile-mark {
+    gap: 8px;
+  }
+  .source-layout .profile-mark select {
+    max-width: 160px;
+  }
+  .source-layout > main {
+    padding: 0 15px 20px;
+  }
+  .horizon .studio-hero-heading {
+    padding: 14px 0 5px;
+  }
+  .horizon .studio-hero-heading > p {
+    font-size: 10px;
+    letter-spacing: 2px;
+  }
+  .horizon .studio-hero-heading h1 {
+    font-size: 38px;
+  }
+  .horizon .studio-phase-nav {
+    gap: 22px;
+    margin: 6px 0;
+  }
+  .horizon .studio-phase-nav button {
+    font-size: 11px;
+    letter-spacing: 1px;
+  }
+  .horizon .studio-coverflow {
+    margin: 0 -15px;
+  }
+  .horizon .studio-cover-slide {
+    flex-basis: 75%;
+  }
+  .horizon .studio-cover-card {
+    height: 270px;
+  }
+  .horizon .studio-cover-card > span {
+    padding: 18px;
+  }
+  .horizon .studio-cover-card strong {
+    font-size: 21px;
+  }
+  .horizon .studio-cover-card small {
+    font-size: 9px;
+  }
+  .horizon .studio-cover-card > .icon {
+    width: 18px;
+  }
+  .horizon .studio-round {
+    width: 35px;
+    height: 35px;
+  }
+  .horizon .studio-round.prev {
+    left: 10px;
+  }
+  .horizon .studio-round.next {
+    right: 10px;
+  }
+  .horizon .studio-allocation-tray {
+    padding: 12px;
+  }
+  .horizon .studio-allocation-tray > header {
+    font-size: 10px;
+    letter-spacing: 1px;
+  }
+  .horizon .studio-allocation-tray > header small {
+    font-size: 9px;
+  }
+  .horizon .studio-bottom-actions {
+    gap: 12px;
+  }
+  .horizon .studio-bottom-actions > span {
+    font-size: 10px;
+    letter-spacing: 0;
+    gap: 6px;
+  }
+  .horizon .studio-bottom-actions .main-action {
+    min-width: 145px;
+    font-size: 11px;
+    padding: 12px;
+  }
+  .horizon .studio-workbench-heading {
+    padding: 15px 0;
+    align-items: flex-start;
+  }
+  .horizon .studio-workbench-heading h1 {
+    font-size: 39px;
+  }
+  .horizon .studio-workbench-heading p {
+    font-size: 9px;
+    letter-spacing: 1px;
+    max-width: 280px;
+  }
+  .horizon .studio-workbench-heading > div:last-child:not(:first-child) {
+    flex-direction: column;
+    gap: 12px;
+  }
+  .horizon .studio-workbench-heading button {
+    font-size: 9px;
+    letter-spacing: 0;
+    gap: 4px;
+  }
+  .horizon .studio-workbench-heading button .icon {
+    width: 17px;
+    height: 17px;
+    flex-basis: 17px;
+  }
+  .horizon .studio-scout-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  .horizon .studio-location-list {
+    flex-direction: row;
+    width: 100%;
+    overflow: auto;
+    gap: 6px;
+    padding: 6px;
+  }
+  .horizon .studio-location-list > button:not(.studio-add) {
+    flex: 0 0 155px;
+    min-height: 75px;
+    padding: 4px;
+  }
+  .horizon .studio-location-list img {
+    width: 43px;
+    height: 65px;
+  }
+  .horizon .studio-location-list > button > span {
+    gap: 4px;
+    padding: 3px 0;
+  }
+  .horizon .studio-location-list > .studio-add {
+    flex: 0 0 120px;
+    font-size: 9px !important;
+    padding: 8px;
+  }
+  .horizon .studio-frame-workbench {
+    width: 100%;
+    padding: 10px;
+  }
+  .horizon .studio-frame-workbench h2 {
+    font-size: 24px;
+  }
+  .horizon .studio-frame-workbench > header p {
+    font-size: 10px;
+  }
+  .horizon .studio-frame-workbench > header button {
+    font-size: 8px;
+  }
+  .horizon .studio-detailed-frames {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 10px;
+  }
+  .horizon .studio-detailed-frames > .studio-frame-card {
+    flex: 0 0 78%;
+    scroll-snap-align: start;
+  }
+  .horizon .studio-detailed-frames .studio-frame-photo {
+    height: 230px;
+  }
+  .horizon .studio-frame-copy {
+    padding: 14px;
+  }
+  .horizon .studio-frame-copy p {
+    min-height: 0;
+  }
+  .horizon .studio-frame-copy dl {
+    gap: 10px;
+  }
+  .horizon .studio-review-column {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  .horizon .studio-review-column .studio-glass {
+    padding: 16px;
+  }
+  .horizon .studio-review-column .studio-metadata {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .horizon .studio-process {
+    gap: 5px;
+    justify-content: space-between;
+  }
+  .horizon .studio-process button {
+    font-size: 8px;
+  }
+  .horizon .studio-process span {
+    width: 50px;
+  }
+  .horizon .studio-immersive {
+    display: block;
+    margin: 0;
+  }
+  .horizon .studio-scenic-rail {
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+  }
+  .horizon .studio-scenic-rail > img,
+  .horizon .studio-scenic-rail h2 {
+    display: none;
+  }
+  .horizon .studio-scenic-rail > div {
+    padding: 0;
+  }
+  .horizon .studio-scenic-rail .studio-phase-nav {
+    flex-direction: row;
+    margin: 0;
+    gap: 25px;
+  }
+  .horizon .studio-scenic-rail .studio-phase-nav button span {
+    display: none;
+  }
+  .horizon .studio-location-main > header {
+    padding: 15px 0;
+    gap: 10px;
+  }
+  .horizon .studio-location-main h1 {
+    font-size: 36px;
+  }
+  .horizon .studio-location-main header p {
+    font-size: 10px;
+  }
+  .horizon .studio-location-main header > .studio-add {
+    padding: 8px;
+    min-width: 70px;
+    font-size: 9px !important;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .horizon .studio-panorama {
+    height: 245px;
+  }
+  .horizon .studio-tabs {
+    gap: 25px;
+  }
+  .horizon .studio-tabs button {
+    font-size: 10px;
+  }
+  .horizon .studio-frame-workbench .studio-tabs {
+    gap: 8px;
+  }
+  .horizon .studio-frame-workbench .studio-tabs button {
+    font-size: 8px;
+  }
+  .horizon .studio-styling-grid {
+    display: flex;
+    flex-direction: column;
+  }
+  .horizon .studio-styling-location {
+    width: 100%;
+  }
+  .horizon .studio-style-place {
+    height: 160px;
+  }
+  .horizon .studio-mini-places {
+    margin-bottom: 10px;
+  }
+  .horizon .studio-frame-row {
+    padding: 10px 0;
+  }
+  .horizon .studio-style-assignments {
+    width: 100%;
+  }
+  .horizon .studio-style-assignments > header h2 {
+    font-size: 25px;
+  }
+  .horizon .studio-style-frame {
+    grid-template-columns: 43% 1fr;
+    gap: 8px;
+  }
+  .horizon .studio-look-detail {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+  }
+  .horizon .studio-look-hero {
+    height: 380px;
+  }
+  .horizon .studio-look-select {
+    margin: 0;
+  }
+  .horizon .studio-products {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .horizon .studio-products > button {
+    padding: 9px;
+  }
+  .horizon .studio-products img {
+    height: 180px;
+  }
+  .horizon .studio-products h2 {
+    font-size: 20px;
+  }
+  .horizon .studio-products p {
+    font-size: 10px;
+  }
+  .horizon.studio-dialog {
+    padding: 20px;
+    max-height: 94dvh;
+  }
+  .horizon.studio-dialog form {
+    grid-template-columns: 1fr;
+  }
+  .horizon.studio-dialog-heading h2 {
+    font-size: 23px;
+  }
+  .horizon.studio-dialog-heading button {
+    font-size: 10px;
+  }
+  .source-layout .study-footer {
+    padding: 12px 15px;
+    font-size: 7px;
+    gap: 10px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .horizon .studio * {
+    transition: none !important;
+    animation: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+/* The source composition takes precedence over the generic Horizon shell. */
+.horizon.source-layout .global-nav {
+  display: none;
+}
+.horizon.source-layout > main {
+  margin: 0;
+  padding: 0 32px 30px;
+}
+.horizon.source-layout .topbar {
+  height: 72px;
+  border: 0;
+  padding: 0 34px;
+}
+.horizon.source-layout .studio h1 {
+  font-size: clamp(42px, 4.7vw, 76px);
+  font-weight: 400;
+  line-height: 1.08;
+}
+.horizon.source-layout .studio h3 {
+  font-size: inherit;
+  font-weight: 400;
+}
+.horizon.source-layout .studio .main-action {
+  border-radius: 30px;
+  padding: 14px 26px;
+}
+.horizon.source-layout .studio button {
+  font-weight: 400;
+}
+.horizon.source-layout .studio .studio-disciplines h3 {
+  font-size: 10px;
+}
+.horizon.source-layout .studio .studio-frame-copy h3 {
+  font-size: 12px;
+}
+.horizon.source-layout .ambient:after {
+  background: linear-gradient(
+    180deg,
+    rgba(30, 64, 85, 0.45),
+    rgba(35, 69, 86, 0.56) 45%,
+    rgba(29, 46, 49, 0.35)
+  );
+}
+.horizon.source-layout .studio-cover-slide {
+  flex-basis: 21%;
+}
+.horizon.source-layout .studio-cover-card {
+  width: 175%;
+  margin-left: -37.5%;
+  transform: scale(0.78) rotateY(15deg);
+  height: 345px;
+}
+.horizon.source-layout .studio-cover-slide.is-current .studio-cover-card {
+  transform: scale(1);
+  border: 2px solid var(--gold);
+}
+.horizon.source-layout .studio-cover-slide.is-current ~ .studio-cover-slide .studio-cover-card {
+  transform: scale(0.78) rotateY(-15deg);
+}
+.horizon.source-layout .studio-cover-viewport {
+  padding-top: 24px;
+  padding-bottom: 12px;
+}
+.horizon.source-layout .studio-disciplines section > div > button {
+  height: 72px;
+  flex-basis: 60px;
+}
+.horizon.source-layout .studio-disciplines section > div > button.studio-add-reference {
+  flex-basis: 30px;
+}
+@media (max-width: 1000px) {
+  .horizon.source-layout > main {
+    padding: 0 20px 24px;
+  }
+  .horizon.source-layout .studio-cover-slide {
+    flex-basis: 33%;
+  }
+  .horizon.source-layout .studio-cover-card {
+    width: 145%;
+    margin-left: -22.5%;
+    height: 310px;
+  }
+}
+@media (max-width: 650px) {
+  .horizon.source-layout > main {
+    padding: 0 15px 20px;
+  }
+  .horizon.source-layout .topbar {
+    padding: 12px 17px;
+  }
+  .horizon.source-layout .studio h1 {
+    font-size: 38px;
+  }
+  .horizon.source-layout .studio-cover-slide {
+    flex-basis: 75%;
+  }
+  .horizon.source-layout .studio-cover-card {
+    width: 100%;
+    margin-left: 0;
+    height: 280px;
+  }
+  .horizon.source-layout .studio .main-action {
+    padding: 12px 18px;
+  }
+}
+.horizon.source-layout .studio-look-views {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 7px;
+  margin: 15px 0 24px;
+}
+.horizon.source-layout .studio-look-views button {
+  flex-direction: column;
+  gap: 10px;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  min-width: 0;
+}
+.horizon.source-layout .studio-look-views img,
+.horizon .studio-view-empty {
+  height: 200px;
+  border-radius: 3px;
+  object-position: 50% 15%;
+  width: 100%;
+}
+.horizon .studio-view-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f0e609;
+  border: 1px dashed var(--line);
+}
+.horizon.source-layout .studio-fit-title {
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--gold);
+  margin: 22px 0 16px;
+}
+.horizon .studio-fit-checks {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 24px;
+  margin-bottom: 24px;
+}
+.horizon .studio-fit-checks button {
+  flex-direction: column;
+  gap: 12px;
+  border-right: 1px solid var(--line);
+  font-size: 9px;
+  text-transform: uppercase;
+}
+.horizon .studio-fit-checks button:last-child {
+  border: 0;
+}
+.horizon .studio-fit-checks .icon {
+  color: var(--ink);
+  width: 25px;
+  height: 25px;
+}
+.horizon .studio-fit-checks small {
+  font-size: 9px;
+  letter-spacing: 0;
+}
+.horizon .studio-fit-checks button[aria-pressed='true'] small {
+  color: #7fc9b1;
+}
+.horizon .studio-assigned-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.horizon .studio-assigned-heading h3 {
+  margin: 0;
+}
+.horizon .studio-assigned-heading button {
+  font-size: 9px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 5px;
+}
+.horizon .studio-assigned-list {
+  margin: 14px 0 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  max-height: 165px;
+  overflow: auto;
+}
+.horizon .studio-assigned-list > div {
+  display: flex;
+  gap: 8px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  align-items: center;
+  padding: 3px 9px 3px 3px;
+  justify-content: space-between;
+}
+.horizon .studio-assigned-list img {
+  width: 56px;
+  height: 43px;
+}
+.horizon .studio-assigned-list button {
+  font-size: 10px;
+  text-align: left;
+}
+.horizon .studio-assigned-list button:last-child {
+  padding: 7px;
+}
+.horizon .studio-assigned-list button:disabled {
+  opacity: 0.3;
+}
+@media (min-width: 1400px) {
+  .horizon .studio-styling-grid {
+    grid-template-columns: 300px minmax(400px, 1fr) 410px;
+  }
+  .horizon .studio-look-views img {
+    height: 235px;
+  }
+}
+@media (max-width: 650px) {
+  .horizon.source-layout .studio-look-views img,
+  .horizon .studio-view-empty {
+    height: 200px;
+  }
+  .horizon .studio-look-detail .studio-fit-title {
+    margin-top: 10px;
+  }
+  .horizon .studio-assigned-heading h3 {
+    font-size: 10px;
+  }
+}

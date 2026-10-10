@@ -71,7 +71,7 @@ describe('Community workflow integrity', () => {
   it('requires evidence for an external result and expert review where requested', () => {
     const r = record({
       kind: 'result',
-      data: { evidenceId: 'ev', actionId: 'a', expertRequired: 'Yes' },
+      data: { evidenceId: 'ev', actionId: 'a', expertRequired: 'Yes', actual: 12 },
     });
     const w = {
       records: [record({ id: 'ev', status: 'bee_reviewed', data: { actionId: 'a' } })],

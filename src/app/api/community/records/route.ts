@@ -6,6 +6,8 @@ import { withTransaction } from '@/lib/db/client';
 import type { CommunityRecord } from '@/lib/community/types';
 import { transitionError } from '@/lib/community/rules';
 import { rejectCrossSiteWrite } from '@/lib/db/admin-guard';
+import { privateProductionFields } from '@/lib/community/horizon';
+import { studioMutationError } from '@/lib/community/studio';
 export const runtime = 'nodejs';
 function fail(error: string, status = 400) {
   return NextResponse.json({ error }, { status });
@@ -49,8 +51,35 @@ async function mutate(request: Request, update: boolean) {
       if (body.to === 'needs_update' && !comment) return fail('Explain the changes needed.');
       status = body.to;
       event = 'transition';
+    } else if (body.assignMember) {
+      if (
+        !existing ||
+        !['bee', 'production'].includes(w.project.role) ||
+        !['invite', 'agreements', 'bookings', 'call-sheet', 'transport', 'stay', 'fitting']
+          .map((id) => 'horizon:' + id)
+          .includes(kind)
+      )
+        return fail('Only the coordination team can assign this record.', 403);
+      const [member] = await sql.query(
+        'SELECT user_id FROM bee_community_members WHERE project_id=$1 AND user_id=$2',
+        [w.project.id, body.assignMember]
+      );
+      if (!member) return fail('Select a project member.');
+      data = { ...data, assigneeId: body.assignMember };
+      event = 'member_assigned';
     } else if (body.assignReviewer) {
-      if (!existing || w.project.role !== 'bee' || !['evidence', 'result', 'action'].includes(kind))
+      if (
+        !existing ||
+        w.project.role !== 'bee' ||
+        ![
+          'evidence',
+          'result',
+          'action',
+          'horizon:indicator',
+          'horizon:expert-review',
+          'horizon:evidence-add',
+        ].includes(kind)
+      )
         return fail('Only Bee Core can assign an expert.', 403);
       const [expert] = await sql.query(
         "SELECT user_id FROM bee_community_members WHERE project_id=$1 AND user_id=$2 AND role='expert'",
@@ -69,6 +98,21 @@ async function mutate(request: Request, update: boolean) {
       const parsed = validateFields(kind, body.data);
       if (parsed.error) return fail(parsed.error);
       data = parsed.data;
+      const studioError = studioMutationError(kind, data, w, existing?.id);
+      if (studioError) return fail(studioError, 403);
+      if (w.project.role === 'production') {
+        const hidden = privateProductionFields[kind] || [];
+        if (hidden.some((key) => Object.hasOwn(data, key)))
+          return fail('This budget layer belongs to Bee.', 403);
+        if (existing && hidden.length) {
+          const [original] = await sql.query(
+            'SELECT data FROM bee_community_records WHERE id=$1 AND project_id=$2',
+            [existing.id, w.project.id]
+          );
+          for (const key of hidden)
+            if (original.data[key] !== undefined) data[key] = original.data[key];
+        }
+      }
       if (
         kind === 'task' &&
         !['bee', 'production', 'art_director'].includes(w.project.role) &&
@@ -76,8 +120,9 @@ async function mutate(request: Request, update: boolean) {
       )
         return fail('Create tasks for your own production pole.', 403);
       if (existing?.data.reviewerId) data.reviewerId = existing.data.reviewerId;
+      if (existing?.data.assigneeId) data.assigneeId = existing.data.assigneeId;
       for (const f of spec.fields.filter((f) => f.type === 'record')) {
-        const linked = w.records.find((r) => r.id === data[f.key] && r.kind === f.linkKind);
+        const linked = w.records.find((r) => r.id === data[f.key] && (f.linkKind || '').split('|').includes(r.kind));
         if (data[f.key] && !linked) return fail(`Select an accessible ${f.label.toLowerCase()}.`);
         if (linked?.kind === 'allocation' && linked.data.layer !== 'Impact')
           return fail('Use an Impact Capital allocation.');
@@ -87,6 +132,27 @@ async function mutate(request: Request, update: boolean) {
     if (existing && Number(body.version) !== existing.version)
       return fail('This record changed. Refresh and try again.', 409);
     return await withTransaction(async (sql) => {
+      if (kind.startsWith('studio:') || (existing && body.to && kind.startsWith('horizon:'))) {
+        await sql.query('SELECT pg_advisory_xact_lock(hashtext($1)::bigint)', [w.project.id]);
+        const fresh = await sql.query<CommunityRecord>(
+          'SELECT * FROM bee_community_records WHERE project_id=$1',
+          [w.project.id]
+        );
+        const files = await sql.query(
+          'SELECT id,record_id,name,mime,size,sha256 FROM bee_community_files WHERE record_id IN (SELECT id FROM bee_community_records WHERE project_id=$1)',
+          [w.project.id]
+        );
+        for (const r of fresh)
+          r.files = files.filter((f) => f.record_id === r.id) as CommunityRecord['files'];
+        const current = fresh.find((r) => r.id === existing?.id);
+        if (existing && (!current || current.version !== existing.version))
+          return fail('This record changed. Refresh and try again.', 409);
+        const error =
+          body.to && current
+            ? transitionError(current, status, { ...w, records: fresh })
+            : studioMutationError(kind, data, { ...w, records: fresh }, existing?.id);
+        if (error) return fail(error);
+      }
       if (existing?.kind === 'expense' && status === 'approved') {
         // Lock the allocation, then read a fresh snapshot so simultaneous reviews
         // cannot reserve more than the available amount.

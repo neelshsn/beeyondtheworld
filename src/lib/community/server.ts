@@ -5,6 +5,7 @@ import { cookies } from 'next/headers';
 import { createHash, randomBytes, scrypt as scryptCallback, timingSafeEqual } from 'node:crypto';
 import { promisify } from 'node:util';
 import { canRead } from './model';
+import { privateProductionFields } from './horizon';
 import type { CommunityRecord, Project, User, Workspace, Member, Event } from './types';
 import { DEMO_ROLE_COOKIE, readDemoRole } from './demo-role';
 const scrypt = promisify(scryptCallback);
@@ -21,7 +22,7 @@ export async function currentUser(): Promise<User | null> {
   const token = (await cookies()).get(COOKIE)?.value;
   if (!token || !/^[a-f0-9]{64}$/.test(token)) return null;
   const rows = await sqlClient().query(
-    `SELECT u.id,u.email,u.name,u.organization,u.is_test FROM bee_community_sessions s JOIN bee_community_users u ON u.id=s.user_id WHERE s.token_hash=$1 AND s.expires_at>now() AND NOT u.disabled`,
+    `SELECT u.id,u.email,u.name,u.organization,u.is_test,u.profile FROM bee_community_sessions s JOIN bee_community_users u ON u.id=s.user_id WHERE s.token_hash=$1 AND s.expires_at>now() AND NOT u.disabled`,
     [digest(token)]
   );
   return (rows[0] as User) || null;
@@ -47,7 +48,7 @@ export async function workspace(projectId?: string): Promise<Workspace | null> {
   let testRoles: Project['role'][] = [];
   if (user.is_test && project.is_demo) {
     const candidates = await sql.query(
-      `SELECT u.id,u.email,u.name,u.organization,u.is_test,m.role
+      `SELECT u.id,u.email,u.name,u.organization,u.is_test,u.profile,m.role
       FROM bee_community_members m JOIN bee_community_users u ON u.id=m.user_id
       WHERE m.project_id=$1 AND u.is_test AND NOT u.disabled ORDER BY u.id`,
       [project.id]
@@ -63,32 +64,44 @@ export async function workspace(projectId?: string): Promise<Workspace | null> {
         name: target.name,
         organization: target.organization,
         is_test: true,
+        profile: target.profile,
       };
       project = { ...project, role: target.role };
     }
   }
-  const allRecords = (await sql.query(
-    'SELECT * FROM bee_community_records WHERE project_id=$1 ORDER BY created_at,id',
-    [project.id]
-  )) as CommunityRecord[];
-  const records = allRecords.filter((r) => canRead(project.role, r, user));
-  const files = await sql.query(
-    'SELECT f.id,f.record_id,f.name,f.mime,f.size,f.sha256 FROM bee_community_files f JOIN bee_community_records r ON r.id=f.record_id WHERE r.project_id=$1',
-    [project.id]
-  );
-  for (const r of records)
-    r.files = files.filter((f) => f.record_id === r.id) as CommunityRecord['files'];
-  const ids = new Set(records.map((r) => r.id));
-  const events = (
-    (await sql.query(
-      'SELECT e.id,e.record_id,u.name as actor,e.action,e.previous_state,e.new_state,e.comment,e.created_at FROM bee_community_events e JOIN bee_community_users u ON u.id=e.actor_id WHERE e.project_id=$1 ORDER BY e.created_at DESC LIMIT 100',
+  const [allRecords, files, allEvents, allMembers] = await Promise.all([
+    sql.query<CommunityRecord>(
+      'SELECT * FROM bee_community_records WHERE project_id=$1 ORDER BY created_at,id',
       [project.id]
-    )) as Event[]
-  ).filter((e) => ids.has(e.record_id));
-  let members = (await sql.query(
-    'SELECT u.id,u.name,u.organization,m.role FROM bee_community_members m JOIN bee_community_users u ON u.id=m.user_id WHERE m.project_id=$1 AND NOT u.disabled ORDER BY u.name',
-    [project.id]
-  )) as Member[];
+    ),
+    sql.query(
+      'SELECT f.id,f.record_id,f.name,f.mime,f.size,f.sha256 FROM bee_community_files f JOIN bee_community_records r ON r.id=f.record_id WHERE r.project_id=$1',
+      [project.id]
+    ),
+    sql.query<Event>(
+      'SELECT e.id,e.record_id,u.name as actor,e.action,e.previous_state,e.new_state,e.comment,e.created_at FROM bee_community_events e JOIN bee_community_users u ON u.id=e.actor_id WHERE e.project_id=$1 ORDER BY e.created_at DESC LIMIT 200',
+      [project.id]
+    ),
+    sql.query<Member>(
+      'SELECT u.id,u.name,u.organization,m.role FROM bee_community_members m JOIN bee_community_users u ON u.id=m.user_id WHERE m.project_id=$1 AND NOT u.disabled ORDER BY u.name',
+      [project.id]
+    ),
+  ]);
+  const records = allRecords.filter((r) => canRead(project.role, r, user));
+  const filesByRecord = new Map<string, CommunityRecord['files']>();
+  for (const f of files) {
+    const list = filesByRecord.get(f.record_id) || [];
+    list.push(f as NonNullable<CommunityRecord['files']>[number]);
+    filesByRecord.set(f.record_id, list);
+  }
+  for (const r of records) {
+    if (project.role === 'production')
+      for (const key of privateProductionFields[r.kind] || []) delete r.data[key];
+    r.files = filesByRecord.get(r.id) || [];
+  }
+  const ids = new Set(records.map((r) => r.id));
+  const events = allEvents.filter((e) => ids.has(e.record_id));
+  let members = allMembers;
   if (project.role === 'ngo' || project.role === 'expert')
     members = members.filter((m) => m.organization === user.organization || m.role === 'bee');
   return { user, projects, project, records, members, events, testRoles };

@@ -3,6 +3,9 @@ import { createHash, randomUUID } from 'node:crypto';
 import { sqlClient, workspace } from '@/lib/community/server';
 import { canEdit } from '@/lib/community/model';
 import { rejectCrossSiteWrite } from '@/lib/db/admin-guard';
+import { studioMutationError } from '@/lib/community/studio';
+import { withTransaction } from '@/lib/db/client';
+import type { CommunityRecord } from '@/lib/community/types';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 export async function POST(request: Request) {
@@ -19,6 +22,8 @@ export async function POST(request: Request) {
     const record = w?.records.find((r) => r.id === form.get('recordId'));
     if (!w || !record || !canEdit(w.project.role, record, w.user))
       return NextResponse.json({ error: 'Access denied.' }, { status: 403 });
+    const studioError = studioMutationError(record.kind, record.data, w, record.id);
+    if (studioError) return NextResponse.json({ error: studioError }, { status: 403 });
     const file = form.get('file');
     if (!(file instanceof File) || file.size > 3145728 || file.size === 0)
       return NextResponse.json({ error: 'Choose a file up to 3 MB.' }, { status: 400 });
@@ -36,22 +41,46 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Use a PDF, JPG, PNG or WebP file.' }, { status: 400 });
     const name = file.name.replace(/[^a-zA-Z0-9._ -]/g, '_').slice(0, 160);
     const id = randomUUID();
-    await sqlClient().query(
-      `WITH added AS (INSERT INTO bee_community_files(id,record_id,name,mime,size,content,sha256) VALUES($1,$2,$3,$4,$5,decode($6,'base64'),$7) RETURNING id), logged AS (INSERT INTO bee_community_events(id,project_id,record_id,actor_id,action,new_state,comment) SELECT $8,$9,$2,$10,'file_attached',$11,$3 FROM added) SELECT id FROM added`,
-      [
-        id,
-        record.id,
-        name,
-        mime,
-        file.size,
-        bytes.toString('base64'),
-        createHash('sha256').update(bytes).digest('hex'),
-        randomUUID(),
-        w.project.id,
-        w.user.id,
-        record.status,
-      ]
-    );
+    const saved = await withTransaction(async (sql) => {
+      await sql.query('SELECT pg_advisory_xact_lock(hashtext($1)::bigint)', [w.project.id]);
+      const fresh = await sql.query<CommunityRecord>(
+        'SELECT * FROM bee_community_records WHERE project_id=$1',
+        [w.project.id]
+      );
+      const current = fresh.find((r) => r.id === record.id);
+      if (
+        !current ||
+        !canEdit(w.project.role, current, w.user) ||
+        studioMutationError(current.kind, current.data, { ...w, records: fresh }, current.id)
+      )
+        return false;
+      await sql.query(
+        'UPDATE bee_community_records SET version=version+1,updated_at=now() WHERE id=$1',
+        [record.id]
+      );
+      await sql.query(
+        `WITH added AS (INSERT INTO bee_community_files(id,record_id,name,mime,size,content,sha256) VALUES($1,$2,$3,$4,$5,decode($6,'base64'),$7) RETURNING id), logged AS (INSERT INTO bee_community_events(id,project_id,record_id,actor_id,action,new_state,comment) SELECT $8,$9,$2,$10,'file_attached',$11,$3 FROM added) SELECT id FROM added`,
+        [
+          id,
+          record.id,
+          name,
+          mime,
+          file.size,
+          bytes.toString('base64'),
+          createHash('sha256').update(bytes).digest('hex'),
+          randomUUID(),
+          w.project.id,
+          w.user.id,
+          record.status,
+        ]
+      );
+      return true;
+    });
+    if (!saved)
+      return NextResponse.json(
+        { error: 'This record is now locked. Reopen it before adding files.' },
+        { status: 409 }
+      );
     return NextResponse.json({ ok: true, id });
   } catch {
     return NextResponse.json({ error: 'Upload failed. Please retry.' }, { status: 500 });
@@ -72,7 +101,7 @@ export async function GET(request: Request) {
     return new Response(Buffer.from(file.content, 'base64'), {
       headers: {
         'Content-Type': file.mime,
-        'Content-Disposition': `attachment; filename="${file.name}"`,
+        'Content-Disposition': `${q.get('inline') === '1' && file.mime.startsWith('image/') ? 'inline' : 'attachment'}; filename="${file.name}"`,
         'Cache-Control': 'private, no-store',
         'X-Content-Type-Options': 'nosniff',
       },

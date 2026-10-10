@@ -1,4 +1,6 @@
 import type { CommunityRecord, Field, Kind, Role, User } from './types';
+import { horizonKinds, pageFromKind, personalPages } from './horizon';
+import { studioKinds } from './studio';
 const all: Role[] = [
   'bee',
   'brand',
@@ -54,6 +56,8 @@ const review = (authors: Role[], reviewers: Role[] = core) => ({
   needs_update: [{ to: 'submitted', roles: authors }],
 });
 export const kinds: Record<string, Kind> = {
+  ...horizonKinds,
+  ...studioKinds,
   brief: {
     label: 'Creative brief',
     group: 'bee',
@@ -196,7 +200,7 @@ export const kinds: Record<string, Kind> = {
         key: 'locationId',
         label: 'Approved location',
         type: 'record',
-        linkKind: 'location',
+        linkKind: 'location|studio:place',
         required: true,
       },
       { key: 'quantity', label: 'Activity quantity', type: 'number', required: true },
@@ -265,6 +269,12 @@ export const kinds: Record<string, Kind> = {
         required: true,
       },
       { key: 'partner', label: 'Recipient organization', required: true },
+      {
+        key: 'pillar',
+        label: 'Impact pillar',
+        type: 'select',
+        options: ['Social', 'Environmental', 'Economic'],
+      },
       { key: 'amount', label: 'Allocated capital', type: 'number', unit: 'EUR', required: true },
       description,
     ],
@@ -392,8 +402,15 @@ export const kinds: Record<string, Kind> = {
       { key: 'definition', label: 'Metric definition', required: true },
       { key: 'baseline', label: 'Baseline', type: 'number', required: true },
       { key: 'target', label: 'Target', type: 'number', required: true },
-      { key: 'actual', label: 'Observed value', type: 'number', required: true },
+      { key: 'actual', label: 'Observed value', type: 'number' },
       { key: 'unit', label: 'Unit', required: true },
+      { key: 'risk', label: 'Risk level', type: 'select', options: ['Low', 'Medium', 'High'] },
+      {
+        key: 'indicatorType',
+        label: 'Indicator type',
+        type: 'select',
+        options: ['Observation', 'Estimate', 'Public claim'],
+      },
       { key: 'method', label: 'Method & reporting period', type: 'textarea', required: true },
       {
         key: 'evidenceId',
@@ -469,6 +486,17 @@ export function canRead(
 ): boolean {
   if (!kinds[r.kind]?.read.includes(role)) return false;
   if (role === 'bee') return true;
+  const page = pageFromKind(r.kind);
+  if (page && personalPages.includes(page.id))
+    return r.created_by === user.id || r.data.assigneeId === user.id || role === 'production';
+  if (page && role === 'ngo' && page.projectType === 'impact')
+    return r.organization === user.organization;
+  if (
+    page &&
+    role === 'model' &&
+    ['bookings', 'call-sheet', 'transport', 'stay', 'fitting'].includes(page.id)
+  )
+    return r.created_by === user.id || r.data.assigneeId === user.id;
   if (
     r.kind === 'task' &&
     ['stylist', 'photographer', 'filmmaker', 'beauty', 'editor'].includes(role)
@@ -496,6 +524,8 @@ export function canEdit(role: Role, r: CommunityRecord, user: Pick<User, 'organi
     ['draft', 'needs_update', 'planned', 'planning'].includes(r.status) &&
     (role === 'bee' ||
       r.created_by === user.id ||
+      Boolean(pageFromKind(r.kind)) ||
+      r.kind.startsWith('studio:') ||
       (['production', 'art_director'].includes(role) &&
         ['task', 'location', 'concept', 'production'].includes(r.kind)))
   );
@@ -512,6 +542,7 @@ export function availableTransitions(
       (t) =>
         !(
           ['verified', 'validated', 'bee_reviewed', 'expert_validated'].includes(t.to) &&
+          r.kind !== 'horizon:expert-review' &&
           r.created_by === user.id
         )
     );

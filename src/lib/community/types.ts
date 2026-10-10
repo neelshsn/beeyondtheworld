@@ -10,6 +10,7 @@ export const roles = [
   'editor',
   'ngo',
   'expert',
+  'model',
 ] as const;
 export type Role = (typeof roles)[number];
 export const roleNames: Record<Role, string> = {
@@ -24,6 +25,7 @@ export const roleNames: Record<Role, string> = {
   editor: 'Editor / post-production',
   ngo: 'NGO / local partner',
   expert: 'Expert / validator',
+  model: 'Talent',
 };
 export type User = {
   id: string;
@@ -31,6 +33,7 @@ export type User = {
   name: string;
   organization: string;
   is_test: boolean;
+  profile?: RecordData;
 };
 export type Project = {
   id: string;
