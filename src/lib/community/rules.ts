@@ -5,6 +5,13 @@ import { studioTransitionError } from './studio';
 export function transitionError(r: CommunityRecord, to: string, w: Workspace): string | null {
   if (r.kind.startsWith('studio:')) return studioTransitionError(r, to, w);
   if (r.kind.startsWith('horizon:')) return horizonTransitionError(r, to, w);
+  const trusted = (organization: unknown) =>
+    w.records.some(
+      (x) =>
+        x.organization === organization &&
+        ((x.kind === 'trust' && x.status === 'verified') ||
+          (x.kind === 'horizon:trust-verified' && x.status === 'approved'))
+    );
   const find = (key: string) => w.records.find((x) => x.id === r.data[key]);
   if (r.kind === 'expense' && ['submitted', 'approved'].includes(to)) {
     const allocation = find('allocationId');
@@ -95,21 +102,13 @@ export function transitionError(r: CommunityRecord, to: string, w: Workspace): s
     !w.records.some((x) => x.kind === 'asset' && x.status === 'delivered')
   )
     return 'Deliver the approved creative assets first.';
-  if (
-    r.kind === 'bloom' &&
-    to === 'approved' &&
-    !w.records.some(
-      (x) => x.kind === 'trust' && x.organization === r.organization && x.status === 'verified'
-    )
-  )
+  if (r.kind === 'bloom' && to === 'approved' && !trusted(r.organization))
     return 'The local partner trust journey must be reviewed first.';
   if (
     r.kind === 'allocation' &&
     to === 'released' &&
     r.data.layer === 'Impact' &&
-    !w.records.some(
-      (x) => x.kind === 'trust' && x.organization === r.data.partner && x.status === 'verified'
-    )
+    !trusted(r.data.partner)
   )
     return 'Verify the recipient partner first. This records an allocation; it does not move money.';
   return null;

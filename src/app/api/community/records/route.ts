@@ -39,6 +39,7 @@ async function mutate(request: Request, update: boolean) {
     let title = existing?.title || '';
     let data = existing?.data || {};
     let status = existing?.status || spec.initial;
+    let organization = existing?.organization || w.user.organization;
     let event = 'created';
     if (body.to) {
       if (
@@ -122,17 +123,34 @@ async function mutate(request: Request, update: boolean) {
       if (existing?.data.reviewerId) data.reviewerId = existing.data.reviewerId;
       if (existing?.data.assigneeId) data.assigneeId = existing.data.assigneeId;
       for (const f of spec.fields.filter((f) => f.type === 'record')) {
-        const linked = w.records.find((r) => r.id === data[f.key] && (f.linkKind || '').split('|').includes(r.kind));
+        const linked = w.records.find(
+          (r) => r.id === data[f.key] && (f.linkKind || '').split('|').includes(r.kind)
+        );
         if (data[f.key] && !linked) return fail(`Select an accessible ${f.label.toLowerCase()}.`);
         if (linked?.kind === 'allocation' && linked.data.layer !== 'Impact')
           return fail('Use an Impact Capital allocation.');
+      }
+      if (!existing) {
+        if (kind === 'bloom') {
+          const allocation = w.records.find(
+            (r) => r.id === data.allocationId && r.kind === 'allocation'
+          );
+          if (allocation?.data.partner) organization = String(allocation.data.partner);
+        } else if (['action', 'expense', 'evidence', 'result'].includes(kind)) {
+          const parent = w.records.find(
+            (r) => r.id === (kind === 'action' ? data.bloomId : data.actionId)
+          );
+          if (parent) organization = parent.organization;
+        }
+        if (organization !== w.user.organization && w.project.role !== 'bee')
+          return fail('Create records for your own partner organization.', 403);
       }
       if (existing) event = 'updated';
     }
     if (existing && Number(body.version) !== existing.version)
       return fail('This record changed. Refresh and try again.', 409);
     return await withTransaction(async (sql) => {
-      if (kind.startsWith('studio:') || (existing && body.to && kind.startsWith('horizon:'))) {
+      if (kind.startsWith('studio:') || (existing && body.to)) {
         await sql.query('SELECT pg_advisory_xact_lock(hashtext($1)::bigint)', [w.project.id]);
         const fresh = await sql.query<CommunityRecord>(
           'SELECT * FROM bee_community_records WHERE project_id=$1',
@@ -195,7 +213,7 @@ async function mutate(request: Request, update: boolean) {
             title,
             status,
             JSON.stringify(data),
-            w.user.organization,
+            organization,
             w.user.id,
             randomUUID(),
             comment,

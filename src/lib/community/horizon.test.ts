@@ -140,4 +140,30 @@ describe('Horizon production workflow', () => {
       /independent/
     );
   });
+  it('connects approved scouting and crew readiness to the production gate', () => {
+    const ready = r('ready');
+    const data = ['contract', 'travel', 'stay', 'equipment', 'permit', 'brief'].reduce(
+      (a, k) => ({ ...a, [k]: 'Ready' }),
+      { memberId: 'crew' }
+    );
+    const snapshot = w([
+      r('creative-lock', { status: 'approved' }),
+      r('budget', { status: 'approved' }),
+      r('location', { kind: 'studio:place', status: 'approved' }),
+      r('team', { kind: 'studio:readiness', status: 'approved', data }),
+    ]);
+    snapshot.members = [{ id: 'crew', name: 'Crew', organization: 'Studio', role: 'photographer' }];
+    expect(horizonTransitionError(ready, 'approved', snapshot)).toBeNull();
+    snapshot.records.at(-1)!.data.permit = 'Pending';
+    expect(horizonTransitionError(ready, 'approved', snapshot)).toMatch(/readiness/);
+  });
+  it('does not reuse another partner’s trust review', () => {
+    expect(
+      horizonTransitionError(
+        r('trust-verified'),
+        'approved',
+        w([r('trust-review', { status: 'approved', organization: 'Other' })])
+      )
+    ).toMatch(/partner/);
+  });
 });

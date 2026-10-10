@@ -193,6 +193,19 @@ export function ImpactWorkspace({
                 : 'Connect each action with its original evidence.'}
           </p>
         </div>
+        {page === 'budget' && may('horizon:budget') && (
+          <button
+            className="main-action"
+            onClick={() => {
+              const r = w.records.filter((r) => r.kind === 'horizon:budget').at(-1);
+              if (r) open(r);
+              else add('horizon:budget');
+            }}
+          >
+            <Icon name="file" />
+            Review production budget
+          </button>
+        )}
         <button className="source-export" onClick={download}>
           <Icon name="download" />
           Export report
@@ -519,6 +532,24 @@ export function ImpactWorkspace({
               </section>
               <section className="source-panel">
                 <h2>Key initiatives</h2>
+                {may('bloom') && (
+                  <button className="text-link" onClick={() => add('bloom')}>
+                    <Icon name="plus" />
+                    Plan a Bloom
+                  </button>
+                )}
+                {w.records
+                  .filter((r) => r.kind === 'bloom')
+                  .map((r) => (
+                    <button key={r.id} onClick={() => open(r)}>
+                      <Icon name="leaf" />
+                      <span>
+                        {r.title}
+                        <small>{statusLabel(r.status)}</small>
+                      </span>
+                      <Icon name="arrow" />
+                    </button>
+                  ))}
                 {actions.map((r) => (
                   <button className="source-history" key={r.id} onClick={() => open(r)}>
                     <Icon name="leaf" />

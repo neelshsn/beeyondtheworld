@@ -6,13 +6,13 @@ Autorisation actuelle : l'utilisateur demande de construire les dashboards fonct
 
 - [x] Auditer les 94 pages et les 26 familles contre les sources originales.
 - [x] Générer avec ChatGPT Image les références carrousel créatif, lieu, scouting détaillé et styling ; décrire leurs composants interactifs.
-- [ ] Conserver les références finales, leur provenance, leurs empreintes et les spécifications dans le projet.
-- [ ] Construire les objets persistants liés : lieu → frame → références / looks / produits, sans formulaire unique indifférencié.
-- [ ] Reproduire les compositions sources et leurs interactions, puis les autres familles métier (brief, équipe, planning, production, post-production, impact et reporting).
-- [ ] Adapter les assets à chaque projet, distinguer concepts IA et archives réelles, optimiser les formats.
-- [ ] Vérifier les 12 rôles et les parcours complets sur le PostgreSQL QA du VPS, y compris les refus et conflits.
-- [ ] Inspecter les rendus desktop et mobile ; corriger les écarts visuels et les contrôles sans effet.
-- [ ] Exécuter tests ciblés, types, lint et build de production.
+- [x] Conserver les références finales, leur provenance, leurs empreintes et les spécifications dans le projet.
+- [x] Construire les objets persistants liés : lieu → frame → références / looks / produits, sans formulaire unique indifférencié.
+- [x] Reproduire les compositions sources et leurs interactions, puis les autres familles métier (brief, équipe, planning, production, post-production, impact et reporting).
+- [x] Adapter les assets à chaque projet, distinguer concepts IA et archives réelles, optimiser les formats.
+- [x] Vérifier les 12 rôles et les parcours complets sur le PostgreSQL QA du VPS, y compris les refus et conflits.
+- [x] Inspecter les rendus desktop et mobile ; corriger les écarts visuels et les contrôles sans effet.
+- [x] Exécuter tests ciblés, types, lint et build de production.
 - [ ] Sauvegarder puis appliquer les migrations additives en production, publier et vérifier le domaine canonique et les parcours de démonstration.
 - [ ] Livrer le lien, le rapport de captures et les preuves vérifiées.
 

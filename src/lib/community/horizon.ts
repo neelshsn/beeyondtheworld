@@ -286,12 +286,46 @@ export function horizonTransitionError(
   if (to === 'approved') {
     if (['budget', 'impact-capital'].includes(p.id) && w.project.role !== 'bee')
       return 'Bee approval is required for budgets.';
-    if (p.id === 'trust-verified' && !approved('trust-review'))
-      return 'Complete the Bee trust review first.';
-    if (p.id === 'ready')
-      for (const id of ['creative-lock', 'budget', 'team', 'location'])
+    if (
+      p.id === 'trust-verified' &&
+      !w.records.some(
+        (r) =>
+          r.kind === pageKind('trust-review') &&
+          r.status === 'approved' &&
+          r.organization === record.organization
+      )
+    )
+      return 'Complete this partner’s Bee trust review first.';
+    if (p.id === 'ready') {
+      for (const id of ['creative-lock', 'budget'])
         if (!approved(id))
           return `Approve ${pages.find((p) => p.id === id)?.title.toLowerCase()} first.`;
+      if (
+        !approved('location') &&
+        !w.records.some((r) => r.kind === 'studio:place' && r.status === 'approved')
+      )
+        return 'Approve a scouting location first.';
+      const crew = (w.members || []).filter(
+        (m) => !['bee', 'brand', 'ngo', 'expert'].includes(m.role)
+      );
+      const prepared =
+        crew.length > 0 &&
+        crew.every((m) =>
+          w.records.some(
+            (r) =>
+              r.kind === 'studio:readiness' &&
+              r.data.memberId === m.id &&
+              r.status === 'approved' &&
+              ['contract', 'travel', 'stay', 'equipment', 'permit', 'brief'].every(
+                (k) => r.data[k] && r.data[k] !== 'Pending'
+              )
+          )
+        );
+      if (!approved('team') && !prepared)
+        return 'Approve the readiness of every assigned crew member first.';
+      if (w.records.some((r) => r.kind === 'booking' && r.status !== 'approved'))
+        return 'Approve the production bookings first.';
+    }
     if (
       p.id === 'delivery' &&
       (!w.records.some(
