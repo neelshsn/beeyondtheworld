@@ -1869,3 +1869,19 @@
     font-size: 10px;
   }
 }
+.studio-source-revision {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 12px 0;
+  font-size: 13px;
+}
+.studio-source-revision button {
+  border: 1px solid #dfbb7a66;
+  padding: 8px 12px;
+  border-radius: 4px;
+  background: transparent;
+  color: #dfbb7a;
+  cursor: pointer;
+}

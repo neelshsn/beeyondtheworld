@@ -128,7 +128,13 @@ export function RecordEditor({
     ? canEdit(w.project.role, record, w.user)
     : spec.roles.includes(w.project.role);
   const set = (key: string, value: string) => {
-    setData((d) => ({ ...d, [key]: value }));
+    setData((d) => ({
+      ...d,
+      [key]: value,
+      ...(key === 'sourceId'
+        ? { sourceVersion: w.records.find((r) => r.id === value)?.version || '' }
+        : {}),
+    }));
     setDirty(true);
     setNotice('');
   };
@@ -191,7 +197,23 @@ export function RecordEditor({
         {spec.fields.map((f) => (
           <label key={f.key}>
             {f.label}
-            {f.key === 'memberId' ? (
+            {f.key === 'sourceVersion' ? (
+              <span className="studio-source-revision">
+                <span>Selected revision: {String(data.sourceVersion || 'Choose a source')}</span>
+                {editable && w.records.some((r) => r.id === data.sourceId) && (
+                  <button
+                    type="button"
+                    disabled={busy}
+                    onClick={() => {
+                      const source = w.records.find((r) => r.id === data.sourceId);
+                      if (source) set('sourceVersion', String(source.version));
+                    }}
+                  >
+                    Use latest version · {w.records.find((r) => r.id === data.sourceId)?.version}
+                  </button>
+                )}
+              </span>
+            ) : f.key === 'memberId' ? (
               <select
                 aria-label={f.label}
                 value={String(data[f.key] || '')}
