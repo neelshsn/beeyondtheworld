@@ -24,7 +24,9 @@ export type HorizonPage = {
   projectType: string;
   number: number;
 };
-export const pages = catalogue.pages as HorizonPage[];
+export const pages: HorizonPage[] = (catalogue.pages as HorizonPage[]).map((p) =>
+  p.id === 'version' ? { ...p, roles: { ...p.roles, brand: 'read' } } : p
+);
 export const assets: Record<string, string> = {
   ...catalogue.study.assets,
   ...Object.fromEntries(
@@ -174,7 +176,7 @@ export const horizonKinds: Record<string, Kind> = Object.fromEntries(
                   ? ('number' as const)
                   : f.type === 'date'
                     ? ('date' as const)
-                    : f.type === 'select' || f.type === 'choices'
+                    : (f.type === 'select' || f.type === 'choices') && f.options.length > 0
                       ? ('select' as const)
                       : ('text' as const),
               options: f.options,

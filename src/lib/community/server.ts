@@ -75,7 +75,7 @@ export async function workspace(projectId?: string): Promise<Workspace | null> {
       [project.id]
     ),
     sql.query(
-      'SELECT f.id,f.record_id,f.name,f.mime,f.size,f.sha256 FROM bee_community_files f JOIN bee_community_records r ON r.id=f.record_id WHERE r.project_id=$1',
+      'SELECT f.id,f.record_id,f.name,f.mime,f.size,f.sha256 FROM bee_community_files f JOIN bee_community_records r ON r.id=f.record_id WHERE r.project_id=$1 ORDER BY f.created_at,f.id',
       [project.id]
     ),
     sql.query<Event>(

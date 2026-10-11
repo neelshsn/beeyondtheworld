@@ -62,7 +62,10 @@ export function calculateMetrics(records: CommunityRecord[]) {
     .filter((r) => r.status === 'evidenced' && (r.files?.length || r.data.reference))
     .reduce((s, r) => s + Number(r.data.amount || 0), 0);
   const bookings = records.filter((r) => r.kind === 'booking' && r.status === 'approved');
-  const footprint = bookings.reduce(
+  const estimated = bookings.filter(
+    (r) => factors[String(r.data.factorKey)] && Number(r.data.quantity) > 0
+  );
+  const footprint = estimated.reduce(
     (s, r) => s + Number(r.data.quantity || 0) * (factors[String(r.data.factorKey)]?.value || 0),
     0
   );
@@ -72,6 +75,8 @@ export function calculateMetrics(records: CommunityRecord[]) {
     coverage: spent ? evidenced / spent : null,
     footprint,
     bookings: bookings.length,
+    estimatedBookings: estimated.length,
+    unestimatedBookings: bookings.length - estimated.length,
     validated: records.filter((r) => r.kind === 'result' && r.status === 'validated'),
     localSpend: expenses
       .filter((r) => r.data.local === 'Yes')

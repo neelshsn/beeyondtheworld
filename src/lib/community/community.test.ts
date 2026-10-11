@@ -115,6 +115,55 @@ describe('Community workflow integrity', () => {
   });
   it('does not invent full evidence coverage for zero spend', () =>
     expect(calculateMetrics([]).coverage).toBe(null));
+  it('keeps unestimated activities out of the measured footprint coverage', () => {
+    const metrics = calculateMetrics([
+      record({
+        kind: 'booking',
+        status: 'approved',
+        data: { quantity: 100, factorKey: 'shared_van' },
+      }),
+      record({
+        kind: 'booking',
+        status: 'approved',
+        data: { quantity: 0, factorKey: 'not_estimated' },
+      }),
+    ]);
+    expect(metrics.footprint).toBe(9);
+    expect(metrics.estimatedBookings).toBe(1);
+    expect(metrics.unestimatedBookings).toBe(1);
+    expect(metrics.bookings).toBe(2);
+  });
+  it('allows explicitly unestimated bookings but rejects a missing activity quantity for a factor', () => {
+    const r = record({
+      kind: 'booking',
+      data: {
+        category: 'Production',
+        locationId: 'place',
+        charter: 'Yes',
+        agreement: 'SIM-01',
+        quantity: 0,
+        factorKey: 'not_estimated',
+      },
+    });
+    const w = {
+      records: [record({ id: 'place', kind: 'studio:place', status: 'approved' })],
+    } as Workspace;
+    expect(transitionError(r, 'submitted', w)).toBe(null);
+    r.data.factorKey = 'local_equipment';
+    expect(transitionError(r, 'submitted', w)).toMatch(/quantity/);
+  });
+  it('saves catalogue fields without predefined options as free text', () => {
+    expect(
+      validateFields('horizon:brief-people', {
+        'brief-people-0': 1,
+        'brief-people-1': 'Adult woman',
+        'brief-people-2': 'Adults',
+      }).error
+    ).toBeUndefined();
+    expect(validateFields('horizon:invite', { 'invite-2': 'Unknown option' }).error).toMatch(
+      /Availability/
+    );
+  });
   it('checks supporting documents when moving an expense to evidenced', () => {
     expect(
       transitionError(record({ kind: 'expense' }), 'evidenced', {

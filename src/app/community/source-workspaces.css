@@ -1473,3 +1473,96 @@
   flex: 0 1 210px;
   width: auto;
 }
+.rehearsal-guide {
+  margin-top: 24px;
+  border-top: 1px solid #dfbb7a40;
+  padding: 20px 4px;
+  color: #f3ecdf;
+}
+.rehearsal-guide summary {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  cursor: pointer;
+  font-size: 15px;
+}
+.rehearsal-guide summary span {
+  margin-left: auto;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  opacity: 0.65;
+}
+.rehearsal-guide > p {
+  max-width: 780px;
+  font-size: 13px;
+  line-height: 1.7;
+  opacity: 0.8;
+  margin: 22px 0;
+}
+.rehearsal-guide ol {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px 28px;
+  list-style: none;
+  padding: 0;
+}
+.rehearsal-guide li {
+  display: flex;
+  gap: 14px;
+  padding: 18px 0;
+  border-top: 1px solid #ffffff1f;
+}
+.rehearsal-guide svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  color: #dfbb7a;
+}
+.rehearsal-guide h3 {
+  margin: 0 0 7px;
+  font-size: 18px;
+  font-weight: 400;
+}
+.rehearsal-guide small {
+  color: #dfbb7a;
+  font-size: 11px;
+}
+.rehearsal-guide li p {
+  font-size: 13px;
+  line-height: 1.65;
+  opacity: 0.8;
+  margin: 10px 0;
+}
+.rehearsal-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+}
+.rehearsal-links button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #f3ecdf;
+  background: none;
+  border: 0;
+  padding: 4px 0;
+  cursor: pointer;
+}
+.rehearsal-links button:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+.rehearsal-links button:focus-visible,
+.rehearsal-guide summary:focus-visible {
+  outline: 1px solid #dfbb7a;
+  outline-offset: 4px;
+}
+@media (max-width: 700px) {
+  .rehearsal-guide ol {
+    grid-template-columns: 1fr;
+  }
+  .rehearsal-guide summary span {
+    display: none;
+  }
+}

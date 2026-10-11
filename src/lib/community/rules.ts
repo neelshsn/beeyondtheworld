@@ -46,8 +46,13 @@ export function transitionError(r: CommunityRecord, to: string, w: Workspace): s
       return 'Review the quality charter and add an agreement reference first.';
     if (find('locationId')?.status !== 'approved')
       return 'The linked scouting location must be approved.';
-    if (factors[String(r.data.factorKey)]?.category !== r.data.category)
+    if (
+      r.data.factorKey !== 'not_estimated' &&
+      factors[String(r.data.factorKey)]?.category !== r.data.category
+    )
       return 'The planning factor must match the booking category.';
+    if (r.data.factorKey !== 'not_estimated' && Number(r.data.quantity) <= 0)
+      return 'Add the activity quantity for this planning estimate.';
   }
   if (
     ['expense', 'evidence', 'asset'].includes(r.kind) &&

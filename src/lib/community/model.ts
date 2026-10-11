@@ -216,6 +216,7 @@ export const kinds: Record<string, Kind> = {
           'plant_meal',
           'local_meal',
           'local_equipment',
+          'not_estimated',
         ],
         required: true,
       },
@@ -486,6 +487,7 @@ export function canRead(
 ): boolean {
   if (!kinds[r.kind]?.read.includes(role)) return false;
   if (role === 'bee') return true;
+  if (role === 'brand' && r.kind === 'horizon:version') return r.status === 'approved';
   const page = pageFromKind(r.kind);
   if (page && personalPages.includes(page.id))
     return r.created_by === user.id || r.data.assigneeId === user.id || role === 'production';

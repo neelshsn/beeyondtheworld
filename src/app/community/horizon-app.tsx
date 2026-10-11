@@ -24,6 +24,7 @@ import { StudioWorkspace, studioPages } from './studio-workspace';
 import { ProductionWorkspace, productionPages } from './production-workspace';
 import { MediaWorkspace, mediaPages } from './media-workspace';
 import { ImpactWorkspace, impactPages } from './impact-workspace';
+import { RehearsalGuide } from './rehearsal-guide';
 import dynamic from 'next/dynamic';
 const ItineraryWorkspace = dynamic(
   () => import('./itinerary-workspace').then((m) => m.ItineraryWorkspace),
@@ -125,9 +126,9 @@ const primaryNext: Record<string, string> = {
   selects: 'version',
   version: 'bee-review',
   'bee-review': 'brand-review',
-  'brand-review': 'delivery',
-  delivery: 'rights',
-  rights: 'archive',
+  'brand-review': 'rights',
+  rights: 'delivery',
+  delivery: 'archive',
   archive: 'report',
   'field-actions': 'field-action',
   evidence: 'evidence-add',
@@ -346,28 +347,40 @@ export function HorizonApp() {
     setMessage('Saved');
     return response.id as string;
   };
+  const guardNavigation = (navigate: () => void) => {
+    if (dirty) {
+      pending.current = navigate;
+      setPanel('unsaved');
+    } else navigate();
+  };
   const switchRole = (nextRole: string) =>
-    void perform(async () => {
-      if (!w) return;
-      await api('/api/community/demo-role', { projectId: w.project.id, role: nextRole });
-      await load(w.project.id);
-      setRecordId(null);
-      setNewRecord(false);
-      setDirty(false);
-      setPanel('');
-    });
+    guardNavigation(
+      () =>
+        void perform(async () => {
+          if (!w) return;
+          await api('/api/community/demo-role', { projectId: w.project.id, role: nextRole });
+          await load(w.project.id);
+          setRecordId(null);
+          setNewRecord(false);
+          setDirty(false);
+          setPanel('');
+        })
+    );
   const changeProject = (id: string) =>
-    void perform(async () => {
-      if (!w) return;
-      if (w.user.is_test && w.projects.find((x) => x.id === id)?.is_demo)
-        await api('/api/community/demo-role', { projectId: id, role: w.project.role });
-      await load(id);
-      setDirty(false);
-      setPageId('project');
-      setNewRecord(false);
-      setRecordId(null);
-      history.pushState(null, '', `${location.pathname}?project=${id}#project`);
-    });
+    guardNavigation(
+      () =>
+        void perform(async () => {
+          if (!w) return;
+          if (w.user.is_test && w.projects.find((x) => x.id === id)?.is_demo)
+            await api('/api/community/demo-role', { projectId: id, role: w.project.role });
+          await load(id);
+          setDirty(false);
+          setPageId('project');
+          setNewRecord(false);
+          setRecordId(null);
+          history.pushState(null, '', `${location.pathname}?project=${id}#project`);
+        })
+    );
   const logout = () =>
     void perform(async () => {
       await api('/api/community/auth', {}, 'DELETE');
@@ -442,7 +455,7 @@ export function HorizonApp() {
   const field = (f: HorizonField, index: number, inPanel = false): ReactNode => {
     const read = !editable,
       inputId = f.id + (inPanel ? '-detail' : '');
-    if (f.type === 'choices')
+    if (f.type === 'choices' && f.options.length > 0)
       return (
         <section className={`choice-group ${index === 0 ? 'first-choice' : ''}`} key={f.id}>
           <h2 id={inputId + '-label'}>{f.label}</h2>
@@ -509,7 +522,7 @@ export function HorizonApp() {
         </label>
         {read ? (
           <div className={'field-value ' + f.type}>{display(f)}</div>
-        ) : f.type === 'select' ? (
+        ) : f.type === 'select' && f.options.length > 0 ? (
           <select
             id={inputId}
             className="field-value"
@@ -606,8 +619,9 @@ export function HorizonApp() {
       <HorizonLogin
         onSuccess={() =>
           void perform(async () => {
-            await load();
-            setPageId('projects');
+            const url = new URL(location.href);
+            await load(url.searchParams.get('project') || undefined);
+            setPageId(url.hash.slice(1).split('/')[0] || 'projects');
           })
         }
       />
@@ -1133,7 +1147,7 @@ export function HorizonApp() {
             <select
               aria-label="Test role"
               value={w.project.role}
-              disabled={busy || dirty}
+              disabled={busy}
               onChange={(e) => switchRole(e.target.value)}
             >
               {w.testRoles?.map((r) => (
@@ -1246,6 +1260,7 @@ export function HorizonApp() {
           ) : (
             content
           )}
+          {p.id === 'project' && w.project.is_demo && <RehearsalGuide w={w} go={go} />}
         </div>
         {error && (
           <div className="feedback error" role="alert">
@@ -1619,6 +1634,7 @@ export function HorizonApp() {
         >
           <h2>Keep this draft?</h2>
           <p>You have unsaved changes on this step.</p>
+          {error && <p role="alert">{error}</p>}
           <div className="review-controls">
             <button
               className="main-action"
@@ -1635,6 +1651,7 @@ export function HorizonApp() {
             </button>
             <button
               className="text-link"
+              disabled={busy}
               onClick={() => {
                 setDirty(false);
                 pending.current?.();

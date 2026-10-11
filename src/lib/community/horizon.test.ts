@@ -94,6 +94,27 @@ describe('Horizon production workflow', () => {
       )
     ).toMatch(/current revision/);
   });
+  it('lets a brand review the approved source version without exposing editor drafts', () => {
+    const source = r('version', { status: 'approved', version: 3 });
+    expect(canRead('brand', source, user)).toBe(true);
+    expect(canRead('brand', { ...source, status: 'draft' }, user)).toBe(false);
+    expect(canRead('brand', { ...source, status: 'needs_update' }, user)).toBe(false);
+    expect(canEdit('brand', source, user)).toBe(false);
+    const review = r('brand-review', {
+      status: 'submitted',
+      data: { sourceId: source.id, sourceVersion: 3 },
+    });
+    expect(
+      horizonTransitionError(
+        review,
+        'approved',
+        w(
+          [source, review].filter((x) => canRead('brand', x, user)),
+          'brand'
+        )
+      )
+    ).toBeNull();
+  });
   it('blocks production readiness and delivery without their prerequisites', () => {
     expect(horizonTransitionError(r('ready'), 'approved', w())).toMatch(/Approve/);
     expect(horizonTransitionError(r('delivery'), 'approved', w())).toMatch(/source record/);

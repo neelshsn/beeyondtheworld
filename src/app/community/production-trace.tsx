@@ -34,11 +34,11 @@ export function ProductionTrace({
   const cards = environmental
     ? [
         [
-          'Planning estimate',
-          metrics.bookings ? metrics.footprint.toFixed(1) + ' kg CO₂e' : '—',
+          metrics.unestimatedBookings ? 'Partial planning estimate' : 'Planning estimate',
+          metrics.estimatedBookings ? metrics.footprint.toFixed(1) + ' kg CO₂e' : 'Not estimated',
           'leaf',
         ],
-        ['Confirmed activities', String(metrics.bookings), 'calendar'],
+        ['Activities estimated', `${metrics.estimatedBookings} / ${metrics.bookings}`, 'calendar'],
         ['Pending bookings', String(bookings.length - approved.length), 'clock'],
       ]
     : economic
@@ -165,10 +165,12 @@ export function ProductionTrace({
                       <td>{euro(Number(r.data.amount || 0))}</td>
                       <td>
                         {r.status === 'approved'
-                          ? (
-                              (Number(r.data.quantity) || 0) *
-                              (factors[String(r.data.factorKey)]?.value || 0)
-                            ).toFixed(1) + ' kg CO₂e'
+                          ? factors[String(r.data.factorKey)] && Number(r.data.quantity) > 0
+                            ? (
+                                (Number(r.data.quantity) || 0) *
+                                (factors[String(r.data.factorKey)]?.value || 0)
+                              ).toFixed(1) + ' kg CO₂e'
+                            : 'Not estimated'
                           : 'Pending confirmation'}
                         <small>{factors[String(r.data.factorKey)]?.label}</small>
                       </td>
