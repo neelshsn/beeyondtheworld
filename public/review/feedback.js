@@ -95,6 +95,9 @@
     return '/api/community/review/images?id=' + encodeURIComponent(id);
   }
   function displayImages(c, list, key) {
+    const signature = JSON.stringify(list.map((file) => [file.id, file.name])) + key + author;
+    if (c.imageSignature === signature) return;
+    c.imageSignature = signature;
     c.images.replaceChildren();
     for (const file of list) {
       const figure = document.createElement('figure'),
