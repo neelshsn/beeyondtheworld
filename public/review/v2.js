@@ -61,7 +61,8 @@
   const value = (key, fallback) => local[key] ?? fallback;
   const editable = () =>
     !['brand', 'expert', 'model'].includes(current.role) ||
-    (current.role === 'expert' && ['validation', 'commitments'].includes(current.v2)) ||
+    (current.role === 'expert' &&
+      ['validation', 'commitments', 'email-evidence', 'email-method'].includes(current.v2)) ||
     (['brand', 'model'].includes(current.role) && current.v2 === 'commitments') ||
     (current.role === 'brand' && ['tale-brief', 'tale-visions'].includes(current.id));
   const field = (key, label, fallback = '', kind = 'text', options) =>
@@ -130,6 +131,7 @@
     model: 'Talent',
     ngo: 'Local Impact Partner',
     expert: 'Independent Reviewer',
+    agency: 'Casting & Agency',
   };
   const rolePurpose = {
     brand: 'Review the intention, approve after Bee and read the evidence.',
@@ -146,6 +148,7 @@
     model: 'See your looks, fittings, calls and consent requirements.',
     ngo: 'Design local actions and document the allocated Impact Capital.',
     expert: 'Review assigned indicators, evidence and provenance by risk.',
+    agency: 'Connect local agencies, voluntary casting, talent rights and production handoffs.',
   };
   const subs = (key, labels) =>
     `<div class="tabs" role="tablist" aria-label="${esc(key)}">${labels.map((x, i) => `<button role="tab" aria-selected="${(tabs[key] ?? 0) === i}" data-tab="${key}" data-index="${i}">${esc(x)}</button>`).join('')}</div>`;
@@ -180,7 +183,7 @@
     ['Production & territory', 'Production', 'Bookings, invoices, footprint', 'label-bloom', 'pin'],
   ];
   function mapView() {
-    return `<div class="flow"><a class="diagram-node" href="#view/${go('label-creative')}/label-creative">${icon('bee')}<h3>Creative Hive</h3><p>DA · Styling · Beauty · Set · Sound<br>Photo · Film · Talent · Post</p><small>One intention. Shared creative objects.</small></a><a class="diagram-node" href="#view/${go('co-creation')}/co-creation">${icon('link')}<h3>Co-creation</h3><p>Scouting · Feasibility · Local sourcing<br>Brief ↔ frames ↔ cost</p><small>Bee and Flower work together here.</small></a><a class="diagram-node" href="#view/${go('label-bloom')}/label-bloom">${icon('pin')}<h3>Production Bloom</h3><p>Local crew · Travel · Stay · Catering<br>Equipment · Materials · Waste</p><small>Turn the approved vision into reality.</small></a></div><div class="arrowline">${icon('arrow')} One project · one history · role-specific views</div><div class="grid2"><div class="panel"><div class="kicker">Production quality</div><h3>The Bee Label</h3><p>Charter → commitments → metrics → evidence → verification.</p>${link('my-commitments', 'My commitments', 'shield')}${link('authenticator', 'Source provenance', 'image')}</div><div class="panel"><div class="kicker">Partner-led action</div><h3>Impact Capital</h3><p>Co-intention → allocation → field action → evidence → outcomes.</p>${link('impact-pillars', 'Social · Environment · Economy', 'leaf', 'ngo')}</div></div><div class="arrowline">${icon('arrow')} Separate evidence streams, one brand report</div><div class="grid3">${[
+    return `<div class="flow"><a class="diagram-node" href="#view/${go('label-creative')}/label-creative">${icon('bee')}<h3>Creative Hive</h3><p>DA · Styling · Beauty · Set · Sound<br>Photo · Film · Talent · Post</p><small>One intention. Shared creative objects.</small></a><a class="diagram-node" href="#view/${go('co-creation')}/co-creation">${icon('link')}<h3>Co-creation</h3><p>Scouting · Feasibility · Local sourcing<br>Brief ↔ frames ↔ cost</p><small>Bee and Flower work together here.</small></a><a class="diagram-node" href="#view/${go('label-bloom')}/label-bloom">${icon('pin')}<h3>Bloom Hive</h3><p>Local crew · Travel · Stay · Catering<br>Equipment · Materials · Waste</p><small>Turn the approved vision into reality.</small></a></div><div class="arrowline">${icon('arrow')} One project · one history · role-specific views</div><div class="grid2"><div class="panel"><div class="kicker">Production quality</div><h3>The Bee Label</h3><p>Charter → commitments → metrics → evidence → verification.</p>${link('my-commitments', 'My commitments', 'shield')}${link('authenticator', 'Source provenance', 'image')}</div><div class="panel"><div class="kicker">Partner-led action</div><h3>Impact Capital</h3><p>Co-intention → allocation → field action → evidence → outcomes.</p>${link('impact-pillars', 'Social · Environment · Economy', 'leaf', 'ngo')}</div></div><div class="arrowline">${icon('arrow')} Separate evidence streams, one brand report</div><div class="grid3">${[
       ['Creative return', 'Assets, usage rights, engagement', 'camera'],
       ['Operational return', 'Shared costs, local spend, resources', 'chart'],
       ['Impact return', 'Documented actions and verified outcomes', 'leaf'],
@@ -196,19 +199,24 @@
         ['tale-brief', 'Start with the brand brief'],
         ['co-creation', 'Explore the scouting bridge'],
         ['actor-ledger', 'Follow every contribution'],
+        ['bee-certified', 'Creative + Bloom → Bee Certified'],
+        ['casting-agencies', 'Agencies and talent'],
+        ['visual-upcycling', 'Visual upcycling'],
+        ['sound-library', 'Organic sound library'],
+        ['honey-library', 'What remains / Honey'],
         ['validation-desk', 'Review the evidence'],
       ]
     )}`;
   }
   const polesCreative = [
-    ['Casting & talent', 'm:talent', 'people', 'my-commitments', 'Consent & fair terms'],
-    ['Visual upcycling', 'film-detail', 'image', 'authenticator', 'Originals & source rights'],
+    ['Casting & talent', 'm:talent', 'people', 'casting-agencies', 'Consent & fair terms'],
+    ['Visual upcycling', 'film-detail', 'image', 'visual-upcycling', 'Originals & source rights'],
     ['Makeup & hair', 'beauty-origin', 'beauty', 'beauty-library', 'Natural claims need proof'],
     ['Styling & designers', 'fitting', 'hanger', 'designer-network', 'Loans & local credit'],
     ['Photography', 'm:frame-fashion-wide', 'camera', 'asset-passport', 'Original capture chain'],
     ['Film / direction', 'on-set', 'film', 'post-chapters', 'Footage & chapter links'],
     ['Set design & artists', 'm:craft', 'box', 'set-studio', 'Materials & second life'],
-    ['Sound / creative post', 'm:landscape', 'sound', 'sound-studio', 'Recordings & usage rights'],
+    ['Sound / creative post', 'm:landscape', 'sound', 'sound-library', 'Recordings & usage rights'],
   ];
   const polesBloom = [
     ['Line producer', 'on-set', 'doc', 'actor-ledger', 'Daily reports'],
@@ -226,6 +234,9 @@
     return `<div class="car-head"><div><h3>${bloom ? 'Territory care. Measurable operations.' : 'Local value. Measurable artistry.'}</h3><small>Select a pole to follow its commitments and evidence.</small></div><div>${button('carousel-back', 'Previous', 'back')}${button('carousel-next', 'Next', 'arrow')}</div></div><div class="carousel" data-carousel>${poles.map(([t, a, i, id, n]) => `<a class="imagecard" href="#view/${go(id)}/${id}">${shot(a, t)}<div class="caption">${icon(i)}<h3>${t}</h3><p>${n}</p><p>Evidence pending</p></div></a>`).join('')}</div><div class="label-seal"><div class="seal">${icon('bee')}BEE LABEL<small>REVIEW PENDING</small></div></div><div class="statrow">${stat('Charter modules', 8, 'Assigned by specialty')}${stat('Verified claims', '—', 'No real evidence in this scenario')}${stat('Certification', 'Pending', 'Human decision required')}${stat('Reporting', '3 pillars', 'Social · Environmental · Economic')}</div><div class="grid2"><div class="panel"><h3>From commitment to proof</h3><p>Every pole records an action, a measurable input and the evidence that supports it. The lead reviews completeness before Bee verification.</p>${link('my-commitments', 'Open my charter', 'doc')}${link('validation-desk', 'Open verification desk', 'shield')}</div><div class="panel"><h3>What the label covers</h3><p>Production quality and provenance. NGO outcomes follow a separate action and evidence register, then join Honey without being used to offset the footprint.</p>${link(bloom ? 'label-creative' : 'label-bloom', bloom ? 'Creative Studio label' : 'Bloom team label', 'link')}${link('impact-pillars', 'NGO impact register', 'leaf')}</div></div>${connections(
       [
         ['authenticator', 'Bee Authenticator'],
+        [bloom ? 'bloom-metrics' : 'creative-metrics', 'Open this pole’s metrics'],
+        ['bee-certified', 'Consolidated Bee Label'],
+        ['bloom-operations', 'Field activity records'],
         ['actor-ledger', 'All actors & calculations'],
         ['brand-value', 'Brand Honey report'],
       ]
@@ -361,6 +372,15 @@
         ] === x[1]
     );
     const specific = {
+      agency: [
+        [
+          'Casting integrity',
+          'Casting & Agency',
+          'Qualified agencies, voluntary discovery, consent, fair terms and production handoff',
+          'casting-agencies',
+          'people',
+        ],
+      ],
       brand: [
         [
           'Brand commitments',
@@ -721,13 +741,13 @@
         .map(([t, k, v]) => field('vision-' + k, t, v, 'textarea'))
         .join('')}`;
     if (step === 2 || step === 5)
-      left = `${chapterStrip()}${field('chapter-name-' + chapter(), 'Chapter title', c[0])}${field('chapter-location-' + chapter(), 'Location', c[1])}${field('chapter-note-' + chapter(), 'Narrative / atmosphere', 'Follow the light, the texture of the bag and the gesture of the talent.', 'textarea')}<div class="kicker space">${step === 5 ? 'BLOOMBOARD · FOUR CONNECTED VIEWS' : 'KEY VISUALS & REFERENCES'}</div><div class="grid4">${['m:frame-arch', 'fitting', 'film-detail', 'on-set'].map((a, i) => `<div>${shot(a, ['Atmosphere', 'Key scene', 'Texture', 'Behind the scene'][i])}<small>${['Atmosphere', 'Key scene', 'Texture', 'Behind the scene'][i]}</small></div>`).join('')}</div>${link('co-creation', 'Assign frames and specialties', 'link')}${link('sound-studio', 'Chapter music', 'sound')}`;
+      left = `${chapterStrip()}${field('chapter-name-' + chapter(), 'Chapter title', c[0])}${field('chapter-location-' + chapter(), 'Location', c[1])}${field('chapter-note-' + chapter(), 'Narrative / atmosphere', 'Follow the light, the texture of the bag and the gesture of the talent.', 'textarea')}<div class="kicker space">${step === 5 ? 'BLOOMBOARD · FOUR CONNECTED VIEWS' : 'KEY VISUALS & REFERENCES'}</div><div class="grid4">${['m:frame-arch', 'fitting', 'film-detail', 'on-set'].map((a, i) => `<div>${shot(a, ['Atmosphere', 'Key scene', 'Texture', 'Behind the scene'][i])}<small>${['Atmosphere', 'Key scene', 'Texture', 'Behind the scene'][i]}</small></div>`).join('')}</div>${link('co-creation', 'Assign frames and specialties', 'link')}${link('sound-library', 'Chapter composition & sound library', 'sound')}`;
     if (step === 3)
-      left = `<h3>Core team & local collaborators</h3><p>Appoint each contributor with a clear role, credit, scope and fair terms.</p><div class="grid2">${card('beauty-prep', 'Nectar of Beauty', 'Beauty direction and local products', 'beauty-library')}${card('fitting', 'Art of Wearing', 'Looks and local designers', 'designer-network')}${card('m:craft', 'Set Design & Artists', 'Maker, materials and second life', 'set-studio')}${card('m:landscape', 'Sound Tale', 'Organic recordings and authorship', 'sound-studio')}</div><div class="notice">Bee Authenticator is part of the source and delivery chain. Sound Tale scope depends on the agreed offer and chapter brief.</div>`;
+      left = `<h3>Core team & local collaborators</h3><div class="toolbar">${link('casting-agencies', 'Casting & local agencies', 'people')}${link('visual-upcycling', 'Reference provenance', 'image')}</div><div class="grid2 space">${card('film-detail', 'Visual Tale', 'Imagery, atmosphere and chapter storytelling', 'tale-chapters')}${card('m:landscape', 'Sound Tale', 'Original sounds, local voices, instruments, nature and ambience', 'sound-library')}</div><p>Appoint each contributor with a clear role, credit, scope and fair terms.</p><div class="grid2">${card('beauty-prep', 'Nectar of Beauty', 'Beauty direction and local products', 'beauty-library')}${card('fitting', 'Art of Wearing', 'Looks and local designers', 'designer-network')}${card('m:craft', 'Set Design & Artists', 'Maker, materials and second life', 'set-studio')}${card('m:landscape', 'Sound Tale', 'Organic recordings and authorship', 'sound-studio')}</div><div class="notice">Bee Authenticator is part of the source and delivery chain. Sound Tale scope depends on the agreed offer and chapter brief.</div>`;
     if (step === 4)
       left = `<h3>Creative Studio ↔ Production</h3><p>Convert the intention into feasible frames, local collaborations, allocations and a shared schedule.</p>${field('tale-feasibility', 'Feasibility return', 'Confirm site access, daylight, products, crew and sound recording permissions.', 'textarea')}${check('tale-scout', 'Scouting feedback reviewed')}${check('tale-cost', 'Budget reviewed by Bee')}${check('tale-charter', 'Relevant charter modules assigned')}${link('co-creation', 'Open co-creation and scouting', 'pin')}${link('creative-lock', 'Review the current revision', 'shield', 'production')}`;
     if (step === 6)
-      left = `<h3>Three returns. Three impact pillars.</h3><p>Creative: original works, usable assets and rights.<br>Operational: costs, shared resources and local value.<br>Impact: documented actions and outcomes across social, environmental and economic pillars.</p>${link('brand-value', 'Open live scenario calculations', 'chart')}${link('impact-pillars', 'Open impact methods', 'leaf')}${field('tale-claim', 'Claim for the presentation', 'Proposed production framework. Results and certifications remain subject to evidence.', 'textarea')}<div class="notice">Never turn a planning target into an achieved result in a brand presentation.</div>`;
+      left = `<h3>Three returns. Three impact pillars.</h3><p>Creative: original works, usable assets and rights.<br>Operational: costs, shared resources and local value.<br>Impact: documented actions and outcomes across social, environmental and economic pillars.</p>${link('brand-value', 'Open live scenario calculations', 'chart')}${link('bee-certified', 'Bee Certified / three pillars', 'bee')}${link('label-social', 'Social', 'people')}${link('label-environment', 'Environmental', 'leaf')}${link('label-economic', 'Economic', 'chart')}${link('impact-pillars', 'NGO impact methods', 'leaf')}${field('tale-claim', 'Claim for the presentation', 'Proposed production framework. Results and certifications remain subject to evidence.', 'textarea')}<div class="notice">Never turn a planning target into an achieved result in a brand presentation.</div>`;
     if (step === 7)
       left = `<h3>A presentation ready for review.</h3><ul class="list">${taleIds
         .slice(0, 7)
@@ -780,10 +800,12 @@
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
   function exportTale() {
+    const labelSummary = window.BeeLabelModel.summary(local);
+    const labelSnapshot = `Bee Label / Creative Hive + Bloom Hive: ${labelSummary.documented}/${labelSummary.total} criteria documented in this local exercise. Social / Environmental / Economic pillars retain separate units and evidence. No certificate issued.\n`;
     const pages = taleNames
       .map(
         (name, i) =>
-          `<section><small>CRAIE STUDIO / MOROCCO · DRAFT · ${i + 1}/8</small><h1>${esc(name)}</h1><img src="${location.origin + img(i === 3 ? 'on-set' : chapters[i % 3][2])}" alt="AI concept"><h2>${esc(i === 0 ? value('tale-title', 'Carry the light') : i === 2 ? value('chapter-name-' + chapter(), chapters[chapter()][0]) : name)}</h2><p>${esc([value('tale-intention', 'A tactile journey between light, gesture and material.'), value('vision-brand', 'Craftsmanship and freedom of movement.') + ' / ' + value('vision-bee', 'Local collaboration and traceable value.'), chapters.map((c, n) => value('chapter-name-' + n, c[0]) + ': ' + value('chapter-note-' + n, 'Narrative to refine.')).join('\n'), 'Beauty, styling, set, sound, photography, film, post and local collaborators. All appointments and rights to confirm.', value('tale-feasibility', 'Scouting, access and budget review pending.'), chapters.map((c, n) => value('chapter-location-' + n, c[1])).join(' / '), value('tale-claim', 'Results and certifications remain subject to evidence.'), 'Bee review, then brand validation. No approval or certification is issued by this export.'][i])}</p><footer>Fictional scenario inspired by Craie Morocco. AI concept images are not evidence. Generated ${new Date().toLocaleDateString('fr-FR')}.</footer></section>`
+          `<section><small>CRAIE STUDIO / MOROCCO · DRAFT · ${i + 1}/8</small><h1>${esc(name)}</h1><img src="${location.origin + img(i === 3 ? 'on-set' : chapters[i % 3][2])}" alt="AI concept"><h2>${esc(i === 0 ? value('tale-title', 'Carry the light') : i === 2 ? value('chapter-name-' + chapter(), chapters[chapter()][0]) : name)}</h2><p>${esc([value('tale-intention', 'A tactile journey between light, gesture and material.'), value('vision-brand', 'Craftsmanship and freedom of movement.') + ' / ' + value('vision-bee', 'Local collaboration and traceable value.'), chapters.map((c, n) => value('chapter-name-' + n, c[0]) + ': ' + value('chapter-note-' + n, 'Narrative to refine.')).join('\n'), 'Beauty, styling, set, sound, photography, film, post and local collaborators. All appointments and rights to confirm.', value('tale-feasibility', 'Scouting, access and budget review pending.'), chapters.map((c, n) => value('chapter-location-' + n, c[1])).join(' / '), labelSnapshot + value('tale-claim', 'Results and certifications remain subject to evidence.'), 'Bee review, then brand validation. No approval or certification is issued by this export.'][i])}</p><footer>Fictional scenario inspired by Craie Morocco. AI concept images are not evidence. Generated ${new Date().toLocaleDateString('fr-FR')}.</footer></section>`
       )
       .join('');
     download(
@@ -796,9 +818,10 @@
     host.addEventListener('scroll', updateCarouselControls, true);
     host.addEventListener('click', (e) => {
       const target = e.target.closest(
-        '[data-action],[data-tab],[data-palette],[data-chapter],[data-set-image]'
+        '[data-action],[data-tab],[data-palette],[data-chapter],[data-set-image],[data-em-metric],[data-em-select],[data-em-group],[data-em-country],[data-em-channel],[data-em-sound],[data-em-operation]'
       );
       if (!target) return;
+      if (emailRevision.handle(target)) return;
       if (target.dataset.tab) {
         tabs[target.dataset.tab] = Number(target.dataset.index);
         draw();
@@ -955,6 +978,15 @@
     host.addEventListener('input', (e) => {
       const t = e.target;
       if (!t.dataset.field || t.readOnly || t.disabled) return;
+      if (t.dataset.field.startsWith('em-') && t.type === 'number' && t.value.trim() === '') {
+        local[t.dataset.field] = null;
+        const prefix = t.dataset.field.replace(/-(n|d)$/, '');
+        local[prefix + '-review'] = 'Pending';
+        local[prefix + '-decision'] = 'Pending';
+        t.setCustomValidity('');
+        save();
+        return;
+      }
       if (t.type === 'number' && t.dataset.field.startsWith('carbon-') && t.value.trim() === '') {
         t.setCustomValidity('');
         delete local[t.dataset.field];
@@ -970,8 +1002,13 @@
       }
       t.setCustomValidity('');
       local[t.dataset.field] = t.type === 'checkbox' ? t.checked : t.value;
+      if (/^em-.+-(n|d|ref|scope|note)$/.test(t.dataset.field)) {
+        const prefix = t.dataset.field.replace(/-(n|d|ref|scope|note)$/, '');
+        local[prefix + '-review'] = 'Pending';
+        local[prefix + '-decision'] = 'Pending';
+      }
       if (
-        /^(scout-|chapter-|beauty-|set-|sound-|designer-|tale-|post-version)/.test(
+        /^(scout-|chapter-|beauty-|set-|sound-|designer-|tale-|post-version|em-composition-|em-cue-|em-talent-|em-source-)/.test(
           t.dataset.field
         ) &&
         ['bee-approved', 'brand-approved'].includes(value('lock-state', 'draft'))
@@ -1052,11 +1089,41 @@
         (t.tagName === 'SELECT' ||
           t.type === 'checkbox' ||
           current.v2 === 'trace' ||
-          current.v2 === 'ledger')
+          current.v2 === 'ledger' ||
+          t.dataset.field.startsWith('em-'))
       )
         draw();
     });
   }
+  const emailRevision = window.BeeEmailRevision({
+    esc,
+    icon,
+    shot,
+    field,
+    check,
+    badge,
+    button,
+    link,
+    card,
+    stat,
+    connections,
+    subs,
+    value,
+    money,
+    percent,
+    chapter,
+    chapterStrip,
+    chapters,
+    tabs,
+    roles: roleNames,
+    state: () => local,
+    current: () => current,
+    ledger: () => window.BeeReviewMath.ledger(ledger()),
+    go,
+    save,
+    draw,
+    download,
+  });
   function draw() {
     if (!current?.v2) return;
     const renderers = {
@@ -1081,8 +1148,9 @@
       impact: impactView,
       tale: taleView,
       post: postView,
+      ...emailRevision.renderers,
     };
-    host.innerHTML = `<div class="v2"><div class="vnav"><a class="mark" href="#view/${go('connected-journey')}/connected-journey">${icon('bee')}BEEYONDTHEWORLD</a><div class="vhead-right"><small>CRAIE / MOROCCO</small>${badge('Design review · 15 Oct', 'concept')}</div></div><div class="vsub">${link('connected-journey', 'The whole journey', 'back')}<span>${roleNames[current.role]}</span><span> / </span><span>${esc(current.phase)}</span></div><div class="vbody"><div class="vtitle"><div><div class="kicker">${current.v2 === 'label' ? 'CONSCIOUS CREATIVE PRODUCTION' : current.v2 === 'tale' ? 'EUGE DA · VISUAL TALE PROPOSAL' : 'CARRY THE LIGHT · HORIZON'}</div><h1>${esc(current.title)}</h1></div><div class="role-note">${rolePurpose[current.role]}<br><small>${editable() ? 'Editable exercise · saved on this device' : 'Review view · change role to explore editing'}</small></div></div>${(renderers[current.v2] || mapView)()}<div class="sourcelinks">${(sourceMap[current.v2] || sourceMap.map).map((id, i) => `<a href="https://drive.google.com/file/d/${id}/view" target="_blank" rel="noopener noreferrer">Source Drive ${i + 1}</a>`).join('')}</div></div><div class="vfooter"><span>Ébauche interactive · scénario fictif · visuels IA · aucune certification réelle</span><span>Essais locaux. Feedbacks Eugénie / Rachid partagés ci-dessous.</span></div><div class="vtoast" role="status" aria-live="polite" hidden></div></div>`;
+    host.innerHTML = `<div class="v2"><div class="vnav"><a class="mark" href="#view/${go('connected-journey')}/connected-journey">${icon('bee')}BEEYONDTHEWORLD</a><div class="vhead-right"><small>CRAIE / MOROCCO</small>${badge('Design review · 15 Oct', 'concept')}</div></div><div class="vsub">${link('connected-journey', 'The whole journey', 'back')}<span>${roleNames[current.role]}</span><span> / </span><span>${esc(current.phase)}</span></div><div class="vbody"><div class="vtitle"><div><div class="kicker">${current.v2 === 'label' ? 'CONSCIOUS CREATIVE PRODUCTION' : current.v2 === 'tale' ? 'EUGE DA · VISUAL TALE PROPOSAL' : 'CARRY THE LIGHT · HORIZON'}</div><h1>${esc(current.title)}</h1></div><div class="role-note">${rolePurpose[current.role]}<br><small>${editable() ? 'Editable exercise · saved on this device' : 'Review view · change role to explore editing'}</small></div></div>${(renderers[current.v2] || mapView)()}${emailRevision.related()}<div class="sourcelinks">${(current.id === 'tale-hive' ? ['1RF9STo1jbkgwQ138zyL61RaCjXYAmfhO', '11-XGmGV_UgGZxwjr7m4AGlWabmMSPd0b'] : emailRevision.source[current.id] ? [emailRevision.source[current.id]] : sourceMap[current.v2] || sourceMap.map).map((id, i) => `<a href="https://drive.google.com/file/d/${id}/view" target="_blank" rel="noopener noreferrer">Source Drive ${i + 1}</a>`).join('')}</div></div><div class="vfooter"><span>Ébauche interactive · scénario fictif · visuels IA · aucune certification réelle</span><span>Essais locaux. Feedbacks Eugénie / Rachid partagés ci-dessous.</span></div><div class="vtoast" role="status" aria-live="polite" hidden></div></div>`;
     updateCarouselControls();
   }
   window.BeeReviewV2 = {

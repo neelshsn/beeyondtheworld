@@ -1,4 +1,5 @@
 import fs from 'node:fs/promises';
+import { emailPages } from './email-review-pages.mjs';
 const dir = 'src/lib/review/';
 try {
   await fs.access(dir + 'gallery-v1.json');
@@ -9,7 +10,12 @@ let html = JSON.parse(await fs.readFile(dir + 'gallery-v1.json', 'utf8'));
 const start = html.indexOf('const D=') + 8,
   end = html.indexOf(';const $=', start),
   D = JSON.parse(html.slice(start, end));
-const all = Object.keys(D.roles).concat(['set', 'sound']);
+const all = Object.keys(D.roles).concat(['set', 'sound', 'agency']);
+D.roles.agency = { fr: 'Agence / responsable casting', en: 'Casting & Agency' };
+D.guides.roles.agency = {
+  focus:
+    'Relier le réseau local, les talents, leurs consentements, les looks et les appels de production.',
+};
 D.roles.set = { fr: 'Scénographie / set design', en: 'Head of Set Design' };
 D.roles.sound = { fr: 'Création sonore', en: 'Head of Sound' };
 D.guides.roles.set = {
@@ -263,6 +269,7 @@ const definitions = [
     'tale',
   ],
 ];
+definitions.push(...emailPages(all));
 for (const [id, title, fr, stage, roles, type] of definitions)
   for (const role of roles)
     D.pages.push({
@@ -299,12 +306,19 @@ D.revision = {
   total: D.pages.length,
 };
 html = html.slice(0, start) + JSON.stringify(D).replaceAll('</', '<\\/') + html.slice(end);
-html = html.replace('<style>', '<link rel="stylesheet" href="/review/v2.css?v=20261015"><style>');
+html = html.replace(
+  '<style>',
+  '<link rel="stylesheet" href="/review/v2.css?v=20261015-email"><link rel="stylesheet" href="/review/email-review.css?v=20261015-email"><style>'
+);
 html = html.replace(
   '<script>const D=',
-  '<script src="/review/review-metrics.js?v=20261015"></script><script src="/review/v2.js?v=20261015"></script><script>const D='
+  '<script src="/review/review-metrics.js?v=20261015"></script><script src="/review/label-model.js?v=20261015-email"></script><script src="/review/email-review.js?v=20261015-email"></script><script src="/review/v2.js?v=20261015-email"></script><script>const D='
 );
 html = html.replace(';const $=', ';window.BEE_REVIEW_DATA=D;const $=');
+html = html.replace(
+  "$('handoff').textContent=s.handoff;$('decision').textContent=s.decision;",
+  "$('handoff').textContent=p.v2?.startsWith('email-')?'Relier la contribution du métier à son objet, son périmètre, ses preuves et au pilier qui la reprend. Les liens de cet écran permettent de suivre ce passage de relais.':s.handoff;$('decision').textContent=p.v2?.startsWith('email-')?'Les chiffres restent des hypothèses de ce cas. Bee et l’expert examinent les pièces selon le risque ; les décisions de label et les résultats ONG restent séparés.':s.decision;"
+);
 html = html.replace(
   '<div class="screenwrap">',
   '<div id="revision-tools"><label>Version <select id="revision"><option value="new">Nouveautés & écrans enrichis · 15 octobre</option><option value="all">Tous les écrans, y compris la version initiale</option></select></label><button id="baseline-toggle" hidden>Comparer avec l’écran initial</button></div><div id="interactive"></div><div class="screenwrap">'
@@ -352,11 +366,11 @@ html = html.replace(
   "['SELECT','INPUT','TEXTAREA','BUTTON','A','AUDIO']"
 );
 html = html
-  .replaceAll('498 écrans', '694 vues')
-  .replaceAll('12 métiers', '14 métiers')
+  .replaceAll('498 écrans', D.pages.length + ' vues')
+  .replaceAll('12 métiers', '15 métiers')
   .replace('/review/feedback.js"', '/review/feedback.js?v=20261015"');
 html = html
-  .replaceAll('Une production entière · 12 métiers', 'Une production entière · 14 métiers')
+  .replaceAll('Une production entière · 12 métiers', 'Une production entière · 15 métiers')
   .replace(
     'Carry the light — les 12 parcours métiers',
     'Beeyond · les métiers, la création et les preuves'
@@ -383,6 +397,11 @@ html = html.replace(
   '<section id="experience"',
   '<section id="revision-report" class="section"><div class="eyebrow">Mise à jour · 15 octobre 2026</div><h2>Les connexions prennent forme.</h2><p>Deux nouveaux métiers, les chartes Hive et Bloom, l’Authentificator, huit pages de présentation Tales et un bilan dont chaque chiffre explique sa provenance.</p><div class="links"><a class="btn primary" href="#view/bee/connected-journey">Voir le parcours complet</a><a class="btn" href="#view/beauty/beauty-library">Nectar of Beauty</a><a class="btn" href="#view/brand/brand-value">ROI & preuves</a><a class="btn" href="/review/oct15/report.html" target="_blank" rel="noopener">Rapport des changements</a></div></section><section id="experience"'
 );
+html = html.replace(
+  'Deux nouveaux métiers, les chartes Hive et Bloom, l’Authentificator, huit pages de présentation Tales et un bilan dont chaque chiffre explique sa provenance.',
+  'Le mail d’Eugénie intégré : Creative Hive, Bloom Hive, Bee Certified, trois piliers détaillés, casting, upcycling, bibliothèque sonore et connexions Tales.'
+);
+html = html.replace('href="/review/oct15/report.html"', 'href="/review/email-oct15/report.html"');
 await fs.writeFile(dir + 'gallery.json', JSON.stringify(html));
 await fs.writeFile(
   dir + 'screen-keys.json',

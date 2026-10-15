@@ -1,0 +1,365 @@
+{
+  "date": "2026-10-15",
+  "screens": [
+    {
+      "role": "bee",
+      "id": "creative-metrics",
+      "title": "Creative Hive / local value",
+      "width": 1228.8000183105469,
+      "height": 1579.825023541227,
+      "heading": "Creative Hive : les contributions deviennent mesurables",
+      "description": "Les cartes de pôles, la jauge, l’historique et la répartition par pilier reprennent le dashboard source. Les 18 critères créatifs conduisent au même registre : casting, designers, beauty, sources visuelles, décor et son.",
+      "interaction": "Filtres par métier, cartes horizontales, jauge de complétude, instantanés datés, indicateurs cliquables et liens vers leurs preuves.",
+      "source": "1Ow_kCrwsDx11zA-DftBrpK_KueX1j0JH",
+      "url": "https://beeyondtheworld.com/community/comparator#view/bee/creative-metrics"
+    },
+    {
+      "role": "bee",
+      "id": "bloom-metrics",
+      "title": "Bloom Hive / local production",
+      "width": 1228.8000183105469,
+      "height": 2495.175037181005,
+      "heading": "Bloom Hive : relier le terrain aux preuves",
+      "description": "19 critères suivent équipe, repérages, fournisseurs, transport, séjour, catering, matériel, ressources et déchets. Les données absentes restent absentes ; les montants viennent du registre des acteurs.",
+      "interaction": "Filtres de catégories, graphe de documentation, liens aux fiches terrain, au coût et au pilier concerné.",
+      "source": "1dGuniNE77UpK2FT-W98-HNMJt8MglBV3",
+      "url": "https://beeyondtheworld.com/community/comparator#view/bee/bloom-metrics"
+    },
+    {
+      "role": "bee",
+      "id": "bee-certified",
+      "title": "Bee Certified / the whole picture",
+      "width": 1228.8000183105469,
+      "height": 1515.137522577308,
+      "heading": "Deux pôles, une vue Bee Label",
+      "description": "Creative Hive et Bloom Hive rejoignent la consolidation Bee Certified. Trois entrées distinctes : social, environnemental et économique. La jauge indique les critères documentés, jamais une note de durabilité inventée.",
+      "interaction": "Deux anneaux de complétude, trois cartes de piliers, données partagées, accès au référentiel et aux preuves.",
+      "source": "1FPWE5Q1ym6EUV0g0giAP5tMKIdTh1Tgv",
+      "url": "https://beeyondtheworld.com/community/comparator#view/bee/bee-certified"
+    },
+    {
+      "role": "bee",
+      "id": "label-social",
+      "title": "People, culture, stronger communities",
+      "width": 1228.8000183105469,
+      "height": 1855.987527656369,
+      "heading": "Le pilier social retrouve son dashboard",
+      "description": "Équipe, talents, fournisseurs, communauté, conditions de travail et inclusion ont leurs indicateurs et leurs pièces. Une participation locale, un contrat et un consentement restent trois informations distinctes.",
+      "interaction": "Six indicateurs, onglets de sous-thèmes, visuel de contexte, lignes cliquables vers le registre.",
+      "source": "1OmlpvuiZnl879Od3Ea7EdgBp5YKYYaZQ",
+      "url": "https://beeyondtheworld.com/community/comparator#view/bee/label-social"
+    },
+    {
+      "role": "bee",
+      "id": "label-environment",
+      "title": "Lower impact, smarter choices",
+      "width": 1228.8000183105469,
+      "height": 1591.2375237112865,
+      "heading": "Le pilier environnemental garde ses unités",
+      "description": "Transport, équipement, énergie, eau, hébergement, restauration et déchets sont séparés. Une provenance locale ne prouve pas à elle seule une réduction carbone. Les facteurs, le périmètre et la comparaison restent accessibles.",
+      "interaction": "Six indicateurs, onglets, suivi matière et ressources, accès au calcul carbone et à ses conditions de validité.",
+      "source": "11Di4hHymmGg95iD3yVLeRtlSg1_n-SB8",
+      "url": "https://beeyondtheworld.com/community/comparator#view/bee/label-environment"
+    },
+    {
+      "role": "bee",
+      "id": "label-economic",
+      "title": "Long-term value, responsible growth",
+      "width": 1228.8000183105469,
+      "height": 1481.437522075139,
+      "heading": "Le pilier économique suit la valeur locale",
+      "description": "Fournisseurs, engagements, artistes, designers et partenariats se rattachent aux dépenses. L’investissement local est une part de la production, sans additionner deux fois les sous-allocations.",
+      "interaction": "Six indicateurs, onglets dépenses/fournisseurs/emploi/valeur, registre budgétaire relié et preuves d’origine.",
+      "source": "14xfHf2m_acmtoqUbBDmqk5s_CMUwTPFE",
+      "url": "https://beeyondtheworld.com/community/comparator#view/bee/label-economic"
+    },
+    {
+      "role": "agency",
+      "id": "casting-agencies",
+      "title": "Casting & Talent",
+      "width": 1228.8000183105469,
+      "height": 1591.7625237191096,
+      "heading": "Un vrai espace Agence / Casting",
+      "description": "Les six cartes de la référence sont reprises : agences locales, wild casting, inclusion, participation locale, consentements et talents émergents. Le réseau peut être interne, partenaire ou hybride et se consulte par pays.",
+      "interaction": "Carrousel de cartes, pays sélectionnables, mode de fonctionnement, canaux de découverte, métriques et bandeau de pièces.",
+      "source": "1kFwSFiaeoeVg_Hvvfa27yu6cU0Ek3DMJ",
+      "url": "https://beeyondtheworld.com/community/comparator#view/agency/casting-agencies"
+    },
+    {
+      "role": "agency",
+      "id": "casting-talent",
+      "title": "One talent, a connected journey",
+      "width": 1228.8000183105469,
+      "height": 1281.02501908876,
+      "heading": "La fiche talent relie les métiers",
+      "description": "La représentation, le pays, le canal de découverte, le look, le chapitre, le fitting et les conditions d’usage se rencontrent dans une fiche. Liens vers stylisme, beauté, scouting et allocation. Le profil est fictif.",
+      "interaction": "Formulaire, sélection de look/chapitre, checklist de consentement et conditions, note de relais et liens vers les responsables.",
+      "source": "1kFwSFiaeoeVg_Hvvfa27yu6cU0Ek3DMJ",
+      "url": "https://beeyondtheworld.com/community/comparator#view/agency/casting-talent"
+    },
+    {
+      "role": "art",
+      "id": "visual-upcycling",
+      "title": "Visual Upcycling",
+      "width": 1228.8000183105469,
+      "height": 1595.5375237753617,
+      "heading": "L’inspiration conserve sa provenance",
+      "description": "Six familles de sources, une référence parent, un auteur, des droits et un dérivé relient inspiration et livraison. Le Bee Authenticator complète cette chaîne. Une illustration IA n’est jamais assimilée à une capture organique.",
+      "interaction": "Canaux sélectionnables, fiche source, parent/dérivé, crédits, checklist et accès au passeport et aux métriques.",
+      "source": "1iyohQvW2nRHW_dgUd15J51e-GcBcJT_7",
+      "url": "https://beeyondtheworld.com/community/comparator#view/art/visual-upcycling"
+    },
+    {
+      "role": "bee",
+      "id": "evidence-register",
+      "title": "Every number carries a trace",
+      "width": 1228.8000183105469,
+      "height": 1528.7500227801502,
+      "heading": "Une seule mesure, plusieurs lectures",
+      "description": "37 identifiants relient métier, quantité, dénominateur, unité, périmètre, preuve, revue et pilier. Modifier une donnée rouvre la revue. Un risque élevé demande une revue indépendante dans l’exercice.",
+      "interaction": "Filtre de pôle, liste d’indicateurs, calcul à la saisie, contrôles de validité, décisions Bee/expert et export du registre.",
+      "source": "1yGEf1WULB8dp_kk-62y5jp2VswdCrwqv",
+      "url": "https://beeyondtheworld.com/community/comparator#view/bee/evidence-register"
+    },
+    {
+      "role": "sound",
+      "id": "sound-library",
+      "title": "Sounds, places, people",
+      "width": 1228.8000183105469,
+      "height": 1822.8875271631405,
+      "heading": "Sound Tale devient une partie du récit",
+      "description": "Le dernier écran EUGE DA donne au son une place égale au Visual Tale. Chaque chapitre relie composition, brief DA, bibliothèque mondiale, voix, instruments, nature, ambiances, artiste, géolocalisation et droits.",
+      "interaction": "Chapitrage commun, types de sons, fiches source et composition, coordonnées, droits, accès au lecteur, budget et Bloomboard.",
+      "source": "11-XGmGV_UgGZxwjr7m4AGlWabmMSPd0b",
+      "url": "https://beeyondtheworld.com/community/comparator#view/sound/sound-library"
+    },
+    {
+      "role": "production",
+      "id": "bloom-operations",
+      "title": "From the field, into the label",
+      "width": 1228.8000183105469,
+      "height": 1173.1250174809247,
+      "heading": "Du travail terrain au label",
+      "description": "Chaque catégorie de production peut renseigner son activité et sa pièce de référence. La fiche rejoint les indicateurs correspondants et le registre des acteurs. Le scénario n’effectue aucune réservation ni paiement.",
+      "interaction": "Catégories cliquables, formulaires d’activité, champs de preuve et liens indicateur/coût/scouting.",
+      "source": "16JgKrnlOXPYMxdH-yvrk8IS25-P2kled",
+      "url": "https://beeyondtheworld.com/community/comparator#view/production/bloom-operations"
+    },
+    {
+      "role": "art",
+      "id": "honey-library",
+      "title": "The value that remains",
+      "width": 1228.8000183105469,
+      "height": 1217.650018144399,
+      "heading": "Ce que la production laisse à la marque",
+      "description": "Sons, matériaux, archives visuelles, passeports et masters composent la bibliothèque de réemploi. Chaque livraison conserve version, licence, crédit et sources. Elixir of Honey, le magazine, reste bien pour plus tard.",
+      "interaction": "Cartes de familles, fiche livraison et droits, liens postproduction, Bee Label, retours Honey et présentation Tales.",
+      "source": "1yGEf1WULB8dp_kk-62y5jp2VswdCrwqv",
+      "url": "https://beeyondtheworld.com/community/comparator#view/art/honey-library"
+    },
+    {
+      "role": "bee",
+      "id": "label-method",
+      "title": "The Bee Label / review framework",
+      "width": 1228.8000183105469,
+      "height": 1254.2500186897814,
+      "heading": "Un référentiel explicite avant un certificat",
+      "description": "Version de charte, propriétaire, périmètre, règles, validité et indépendance sont visibles. Les screens ne définissent pas de barème complet : aucun poids, seuil ni certificat réel n’a été fabriqué.",
+      "interaction": "Formulaire de référentiel, décision de revue réservée à Bee/expert, export d’un dossier de revue marqué brouillon.",
+      "source": "1yGEf1WULB8dp_kk-62y5jp2VswdCrwqv",
+      "url": "https://beeyondtheworld.com/community/comparator#view/bee/label-method"
+    },
+    {
+      "role": "bee",
+      "id": "connected-journey",
+      "title": "One journey, connected",
+      "width": 1228.8000183105469,
+      "height": 979.5000145956874,
+      "heading": "La carte comprend les nouvelles connexions",
+      "description": "Brief marque → création et équipe → scouting Bee / Flower → faisabilité → revue Bee puis marque → production → postproduction → livraison → mesure → Honey. Casting, sources, deux Hives, label, preuves et Tales sont reliés.",
+      "interaction": "Carte navigable, raccourcis entre métiers et objets, accès direct aux nouvelles branches.",
+      "source": null,
+      "url": "https://beeyondtheworld.com/community/comparator#view/bee/connected-journey"
+    },
+    {
+      "role": "bee",
+      "id": "label-creative",
+      "title": "The Bee Label / Creative Hive",
+      "width": 1228.8000183105469,
+      "height": 1154.6000172048807,
+      "heading": "Les engagements du Creative Studio restent le point d’entrée",
+      "description": "Les huit pôles d’origine sont conservés. Casting conduit désormais au réseau et aux talents ; upcycling à ses sources ; le son à sa bibliothèque. Les métriques et la consolidation sont accessibles depuis le pôle.",
+      "interaction": "Carrousel à flèches, huit cartes, sceau, engagements et raccourcis vers la mesure.",
+      "source": "1d63un6FCWYGZ-W9IdvxQyXcqfjxl-QjT",
+      "url": "https://beeyondtheworld.com/community/comparator#view/bee/label-creative"
+    },
+    {
+      "role": "bee",
+      "id": "label-bloom",
+      "title": "The Bee Label / Bloom",
+      "width": 1228.8000183105469,
+      "height": 1154.6000172048807,
+      "heading": "Les engagements Bloom conduisent au terrain",
+      "description": "Les huit fonctions de production se relient à leurs activités, au registre budgétaire, aux métriques Bloom et au Bee Label. Les repérages font toujours le lien entre création et production.",
+      "interaction": "Carrousel de pôles, checklist et liens terrain/mesure/consolidation.",
+      "source": "16JgKrnlOXPYMxdH-yvrk8IS25-P2kled",
+      "url": "https://beeyondtheworld.com/community/comparator#view/bee/label-bloom"
+    },
+    {
+      "role": "art",
+      "id": "tale-hive",
+      "title": "The creative hive",
+      "width": 1228.8000183105469,
+      "height": 1434.450021374971,
+      "heading": "EUGE DA : Visual Tale et Sound Tale côte à côte",
+      "description": "La version récente du Drive remplace l’ancienne logique d’options par deux univers forts. L’équipe créative, les métiers locaux, le casting et les inspirations restent rattachés à la proposition marque.",
+      "interaction": "Deux cartes visuelles principales, raccourcis spécialités, équipe et source, assistant Tales en huit étapes.",
+      "source": "1RF9STo1jbkgwQ138zyL61RaCjXYAmfhO",
+      "url": "https://beeyondtheworld.com/community/comparator#view/art/tale-hive"
+    },
+    {
+      "role": "art",
+      "id": "tale-bloom",
+      "title": "The journey comes to life",
+      "width": 1228.8000183105469,
+      "height": 1144.3375170519575,
+      "heading": "Le Bloomboard relie image et son par chapitre",
+      "description": "Le chapitre choisi est partagé entre narration, lieu, moodboard et musique. La planche visuelle et la bibliothèque sonore sont accessibles depuis la même étape de présentation.",
+      "interaction": "Chapitrage partagé, planche visuelle, champs narratifs et liens vers le Sound Tale.",
+      "source": null,
+      "url": "https://beeyondtheworld.com/community/comparator#view/art/tale-bloom"
+    },
+    {
+      "role": "art",
+      "id": "tale-value",
+      "title": "A creation that creates value",
+      "width": 1228.8000183105469,
+      "height": 988.4500147290528,
+      "heading": "La promesse marque s’appuie sur les bons registres",
+      "description": "Les trois retours Honey restent distincts des trois piliers du label. La présentation conduit désormais à Bee Certified, à ses preuves et aux calculs. L’export inclut l’état de documentation du label.",
+      "interaction": "Aperçu de présentation, champ de promesse, accès aux calculs et à la consolidation ; export HTML de huit pages et données locales.",
+      "source": null,
+      "url": "https://beeyondtheworld.com/community/comparator#view/art/tale-value"
+    },
+    {
+      "role": "beauty",
+      "id": "beauty-origin",
+      "title": "Beauty, rooted in place",
+      "width": 1228.8000183105469,
+      "height": 1077.9250160623342,
+      "heading": "Beauty : pays, ingrédients et preuve",
+      "description": "Huiles, pigments, textures, fournisseur, région, lot et certificat restent documentés. La page est maintenant connectée aux critères produits naturels et sourcing local ; changer de pays retire le fournisseur d’exemple non pertinent.",
+      "interaction": "Sélecteur de pays et matières, formulaire de provenance, liens métriques et preuves. Aucun partenariat réel annoncé.",
+      "source": null,
+      "url": "https://beeyondtheworld.com/community/comparator#view/beauty/beauty-origin"
+    },
+    {
+      "role": "stylist",
+      "id": "designer-network",
+      "title": "Art of Wearing",
+      "width": 1228.8000183105469,
+      "height": 1121.9250167179853,
+      "heading": "Stylisme : les designers rejoignent la mesure",
+      "description": "Looks, designers et matières restent le cœur de l’écran. Les indicateurs de présence locale et de crédits sont maintenant reliés au pilier et au registre de preuves.",
+      "interaction": "Looks, pays et spécialités, mode de collaboration, crédits et accès aux critères de sourcing.",
+      "source": null,
+      "url": "https://beeyondtheworld.com/community/comparator#view/stylist/designer-network"
+    },
+    {
+      "role": "set",
+      "id": "set-detail",
+      "title": "Look 02 / set design",
+      "width": 1228.8000183105469,
+      "height": 1283.0500191189349,
+      "heading": "Set design : provenance, coût et seconde vie",
+      "description": "Le créateur, les matières, le prêt ou l’achat, le coût et le retour des éléments restent liés. Les indicateurs artistes et réemploi de matière se retrouvent dans les métriques Creative Hive.",
+      "interaction": "Sélection visuelle, formulaire décor, montant partagé avec le budget, critères et preuves reliés.",
+      "source": null,
+      "url": "https://beeyondtheworld.com/community/comparator#view/set/set-detail"
+    },
+    {
+      "role": "bee",
+      "id": "co-creation",
+      "title": "The co-creation bridge",
+      "width": 1228.8000183105469,
+      "height": 1092.2000162750485,
+      "heading": "Scouting : le passage Bee / Flower reste central",
+      "description": "La DA partage récit et frames. La production vérifie accès, lumière, timing, disponibilité et coût. Beauty, stylisme, décor et son préparent le même chapitre avant la revue Bee, puis marque.",
+      "interaction": "Frames, lieux, checklist de faisabilité, retour de production et accès au verrouillage créatif.",
+      "source": null,
+      "url": "https://beeyondtheworld.com/community/comparator#view/bee/co-creation"
+    },
+    {
+      "role": "brand",
+      "id": "brand-value",
+      "title": "Honey / value for your brand",
+      "width": 1228.8000183105469,
+      "height": 1004.575014969334,
+      "heading": "ROI : garder la trace de ce que gagne la marque",
+      "description": "Le retour créatif compte les œuvres et formats, le retour opérationnel suit allocations et mutualisation, l’impact garde ses preuves propres. Le label mesure les pratiques de production ; les actions ONG sont séparées.",
+      "interaction": "Cartes calculées, coût par œuvre distincte, détail des contributions, méthode carbone et attribution du financement.",
+      "source": null,
+      "url": "https://beeyondtheworld.com/community/comparator#view/brand/brand-value"
+    }
+  ],
+  "summary": [
+    [
+      "Ce qui a été ajouté",
+      "14 nouvelles pages complètent la première révision : 161 vues métier/page supplémentaires, soit 855 vues au total pour 15 métiers. 374 vues sont interactives ; 481 captures initiales restent disponibles. Ce rapport présente 25 captures actuelles, dont les 14 nouvelles pages."
+    ],
+    [
+      "Ce qui est partagé",
+      "La même interface conserve les feedbacks séparés Eugénie / Rachid et plusieurs images par écran. Ils sont enregistrés sur le VPS. Les essais de formulaires, critères et validations restent locaux à votre navigateur : le comparateur est un outil de revue, pas encore le dossier opérationnel synchronisé de toute une équipe."
+    ],
+    [
+      "Les références prises en compte",
+      "Mail « UX DAHSBOARD PROCESS BEEYOND » du 15 octobre 2026, screens Creative/Bloom, métriques, Bee Certified, trois piliers, casting, authentification, écosystème et dossier EUGE DA. Les deux écrans récents Creative Hive / Sound Tale corrigent l’ancienne structure de présentation."
+    ],
+    [
+      "Ce qui est harmonisé",
+      "Compositions sources, carrousels, icônes, menus, cartes, anneaux et bandeaux de pièces sont intégrés au langage Horizon. Les écrans anglais sont expliqués en français. Les chiffres décoratifs des références deviennent des données d’exercice reliées à leur périmètre."
+    ]
+  ],
+  "test_path": [
+    [
+      "1. Partir du Creative Studio",
+      "Ouvrir Creative Hive, puis Casting. Choisir un pays et un mode interne / partenaire ; ouvrir la fiche talent et suivre les liens look, beauty et scouting."
+    ],
+    [
+      "2. Relier le son au récit",
+      "Ouvrir Sound library, changer de chapitre, renseigner le brief et la source ; retrouver le même chapitre dans le studio, la carte et le Bloomboard."
+    ],
+    [
+      "3. Suivre un chiffre",
+      "Cliquer un indicateur, modifier quantité et total, puis ajouter une référence. La documentation remonte dans Creative ou Bloom et dans Bee Certified ; le pilier retrouve la même mesure."
+    ],
+    [
+      "4. Tester la revue",
+      "En rôle Bee ou expert, revoir un critère. Un risque élevé exige la revue indépendante. Modifier une quantité ou sa preuve remet la revue en attente. Aucun certificat n’est émis."
+    ],
+    [
+      "5. Préparer la marque",
+      "Parcourir les huit étapes Tales, puis la valeur. Ouvrir les retours Honey et le label, exporter la présentation et commenter les écrans avec le lien personnel habituel."
+    ]
+  ],
+  "decisions_remaining": [
+    [
+      "Référentiel de certification",
+      "Définir et approuver critères obligatoires, poids éventuels, seuils, propriétaire, durée de validité et renouvellement. Le comparateur expose ces champs sans décider à votre place."
+    ],
+    [
+      "Qualification des partenaires",
+      "Renseigner les agences, designers, artisans, fournisseurs beauty, musiciens et lieux réels par pays, leurs disponibilités, tarifs et permissions. Les propositions du cas restent illustratives."
+    ],
+    [
+      "Données de la prochaine production",
+      "Importer originaux et droits, contrats, factures, activités terrain et preuves. Une origine naturelle, une certification de produit et une autorisation culturelle demandent des pièces différentes."
+    ],
+    [
+      "Périmètre opérationnel suivant",
+      "Après validation de l’ébauche : dossiers partagés par production, stockage des sources métier, invitations, permissions effectives et décisions auditables. Elixir of Honey reste hors périmètre, conformément au mail."
+    ]
+  ],
+  "feedback": "Same personal links and existing VPS feedback interface",
+  "scope": "Interactive review; local scenario; no real certificate"
+}

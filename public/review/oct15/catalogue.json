@@ -2,8 +2,8 @@
   "revision": {
     "date": "2026-10-15",
     "original": 498,
-    "added": 196,
-    "total": 694
+    "added": 357,
+    "total": 855
   },
   "definitions": [
     [
@@ -25,7 +25,8 @@
         "ngo",
         "expert",
         "set",
-        "sound"
+        "sound",
+        "agency"
       ],
       "map"
     ],
@@ -229,7 +230,8 @@
         "model",
         "expert",
         "set",
-        "sound"
+        "sound",
+        "agency"
       ],
       "passport"
     ],
@@ -252,7 +254,8 @@
         "ngo",
         "expert",
         "set",
-        "sound"
+        "sound",
+        "agency"
       ],
       "commitments"
     ],
@@ -453,6 +456,290 @@
         "production"
       ],
       "tale"
+    ],
+    [
+      "creative-metrics",
+      "Creative Hive / local value",
+      "Creative Hive · métriques & contributions",
+      11,
+      [
+        "bee",
+        "art",
+        "production",
+        "brand",
+        "expert",
+        "stylist",
+        "beauty",
+        "set",
+        "sound",
+        "photo",
+        "film",
+        "editor",
+        "agency"
+      ],
+      "email-metrics"
+    ],
+    [
+      "bloom-metrics",
+      "Bloom Hive / local production",
+      "Bloom Hive · métriques & contributions",
+      11,
+      [
+        "bee",
+        "art",
+        "production",
+        "brand",
+        "expert"
+      ],
+      "email-metrics"
+    ],
+    [
+      "bee-certified",
+      "Bee Certified / the whole picture",
+      "Bee Certified · consolidation des deux pôles",
+      12,
+      [
+        "brand",
+        "bee",
+        "art",
+        "production",
+        "stylist",
+        "photo",
+        "film",
+        "beauty",
+        "editor",
+        "model",
+        "ngo",
+        "expert",
+        "set",
+        "sound",
+        "agency"
+      ],
+      "email-certified"
+    ],
+    [
+      "label-social",
+      "People, culture, stronger communities",
+      "Bee Label · pilier social",
+      11,
+      [
+        "brand",
+        "bee",
+        "art",
+        "production",
+        "stylist",
+        "photo",
+        "film",
+        "beauty",
+        "editor",
+        "model",
+        "ngo",
+        "expert",
+        "set",
+        "sound",
+        "agency"
+      ],
+      "email-pillar"
+    ],
+    [
+      "label-environment",
+      "Lower impact, smarter choices",
+      "Bee Label · pilier environnemental",
+      11,
+      [
+        "brand",
+        "bee",
+        "art",
+        "production",
+        "stylist",
+        "photo",
+        "film",
+        "beauty",
+        "editor",
+        "model",
+        "ngo",
+        "expert",
+        "set",
+        "sound",
+        "agency"
+      ],
+      "email-pillar"
+    ],
+    [
+      "label-economic",
+      "Long-term value, responsible growth",
+      "Bee Label · pilier économique",
+      11,
+      [
+        "brand",
+        "bee",
+        "art",
+        "production",
+        "stylist",
+        "photo",
+        "film",
+        "beauty",
+        "editor",
+        "model",
+        "ngo",
+        "expert",
+        "set",
+        "sound",
+        "agency"
+      ],
+      "email-pillar"
+    ],
+    [
+      "casting-agencies",
+      "Casting & Talent",
+      "Casting · agences et réseau local",
+      3,
+      [
+        "bee",
+        "art",
+        "production",
+        "brand",
+        "expert",
+        "agency",
+        "model",
+        "stylist",
+        "beauty"
+      ],
+      "email-casting"
+    ],
+    [
+      "casting-talent",
+      "One talent, a connected journey",
+      "Casting · fiche talent et passages de relais",
+      3,
+      [
+        "bee",
+        "art",
+        "production",
+        "brand",
+        "expert",
+        "agency",
+        "model",
+        "stylist",
+        "beauty"
+      ],
+      "email-talent"
+    ],
+    [
+      "visual-upcycling",
+      "Visual Upcycling",
+      "Upcycling · inspirations et canaux source",
+      3,
+      [
+        "bee",
+        "art",
+        "production",
+        "brand",
+        "expert",
+        "photo",
+        "film",
+        "editor",
+        "stylist",
+        "beauty",
+        "set",
+        "sound"
+      ],
+      "email-upcycling"
+    ],
+    [
+      "evidence-register",
+      "Every number carries a trace",
+      "Registre partagé · données, preuves et revue",
+      11,
+      [
+        "brand",
+        "bee",
+        "art",
+        "production",
+        "stylist",
+        "photo",
+        "film",
+        "beauty",
+        "editor",
+        "model",
+        "ngo",
+        "expert",
+        "set",
+        "sound",
+        "agency"
+      ],
+      "email-evidence"
+    ],
+    [
+      "sound-library",
+      "Sounds, places, people",
+      "Son · bibliothèque, artistes et réemploi",
+      3,
+      [
+        "bee",
+        "art",
+        "production",
+        "brand",
+        "expert",
+        "sound",
+        "film",
+        "editor"
+      ],
+      "email-sound"
+    ],
+    [
+      "bloom-operations",
+      "From the field, into the label",
+      "Bloom · activités et preuves terrain",
+      7,
+      [
+        "bee",
+        "production",
+        "art",
+        "expert",
+        "ngo",
+        "set",
+        "sound"
+      ],
+      "email-operations"
+    ],
+    [
+      "honey-library",
+      "The value that remains",
+      "Honey · bibliothèque, passeports et héritage",
+      10,
+      [
+        "brand",
+        "bee",
+        "art",
+        "production",
+        "stylist",
+        "photo",
+        "film",
+        "beauty",
+        "editor",
+        "model",
+        "ngo",
+        "expert",
+        "set",
+        "sound",
+        "agency"
+      ],
+      "email-honey"
+    ],
+    [
+      "label-method",
+      "The Bee Label / review framework",
+      "Bee Label · référentiel et décision",
+      11,
+      [
+        "bee",
+        "expert",
+        "production",
+        "art",
+        "brand"
+      ],
+      "email-method"
     ]
   ],
   "roles": {
@@ -515,6 +802,10 @@
       "fr": "Expert indépendant",
       "en": "Independent expert",
       "purpose": "Examen des seuls dossiers attribués selon le risque."
+    },
+    "agency": {
+      "fr": "Agence / responsable casting",
+      "en": "Casting & Agency"
     },
     "set": {
       "fr": "Scénographie / set design",
