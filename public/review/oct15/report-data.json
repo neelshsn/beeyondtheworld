@@ -1,0 +1,707 @@
+{
+  "revision": "2026-10-15",
+  "summary": [
+    [
+      "Ce qui change",
+      "28 nouvelles pages, déclinées selon 14 métiers, ajoutent 196 vues métier/page. Trois pages existantes — creative lock, beauté et stylisme — sont enrichies sur 17 vues. Le comparateur compte 694 vues : 213 interactives et 481 captures initiales conservées."
+    ],
+    [
+      "Ce qui est réellement partagé",
+      "Les feedbacks Eugénie et Rachid, leurs images et leurs versions restent enregistrés sur le VPS. Les anciennes adresses métier/page sont conservées. Les champs du nouveau scénario sont des essais locaux au navigateur : ils ne constituent pas encore des dossiers opérationnels synchronisés entre toute l’équipe."
+    ],
+    [
+      "Le cas utilisé",
+      "Carry the light / Craie Studio / Maroc reste une production imaginée, inspirée d’une campagne réelle. Les personnes, dates, partenaires, budgets et résultats sont illustratifs. Le nouvel asset beauty est généré par ChatGPT Image ; les autres visuels du cas sont réutilisés avec leur statut concept IA."
+    ],
+    [
+      "Ce qui a été repris du Drive",
+      "Le dossier global a été cartographié : 37 dossiers, 129 fichiers recensés, 79 références téléchargées. Les écrans métiers, les chartes et les documents de calcul pertinents ont été analysés. Cet inventaire ne prétend pas être un audit visuel exhaustif des 129 fichiers. Les liens source sont accessibles depuis les nouvelles pages."
+    ],
+    [
+      "Adaptations explicites",
+      "Le dossier Sound contient surtout une entrée Creative Hive : l’écran détaillé par chapitre, la carte schématique et les champs de droits ont été construits à partir de la demande et du classeur des acteurs. La charte n’émet aucun certificat automatique et aucun mécanisme blockchain ou détecteur IA n’est simulé comme réel."
+    ]
+  ],
+  "flow": [
+    [
+      "1. Brief → intention",
+      "La marque exprime la demande. Bee et la DA structurent objectifs, périmètre, usages, valeurs et offre. Les huit étapes EUGE DA préparent la présentation."
+    ],
+    [
+      "2. Intention → objets créatifs",
+      "Chaque chapitre possède des lieux, frames, looks, palettes beauty, décors et sons. Les chefs de pôle documentent auteurs, provenance, droits et besoins."
+    ],
+    [
+      "3. Bee ↔ Flower / scouting",
+      "La DA propose. La production et les partenaires locaux vérifient disponibilité, lumière, permissions, logistique, ressources et budget. Le retour de faisabilité peut modifier le brief."
+    ],
+    [
+      "4. Une version → deux décisions",
+      "Les disciplines sont rattachées à une même version. Bee valide la création avant la marque et conserve la décision budgétaire. Une modification significative rouvre les validations."
+    ],
+    [
+      "5. Production → preuves",
+      "Bloom collecte les activités et pièces. Les créateurs conservent originaux et droits. L’action locale garde son capital et ses résultats dans un flux distinct."
+    ],
+    [
+      "6. Livraison → Honey",
+      "Les livrables, passeports et versions alimentent le retour créatif. Les allocations et activités alimentent l’opérationnel. Les observations vérifiées alimentent l’impact. Chaque promesse de marque conserve son périmètre et son statut."
+    ]
+  ],
+  "calculations": [
+    [
+      "Capital du cas",
+      "12 000 € créatif + 14 000 € production + 6 000 € coordination Bee + 2 500 € Impact Capital = 34 500 €. Chaque allocation n’est comptée qu’une fois."
+    ],
+    [
+      "Valeur locale de production",
+      "11 600 € proposés comme locaux / 14 000 € de production = 82,9 %. Il s’agit d’une classification de planification, à justifier par les fournisseurs et pièces réelles ; l’Impact Capital n’est pas ajouté au numérateur."
+    ],
+    [
+      "Créations et fichiers",
+      "12 images + 3 films originaux = 15 œuvres. Les trois films en deux formats donnent six fichiers vidéo, soit 18 fichiers livrés. 26 000 € de créatif + production / 15 = 1 733 € par œuvre prévue ; / 18 = 1 444 € par fichier."
+    ],
+    [
+      "Sous-allocations artistiques",
+      "DA 2 000 ; stylisme 1 600 ; beauty 900 ; set 450 ; son 650 ; photo 2 200 ; film 2 200 ; post 1 200 ; talent 800 = 12 000 €. Set et son sont reliés à leurs écrans. Le registre signale l’écart après modification, au lieu de doubler le total."
+    ],
+    [
+      "Carbone et économies",
+      "Réduction = (référence − scénario) / référence, uniquement si la référence est positive et le périmètre complet et comparable. Activités, unités, facteurs, date, couverture et incertitude doivent être renseignés. Une donnée absente n’est jamais assimilée à zéro."
+    ],
+    [
+      "Attribution multi-marques",
+      "Exemple distinct du cas marocain : 40 unités d’un résultat × 2 000 / (2 000 + 8 000) = 8 unités attribuées au financement. Le partage doit être calculé dans le pilier concerné ; ce n’est pas une causalité exclusive ni une compensation carbone."
+    ],
+    [
+      "ROI financier et résultats",
+      "Aucun pourcentage financier, reach, brand lift, économie de CO₂ ou résultat écologique acquis n’est affiché sans données et méthode. Le label porte sur les pratiques de production ; le registre partenaire porte sur ses actions et observations."
+    ]
+  ],
+  "decisions": [
+    [
+      "Référentiel du Bee Label",
+      "Définir le propriétaire du référentiel, les critères obligatoires par métier, les seuils, la validité et les personnes habilitées à rendre une décision."
+    ],
+    [
+      "Sens exact d’« organique »",
+      "Préciser séparément une captation photographique/sonore originale, la composition naturelle d’un produit, une certification biologique et une inspiration culturelle autorisée. L’interface les distingue déjà."
+    ],
+    [
+      "Annuaire territorial qualifié",
+      "Valider les fournisseurs beauty, designers, artisans et talents son réellement partenaires, avec pays, capacités, droits et contacts. Les noms génériques de l’ébauche ne représentent pas des partenaires recrutés."
+    ],
+    [
+      "Mesures de marque et revue",
+      "Choisir les indicateurs prioritaires, les sources de données de marque, les périodes et dénominateurs. Confirmer pour chaque risque les pièces requises et le déclenchement d’une revue indépendante."
+    ]
+  ],
+  "screens": [
+    {
+      "id": "connected-journey",
+      "title": "One journey, connected",
+      "fr": "Le parcours et les connexions",
+      "role": "bee",
+      "roles": [
+        "brand",
+        "bee",
+        "art",
+        "production",
+        "stylist",
+        "photo",
+        "film",
+        "beauty",
+        "editor",
+        "model",
+        "ngo",
+        "expert",
+        "set",
+        "sound"
+      ],
+      "kind": "map",
+      "description": "Creative Hive et Production Bloom se rejoignent dans la co-création et le scouting. Les créations suivent leur propre chaîne de preuves ; les actions du partenaire local conservent leur registre. Les deux alimentent Honey.",
+      "interaction": "Carte de navigation SVG/HTML, liens métier/page, boutons de passage de relais.",
+      "heading": "Une seule production, des objets partagés"
+    },
+    {
+      "id": "label-creative",
+      "title": "The Bee Label / Creative Hive",
+      "fr": "Bee Label · Creative Studio",
+      "role": "bee",
+      "roles": [
+        "bee",
+        "art",
+        "production",
+        "brand",
+        "expert",
+        "stylist",
+        "beauty",
+        "set",
+        "sound",
+        "photo",
+        "film",
+        "editor",
+        "model"
+      ],
+      "kind": "label",
+      "description": "Huit pôles : casting, upcycling visuel, beauty, stylisme, photographie, film, set design et son. Chaque carte conduit aux objets de travail, engagements et preuves. Les pourcentages décoratifs des références ne sont pas présentés comme des résultats.",
+      "interaction": "Carrousel CSS scroll-snap, contrôles précédent/suivant, cartes cliquables, sceau en attente et indicateurs de complétude.",
+      "heading": "Le label entre dans le Creative Studio"
+    },
+    {
+      "id": "label-bloom",
+      "title": "The Bee Label / Bloom",
+      "fr": "Bee Label · équipe de production",
+      "role": "bee",
+      "roles": [
+        "bee",
+        "production",
+        "art",
+        "brand",
+        "expert"
+      ],
+      "kind": "label",
+      "description": "Huit pôles Bloom : coordination terrain, scout, transport, hébergement, catering, équipe locale, matériel et déchets. Les dépenses et activités remontent vers le registre, puis vers les indicateurs.",
+      "interaction": "Carrousel de huit pôles, raccourcis de preuve, panneaux de périmètre et liaison au calcul des contributions.",
+      "heading": "Le label entre dans la production"
+    },
+    {
+      "id": "beauty-library",
+      "title": "Nectar of Beauty",
+      "fr": "Beauté · palettes, looks et matières",
+      "role": "beauty",
+      "roles": [
+        "beauty",
+        "art",
+        "bee",
+        "production",
+        "brand",
+        "stylist"
+      ],
+      "kind": "beauty",
+      "description": "Les palettes rondes et les vues makeup/hair reprennent les références. Le look sélectionné se relie au talent, au lieu et au fournisseur. Un nouveau visuel IA de pigments, argan et roses ancre la page au Maroc.",
+      "interaction": "Palette sélectionnable, onglets Makeup/Hair et Looks/Models/Locations/Suppliers, fiche direction et look, brouillon local.",
+      "heading": "Palettes, looks et continuité"
+    },
+    {
+      "id": "beauty-origin",
+      "title": "Beauty, rooted in place",
+      "fr": "Beauté · origine et partenaires locaux",
+      "role": "beauty",
+      "roles": [
+        "beauty",
+        "art",
+        "bee",
+        "production",
+        "expert"
+      ],
+      "kind": "beauty-origin",
+      "description": "Pays, ingrédient, fournisseur, région, lot et certificat sont distincts. Changer de pays retire la proposition de fournisseur marocain. Les partenaires affichés sont des exemples à qualifier.",
+      "interaction": "Sélecteurs pays/matière, champs liés, état de qualification, accès à la liste de preuves.",
+      "heading": "Produits naturels : documenter chaque affirmation"
+    },
+    {
+      "id": "designer-network",
+      "title": "Art of Wearing",
+      "fr": "Stylisme · looks et designers locaux",
+      "role": "stylist",
+      "roles": [
+        "stylist",
+        "art",
+        "bee",
+        "production",
+        "brand",
+        "model"
+      ],
+      "kind": "styling",
+      "description": "Planche visuelle, détails matière et pièces du kit. Le sourcing distingue prêt, location, achat et collaboration sur mesure, avec crédit et droits à confirmer.",
+      "interaction": "Grille de looks, changement de look, filtres pays/spécialité, choix de collaboration et rattachement au brief.",
+      "heading": "Relier les looks aux designers locaux"
+    },
+    {
+      "id": "set-studio",
+      "title": "Set Design & Artists",
+      "fr": "Décors · artistes et matières",
+      "role": "set",
+      "roles": [
+        "set",
+        "art",
+        "bee",
+        "production",
+        "brand",
+        "photo",
+        "film"
+      ],
+      "kind": "set",
+      "description": "Vue d’ensemble des décors, artistes et matières. Les accessoires du look s’associent au lieu et au chapitre, avec un budget et une seconde vie prévus.",
+      "interaction": "Hero photographique, miniatures interactives, fiches accessoires, matière, créateur, budget et retour.",
+      "heading": "La scénographie devient un métier visible"
+    },
+    {
+      "id": "set-detail",
+      "title": "Look 02 / set design",
+      "fr": "Décors · fiche, budget et seconde vie",
+      "role": "set",
+      "roles": [
+        "set",
+        "art",
+        "bee",
+        "production",
+        "stylist",
+        "expert"
+      ],
+      "kind": "set-detail",
+      "description": "La fiche relie un look, ses accessoires, le mode d’acquisition, le créateur, le montant et le retour des objets. Le montant se retrouve dans les sous-allocations créatives.",
+      "interaction": "Sélection de référence, formulaires de provenance et de retour, budget connecté au registre des acteurs.",
+      "heading": "Une fiche décor exploitable par la production"
+    },
+    {
+      "id": "sound-studio",
+      "title": "Sound Tale",
+      "fr": "Son · brief DA et musique par chapitre",
+      "role": "sound",
+      "roles": [
+        "sound",
+        "art",
+        "bee",
+        "production",
+        "film",
+        "editor",
+        "brand"
+      ],
+      "kind": "sound",
+      "description": "Le producteur et les responsables son voient le brief DA, le chapitre, le talent, la provenance, les droits et les honoraires. Un fichier audio peut être écouté localement ; aucune captation réelle n’a été inventée.",
+      "interaction": "Sélecteur de chapitre, lecteur audio natif et fichier local, brief par chapitre, calcul sessions × tarif + droits.",
+      "heading": "De la DA à la musique de chaque chapitre"
+    },
+    {
+      "id": "sound-map",
+      "title": "Sounds, rooted in place",
+      "fr": "Son · territoire, talents et droits",
+      "role": "sound",
+      "roles": [
+        "sound",
+        "art",
+        "bee",
+        "production",
+        "film",
+        "editor",
+        "expert"
+      ],
+      "kind": "sound-map",
+      "description": "Chaque chapitre rattache ses sons à un lieu, des coordonnées indicatives, un auteur et des droits. La carte est un schéma de travail, sans prétendre restituer des captations réelles.",
+      "interaction": "Carte SVG avec points cliquables, chapitre synchronisé, provenance, talents et autorisations territoriales.",
+      "heading": "Les sons conservent leur territoire"
+    },
+    {
+      "id": "co-creation",
+      "title": "The co-creation bridge",
+      "fr": "Co-création · aller-retour Bee et Flower",
+      "role": "bee",
+      "roles": [
+        "bee",
+        "art",
+        "production",
+        "stylist",
+        "beauty",
+        "set",
+        "sound",
+        "photo",
+        "film",
+        "ngo"
+      ],
+      "kind": "bridge",
+      "description": "La DA propose la narration et les frames. La production vérifie accès, timing, faisabilité et budget. Les chefs de pôle y rattachent look, beauty, décor et son avant le feu vert.",
+      "interaction": "Frames en carrousel, liens entre disciplines, retour de production, contrôles de préparation et soumission à Bee.",
+      "heading": "Le scouting est bien entre Bee et Flower"
+    },
+    {
+      "id": "authenticator",
+      "title": "Bee Authenticator",
+      "fr": "Authentificator · origine des inspirations",
+      "role": "bee",
+      "roles": [
+        "bee",
+        "art",
+        "production",
+        "beauty",
+        "stylist",
+        "set",
+        "sound",
+        "photo",
+        "film",
+        "editor",
+        "expert"
+      ],
+      "kind": "auth",
+      "description": "Inspiration, original et dérivé restent reliés. Auteur, droits, consentement et pièces attendues sont explicités. Une image IA reste un concept : cocher les cases ne la certifie jamais organique.",
+      "interaction": "Déclaration d’origine, checklist, calcul local SHA-256, verdict de complétude, orientation vers la revue humaine.",
+      "heading": "Une chaîne de provenance, pas un badge automatique"
+    },
+    {
+      "id": "asset-passport",
+      "title": "The asset passport",
+      "fr": "Passeport · droits, réemploi et provenance",
+      "role": "brand",
+      "roles": [
+        "brand",
+        "bee",
+        "art",
+        "production",
+        "stylist",
+        "photo",
+        "film",
+        "beauty",
+        "editor",
+        "model",
+        "expert",
+        "set",
+        "sound"
+      ],
+      "kind": "passport",
+      "description": "La livraison conserve la source parente, le créateur, les usages et les preuves manquantes. Le fichier téléchargeable est toujours marqué brouillon, sans certificat délivré.",
+      "interaction": "Empreinte de fichier, liaison inspiration/dérivé, export JSON du passeport et de ses preuves déclarées.",
+      "heading": "Un passeport accompagne le réemploi visuel"
+    },
+    {
+      "id": "my-commitments",
+      "title": "My Bee commitments",
+      "fr": "Ma charte métier et mes preuves",
+      "role": "beauty",
+      "roles": [
+        "brand",
+        "bee",
+        "art",
+        "production",
+        "stylist",
+        "photo",
+        "film",
+        "beauty",
+        "editor",
+        "model",
+        "ngo",
+        "expert",
+        "set",
+        "sound"
+      ],
+      "kind": "commitments",
+      "description": "Les engagements varient selon le rôle : originaux photo/film, pratiques beauté, prêts et crédits, consentement talent, actions locales ou revue indépendante. Le passage de relais mentionne les preuves et le prochain responsable.",
+      "interaction": "Charte filtrée par métier, cases d’engagement, note de relais et liens vers l’objet concerné.",
+      "heading": "Chaque métier sait ce qu’il doit transmettre"
+    },
+    {
+      "id": "validation-desk",
+      "title": "The verification desk",
+      "fr": "Revue des preuves et corrections",
+      "role": "bee",
+      "roles": [
+        "bee",
+        "expert",
+        "art",
+        "production",
+        "ngo"
+      ],
+      "kind": "validation",
+      "description": "Deux flux séparés, production et action locale. Le réviseur choisit périmètre, risque, décision et justification. Les dossiers sensibles demandent une revue indépendante selon l’indicateur.",
+      "interaction": "File de vérification, filtres de périmètre/risque, décision et motif ; simulation de revue sans certification réelle.",
+      "heading": "La revue a un périmètre et une raison"
+    },
+    {
+      "id": "brand-value",
+      "title": "Honey / value for your brand",
+      "fr": "ROI · retours créatif, opérationnel et impact",
+      "role": "brand",
+      "roles": [
+        "bee",
+        "brand",
+        "art",
+        "production",
+        "expert"
+      ],
+      "kind": "metrics",
+      "description": "Retour créatif, opérationnel et impact, conformément à SATYA. Ces retours ne se confondent pas avec les piliers social, environnemental et économique. Les chiffres du cas sont des hypothèses de planification.",
+      "interaction": "Cartes de synthèse calculées, montants et dénominateurs explicites, liens vers la méthode, les acteurs et les preuves.",
+      "heading": "Les trois retours Honey"
+    },
+    {
+      "id": "metric-trace",
+      "title": "Every number has a story",
+      "fr": "Détail du calcul et des preuves",
+      "role": "bee",
+      "roles": [
+        "bee",
+        "brand",
+        "production",
+        "expert",
+        "ngo"
+      ],
+      "kind": "trace",
+      "description": "Coût par œuvre distincte et par fichier livré sont séparés. Une comparaison carbone exige un scénario de référence comparable et une couverture complète. L’attribution d’impact est proportionnelle au financement du pilier, sans revendiquer une causalité exclusive.",
+      "interaction": "Formulaires de paramètres, calculs dynamiques, traitement des données absentes, exemple séparé de financement multi-marques.",
+      "heading": "Un chiffre doit être explicable"
+    },
+    {
+      "id": "actor-ledger",
+      "title": "The value we create together",
+      "fr": "Contributions et calculs de tous les acteurs",
+      "role": "bee",
+      "roles": [
+        "bee",
+        "production",
+        "art",
+        "brand",
+        "expert"
+      ],
+      "kind": "ledger",
+      "description": "Le registre suit allocation → acteur → action → preuve. Neuf sous-allocations créatives détaillent DA, stylisme, beauty, set, son, photo, film, post et talent. Elles restent à l’intérieur de l’enveloppe créative, sans double comptage.",
+      "interaction": "Registre éditable, sous-calculs dépliables, rapprochement à l’enveloppe, propriétaire de preuve, export CSV.",
+      "heading": "Tous les acteurs entrent dans le calcul"
+    },
+    {
+      "id": "impact-pillars",
+      "title": "People, place, planet",
+      "fr": "Impact · social, environnemental, économique",
+      "role": "ngo",
+      "roles": [
+        "bee",
+        "brand",
+        "ngo",
+        "expert",
+        "production"
+      ],
+      "kind": "impact",
+      "description": "Social : participants et compétences. Environnement : observations et méthode. Économie : capital alloué, engagement, décaissement et usage. Les exemples de pots et participants ne constituent pas des résultats de terrain vérifiés.",
+      "interaction": "Trois panneaux, action, baseline, preuves et suivi ; connexions au partenaire, au réviseur et à Honey.",
+      "heading": "Les trois piliers de l’action locale"
+    },
+    {
+      "id": "post-chapters",
+      "title": "From chapters to final tales",
+      "fr": "Postproduction · chapitres et validations",
+      "role": "editor",
+      "roles": [
+        "bee",
+        "art",
+        "production",
+        "brand",
+        "editor",
+        "photo",
+        "film",
+        "sound"
+      ],
+      "kind": "post",
+      "description": "Chaque chapitre traverse montage, revue Bee puis validation marque. Originaux, historique, stems, masters et droits accompagnent la version.",
+      "interaction": "Vues calendrier/liste distinctes, liens chapitre/son/passeport, notes de version et accès à la revue.",
+      "heading": "La version relie le montage aux validations"
+    },
+    {
+      "id": "tale-brief",
+      "title": "Let’s begin with an intention",
+      "fr": "EUGE DA · 01 Brief & Brand",
+      "role": "art",
+      "roles": [
+        "bee",
+        "art",
+        "brand",
+        "production"
+      ],
+      "kind": "tale",
+      "description": "Identité de marque, intention, mots-clés, destination et options photo/son/BTS. Le texte saisi alimente l’aperçu de présentation.",
+      "interaction": "Assistant en huit étapes, champs, options, aperçu synchronisé et conservation locale.",
+      "heading": "EUGE DA / 01 — Brief & Brand"
+    },
+    {
+      "id": "tale-visions",
+      "title": "Mutual visions",
+      "fr": "EUGE DA · 02 Valeurs communes",
+      "role": "art",
+      "roles": [
+        "bee",
+        "art",
+        "brand",
+        "production",
+        "ngo"
+      ],
+      "kind": "tale",
+      "description": "Valeurs de la marque et valeurs Bee, traduites en engagements sociaux, environnementaux et économiques pour la production.",
+      "interaction": "Formulaire à deux voix, trois engagements, aperçu visuel et navigation d’étape.",
+      "heading": "EUGE DA / 02 — Mutual Visions"
+    },
+    {
+      "id": "tale-chapters",
+      "title": "The visual tale",
+      "fr": "EUGE DA · 03 Chapitres et univers",
+      "role": "art",
+      "roles": [
+        "bee",
+        "art",
+        "brand",
+        "production",
+        "photo",
+        "film",
+        "sound"
+      ],
+      "kind": "tale",
+      "description": "Le récit se structure par chapitres, lieux et atmosphères. Il est relié aux frames, aux spécialités et à la musique.",
+      "interaction": "Chapitrage sélectionnable, titre/lieu/narration, références et accès direct au son et au scouting.",
+      "heading": "EUGE DA / 03 — Visual Tale"
+    },
+    {
+      "id": "tale-hive",
+      "title": "The creative hive",
+      "fr": "EUGE DA · 04 Talents et options",
+      "role": "art",
+      "roles": [
+        "bee",
+        "art",
+        "brand",
+        "production"
+      ],
+      "kind": "tale",
+      "description": "Les options artistiques rendent visible la valeur ajoutée : beauty, designers, artistes et Sound Tale. Le périmètre dépend de l’offre retenue et des droits disponibles.",
+      "interaction": "Cartes de métiers reliées aux écrans détaillés, aperçu de présentation et contrôles de parcours.",
+      "heading": "EUGE DA / 04 — Creative Hive"
+    },
+    {
+      "id": "tale-cocreation",
+      "title": "From vision to feasibility",
+      "fr": "EUGE DA · 05 Co-création",
+      "role": "art",
+      "roles": [
+        "bee",
+        "art",
+        "brand",
+        "production"
+      ],
+      "kind": "tale",
+      "description": "L’intention est confrontée aux lieux, aux disponibilités, au budget et aux chartes. Cette étape matérialise l’aller-retour entre création et production.",
+      "interaction": "Retour de faisabilité, préparation des arbitrages, accès au scouting et à la version à valider.",
+      "heading": "EUGE DA / 05 — Co-creation"
+    },
+    {
+      "id": "tale-bloom",
+      "title": "The journey comes to life",
+      "fr": "EUGE DA · 06 Bloomboards",
+      "role": "art",
+      "roles": [
+        "bee",
+        "art",
+        "brand",
+        "production",
+        "film",
+        "photo",
+        "sound"
+      ],
+      "kind": "tale",
+      "description": "Chaque chapitre rassemble atmosphère, scène principale, matière et coulisses. Les intentions restent reliées au lieu et au récit.",
+      "interaction": "Chapitre partagé, planche de quatre vues, textes, aperçu et liens vers les disciplines.",
+      "heading": "EUGE DA / 06 — Bloomboards"
+    },
+    {
+      "id": "tale-value",
+      "title": "A creation that creates value",
+      "fr": "EUGE DA · 07 Impact & Multi-ROI",
+      "role": "art",
+      "roles": [
+        "bee",
+        "art",
+        "brand",
+        "production"
+      ],
+      "kind": "tale",
+      "description": "La présentation de marque reprend les trois retours Honey et la méthode des trois piliers RSE. Une cible ne devient pas un résultat acquis.",
+      "interaction": "Accès aux calculs, aux méthodes d’impact et champ de formulation de la promesse.",
+      "heading": "EUGE DA / 07 — Impact & Multi-ROI"
+    },
+    {
+      "id": "tale-export",
+      "title": "Ready to tell the story",
+      "fr": "EUGE DA · 08 Revue & présentation",
+      "role": "art",
+      "roles": [
+        "bee",
+        "art",
+        "brand",
+        "production"
+      ],
+      "kind": "tale",
+      "description": "Une présentation de huit pages est générée à partir des textes locaux et des visuels du cas. Elle peut être ouverte dans le navigateur puis imprimée en PDF.",
+      "interaction": "Sommaire cliquable, export HTML de huit pages, export JSON du scénario, mention brouillon.",
+      "heading": "EUGE DA / 08 — Review & Export"
+    },
+    {
+      "id": "creative-lock",
+      "title": "Creative lock",
+      "fr": "Valider la direction finale",
+      "role": "production",
+      "roles": [
+        "bee",
+        "art",
+        "production",
+        "brand"
+      ],
+      "kind": "lock",
+      "description": "La production soumet une version après les vérifications de faisabilité. Bee valide d’abord ; la marque peut ensuite valider. Modifier une source créative rouvre la revue.",
+      "interaction": "Machine d’états locale, garde-fous de passage, commandes selon le rôle, retour à la capture initiale.",
+      "heading": "Écran existant enrichi — Creative lock"
+    }
+  ],
+  "sources": [
+    [
+      "Bee Label / Creative Studio",
+      "1d63un6FCWYGZ-W9IdvxQyXcqfjxl-QjT"
+    ],
+    [
+      "Bee Label / Bloom",
+      "16JgKrnlOXPYMxdH-yvrk8IS25-P2kled"
+    ],
+    [
+      "Beauty / palettes et connexions",
+      "1KLAf6f6_04jGNG7pRXQNp4LwUxqwuDP0"
+    ],
+    [
+      "Art of Wearing / designers",
+      "1Ny8yS6ZM8QGQa4O-Dr6BLIH7PSVCWPw7"
+    ],
+    [
+      "Set design / détail",
+      "1Qtw5abAeolkaDnOFK55hu9QhYrYOpzmf"
+    ],
+    [
+      "Creative Hive / Sound Tale",
+      "1XJIJ26z-bvsFmB2eMoXV5lRgqoJfyUlc"
+    ],
+    [
+      "Bee Authenticator / parcours source",
+      "1e6DXzleeLJGsn6QcIzB_Jv3Xzn2kBrGA"
+    ],
+    [
+      "Écosystème global",
+      "1CA2BNAI8BOQ7rQitcTYDElpDlZouzJ5r"
+    ],
+    [
+      "SATYA / trois retours, p.39",
+      "10JSlNO5Biz310qFoqlcPre0z9EVjPeS3"
+    ],
+    [
+      "Comparatif Journeys / 02_Metrics",
+      "14oC3bgAzPXWo1BXWCq8xYJo06hDNafiS"
+    ],
+    [
+      "CSR 10K / cinq marques",
+      "1E8pPkDEY6hv2J6_bbYdkmr1ptdyw9R-m"
+    ],
+    [
+      "Traçabilité globale de production",
+      "1hbEjg00dpt1c5-Lb9_ZYsTVIm3IpZAQP"
+    ],
+    [
+      "Rapport acteurs / Sound production",
+      "1d1A2g1WJkTsikRYKBiePCFXK5wuE0qLj"
+    ],
+    [
+      "Capital créatif / modèle universel",
+      "1jJBWYEgePjsqZ5dCnNl48kimYqEMeNdz"
+    ]
+  ]
+}

@@ -1,0 +1,528 @@
+{
+  "revision": {
+    "date": "2026-10-15",
+    "original": 498,
+    "added": 196,
+    "total": 694
+  },
+  "definitions": [
+    [
+      "connected-journey",
+      "One journey, connected",
+      "Le parcours et les connexions",
+      0,
+      [
+        "brand",
+        "bee",
+        "art",
+        "production",
+        "stylist",
+        "photo",
+        "film",
+        "beauty",
+        "editor",
+        "model",
+        "ngo",
+        "expert",
+        "set",
+        "sound"
+      ],
+      "map"
+    ],
+    [
+      "label-creative",
+      "The Bee Label / Creative Hive",
+      "Bee Label · Creative Studio",
+      3,
+      [
+        "bee",
+        "art",
+        "production",
+        "brand",
+        "expert",
+        "stylist",
+        "beauty",
+        "set",
+        "sound",
+        "photo",
+        "film",
+        "editor",
+        "model"
+      ],
+      "label"
+    ],
+    [
+      "label-bloom",
+      "The Bee Label / Bloom",
+      "Bee Label · équipe de production",
+      7,
+      [
+        "bee",
+        "production",
+        "art",
+        "brand",
+        "expert"
+      ],
+      "label"
+    ],
+    [
+      "beauty-library",
+      "Nectar of Beauty",
+      "Beauté · palettes, looks et matières",
+      3,
+      [
+        "beauty",
+        "art",
+        "bee",
+        "production",
+        "brand",
+        "stylist"
+      ],
+      "beauty"
+    ],
+    [
+      "beauty-origin",
+      "Beauty, rooted in place",
+      "Beauté · origine et partenaires locaux",
+      3,
+      [
+        "beauty",
+        "art",
+        "bee",
+        "production",
+        "expert"
+      ],
+      "beauty-origin"
+    ],
+    [
+      "designer-network",
+      "Art of Wearing",
+      "Stylisme · looks et designers locaux",
+      3,
+      [
+        "stylist",
+        "art",
+        "bee",
+        "production",
+        "brand",
+        "model"
+      ],
+      "styling"
+    ],
+    [
+      "set-studio",
+      "Set Design & Artists",
+      "Décors · artistes et matières",
+      3,
+      [
+        "set",
+        "art",
+        "bee",
+        "production",
+        "brand",
+        "photo",
+        "film"
+      ],
+      "set"
+    ],
+    [
+      "set-detail",
+      "Look 02 / set design",
+      "Décors · fiche, budget et seconde vie",
+      5,
+      [
+        "set",
+        "art",
+        "bee",
+        "production",
+        "stylist",
+        "expert"
+      ],
+      "set-detail"
+    ],
+    [
+      "sound-studio",
+      "Sound Tale",
+      "Son · brief DA et musique par chapitre",
+      3,
+      [
+        "sound",
+        "art",
+        "bee",
+        "production",
+        "film",
+        "editor",
+        "brand"
+      ],
+      "sound"
+    ],
+    [
+      "sound-map",
+      "Sounds, rooted in place",
+      "Son · territoire, talents et droits",
+      4,
+      [
+        "sound",
+        "art",
+        "bee",
+        "production",
+        "film",
+        "editor",
+        "expert"
+      ],
+      "sound-map"
+    ],
+    [
+      "co-creation",
+      "The co-creation bridge",
+      "Co-création · aller-retour Bee et Flower",
+      4,
+      [
+        "bee",
+        "art",
+        "production",
+        "stylist",
+        "beauty",
+        "set",
+        "sound",
+        "photo",
+        "film",
+        "ngo"
+      ],
+      "bridge"
+    ],
+    [
+      "authenticator",
+      "Bee Authenticator",
+      "Authentificator · origine des inspirations",
+      3,
+      [
+        "bee",
+        "art",
+        "production",
+        "beauty",
+        "stylist",
+        "set",
+        "sound",
+        "photo",
+        "film",
+        "editor",
+        "expert"
+      ],
+      "auth"
+    ],
+    [
+      "asset-passport",
+      "The asset passport",
+      "Passeport · droits, réemploi et provenance",
+      10,
+      [
+        "brand",
+        "bee",
+        "art",
+        "production",
+        "stylist",
+        "photo",
+        "film",
+        "beauty",
+        "editor",
+        "model",
+        "expert",
+        "set",
+        "sound"
+      ],
+      "passport"
+    ],
+    [
+      "my-commitments",
+      "My Bee commitments",
+      "Ma charte métier et mes preuves",
+      5,
+      [
+        "brand",
+        "bee",
+        "art",
+        "production",
+        "stylist",
+        "photo",
+        "film",
+        "beauty",
+        "editor",
+        "model",
+        "ngo",
+        "expert",
+        "set",
+        "sound"
+      ],
+      "commitments"
+    ],
+    [
+      "validation-desk",
+      "The verification desk",
+      "Revue des preuves et corrections",
+      11,
+      [
+        "bee",
+        "expert",
+        "art",
+        "production",
+        "ngo"
+      ],
+      "validation"
+    ],
+    [
+      "brand-value",
+      "Honey / value for your brand",
+      "ROI · retours créatif, opérationnel et impact",
+      12,
+      [
+        "bee",
+        "brand",
+        "art",
+        "production",
+        "expert"
+      ],
+      "metrics"
+    ],
+    [
+      "metric-trace",
+      "Every number has a story",
+      "Détail du calcul et des preuves",
+      12,
+      [
+        "bee",
+        "brand",
+        "production",
+        "expert",
+        "ngo"
+      ],
+      "trace"
+    ],
+    [
+      "actor-ledger",
+      "The value we create together",
+      "Contributions et calculs de tous les acteurs",
+      12,
+      [
+        "bee",
+        "production",
+        "art",
+        "brand",
+        "expert"
+      ],
+      "ledger"
+    ],
+    [
+      "impact-pillars",
+      "People, place, planet",
+      "Impact · social, environnemental, économique",
+      11,
+      [
+        "bee",
+        "brand",
+        "ngo",
+        "expert",
+        "production"
+      ],
+      "impact"
+    ],
+    [
+      "post-chapters",
+      "From chapters to final tales",
+      "Postproduction · chapitres et validations",
+      9,
+      [
+        "bee",
+        "art",
+        "production",
+        "brand",
+        "editor",
+        "photo",
+        "film",
+        "sound"
+      ],
+      "post"
+    ],
+    [
+      "tale-brief",
+      "Let’s begin with an intention",
+      "EUGE DA · 01 Brief & Brand",
+      1,
+      [
+        "bee",
+        "art",
+        "brand",
+        "production"
+      ],
+      "tale"
+    ],
+    [
+      "tale-visions",
+      "Mutual visions",
+      "EUGE DA · 02 Valeurs communes",
+      3,
+      [
+        "bee",
+        "art",
+        "brand",
+        "production",
+        "ngo"
+      ],
+      "tale"
+    ],
+    [
+      "tale-chapters",
+      "The visual tale",
+      "EUGE DA · 03 Chapitres et univers",
+      3,
+      [
+        "bee",
+        "art",
+        "brand",
+        "production",
+        "photo",
+        "film",
+        "sound"
+      ],
+      "tale"
+    ],
+    [
+      "tale-hive",
+      "The creative hive",
+      "EUGE DA · 04 Talents et options",
+      3,
+      [
+        "bee",
+        "art",
+        "brand",
+        "production"
+      ],
+      "tale"
+    ],
+    [
+      "tale-cocreation",
+      "From vision to feasibility",
+      "EUGE DA · 05 Co-création",
+      4,
+      [
+        "bee",
+        "art",
+        "brand",
+        "production"
+      ],
+      "tale"
+    ],
+    [
+      "tale-bloom",
+      "The journey comes to life",
+      "EUGE DA · 06 Bloomboards",
+      5,
+      [
+        "bee",
+        "art",
+        "brand",
+        "production",
+        "film",
+        "photo",
+        "sound"
+      ],
+      "tale"
+    ],
+    [
+      "tale-value",
+      "A creation that creates value",
+      "EUGE DA · 07 Impact & Multi-ROI",
+      12,
+      [
+        "bee",
+        "art",
+        "brand",
+        "production"
+      ],
+      "tale"
+    ],
+    [
+      "tale-export",
+      "Ready to tell the story",
+      "EUGE DA · 08 Revue & présentation",
+      10,
+      [
+        "bee",
+        "art",
+        "brand",
+        "production"
+      ],
+      "tale"
+    ]
+  ],
+  "roles": {
+    "brand": {
+      "fr": "Marque",
+      "en": "Brand",
+      "purpose": "Brief, choix créatifs, réception des livrables."
+    },
+    "bee": {
+      "fr": "Bee / coordination",
+      "en": "Bee Core",
+      "purpose": "Coordination, validation interne, budgets et publication des résultats."
+    },
+    "art": {
+      "fr": "Direction artistique",
+      "en": "Art director",
+      "purpose": "Concept, direction visuelle et cohérence des images."
+    },
+    "production": {
+      "fr": "Direction de production",
+      "en": "Producer",
+      "purpose": "Équipe, faisabilité, planning, logistique et remise des fichiers."
+    },
+    "stylist": {
+      "fr": "Stylisme",
+      "en": "Stylist",
+      "purpose": "Produits, looks, essayages et raccords."
+    },
+    "photo": {
+      "fr": "Photographie",
+      "en": "Photographer",
+      "purpose": "Plans photo, lumière, sélection et sources."
+    },
+    "film": {
+      "fr": "Film / réalisation",
+      "en": "Filmmaker",
+      "purpose": "Plans film, son, rushes et intentions de montage."
+    },
+    "beauty": {
+      "fr": "Maquillage / coiffure",
+      "en": "Beauty artist",
+      "purpose": "Références beauté, préparation et continuité."
+    },
+    "editor": {
+      "fr": "Montage / retouche",
+      "en": "Editor",
+      "purpose": "Versions, retouches, formats et exports."
+    },
+    "model": {
+      "fr": "Mannequin / talent",
+      "en": "Talent",
+      "purpose": "Disponibilités, accord, essayage et feuille de service personnelle."
+    },
+    "ngo": {
+      "fr": "ONG / partenaire local",
+      "en": "Local partner",
+      "purpose": "Confiance, actions terrain, dépenses et preuves."
+    },
+    "expert": {
+      "fr": "Expert indépendant",
+      "en": "Independent expert",
+      "purpose": "Examen des seuls dossiers attribués selon le risque."
+    },
+    "set": {
+      "fr": "Scénographie / set design",
+      "en": "Head of Set Design"
+    },
+    "sound": {
+      "fr": "Création sonore",
+      "en": "Head of Sound"
+    }
+  }
+}

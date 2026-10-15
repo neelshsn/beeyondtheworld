@@ -35,9 +35,20 @@
       }
     }
   }
+  document.addEventListener(
+    'click',
+    (event) => {
+      if (uploading && event.target.closest('a[href^="#view/"]')) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+      }
+    },
+    true
+  );
   function lockNavigation(lock) {
-    for (const id of ['role', 'stage', 'page', 'prev', 'next']) {
+    for (const id of ['role', 'stage', 'page', 'prev', 'next', 'revision']) {
       const el = document.getElementById(id);
+      if (!el) continue;
       if (lock) {
         el.dataset.wasDisabled = String(el.disabled);
         el.disabled = true;
@@ -202,16 +213,15 @@
         c.text.placeholder = mine
           ? 'Ce qui fonctionne, ce qui manque, ce que vous souhaitez changer…'
           : 'Aucun feedback pour cet écran pour le moment.';
-        c.status.textContent =
-          draft
-            ? 'Modifications non enregistrées'
-            : row.updated_at
-              ? 'Enregistré · ' +
-                new Date(row.updated_at).toLocaleString('fr-FR', {
-                  dateStyle: 'short',
-                  timeStyle: 'short',
-                })
-              : 'Aucun retour pour cet écran.';
+        c.status.textContent = draft
+          ? 'Modifications non enregistrées'
+          : row.updated_at
+            ? 'Enregistré · ' +
+              new Date(row.updated_at).toLocaleString('fr-FR', {
+                dateStyle: 'short',
+                timeStyle: 'short',
+              })
+            : 'Aucun retour pour cet écran.';
         displayImages(
           c,
           data.images.filter((f) => f.author === key),
@@ -220,7 +230,7 @@
       }
       const reviewed = new Set(data.summary.map((s) => s.role + '/' + s.page));
       document.getElementById('review-count').textContent =
-        reviewed.size + ' / 498 écrans commentés';
+        reviewed.size + ' / ' + (window.BEE_REVIEW_DATA?.pages.length || 498) + ' écrans commentés';
     } catch (e) {
       if (ticket === generation) fail(e);
     } finally {
