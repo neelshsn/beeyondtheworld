@@ -762,6 +762,15 @@
       el.textContent = message;
     }
   }
+  function updateCarouselControls() {
+    const track = host?.querySelector('[data-carousel]');
+    if (!track) return;
+    const back = host.querySelector('[data-action="carousel-back"]');
+    const next = host.querySelector('[data-action="carousel-next"]');
+    if (back) back.disabled = track.scrollLeft < 2;
+    if (next) next.disabled = track.scrollLeft >= track.scrollWidth - track.clientWidth - 2;
+  }
+  window.addEventListener('resize', updateCarouselControls);
   function download(name, body, type = 'application/json') {
     const url = URL.createObjectURL(new Blob([body], { type }));
     const a = document.createElement('a');
@@ -784,6 +793,7 @@
     );
   }
   function attachEvents() {
+    host.addEventListener('scroll', updateCarouselControls, true);
     host.addEventListener('click', (e) => {
       const target = e.target.closest(
         '[data-action],[data-tab],[data-palette],[data-chapter],[data-set-image]'
@@ -1073,6 +1083,7 @@
       post: postView,
     };
     host.innerHTML = `<div class="v2"><div class="vnav"><a class="mark" href="#view/${go('connected-journey')}/connected-journey">${icon('bee')}BEEYONDTHEWORLD</a><div class="vhead-right"><small>CRAIE / MOROCCO</small>${badge('Design review · 15 Oct', 'concept')}</div></div><div class="vsub">${link('connected-journey', 'The whole journey', 'back')}<span>${roleNames[current.role]}</span><span> / </span><span>${esc(current.phase)}</span></div><div class="vbody"><div class="vtitle"><div><div class="kicker">${current.v2 === 'label' ? 'CONSCIOUS CREATIVE PRODUCTION' : current.v2 === 'tale' ? 'EUGE DA · VISUAL TALE PROPOSAL' : 'CARRY THE LIGHT · HORIZON'}</div><h1>${esc(current.title)}</h1></div><div class="role-note">${rolePurpose[current.role]}<br><small>${editable() ? 'Editable exercise · saved on this device' : 'Review view · change role to explore editing'}</small></div></div>${(renderers[current.v2] || mapView)()}<div class="sourcelinks">${(sourceMap[current.v2] || sourceMap.map).map((id, i) => `<a href="https://drive.google.com/file/d/${id}/view" target="_blank" rel="noopener noreferrer">Source Drive ${i + 1}</a>`).join('')}</div></div><div class="vfooter"><span>Ébauche interactive · scénario fictif · visuels IA · aucune certification réelle</span><span>Essais locaux. Feedbacks Eugénie / Rachid partagés ci-dessous.</span></div><div class="vtoast" role="status" aria-live="polite" hidden></div></div>`;
+    updateCarouselControls();
   }
   window.BeeReviewV2 = {
     render(p) {
