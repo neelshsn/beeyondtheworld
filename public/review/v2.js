@@ -164,6 +164,7 @@
     ['The first light', 'Courtyard', 'm:frame-arch'],
     ['Earth in motion', 'Olive grove', 'film-detail'],
     ['What remains', 'Terrace', 'm:frame-shadow'],
+    ...value('da-extra-chapters', []),
   ];
   const chapter = () => Math.max(0, Number(value('chapter', 0)) || 0) % chapters.length;
   const chapterStrip = () =>
@@ -698,74 +699,6 @@
       ]
     )}`;
   }
-  const taleIds = [
-    'tale-brief',
-    'tale-visions',
-    'tale-chapters',
-    'tale-hive',
-    'tale-cocreation',
-    'tale-bloom',
-    'tale-value',
-    'tale-export',
-  ];
-  const taleNames = [
-    'Brief & Brand',
-    'Mutual Visions',
-    'Visual Tale',
-    'Creative Hive',
-    'Co-creation',
-    'Bloom',
-    'Impact & Multi-ROI',
-    'Review & Export',
-  ];
-  function taleView() {
-    const step = taleIds.indexOf(current.id),
-      c = chapters[chapter()];
-    const previewTitle =
-      step === 0
-        ? value('tale-title', 'Carry the light')
-        : step === 1
-          ? 'Mutual visions'
-          : step === 2 || step === 5
-            ? value('chapter-name-' + chapter(), c[0])
-            : taleNames[step];
-    let left = '';
-    if (step === 0)
-      left = `${field('tale-brand', 'Brand', 'Craie Studio / exercise')}${field('tale-title', 'Project title', 'Carry the light')}${field('tale-intention', 'Creative intention', 'A tactile journey between light, gesture and material in Morocco.', 'textarea')}${field('tale-keywords', 'Keywords', 'Natural light · texture · movement · quiet strength')}${field('tale-destination', 'Destination / season', 'Morocco · November 2026 / exercise')}<div class="toolbar">${check('tale-photo', 'Visual Tale / photography', true)}${check('tale-sound', 'Sound Tale', true)}${check('tale-bts', 'Behind the scenes', true)}</div>`;
-    if (step === 1)
-      left = `<div class="grid2">${field('vision-brand', 'Brand values', 'Craftsmanship, durable objects and freedom of movement.', 'textarea')}${field('vision-bee', 'Bee values', 'Local collaboration, conscious production and traceable creative value.', 'textarea')}</div>${[
-        ['Social', 'social', 'Credit and fairly compensate contributors.'],
-        ['Environmental', 'environment', 'Reuse materials and document resource choices.'],
-        ['Economic', 'economy', 'Plan local sourcing and track value retained locally.'],
-      ]
-        .map(([t, k, v]) => field('vision-' + k, t, v, 'textarea'))
-        .join('')}`;
-    if (step === 2 || step === 5)
-      left = `${chapterStrip()}${field('chapter-name-' + chapter(), 'Chapter title', c[0])}${field('chapter-location-' + chapter(), 'Location', c[1])}${field('chapter-note-' + chapter(), 'Narrative / atmosphere', 'Follow the light, the texture of the bag and the gesture of the talent.', 'textarea')}<div class="kicker space">${step === 5 ? 'BLOOMBOARD · FOUR CONNECTED VIEWS' : 'KEY VISUALS & REFERENCES'}</div><div class="grid4">${['m:frame-arch', 'fitting', 'film-detail', 'on-set'].map((a, i) => `<div>${shot(a, ['Atmosphere', 'Key scene', 'Texture', 'Behind the scene'][i])}<small>${['Atmosphere', 'Key scene', 'Texture', 'Behind the scene'][i]}</small></div>`).join('')}</div>${link('co-creation', 'Assign frames and specialties', 'link')}${link('sound-library', 'Chapter composition & sound library', 'sound')}`;
-    if (step === 3)
-      left = `<h3>Core team & local collaborators</h3><div class="toolbar">${link('casting-agencies', 'Casting & local agencies', 'people')}${link('visual-upcycling', 'Reference provenance', 'image')}</div><div class="grid2 space">${card('film-detail', 'Visual Tale', 'Imagery, atmosphere and chapter storytelling', 'tale-chapters')}${card('m:landscape', 'Sound Tale', 'Original sounds, local voices, instruments, nature and ambience', 'sound-library')}</div><p>Appoint each contributor with a clear role, credit, scope and fair terms.</p><div class="grid2">${card('beauty-prep', 'Nectar of Beauty', 'Beauty direction and local products', 'beauty-library')}${card('fitting', 'Art of Wearing', 'Looks and local designers', 'designer-network')}${card('m:craft', 'Set Design & Artists', 'Maker, materials and second life', 'set-studio')}${card('m:landscape', 'Sound Tale', 'Organic recordings and authorship', 'sound-studio')}</div><div class="notice">Bee Authenticator is part of the source and delivery chain. Sound Tale scope depends on the agreed offer and chapter brief.</div>`;
-    if (step === 4)
-      left = `<h3>Creative Studio ↔ Production</h3><p>Convert the intention into feasible frames, local collaborations, allocations and a shared schedule.</p>${field('tale-feasibility', 'Feasibility return', 'Confirm site access, daylight, products, crew and sound recording permissions.', 'textarea')}${check('tale-scout', 'Scouting feedback reviewed')}${check('tale-cost', 'Budget reviewed by Bee')}${check('tale-charter', 'Relevant charter modules assigned')}${link('co-creation', 'Open co-creation and scouting', 'pin')}${link('creative-lock', 'Review the current revision', 'shield', 'production')}`;
-    if (step === 6)
-      left = `<h3>Three returns. Three impact pillars.</h3><p>Creative: original works, usable assets and rights.<br>Operational: costs, shared resources and local value.<br>Impact: documented actions and outcomes across social, environmental and economic pillars.</p>${link('brand-value', 'Open live scenario calculations', 'chart')}${link('bee-certified', 'Bee Certified / three pillars', 'bee')}${link('label-social', 'Social', 'people')}${link('label-environment', 'Environmental', 'leaf')}${link('label-economic', 'Economic', 'chart')}${link('impact-pillars', 'NGO impact methods', 'leaf')}${field('tale-claim', 'Claim for the presentation', 'Proposed production framework. Results and certifications remain subject to evidence.', 'textarea')}<div class="notice">Never turn a planning target into an achieved result in a brand presentation.</div>`;
-    if (step === 7)
-      left = `<h3>A presentation ready for review.</h3><ul class="list">${taleIds
-        .slice(0, 7)
-        .map(
-          (id, i) =>
-            `<li><span>${String(i + 1).padStart(2, '0')} / ${taleNames[i]}</span>${link(id, 'Review')}</li>`
-        )
-        .join(
-          ''
-        )}</ul><p>The export uses your current local text and the selected Morocco visuals. It is marked as a draft and contains no certification.</p>${button('export-tale', 'Download the 8-page presentation', 'download', true)}${button('export-scenario', 'Export scenario data', 'doc')}<div class="notice">Bee creative validation comes before brand validation. This exercise does not send the proposal or sign an agreement.</div>`;
-    return `<div class="stepper">${taleIds.map((id, i) => `<a class="${i === step ? 'active' : ''}" href="#view/${go(id, 'art')}/${id}"><small>${String(i + 1).padStart(2, '0')}</small>${taleNames[i]}</a>`).join('')}</div><div class="grid2"><div class="panel paper">${left}</div><div><div class="preview">${shot(step === 2 || step === 5 ? c[2] : step === 3 ? 'on-set' : 'm:frame-fashion-wide', 'Presentation preview')}<div class="kicker">CRAIE STUDIO · MOROCCO</div><h2 id="tale-preview-title">${esc(previewTitle)}</h2><p id="tale-preview-copy">${esc(step === 0 ? value('tale-intention', 'A tactile journey between light, gesture and material.') : step === 2 || step === 5 ? value('chapter-note-' + chapter(), 'An intimate chapter, rooted in place.') : 'From intention to creation. From creation to shared value.')}</p><small>DRAFT PRESENTATION · CONCEPT IMAGES</small></div><p class="caption-note">EUGE DA process: brief, shared values, tale, team, co-creation, bloomboards, returns and review. The right side previews the brand-facing story.</p></div></div>${connections(
-      [
-        ['authenticator', 'Reference provenance'],
-        ['post-chapters', 'Editorial planning'],
-        ['tale-export', 'Review & export'],
-      ]
-    )}`;
-  }
   function postView() {
     return `${subs('post', ['Calendar', 'List'])}<div class="panel ${tabs.post === 1 ? 'post-list' : ''}">${chapters.map(([t, , a], i) => `<div class="two-lines"><div>${shot(a, t)}<small>CHAPTER ${i + 1} · ${t}</small></div><div class="panel">Editing<small>9–12 November</small>${badge('Draft', 'concept')}</div><div class="panel">Bee review<small>13–16 November</small>${link('asset-passport', 'Sources & rights')}</div><div class="panel">Brand validation<small>17–20 November</small>${link('creative-lock', 'Current revision', 'shield', 'brand')}</div></div>`).join('')}</div><div class="grid2 space"><div class="panel"><h3>What travels with every version</h3><p>Chapter ID, source originals, creator credit, edit history, sound stems, master/composition rights and review decisions.</p>${field('post-version', 'Version', 'CM-CH01-v03 / exercise')}${field('post-return', 'Review notes', 'Keep skin texture; align the sound cue with the approved chapter; attach all source rights.', 'textarea')}${button('post-save', 'Save revision notes', 'doc', true)}</div><div class="panel paper"><h3>Version changes reopen review.</h3><p>A brand decision refers to a specific version. A new image, mix or usage scope cannot silently inherit an old approval.</p>${link('authenticator', 'Source chain', 'link')}${link('sound-studio', 'Sound handoff', 'sound')}${link('asset-passport', 'Delivery passport', 'shield')}</div></div>${connections(
       [
@@ -799,28 +732,14 @@
     a.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
-  function exportTale() {
-    const labelSummary = window.BeeLabelModel.summary(local);
-    const labelSnapshot = `Bee Label / Creative Hive + Bloom Hive: ${labelSummary.documented}/${labelSummary.total} criteria documented in this local exercise. Social / Environmental / Economic pillars retain separate units and evidence. No certificate issued.\n`;
-    const pages = taleNames
-      .map(
-        (name, i) =>
-          `<section><small>CRAIE STUDIO / MOROCCO · DRAFT · ${i + 1}/8</small><h1>${esc(name)}</h1><img src="${location.origin + img(i === 3 ? 'on-set' : chapters[i % 3][2])}" alt="AI concept"><h2>${esc(i === 0 ? value('tale-title', 'Carry the light') : i === 2 ? value('chapter-name-' + chapter(), chapters[chapter()][0]) : name)}</h2><p>${esc([value('tale-intention', 'A tactile journey between light, gesture and material.'), value('vision-brand', 'Craftsmanship and freedom of movement.') + ' / ' + value('vision-bee', 'Local collaboration and traceable value.'), chapters.map((c, n) => value('chapter-name-' + n, c[0]) + ': ' + value('chapter-note-' + n, 'Narrative to refine.')).join('\n'), 'Beauty, styling, set, sound, photography, film, post and local collaborators. All appointments and rights to confirm.', value('tale-feasibility', 'Scouting, access and budget review pending.'), chapters.map((c, n) => value('chapter-location-' + n, c[1])).join(' / '), labelSnapshot + value('tale-claim', 'Results and certifications remain subject to evidence.'), 'Bee review, then brand validation. No approval or certification is issued by this export.'][i])}</p><footer>Fictional scenario inspired by Craie Morocco. AI concept images are not evidence. Generated ${new Date().toLocaleDateString('fr-FR')}.</footer></section>`
-      )
-      .join('');
-    download(
-      'beeyond-carry-the-light-proposal.html',
-      `<!doctype html><html lang="en"><meta charset="utf-8"><title>Carry the light · draft proposal</title><style>body{margin:0;background:#f5f0e6;color:#244555;font:17px/1.7 Arial}section{padding:55px;max-width:1100px;margin:auto;min-height:90vh;break-after:page}h1{font:54px Georgia}h2{font:32px Georgia}img{float:right;width:48%;max-height:520px;object-fit:cover;margin:0 0 30px 30px}p{white-space:pre-line}small,footer{font-size:11px}footer{clear:both;padding-top:35px}@media print{section{min-height:0;height:90vh}}@media(max-width:600px){section{padding:25px}img{float:none;width:100%;margin:0}h1{font-size:36px}}</style><p style="padding:20px">Draft presentation · Open in your browser and print to PDF if needed.</p>${pages}</html>`,
-      'text/html'
-    );
-  }
   function attachEvents() {
     host.addEventListener('scroll', updateCarouselControls, true);
     host.addEventListener('click', (e) => {
       const target = e.target.closest(
-        '[data-action],[data-tab],[data-palette],[data-chapter],[data-set-image],[data-em-metric],[data-em-select],[data-em-group],[data-em-country],[data-em-channel],[data-em-sound],[data-em-operation]'
+        '[data-da-action],[data-action],[data-tab],[data-palette],[data-chapter],[data-set-image],[data-em-metric],[data-em-select],[data-em-group],[data-em-country],[data-em-channel],[data-em-sound],[data-em-operation]'
       );
       if (!target) return;
+      if (taleWorkspace.handle(target)) return;
       if (emailRevision.handle(target)) return;
       if (target.dataset.tab) {
         tabs[target.dataset.tab] = Number(target.dataset.index);
@@ -858,7 +777,7 @@
         return;
       }
       if (a === 'export-tale') {
-        exportTale();
+        taleWorkspace.exportPresentation();
         return;
       }
       if (a === 'export-scenario') {
@@ -884,6 +803,9 @@
               status: 'DRAFT - NOT A CERTIFICATE',
               source: value('auth-origin', 'AI / synthetic'),
               creator: value('auth-author', 'ChatGPT Image'),
+              distributionRights: Object.fromEntries(
+                Object.entries(local).filter(([k]) => k.startsWith('da-rights-'))
+              ),
               fingerprint: value('auth-fingerprint', 'Not supplied'),
               parent: value('auth-parent', 'CM-01-concept'),
               declaredChecks: Object.fromEntries(
@@ -977,6 +899,7 @@
     });
     host.addEventListener('input', (e) => {
       const t = e.target;
+      if (taleWorkspace.input(t)) return;
       if (!t.dataset.field || t.readOnly || t.disabled) return;
       if (t.dataset.field.startsWith('em-') && t.type === 'number' && t.value.trim() === '') {
         local[t.dataset.field] = null;
@@ -1017,6 +940,12 @@
         local['lock-status'] =
           'Exercise · source changed. Bee and brand must review the new revision.';
       }
+      if (
+        /^(chapter-|sound-|scout-|beauty-|set-|designer-|em-composition-|em-cue-|em-talent-|em-source-)/.test(
+          t.dataset.field
+        )
+      )
+        window.BeeTaleModel.sourceChanged(local, t.dataset.field);
       save();
       if (t.dataset.field === 'tale-title') {
         const p = host.querySelector('#tale-preview-title');
@@ -1037,6 +966,10 @@
     });
     host.addEventListener('change', async (e) => {
       const t = e.target;
+      if (t.dataset.daField || t.dataset.daUpload) {
+        await taleWorkspace.change(t);
+        return;
+      }
       if (t.id === 'sound-file') {
         const f = t.files[0];
         if (!f) return;
@@ -1124,6 +1057,24 @@
     draw,
     download,
   });
+  const taleWorkspace = window.BeeTaleWorkspace({
+    esc,
+    icon,
+    shot,
+    link,
+    badge,
+    button,
+    chapters,
+    chapter,
+    go,
+    save,
+    draw,
+    download,
+    toast,
+    roles: roleNames,
+    state: () => local,
+    current: () => current,
+  });
   function draw() {
     if (!current?.v2) return;
     const renderers = {
@@ -1146,11 +1097,12 @@
       trace: traceView,
       ledger: ledgerView,
       impact: impactView,
-      tale: taleView,
+      tale: taleWorkspace.render,
+      'tale-team': taleWorkspace.render,
       post: postView,
       ...emailRevision.renderers,
     };
-    host.innerHTML = `<div class="v2"><div class="vnav"><a class="mark" href="#view/${go('connected-journey')}/connected-journey">${icon('bee')}BEEYONDTHEWORLD</a><div class="vhead-right"><small>CRAIE / MOROCCO</small>${badge('Design review · 15 Oct', 'concept')}</div></div><div class="vsub">${link('connected-journey', 'The whole journey', 'back')}<span>${roleNames[current.role]}</span><span> / </span><span>${esc(current.phase)}</span></div><div class="vbody"><div class="vtitle"><div><div class="kicker">${current.v2 === 'label' ? 'CONSCIOUS CREATIVE PRODUCTION' : current.v2 === 'tale' ? 'EUGE DA · VISUAL TALE PROPOSAL' : 'CARRY THE LIGHT · HORIZON'}</div><h1>${esc(current.title)}</h1></div><div class="role-note">${rolePurpose[current.role]}<br><small>${editable() ? 'Editable exercise · saved on this device' : 'Review view · change role to explore editing'}</small></div></div>${(renderers[current.v2] || mapView)()}${emailRevision.related()}<div class="sourcelinks">${(current.id === 'tale-hive' ? ['1RF9STo1jbkgwQ138zyL61RaCjXYAmfhO', '11-XGmGV_UgGZxwjr7m4AGlWabmMSPd0b'] : emailRevision.source[current.id] ? [emailRevision.source[current.id]] : sourceMap[current.v2] || sourceMap.map).map((id, i) => `<a href="https://drive.google.com/file/d/${id}/view" target="_blank" rel="noopener noreferrer">Source Drive ${i + 1}</a>`).join('')}</div></div><div class="vfooter"><span>Ébauche interactive · scénario fictif · visuels IA · aucune certification réelle</span><span>Essais locaux. Feedbacks Eugénie / Rachid partagés ci-dessous.</span></div><div class="vtoast" role="status" aria-live="polite" hidden></div></div>`;
+    host.innerHTML = `<div class="v2"><div class="vnav"><a class="mark" href="#view/${go('connected-journey')}/connected-journey">${icon('bee')}BEEYONDTHEWORLD</a><div class="vhead-right"><small>CRAIE / MOROCCO</small>${badge('Design review · 15 Oct', 'concept')}</div></div><div class="vsub">${link('connected-journey', 'The whole journey', 'back')}<span>${roleNames[current.role]}</span><span> / </span><span>${esc(current.phase)}</span></div><div class="vbody"><div class="vtitle"><div><div class="kicker">${current.v2 === 'label' ? 'CONSCIOUS CREATIVE PRODUCTION' : current.v2 === 'tale' ? 'EUGE DA · VISUAL TALE PROPOSAL' : 'CARRY THE LIGHT · HORIZON'}</div><h1>${esc(current.title)}</h1></div><div class="role-note">${rolePurpose[current.role]}<br><small>${editable() ? 'Editable exercise · saved on this device' : 'Review view · change role to explore editing'}</small></div></div>${(renderers[current.v2] || mapView)()}${emailRevision.related()}${current.v2 === 'passport' ? taleWorkspace.rights() : ''}${taleWorkspace.related()}<div class="sourcelinks">${(taleWorkspace.source[current.id] ? [taleWorkspace.source[current.id]] : current.id === 'tale-hive' ? ['1RF9STo1jbkgwQ138zyL61RaCjXYAmfhO', '11-XGmGV_UgGZxwjr7m4AGlWabmMSPd0b'] : emailRevision.source[current.id] ? [emailRevision.source[current.id]] : sourceMap[current.v2] || sourceMap.map).map((id, i) => `<a href="https://drive.google.com/file/d/${id}/view" target="_blank" rel="noopener noreferrer">Source Drive ${i + 1}</a>`).join('')}</div></div><div class="vfooter"><span>Ébauche interactive · scénario fictif · visuels IA · aucune certification réelle</span><span>Essais locaux. Feedbacks Eugénie / Rachid partagés ci-dessous.</span></div><div class="vtoast" role="status" aria-live="polite" hidden></div></div>`;
     updateCarouselControls();
   }
   window.BeeReviewV2 = {

@@ -270,6 +270,15 @@ const definitions = [
   ],
 ];
 definitions.push(...emailPages(all));
+for (const d of definitions) if (d[5] === 'tale') d[4] = all;
+definitions.push([
+  'tale-team',
+  'The team makes the Tale',
+  'EUGE DA · Contributions & responsables',
+  3,
+  all,
+  'tale-team',
+]);
 for (const [id, title, fr, stage, roles, type] of definitions)
   for (const role of roles)
     D.pages.push({
@@ -308,11 +317,11 @@ D.revision = {
 html = html.slice(0, start) + JSON.stringify(D).replaceAll('</', '<\\/') + html.slice(end);
 html = html.replace(
   '<style>',
-  '<link rel="stylesheet" href="/review/v2.css?v=20261015-email"><link rel="stylesheet" href="/review/email-review.css?v=20261015-email"><style>'
+  '<link rel="stylesheet" href="/review/v2.css?v=20261015-email"><link rel="stylesheet" href="/review/email-review.css?v=20261015-da"><link rel="stylesheet" href="/review/tale-workspace.css?v=20261015-da"><style>'
 );
 html = html.replace(
   '<script>const D=',
-  '<script src="/review/review-metrics.js?v=20261015"></script><script src="/review/label-model.js?v=20261015-email"></script><script src="/review/email-review.js?v=20261015-email"></script><script src="/review/v2.js?v=20261015-email"></script><script>const D='
+  '<script src="/review/review-metrics.js?v=20261015"></script><script src="/review/label-model.js?v=20261015-email"></script><script src="/review/email-review.js?v=20261015-email"></script><script src="/review/tale-model.js?v=20261015-da"></script><script src="/review/tale-workspace.js?v=20261015-da"></script><script src="/review/v2.js?v=20261015-da"></script><script>const D='
 );
 html = html.replace(';const $=', ';window.BEE_REVIEW_DATA=D;const $=');
 html = html.replace(
@@ -402,6 +411,14 @@ html = html.replace(
   'Le mail d’Eugénie intégré : Creative Hive, Bloom Hive, Bee Certified, trois piliers détaillés, casting, upcycling, bibliothèque sonore et connexions Tales.'
 );
 html = html.replace('href="/review/oct15/report.html"', 'href="/review/email-oct15/report.html"');
+html = html.replace(
+  'href="/review/email-oct15/report.html"',
+  'href="/review/da-oct15/report.html"'
+);
+html = html.replace(
+  'Le mail d’Eugénie intégré : Creative Hive, Bloom Hive, Bee Certified, trois piliers détaillés, casting, upcycling, bibliothèque sonore et connexions Tales.',
+  'L’atelier DA : huit étapes de création, aperçu de la proposition, contributions par head et revue Bee puis marque.'
+);
 await fs.writeFile(dir + 'gallery.json', JSON.stringify(html));
 await fs.writeFile(
   dir + 'screen-keys.json',

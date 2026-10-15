@@ -20,6 +20,8 @@ beforeAll(() => {
   // Execute the actual standalone renderer in the test DOM, with no network or real database.
   new Function(readFileSync('public/review/label-model.js', 'utf8'))();
   new Function(readFileSync('public/review/email-review.js', 'utf8'))();
+  new Function(readFileSync('public/review/tale-model.js', 'utf8'))();
+  new Function(readFileSync('public/review/tale-workspace.js', 'utf8'))();
   new Function(readFileSync('public/review/v2.js', 'utf8'))();
 });
 describe('all enriched role/page surfaces', () => {

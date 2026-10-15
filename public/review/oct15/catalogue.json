@@ -2,8 +2,8 @@
   "revision": {
     "date": "2026-10-15",
     "original": 498,
-    "added": 357,
-    "total": 855
+    "added": 453,
+    "total": 951
   },
   "definitions": [
     [
@@ -352,10 +352,21 @@
       "EUGE DA · 01 Brief & Brand",
       1,
       [
+        "brand",
         "bee",
         "art",
-        "brand",
-        "production"
+        "production",
+        "stylist",
+        "photo",
+        "film",
+        "beauty",
+        "editor",
+        "model",
+        "ngo",
+        "expert",
+        "set",
+        "sound",
+        "agency"
       ],
       "tale"
     ],
@@ -365,11 +376,21 @@
       "EUGE DA · 02 Valeurs communes",
       3,
       [
+        "brand",
         "bee",
         "art",
-        "brand",
         "production",
-        "ngo"
+        "stylist",
+        "photo",
+        "film",
+        "beauty",
+        "editor",
+        "model",
+        "ngo",
+        "expert",
+        "set",
+        "sound",
+        "agency"
       ],
       "tale"
     ],
@@ -379,13 +400,21 @@
       "EUGE DA · 03 Chapitres et univers",
       3,
       [
+        "brand",
         "bee",
         "art",
-        "brand",
         "production",
+        "stylist",
         "photo",
         "film",
-        "sound"
+        "beauty",
+        "editor",
+        "model",
+        "ngo",
+        "expert",
+        "set",
+        "sound",
+        "agency"
       ],
       "tale"
     ],
@@ -395,10 +424,21 @@
       "EUGE DA · 04 Talents et options",
       3,
       [
+        "brand",
         "bee",
         "art",
-        "brand",
-        "production"
+        "production",
+        "stylist",
+        "photo",
+        "film",
+        "beauty",
+        "editor",
+        "model",
+        "ngo",
+        "expert",
+        "set",
+        "sound",
+        "agency"
       ],
       "tale"
     ],
@@ -408,10 +448,21 @@
       "EUGE DA · 05 Co-création",
       4,
       [
+        "brand",
         "bee",
         "art",
-        "brand",
-        "production"
+        "production",
+        "stylist",
+        "photo",
+        "film",
+        "beauty",
+        "editor",
+        "model",
+        "ngo",
+        "expert",
+        "set",
+        "sound",
+        "agency"
       ],
       "tale"
     ],
@@ -421,13 +472,21 @@
       "EUGE DA · 06 Bloomboards",
       5,
       [
+        "brand",
         "bee",
         "art",
-        "brand",
         "production",
-        "film",
+        "stylist",
         "photo",
-        "sound"
+        "film",
+        "beauty",
+        "editor",
+        "model",
+        "ngo",
+        "expert",
+        "set",
+        "sound",
+        "agency"
       ],
       "tale"
     ],
@@ -437,10 +496,21 @@
       "EUGE DA · 07 Impact & Multi-ROI",
       12,
       [
+        "brand",
         "bee",
         "art",
-        "brand",
-        "production"
+        "production",
+        "stylist",
+        "photo",
+        "film",
+        "beauty",
+        "editor",
+        "model",
+        "ngo",
+        "expert",
+        "set",
+        "sound",
+        "agency"
       ],
       "tale"
     ],
@@ -450,10 +520,21 @@
       "EUGE DA · 08 Revue & présentation",
       10,
       [
+        "brand",
         "bee",
         "art",
-        "brand",
-        "production"
+        "production",
+        "stylist",
+        "photo",
+        "film",
+        "beauty",
+        "editor",
+        "model",
+        "ngo",
+        "expert",
+        "set",
+        "sound",
+        "agency"
       ],
       "tale"
     ],
@@ -740,6 +821,30 @@
         "brand"
       ],
       "email-method"
+    ],
+    [
+      "tale-team",
+      "The team makes the Tale",
+      "EUGE DA · Contributions & responsables",
+      3,
+      [
+        "brand",
+        "bee",
+        "art",
+        "production",
+        "stylist",
+        "photo",
+        "film",
+        "beauty",
+        "editor",
+        "model",
+        "ngo",
+        "expert",
+        "set",
+        "sound",
+        "agency"
+      ],
+      "tale-team"
     ]
   ],
   "roles": {

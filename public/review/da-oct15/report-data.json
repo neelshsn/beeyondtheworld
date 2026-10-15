@@ -1,0 +1,140 @@
+{
+  "screens": [
+    {
+      "id": "tale-brief",
+      "role": "art",
+      "title": "Letâ€™s begin with an intention",
+      "heading": "01. Construire la proposition",
+      "description": "Identité marque, intention, mots-clés, destination, saison et livrables. L’aperçu reprend le titre et le texte pendant la saisie. Le visuel de couverture se choisit dans les assets du voyage ou avec une image personnelle.",
+      "interaction": "Formulaires, aperçu instantané, sélecteur d’images, import JPEG/PNG/WebP et navigation visuelle.",
+      "url": "https://beeyondtheworld.com/community/comparator#view/art/tale-brief"
+    },
+    {
+      "id": "tale-visions",
+      "role": "art",
+      "title": "Mutual visions",
+      "heading": "02. Aligner les visions",
+      "description": "Valeurs de la marque et de Bee, puis intention commune sociale, environnementale et économique. Le sens donné à la production reste distinct des résultats à prouver.",
+      "interaction": "Édition des valeurs, trois piliers dans la présentation, références visuelles et mode aperçu.",
+      "url": "https://beeyondtheworld.com/community/comparator#view/art/tale-visions"
+    },
+    {
+      "id": "tale-chapters",
+      "role": "art",
+      "title": "The visual tale",
+      "heading": "03. Composer le récit",
+      "description": "Chapitres nommés, lieu, émotion et narration. Un chapitre peut être ajouté et déplacé dans le récit. Son identifiant reste stable ; le son et les Bloomboards retrouvent le même chapitre.",
+      "interaction": "Ajouter un chapitre, déplacer, renommer, sélectionner son image, ouvrir sa composition sonore.",
+      "url": "https://beeyondtheworld.com/community/comparator#view/art/tale-chapters"
+    },
+    {
+      "id": "tale-hive",
+      "role": "art",
+      "title": "The creative hive",
+      "heading": "04. Constituer la Creative Hive",
+      "description": "Visual Tale et Sound Tale retrouvent leurs grandes cartes. Neuf pôles affichent contributeur, head et état de revue. Les noms sont à désigner ; aucun membre réel n’est invité.",
+      "interaction": "Cartes des pôles, passage à la contribution choisie et accès aux métiers liés.",
+      "url": "https://beeyondtheworld.com/community/comparator#view/art/tale-hive"
+    },
+    {
+      "id": "tale-cocreation",
+      "role": "art",
+      "title": "From vision to feasibility",
+      "heading": "05. Relier la DA au scouting",
+      "description": "Le retour Flower et Bloom précise accès, lumière, enregistrement, faisabilité et coût. Bee garde la revue du budget ; la marque peut formuler ses questions.",
+      "interaction": "Formulaires de retour, checklist, liens vers frames/scouting, registre des coûts et responsable production.",
+      "url": "https://beeyondtheworld.com/community/comparator#view/art/tale-cocreation"
+    },
+    {
+      "id": "tale-bloom",
+      "role": "art",
+      "title": "The journey comes to life",
+      "heading": "06. Préparer les Bloomboards",
+      "description": "Chaque chapitre possède quatre vues : atmosphère, scène, texture et coulisses. Chacune peut recevoir une direction et un visuel. Les repérages et le Sound Tale restent accessibles depuis cette étape.",
+      "interaction": "Navigation entre chapitres, quatre planches modifiables, images propres à chaque planche et liens scouting/son.",
+      "url": "https://beeyondtheworld.com/community/comparator#view/art/tale-bloom"
+    },
+    {
+      "id": "tale-value",
+      "role": "art",
+      "title": "A creation that creates value",
+      "heading": "07. Formuler la valeur pour la marque",
+      "description": "Les trois retours sont explicités : créatif, opérationnel et impact. Les liens conduisent aux calculs et aux preuves des trois piliers. Une intention reste une proposition, sans certification fabriquée.",
+      "interaction": "Édition des arguments, accès aux métriques, aux hypothèses et au Bee Label.",
+      "url": "https://beeyondtheworld.com/community/comparator#view/art/tale-value"
+    },
+    {
+      "id": "tale-export",
+      "role": "art",
+      "title": "Ready to tell the story",
+      "heading": "08. Revoir et exporter",
+      "description": "La liste des points ouverts précède la soumission. Les contributions requises, la faisabilité et le budget conditionnent la revue Bee ; la marque intervient ensuite. Une modification rouvre la revue.",
+      "interaction": "Soumission, revue Bee puis marque, demande de correction, export HTML imprimable en PDF et export des données.",
+      "url": "https://beeyondtheworld.com/community/comparator#view/art/tale-export"
+    },
+    {
+      "id": "tale-team",
+      "role": "art",
+      "title": "The team makes the Tale",
+      "heading": "Le travail de chaque pôle",
+      "description": "Un espace commun permet de nommer un contributeur, désigner son head, rattacher le chapitre, préciser une échéance et le rendu attendu. Le contributeur soumet texte et référence ; le head accepte ou demande une correction motivée.",
+      "interaction": "Changer de pôle et de rôle, remplir la contribution, soumettre au head, demander une correction, approuver et retrouver le statut dans la Hive.",
+      "url": "https://beeyondtheworld.com/community/comparator#view/art/tale-team"
+    },
+    {
+      "id": "asset-passport",
+      "role": "bee",
+      "title": "The asset passport",
+      "heading": "Le passeport inclut les droits de diffusion",
+      "description": "La provenance est complétée par titulaire, version, territoires, supports, dates, restrictions, document de licence et crédits. L’export du passeport reprend ces champs. Il ne remplace pas un contrat signé.",
+      "interaction": "Champs de droits et de provenance, empreinte de fichier, export du brouillon et retour à la revue de proposition.",
+      "url": "https://beeyondtheworld.com/community/comparator#view/bee/asset-passport"
+    }
+  ],
+  "summary": [
+    [
+      "La demande relue",
+      "Réponse WhatsApp d’Eugénie du 15 octobre : rendre la création de la proposal délégable, relier les Tales à l’équipe, désigner un head par pôle et clarifier les droits dans le passeport. Le dossier EUGE DA et la présentation SATYA de 41 pages servent de références."
+    ],
+    [
+      "Ce qui change",
+      "Les huit pages Tales deviennent un atelier de création, avec navigation verticale, bandeau de vignettes, formulaires et aperçu. Un espace de contributions complète ces huit étapes pour les 15 métiers. Le comparateur contient 951 vues, dont 470 interactives."
+    ],
+    [
+      "Ce qui est réellement partagé",
+      "Les feedbacks Eugénie / Rachid et leurs images restent enregistrés sur le VPS avec les mêmes liens et adresses d’écran. Les textes de proposition, fichiers de référence et validations d’exercice restent dans ce navigateur. Ce lot ne crée pas encore des tâches opérationnelles synchronisées entre plusieurs comptes."
+    ]
+  ],
+  "test": [
+    [
+      "Créer",
+      "En Direction artistique, ouvrir Brief & Brand. Modifier le titre, choisir un visuel, puis passer aux visions et aux chapitres. Observer l’aperçu et ajouter un chapitre."
+    ],
+    [
+      "Déléguer",
+      "Ouvrir Collaborate. Choisir Beauty, renseigner le contributeur et sélectionner Art Director comme head. Changer le métier affiché vers Beauty ; compléter la contribution et sa référence, puis soumettre."
+    ],
+    [
+      "Revoir",
+      "Revenir en Direction artistique. Approuver ou écrire une demande de correction. Le statut apparaît dans Creative Hive. Modifier la contribution ou sa source beauté rouvre la revue."
+    ],
+    [
+      "Finaliser",
+      "Compléter les contributions requises et le scouting ; Bee coche la revue du budget. La DA soumet, Bee valide puis la marque intervient. L’export reste un brouillon ; ouvrir le fichier HTML téléchargé et utiliser Print / save as PDF."
+    ]
+  ],
+  "remaining": [
+    [
+      "Noms et périmètres",
+      "Question envoyée à Eugénie : heads par pôle et sales à ajouter au CRM, avec leurs emails et périmètres. Aucun accès supplémentaire n’a été créé sans ces précisions."
+    ],
+    [
+      "Vocaux",
+      "Les deux vocaux de 10:10 n’ont pas pu être transcrits dans cet environnement. Un résumé écrit lui a été demandé ; les messages écrits et la capture renvoyant au dossier EUGE DA sont traités."
+    ],
+    [
+      "Après validation du parcours",
+      "La synchronisation des propositions entre comptes, les invitations opérationnelles, le stockage des originaux et l’audit des validations constituent le branchement métier suivant. L’exercice permet de valider les écrans et règles avant ce branchement."
+    ]
+  ]
+}
