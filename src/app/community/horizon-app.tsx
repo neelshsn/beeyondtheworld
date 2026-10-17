@@ -1239,7 +1239,11 @@ export function HorizonApp() {
         </div>
         <div className="workspace">
           {['project', 'tale-brief', 'tale-preview', 'scouting'].includes(p.id) && (
-            <CreativeConnections project={w.project.id} demo={w.project.is_demo} />
+            <CreativeConnections
+              key={`${w.project.id}:${w.project.role}`}
+              project={w.project.id}
+              demo={w.project.is_demo}
+            />
           )}
           {p.id === 'projects' && w.project.role === 'bee' && (
             <button
