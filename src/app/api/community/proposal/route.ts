@@ -53,7 +53,14 @@ async function sources(sql: Sql, project: string) {
     'SELECT id,kind,version FROM bee_community_records WHERE project_id=$1 ORDER BY id',
     [project]
   );
-  return JSON.stringify(records.filter((r) => sourceKind(r.kind)).map((r) => [r.id, r.version]));
+  const creative = await sql.query(
+    `SELECT i.id,i.version FROM bee_creative_items i WHERE (i.kind='collection' AND i.data->>'projectId'=$1) OR (i.kind='content' AND EXISTS(SELECT 1 FROM bee_creative_items c WHERE c.kind='collection' AND c.scope=i.scope AND c.data->>'projectId'=$1 AND c.data->'contentIds' ? i.id::text)) ORDER BY i.id`,
+    [project]
+  );
+  const core = records.filter((r) => sourceKind(r.kind)).map((r) => [r.id, r.version]);
+  return JSON.stringify(
+    creative.length ? [...core, ...creative.map((r) => [r.id, r.version])] : core
+  );
 }
 async function log(
   sql: Sql,

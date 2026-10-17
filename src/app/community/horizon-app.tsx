@@ -41,6 +41,7 @@ import './proposal.css';
 import './studio.css';
 import './production.css';
 import './source-workspaces.css';
+import { CreativeConnections } from './creative-connections';
 
 async function api(path: string, body?: unknown, method = 'POST') {
   const r = await fetch(path, {
@@ -1184,6 +1185,15 @@ export function HorizonApp() {
         </div>
       </header>
       <aside className="global-nav" aria-label="Journey sections">
+        {['bee', 'art_director', 'production'].includes(w.project.role) && (
+          <a
+            className="nav-entry"
+            href={'/community/creative?scope=' + (w.project.is_demo ? 'demo' : 'studio')}
+          >
+            <Icon name="compass" />
+            <span>Creative CRM</span>
+          </a>
+        )}
         {['Creatives', 'Journeys', 'Impacts'].map((name, i) => (
           <button
             className={`nav-entry ${group === name ? 'active' : ''}`}
@@ -1228,6 +1238,9 @@ export function HorizonApp() {
           <h1>{visible ? p.title : 'Your journey'}</h1>
         </div>
         <div className="workspace">
+          {['project', 'tale-brief', 'tale-preview', 'scouting'].includes(p.id) && (
+            <CreativeConnections project={w.project.id} demo={w.project.is_demo} />
+          )}
           {p.id === 'projects' && w.project.role === 'bee' && (
             <button
               className="source-export new-journey-button"
