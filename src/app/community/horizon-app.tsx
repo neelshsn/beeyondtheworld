@@ -1374,7 +1374,13 @@ export function HorizonApp() {
       </main>
       <div className="study-footer">
         <span>{w.project.is_demo ? 'DEMO JOURNEY · ILLUSTRATIVE WORKFLOW' : w.project.title}</span>
-        <span>AI VISUAL CONCEPTS / HORIZON</span>
+        <span>
+          {!w.project.is_demo &&
+          w.project.season.startsWith('Historical archive') &&
+          ['project', 'projects'].includes(p.id)
+            ? 'ORIGINAL ARCHIVE / CREDITS TO VERIFY'
+            : 'AI VISUAL CONCEPTS / HORIZON'}
+        </span>
       </div>
       {panel === 'create-project' && (
         <OnboardingDialog kind="project" w={w} close={() => setPanel('')} />
