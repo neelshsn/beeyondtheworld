@@ -45,6 +45,9 @@ export const schemas: Record<CreativeKind, CreativeField[]> = {
         'Set design',
         'Sound',
         'Post-production',
+        'Model',
+        'Casting agency',
+        'Production management',
       ],
       required: true,
     },
@@ -88,9 +91,8 @@ export const schemas: Record<CreativeKind, CreativeField[]> = {
       label: 'Destination',
       type: 'link',
       target: 'destination',
-      required: true,
     },
-    { key: 'talentId', label: 'Creator / scout', type: 'link', target: 'talent', required: true },
+    { key: 'talentId', label: 'Creator / scout · when confirmed', type: 'link', target: 'talent' },
     {
       key: 'medium',
       label: 'Medium',
@@ -103,6 +105,12 @@ export const schemas: Record<CreativeKind, CreativeField[]> = {
     { key: 'sector', label: 'Brand sectors' },
     { key: 'description', label: 'Creative intention', type: 'textarea' },
     { key: 'credit', label: 'Credit line', required: true },
+    {
+      key: 'creditStatus',
+      label: 'Credit review',
+      type: 'select',
+      options: ['To verify', 'Confirmed'],
+    },
     {
       key: 'rights',
       label: 'Usage permission',
@@ -133,6 +141,7 @@ export const schemas: Record<CreativeKind, CreativeField[]> = {
     { key: 'briefId', label: 'CRM brief' },
     { key: 'projectId', label: 'Community production' },
     { key: 'contentIds', label: 'Selected content' },
+    { key: 'talentIds', label: 'Connected team' },
     { key: 'notes', label: 'Selection notes', type: 'textarea' },
   ],
   activation: [
@@ -150,6 +159,25 @@ export const schemas: Record<CreativeKind, CreativeField[]> = {
     { key: 'notes', label: 'Production handoff / cancellation reason', type: 'textarea' },
   ],
 };
+// Imported source facts remain visible and survive later edits; no approval is implied.
+for (const kind of creativeKinds) {
+  schemas[kind].push(
+    { key: 'referenceUrl', label: 'Source record', type: 'url' },
+    {
+      key: 'sourceContext',
+      label: 'Source context',
+      type: 'select',
+      options: [
+        'Current team',
+        'Production archive',
+        'Historical proposal',
+        'Scouting reference',
+        'Credit to verify',
+      ],
+    },
+    { key: 'sourceNotes', label: 'Evidence & points to verify', type: 'textarea' }
+  );
+}
 export class CreativeError extends Error {
   constructor(
     message: string,
@@ -174,14 +202,15 @@ export function cleanItem(
   const data: CreativeData = {};
   for (const f of schemas[kind]) {
     const raw = b.data?.[f.key];
-    if (f.key === 'contentIds') {
+    if (f.key === 'contentIds' || f.key === 'talentIds') {
+      const ids = raw === undefined && f.key === 'talentIds' ? [] : raw;
       need(
-        Array.isArray(raw) &&
-          raw.length <= 60 &&
-          raw.every((x) => typeof x === 'string' && /^[a-f0-9-]{36}$/i.test(x)),
-        'Select up to 60 contents.'
+        Array.isArray(ids) &&
+          ids.length <= 60 &&
+          ids.every((x) => typeof x === 'string' && /^[a-f0-9-]{36}$/i.test(x)),
+        'Select up to 60 linked records.'
       );
-      data[f.key] = [...new Set(raw as string[])];
+      data[f.key] = [...new Set(ids as string[])];
       continue;
     }
     need(raw === undefined || typeof raw === 'string', `Invalid ${f.label}.`);
@@ -220,6 +249,7 @@ export function usable(
     item.kind === 'content' &&
     item.status === 'curated' &&
     !!item.data.credit &&
+    item.data.creditStatus !== 'To verify' &&
     (!external ||
       (['Brand presentation', 'Public showreel'].includes(String(item.data.rights)) &&
         !!item.data.rightsEvidence &&
@@ -256,7 +286,11 @@ export function transition(
       403
     );
     need(
-      item.data.sourceUrl && item.data.credit && item.data.talentId && item.data.destinationId,
+      item.data.sourceUrl &&
+        item.data.credit &&
+        item.data.talentId &&
+        item.data.destinationId &&
+        item.data.creditStatus !== 'To verify',
       'Complete source, credit, creator and destination.'
     );
     return 'curated';

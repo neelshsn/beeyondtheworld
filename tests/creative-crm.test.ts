@@ -34,6 +34,51 @@ const place = {
   data: { feasibilityNote: 'Permits reviewed' },
 } as CreativeItem;
 describe('creative CRM publication and approvals', () => {
+  it('retains an honest source draft without inventing a creator or destination', () => {
+    const draft = cleanItem(
+      {
+        title: 'Archived campaign source',
+        data: {
+          medium: 'Photo',
+          sourceUrl: 'https://drive.google.com/file/d/source/view',
+          credit: 'Individual credits to verify',
+          creditStatus: 'To verify',
+          rights: 'Internal only',
+          provenance: 'Unknown',
+          referenceUrl: 'https://drive.google.com/drive/folders/source',
+          sourceContext: 'Production archive',
+          sourceNotes: 'Date and credits need review.',
+        },
+      },
+      'content'
+    );
+    expect(draft.data.talentId).toBe('');
+    expect(draft.data.destinationId).toBe('');
+    expect(draft.data.sourceNotes).toBe('Date and credits need review.');
+    expect(() =>
+      transition({ ...content, ...draft, status: 'draft' }, 'curate', 'curator', [])
+    ).toThrow();
+  });
+  it('blocks external export and publication while credits remain unverified', () => {
+    const pending = { ...content, data: { ...content.data, creditStatus: 'To verify' } };
+    expect(usable(pending, true)).toBe(false);
+    expect(canPublish(pending, [place])).toBe(false);
+  });
+  it('preserves connected people and rejects malformed references', () => {
+    const base = {
+      title: 'Historical casting',
+      data: {
+        intention: 'Source-backed proposals',
+        contentIds: [],
+        talentIds: ['00000000-0000-4000-8000-000000000001'],
+        sourceContext: 'Historical proposal',
+      },
+    };
+    expect(cleanItem(base, 'collection').data.talentIds).toEqual(base.data.talentIds);
+    expect(() =>
+      cleanItem({ ...base, data: { ...base.data, talentIds: ['not-an-id'] } }, 'collection')
+    ).toThrow();
+  });
   it('keeps internal-use content out of external portfolios', () =>
     expect(usable({ ...content, data: { ...content.data, rights: 'Internal only' } }, true)).toBe(
       false

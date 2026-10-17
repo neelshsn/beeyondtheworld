@@ -46,7 +46,10 @@ const tabs: { id: CreativeKind; label: string; icon: typeof Users }[] = [
 ];
 const blank = (kind: CreativeKind) =>
   Object.fromEntries(
-    schemas[kind].map((f) => [f.key, f.key === 'contentIds' ? [] : f.options?.[0] || ''])
+    schemas[kind].map((f) => [
+      f.key,
+      ['contentIds', 'talentIds'].includes(f.key) ? [] : f.options?.[0] || '',
+    ])
   ) as CreativeData;
 const text = (v: unknown) => String(v || '');
 const esc = (s: unknown) =>
@@ -226,15 +229,16 @@ export function CreativeWorkspace() {
         : all.find(
             (x) =>
               x.kind === 'content' &&
+              x.data.mediaId &&
               (x.data.destinationId === item.id ||
                 x.data.talentId === item.id ||
                 ((item.data.contentIds as string[]) || []).includes(x.id))
           );
     if (content?.data.mediaId) return endpoint + '&file=' + content.data.mediaId;
-    return (
-      text(item.data.demoImage || content?.data.demoImage) ||
-      '/assets/community/horizon/morocco-landscape.webp'
-    );
+    return scope === 'demo'
+      ? text(item.data.demoImage || content?.data.demoImage) ||
+          '/assets/community/horizon/morocco-landscape.webp'
+      : '';
   }
   async function portfolio(item: CreativeItem) {
     setError('');
@@ -469,15 +473,29 @@ export function CreativeWorkspace() {
                       onClick={() => choose(item)}
                     >
                       <div className="cc-image">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={hero(item)}
-                          alt=""
-                          loading="lazy"
-                          onError={(e) => {
-                            e.currentTarget.style.visibility = 'hidden';
-                          }}
-                        />
+                        {hero(item) ? (
+                          // The authenticated endpoint already returns an optimised WebP.
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={hero(item)}
+                            alt=""
+                            loading="lazy"
+                            onError={(e) => {
+                              e.currentTarget.style.visibility = 'hidden';
+                            }}
+                          />
+                        ) : (
+                          <Images
+                            size={38}
+                            aria-label="Preview not imported · open original source"
+                            style={{
+                              position: 'absolute',
+                              inset: 0,
+                              margin: 'auto',
+                              color: 'var(--cc-gold, #c7a66c)',
+                            }}
+                          />
+                        )}
                         <span>{item.status.replaceAll('_', ' ')}</span>
                         {item.data.provenance === 'AI concept' && <small>AI concept</small>}
                       </div>
@@ -541,7 +559,9 @@ export function CreativeWorkspace() {
                 <div className="cc-detail-grid">
                   <dl>
                     {schemas[current.kind]
-                      .filter((f) => current.data[f.key] && f.key !== 'contentIds')
+                      .filter(
+                        (f) => current.data[f.key] && !['contentIds', 'talentIds'].includes(f.key)
+                      )
                       .map((f) => (
                         <div key={f.key}>
                           <dt>{f.label}</dt>
@@ -594,6 +614,63 @@ export function CreativeWorkspace() {
                       ))}
                   </dl>
                   <aside>
+                    {current.kind === 'collection' && (
+                      <details open>
+                        <summary>Selected stories & connected people</summary>
+                        {[
+                          ...((current.data.contentIds as string[]) || []),
+                          ...((current.data.talentIds as string[]) || []),
+                        ].map((id) => {
+                          const linked = all.find((x) => x.id === id);
+                          return (
+                            linked && (
+                              <button
+                                key={id}
+                                onClick={() => {
+                                  setTab(linked.kind);
+                                  choose(linked);
+                                }}
+                              >
+                                {linked.title}
+                                {linked.kind === 'talent' && (
+                                  <small> · {text(linked.data.sourceContext)}</small>
+                                )}{' '}
+                                <ArrowRight size={12} />
+                              </button>
+                            )
+                          );
+                        })}
+                      </details>
+                    )}
+                    {all
+                      .filter(
+                        (x) =>
+                          x.kind === 'collection' &&
+                          x.status !== 'archived' &&
+                          (((x.data.talentIds as string[]) || []).includes(current.id) ||
+                            ((x.data.contentIds as string[]) || []).some(
+                              (id) =>
+                                id === current.id ||
+                                all.some(
+                                  (c) =>
+                                    c.id === id &&
+                                    (c.data.destinationId === current.id ||
+                                      c.data.talentId === current.id)
+                                )
+                            ))
+                      )
+                      .map((x) => (
+                        <p key={x.id}>
+                          <button
+                            onClick={() => {
+                              setTab('collection');
+                              choose(x);
+                            }}
+                          >
+                            {x.title} <ArrowRight size={12} />
+                          </button>
+                        </p>
+                      ))}
                     <span className="cc-eyebrow">NEXT STEP</span>
                     <div className="cc-actions">
                       {current.kind === 'talent' && writable && (
@@ -870,6 +947,7 @@ export function CreativeWorkspace() {
                         'briefId',
                         'projectId',
                         'contentIds',
+                        'talentIds',
                       ].includes(f.key)
                   )
                   .map((f) => (
@@ -998,6 +1076,39 @@ export function CreativeWorkspace() {
                       ))}
                     </select>
                   </label>
+                </fieldset>
+              )}
+              {editing.kind === 'collection' && (
+                <fieldset>
+                  <legend>Connected team · source-backed roles</legend>
+                  <div className="cc-checklist">
+                    {all
+                      .filter((x) => x.kind === 'talent' && x.status !== 'archived')
+                      .map((x) => (
+                        <label key={x.id}>
+                          <input
+                            type="checkbox"
+                            checked={((editing.data.talentIds as string[]) || []).includes(x.id)}
+                            onChange={(e) =>
+                              setField(
+                                'talentIds',
+                                e.target.checked
+                                  ? [...((editing.data.talentIds as string[]) || []), x.id]
+                                  : ((editing.data.talentIds as string[]) || []).filter(
+                                      (id) => id !== x.id
+                                    )
+                              )
+                            }
+                          />
+                          <span>
+                            {x.title}
+                            <small>
+                              {text(x.data.discipline)} · {text(x.data.sourceContext)}
+                            </small>
+                          </span>
+                        </label>
+                      ))}
+                  </div>
                 </fieldset>
               )}
               {editing.kind === 'collection' && (

@@ -141,6 +141,12 @@ export async function POST(request: Request) {
             );
         }
         if (kind === 'collection') {
+          need(
+            (data.talentIds as string[]).every((id) =>
+              all.some((x) => x.id === id && x.kind === 'talent' && x.status !== 'archived')
+            ),
+            'Some linked team members are unavailable.'
+          );
           const ids = data.contentIds as string[];
           need(
             ids.every((id) =>
@@ -260,11 +266,22 @@ export async function POST(request: Request) {
           const scouts = [
             ...new Set(relatedContent(c!, all).map((x) => String(x.data.talentId))),
           ].map((id) => all.find((x) => x.id === id)!);
-          need(relatedContent(c!,all).every(x=>all.some(p=>p.id===x.data.destinationId&&p.kind==='destination'&&p.status==='feasible')),'Bloom must validate every selected destination before booking.');
+          need(
+            relatedContent(c!, all).every((x) =>
+              all.some(
+                (p) =>
+                  p.id === x.data.destinationId &&
+                  p.kind === 'destination' &&
+                  p.status === 'feasible'
+              )
+            ),
+            'Bloom must validate every selected destination before booking.'
+          );
           need(
             scouts.every(
               (x) =>
-                x.status!=='archived' && x.data.agreement &&
+                x.status !== 'archived' &&
+                x.data.agreement &&
                 ['Local Line Producer', 'Creative Scout Royalty'].includes(
                   String(x.data.collaboration)
                 )

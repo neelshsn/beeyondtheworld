@@ -34,6 +34,7 @@ export async function GET(request: Request) {
             medium: x.data.medium,
             provenance: x.data.provenance,
             chapter: x.data.chapter,
+            mediaId: internal ? x.data.mediaId : undefined,
           })),
         activations: all
           .filter((x) => x.kind === 'activation' && x.data.collectionId === c.id)

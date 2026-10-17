@@ -743,13 +743,17 @@ export function HorizonApp() {
     content = (
       <>
         <div className="portfolio">
-          <Photo
-            src={
-              activeProject.territory === 'Morocco'
-                ? assets.landscape
-                : activeExample?.cover || assets.landscape
-            }
-          />
+          {!activeProject.is_demo && activeProject.season.startsWith('Historical archive') ? (
+            <CreativeConnections project={activeProject.id} demo={false} coverOnly />
+          ) : (
+            <Photo
+              src={
+                activeProject.territory === 'Morocco'
+                  ? assets.landscape
+                  : activeExample?.cover || assets.landscape
+              }
+            />
+          )}
           <div className="portfolio-title">
             <span className="eyebrow">YOUR JOURNEY</span>
             <h2>{activeProject.territory}</h2>
@@ -767,6 +771,9 @@ export function HorizonApp() {
           {w.projects.map((x, i) => (
             <button aria-pressed={i === projectIndex} key={x.id} onClick={() => setProjectIndex(i)}>
               {x.territory}
+              {!x.is_demo && x.season.startsWith('Historical archive') && (
+                <small> · {x.title.split(' · ')[0]}</small>
+              )}
             </button>
           ))}
         </div>
@@ -1243,6 +1250,7 @@ export function HorizonApp() {
               key={`${w.project.id}:${w.project.role}`}
               project={w.project.id}
               demo={w.project.is_demo}
+              expanded={!w.project.is_demo && w.project.season.startsWith('Historical archive')}
             />
           )}
           {p.id === 'projects' && w.project.role === 'bee' && (
@@ -1254,7 +1262,22 @@ export function HorizonApp() {
               New journey
             </button>
           )}
-          {visible && proposalPages.includes(p.id) ? (
+          {p.id === 'project' &&
+          !w.project.is_demo &&
+          w.project.season.startsWith('Historical archive') ? (
+            <section className="overview-next">
+              <span className="eyebrow">ORIGINAL PRODUCTION ARCHIVE</span>
+              <h2>{w.project.title}</h2>
+              <p>
+                Original sources, selected images and documented connections are available above.
+                Historical proposals remain separate from confirmed contributions. Credits, dates
+                and rights marked for review are not approved for a new production.
+              </p>
+              <a className="text-link" href="/community/creative?tab=collection">
+                Review the source library <Icon name="arrow" />
+              </a>
+            </section>
+          ) : visible && proposalPages.includes(p.id) ? (
             <ProposalWorkspace
               key={w.project.id + w.project.role}
               w={w}
