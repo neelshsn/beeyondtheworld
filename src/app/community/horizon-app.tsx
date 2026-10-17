@@ -30,8 +30,14 @@ const ItineraryWorkspace = dynamic(
   () => import('./itinerary-workspace').then((m) => m.ItineraryWorkspace),
   { ssr: false }
 );
+import { proposalPages } from '@/lib/community/proposal';
+const ProposalWorkspace = dynamic(
+  () => import('./proposal-workspace').then((m) => m.ProposalWorkspace),
+  { ssr: false }
+);
 import './horizon.css';
 import './horizon-interactions.css';
+import './proposal.css';
 import './studio.css';
 import './production.css';
 import './source-workspaces.css';
@@ -184,6 +190,10 @@ function Modal({
 }
 
 export function HorizonApp() {
+  const proposalFlush = useRef<null | (() => Promise<boolean>)>(null);
+  const registerProposalFlush = useCallback((flush: (() => Promise<boolean>) | null) => {
+    proposalFlush.current = flush;
+  }, []);
   const [w, setW] = useState<Workspace | null>(null),
     [loading, setLoading] = useState(true),
     [signedOut, setSignedOut] = useState(false),
@@ -223,7 +233,8 @@ export function HorizonApp() {
         else setError(e.message);
       })
       .finally(() => setLoading(false));
-    const hash = () => {
+    const hash = async () => {
+      if (proposalFlush.current && !(await proposalFlush.current())) return;
       setPageId(location.hash.slice(1).split('/')[0] || 'projects');
       setRecordId(null);
       setNewRecord(false);
@@ -307,7 +318,11 @@ export function HorizonApp() {
     if (dirty && !saved) {
       pending.current = navigate;
       setPanel('unsaved');
-    } else navigate();
+    } else if (proposalFlush.current)
+      void proposalFlush.current().then((ok) => {
+        if (ok) navigate();
+      });
+    else navigate();
   };
   const next = (saved = false) => {
     const index = allowed.findIndex((x) => x.id === p.id);
@@ -351,7 +366,11 @@ export function HorizonApp() {
     if (dirty) {
       pending.current = navigate;
       setPanel('unsaved');
-    } else navigate();
+    } else if (proposalFlush.current)
+      void proposalFlush.current().then((ok) => {
+        if (ok) navigate();
+      });
+    else navigate();
   };
   const switchRole = (nextRole: string) =>
     guardNavigation(
@@ -1126,7 +1145,7 @@ export function HorizonApp() {
   };
   return (
     <div
-      className={`horizon direction-A kind-${p.kind} ${isImpact ? 'is-impact' : ''} mode-${mode} ${visible && [...studioPages, ...productionPages, ...mediaPages, ...impactPages].includes(p.id) ? 'source-layout' : ''}`}
+      className={`horizon direction-A kind-${p.kind} ${isImpact ? 'is-impact' : ''} mode-${mode} ${visible && [...studioPages, ...productionPages, ...mediaPages, ...impactPages, ...proposalPages].includes(p.id) ? 'source-layout' : ''}`}
       data-page={p.id}
       aria-busy={busy}
     >
@@ -1218,7 +1237,15 @@ export function HorizonApp() {
               New journey
             </button>
           )}
-          {visible && p.id === 'itinerary' ? (
+          {visible && proposalPages.includes(p.id) ? (
+            <ProposalWorkspace
+              key={w.project.id + w.project.role}
+              w={w}
+              page={p.id}
+              go={go}
+              registerFlush={registerProposalFlush}
+            />
+          ) : visible && p.id === 'itinerary' ? (
             <ItineraryWorkspace
               key={w.project.id}
               w={w}
@@ -1260,6 +1287,15 @@ export function HorizonApp() {
           ) : (
             content
           )}
+          {p.id === 'project' && (
+            <button className="proposal-entry" onClick={() => go('tale-brief')}>
+              <span>
+                <strong>Creative Studio</strong>
+                <small>Create the proposal · chapters, contributions, Bee & brand review</small>
+              </span>
+              <Icon name="arrow" />
+            </button>
+          )}
           {p.id === 'project' && w.project.is_demo && <RehearsalGuide w={w} go={go} />}
         </div>
         {error && (
@@ -1267,26 +1303,34 @@ export function HorizonApp() {
             {error}
           </div>
         )}
-        <footer className="page-action">
-          <span className="access-state" role="status">
-            <Icon
-              name={
-                dirty ? 'clock' : mode === 'read' ? 'lock' : mode === 'approve' ? 'shield' : 'check'
-              }
-            />
-            {busy ? 'Saving…' : decisionStatus}
-          </span>
-          {visible && !['projects', 'profile'].includes(p.id) && (
-            <button className="detail-button" onClick={() => setPanel('details')}>
-              <Icon name="plus" />
-              {p.detail || p.secondary || 'View details'}
+        {!proposalPages.includes(p.id) && (
+          <footer className="page-action">
+            <span className="access-state" role="status">
+              <Icon
+                name={
+                  dirty
+                    ? 'clock'
+                    : mode === 'read'
+                      ? 'lock'
+                      : mode === 'approve'
+                        ? 'shield'
+                        : 'check'
+                }
+              />
+              {busy ? 'Saving…' : decisionStatus}
+            </span>
+            {visible && !['projects', 'profile'].includes(p.id) && (
+              <button className="detail-button" onClick={() => setPanel('details')}>
+                <Icon name="plus" />
+                {p.detail || p.secondary || 'View details'}
+              </button>
+            )}
+            <button className="main-action" disabled={busy} onClick={primary}>
+              {primaryLabel}
+              <Icon name="arrow" />
             </button>
-          )}
-          <button className="main-action" disabled={busy} onClick={primary}>
-            {primaryLabel}
-            <Icon name="arrow" />
-          </button>
-        </footer>
+          </footer>
+        )}
       </main>
       <div className="study-footer">
         <span>{w.project.is_demo ? 'DEMO JOURNEY · ILLUSTRATIVE WORKFLOW' : w.project.title}</span>

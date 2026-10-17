@@ -54,6 +54,7 @@ window.BeeTaleWorkspace = function (H) {
     return [...new Set([...stored.filter((i) => rest.includes(i)), ...rest])];
   };
   const can = (key) => {
+    if (H.can) return H.can(key);
     if (key === 'tale-cost') return role() === 'bee';
     if (key === 'da-review-note') return ['bee', 'brand', 'art'].includes(role());
     const p = M.poles.find((p) => key.endsWith('-' + p.id));
@@ -91,8 +92,9 @@ window.BeeTaleWorkspace = function (H) {
   const photo = (key, fallback, alt) => {
     const pick = v('da-visual-' + key, fallback);
     const uploaded = v('da-upload-' + key, '');
-    return /^data:image\/jpeg;base64,/.test(uploaded)
-      ? `<img class="image" src="${uploaded}" alt="${esc(alt)} · user reference">`
+    return /^data:image\/jpeg;base64,/.test(uploaded) ||
+      (H.persisted && /^\/api\/community\/proposal\?/.test(uploaded))
+      ? `<img class="image" src="${esc(uploaded)}" alt="${esc(alt)} · user reference">`
       : shot(pick, alt);
   };
   function picker(key, fallback) {
@@ -154,9 +156,10 @@ window.BeeTaleWorkspace = function (H) {
       })
       .join(
         ''
-      )}</div><div class="da-task-detail"><div class="da-section-heading"><div><small>CONTRIBUTOR → HEAD → CREATIVE DIRECTOR</small><h3>${p.name}</h3></div>${badge(t.status, t.status === 'Approved for proposal' ? 'ok' : 'pending')}</div><div class="grid2">${field('da-owner-' + p.id, 'Contributor name', '')}${field('da-head-' + p.id, 'Responsible head / role', p.id, 'select', M.poles.map((x) => x.id).concat(['art', 'bee']))}${field('da-due-' + p.id, 'Internal due date', '', 'date')}${field('da-chapter-' + p.id, 'Linked chapter', 'All chapters', 'select', ['All chapters', ...order().map((i) => ({ value: 'chapter:' + i, label: `CH${i + 1} · ${title(i)}` }))])}</div>${field('da-brief-' + p.id, 'Expected contribution', p.brief, 'textarea')}${check('da-required-' + p.id, 'Required for this proposal', p.id !== 'sound' || v('tale-sound'))}${sourceContext(p.id)}<div class="da-contribution">${field('da-content-' + p.id, 'Contribution / creative direction', '', 'textarea')}${field('da-evidence-' + p.id, 'Reference, asset ID or source link', '')}${field('da-feedback-' + p.id, 'Head’s revision request', '', 'textarea')}</div><div class="toolbar">${act('task-submit', 'Submit to head', 'arrow', `data-pole="${p.id}" ${M.lead(role()) || role() === p.id ? '' : 'disabled'}`)}${act('task-approve', 'Approve contribution', 'check', `data-pole="${p.id}" ${canHead ? '' : 'disabled'}`)}${act('task-return', 'Request changes', 'back', `data-pole="${p.id}" ${canHead ? '' : 'disabled'}`)}</div><div class="toolbar">${link(p.page, 'Open ' + p.name + ' workspace', p.icon, p.id)}<a class="vbutton" href="#view/${p.id}/tale-team">${icon('people')}View as ${p.name}</a></div><p class="caption-note">These assignments and decisions are an exercise on this device. No invitation, task notification or real approval is sent.</p></div>`;
+      )}</div><div class="da-task-detail"><div class="da-section-heading"><div><small>CONTRIBUTOR → HEAD → CREATIVE DIRECTOR</small><h3>${p.name}</h3></div>${badge(t.status, t.status === 'Approved for proposal' ? 'ok' : 'pending')}</div><div class="grid2">${H.members ? field('da-owner-' + p.id, 'Assigned contributor', '', 'select', [{ value: '', label: 'Choose a project member' }, ...H.members(p.id)]) : field('da-owner-' + p.id, 'Contributor name', '')}${field('da-head-' + p.id, 'Responsible head / role', p.id, 'select', M.poles.map((x) => x.id).concat(['art', 'bee']))}${field('da-due-' + p.id, 'Internal due date', '', 'date')}${field('da-chapter-' + p.id, 'Linked chapter', 'All chapters', 'select', ['All chapters', ...order().map((i, position) => ({ value: 'chapter:' + i, label: `CH${position + 1} · ${title(i)}` }))])}</div>${field('da-brief-' + p.id, 'Expected contribution', p.brief, 'textarea')}${check('da-required-' + p.id, 'Required for this proposal', p.id !== 'sound' || v('tale-sound'))}${sourceContext(p.id)}<div class="da-contribution">${field('da-content-' + p.id, 'Contribution / creative direction', '', 'textarea')}${field('da-evidence-' + p.id, 'Reference, asset ID or source link', '')}${field('da-feedback-' + p.id, 'Head’s revision request', '', 'textarea')}</div><div class="toolbar">${act('task-submit', 'Submit to head', 'arrow', `data-pole="${p.id}" ${M.lead(role()) || role() === p.id ? '' : 'disabled'}`)}${act('task-approve', 'Approve contribution', 'check', `data-pole="${p.id}" ${canHead ? '' : 'disabled'}`)}${act('task-return', 'Request changes', 'back', `data-pole="${p.id}" ${canHead ? '' : 'disabled'}`)}</div><div class="toolbar">${link(p.page, 'Open ' + p.name + ' workspace', p.icon, p.id)}${H.persisted ? '' : `<a class="vbutton" href="#view/${p.id}/tale-team">${icon('people')}View as ${p.name}</a>`}</div><p class="caption-note">These assignments and decisions are an exercise on this device. No invitation, task notification or real approval is sent.</p></div>`;
   }
   function sourceContext(id) {
+    if (H.sourceContext) return H.sourceContext(id);
     const mapping = {
       beauty: [
         ['beauty-direction', 'Beauty direction'],
@@ -229,7 +232,7 @@ window.BeeTaleWorkspace = function (H) {
         )}</div><h3>One head for every pole.</h3><p>Assign the contribution, receive the head’s review, then assemble the proposal.</p>${link('tale-team', 'Assign & review contributions', 'people')}<div class="da-people-grid">${M.poles
         .map((p) => {
           const t = M.task(s(), p.id);
-          return `<button data-da-action="open-pole" data-pole="${p.id}">${shot(p.asset, p.name)}<strong>${p.name}</strong><small>${esc(t.owner || 'Contributor to appoint')}</small><small>Head: ${esc(H.roles[t.head] || t.head)}</small>${badge(t.status, t.status === 'Approved for proposal' ? 'ok' : 'pending')}</button>`;
+          return `<button data-da-action="open-pole" data-pole="${p.id}">${shot(p.asset, p.name)}<strong>${p.name}</strong><small>${esc((H.memberName ? H.memberName(t.owner) : t.owner) || 'Contributor to appoint')}</small><small>Head: ${esc(H.roles[t.head] || t.head)}</small>${badge(t.status, t.status === 'Approved for proposal' ? 'ok' : 'pending')}</button>`;
         })
         .join('')}</div>`;
     if (i === 4)
@@ -237,7 +240,7 @@ window.BeeTaleWorkspace = function (H) {
     if (i === 5)
       return `${chapterList()}<h3>${esc(title(ch()))}</h3>${field('da-call-' + ch(), 'Production window / call', 'Daylight and access to confirm')}${field('da-board-note-' + ch(), 'Chapter production notes', '', 'textarea')}<div class="da-boards">${['Atmosphere', 'Key scene', 'Details & textures', 'Behind the scene'].map((n, j) => `<div>${photo('board-' + ch() + '-' + j, ['m:frame-arch', 'fitting', 'film-detail', 'on-set'][j], n)}<small>${j + 1}. ${n}</small>${field('da-board-' + ch() + '-' + j, n + ' / direction', '', 'textarea')}${picker('board-' + ch() + '-' + j, ['m:frame-arch', 'fitting', 'film-detail', 'on-set'][j])}</div>`).join('')}</div>${link('co-creation', 'Connect scouting & frames', 'pin')}${link('sound-library', 'Chapter sound & local artists', 'sound')}`;
     if (i === 6) {
-      const summary = window.BeeLabelModel.summary(s());
+      const summary = H.summary ? H.summary() : window.BeeLabelModel.summary(s());
       return `<h3>A creation that creates lasting value.</h3><div class="da-value-flow">${[
         ['bee', 'Bee ecosystem'],
         ['leaf', 'Conscious creation'],
@@ -309,7 +312,7 @@ window.BeeTaleWorkspace = function (H) {
                     ? M.poles
                         .map((p) => {
                           const t = M.task(s(), p.id);
-                          return `<article><h2>${p.name}</h2><p>${esc(t.owner || 'To appoint')} · ${esc(t.status)}</p><p>${esc(t.content || t.brief)}</p><p>Reference: ${esc(t.evidence || 'Pending')}</p></article>`;
+                          return `<article><h2>${p.name}</h2><p>${esc((H.memberName ? H.memberName(t.owner) : t.owner) || 'To appoint')} · ${esc(t.status)}</p><p>${esc(t.content || t.brief)}</p><p>Reference: ${esc(t.evidence || 'Pending')}</p></article>`;
                         })
                         .join('')
                     : i === 4

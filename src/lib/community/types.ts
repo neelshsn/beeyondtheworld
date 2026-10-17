@@ -11,6 +11,9 @@ export const roles = [
   'ngo',
   'expert',
   'model',
+  'set',
+  'sound',
+  'agency',
 ] as const;
 export type Role = (typeof roles)[number];
 export const roleNames: Record<Role, string> = {
@@ -26,6 +29,9 @@ export const roleNames: Record<Role, string> = {
   ngo: 'NGO / local partner',
   expert: 'Expert / validator',
   model: 'Talent',
+  set: 'Set designer',
+  sound: 'Sound producer',
+  agency: 'Casting agency',
 };
 export type User = {
   id: string;

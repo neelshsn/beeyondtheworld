@@ -57,6 +57,9 @@ const namibiaFrames = [
   { image: landscape(32), label: 'Light & shadow', place: 'Deadvlei' },
 ];
 const roleIntent: Record<Role, string> = {
+  set: 'Connect materials, makers and the scene.',
+  sound: 'Compose each chapter and document its sources.',
+  agency: 'Coordinate talent, availability and usage rights.',
   model: 'Prepare your availability, agreement and personal call time.',
   bee: 'Connect the intention, the people and every decision.',
   brand: 'Your brief. Your creative direction. Your final selection.',

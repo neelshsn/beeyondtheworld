@@ -1317,3 +1317,28 @@
     gap: 25px;
   }
 }
+
+/* Entry to the shared DA workspace, available before its lazy stylesheet loads. */
+.horizon .proposal-entry {
+  margin: 24px 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px;
+  border: 1px solid #cfac6c;
+  background: #163d49;
+  color: #f1e8d4;
+  text-align: left;
+}
+.horizon .proposal-entry strong {
+  display: block;
+  font:
+    28px Cannia,
+    Georgia,
+    serif;
+}
+.horizon .proposal-entry small {
+  display: block;
+  margin-top: 8px;
+}

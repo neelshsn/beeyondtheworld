@@ -1,3 +1,4 @@
+import { proposalPages, proposalNames } from './proposal';
 import catalogue from '@/data/horizon-catalogue.json';
 import type { CommunityRecord, Field, Kind, Role, Workspace } from './types';
 
@@ -27,6 +28,44 @@ export type HorizonPage = {
 export const pages: HorizonPage[] = (catalogue.pages as HorizonPage[]).map((p) =>
   p.id === 'version' ? { ...p, roles: { ...p.roles, brand: 'read' } } : p
 );
+pages.push(
+  ...proposalPages.map((id, i): HorizonPage => ({
+    id,
+    title: proposalNames[i],
+    fr: proposalNames[i],
+    phase: 'Creative Studio · DA',
+    kind: 'proposal',
+    fields: [],
+    roles: Object.fromEntries(
+      [
+        'bee',
+        'art',
+        'brand',
+        'production',
+        'stylist',
+        'photo',
+        'film',
+        'beauty',
+        'set',
+        'sound',
+        'agency',
+        'editor',
+        'model',
+        'ngo',
+        'expert',
+      ].map((r) => [r, 'read'])
+    ),
+    note: 'Shared creative proposal',
+    action: 'Save',
+    secondary: 'Proposal',
+    projectType: 'production',
+    number: 200 + i,
+  }))
+);
+for (const p of pages.filter((p) =>
+  ['projects', 'project', 'profile', 'login', 'inbox', 'calendar'].includes(p.id)
+))
+  Object.assign(p.roles, { set: 'read', sound: 'read', agency: 'read' });
 export const assets: Record<string, string> = {
   ...catalogue.study.assets,
   ...Object.fromEntries(

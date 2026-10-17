@@ -150,6 +150,7 @@ async function mutate(request: Request, update: boolean) {
     if (existing && Number(body.version) !== existing.version)
       return fail('This record changed. Refresh and try again.', 409);
     return await withTransaction(async (sql) => {
+      await sql.query('SELECT pg_advisory_xact_lock(hashtext($1)::bigint)', [w.project.id]);
       if (kind.startsWith('studio:') || (existing && body.to)) {
         await sql.query('SELECT pg_advisory_xact_lock(hashtext($1)::bigint)', [w.project.id]);
         const fresh = await sql.query<CommunityRecord>(
