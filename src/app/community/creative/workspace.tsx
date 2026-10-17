@@ -573,7 +573,7 @@ export function CreativeWorkspace() {
                             ) : f.key === 'projectId' ? (
                               <a
                                 href={
-                                  '/community?project=' + current.data.projectId + '#tale-brief'
+                                  '/community?project=' + current.data.projectId + '#project'
                                 }
                               >
                                 {snapshot.projects.find((p) => p.id === current.data.projectId)
