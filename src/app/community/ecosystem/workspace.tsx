@@ -859,9 +859,9 @@ export function EcosystemWorkspace() {
               <RefreshCw aria-hidden="true" /> Retry
             </button>
             {hasCrmContext && (
-              <Link href="/sales/">
+              <a href="/sales/">
                 <ExternalLink aria-hidden="true" /> Sign in to CRM
-              </Link>
+              </a>
             )}
           </div>
         )}
@@ -990,10 +990,10 @@ export function EcosystemWorkspace() {
                   <h2 id="connected-title">One story, shared identifiers.</h2>
                 </div>
                 <div className="eco-link-list">
-                  <Link href="/sales/">
+                  <a href="/sales/">
                     <span>CRM</span>
                     <ExternalLink aria-hidden="true" />
-                  </Link>
+                  </a>
                   <Link href="/community">
                     <span>Community</span>
                     <ExternalLink aria-hidden="true" />
@@ -1128,9 +1128,9 @@ function CommercialSummaryPanel({ data }: { data: EcosystemConnectionSummary }) 
             creator records stay with the authorised BEE team.
           </p>
         </div>
-        <Link href="/sales/" className="eco-primary">
+        <a href="/sales/" className="eco-primary">
           Return to CRM <ExternalLink aria-hidden="true" />
-        </Link>
+        </a>
       </div>
 
       <div className="eco-commercial-metrics" aria-label="Connected record totals">
