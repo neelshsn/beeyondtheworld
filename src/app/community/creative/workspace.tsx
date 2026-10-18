@@ -52,6 +52,12 @@ const blank = (kind: CreativeKind) =>
     ])
   ) as CreativeData;
 const text = (v: unknown) => String(v || '');
+const terminology = (v: string) =>
+  v === 'Local scout'
+    ? 'BEE Visual Poet'
+    : v === 'Creative Scout Royalty'
+      ? 'Visual Poet royalty (proposal)'
+      : v;
 const esc = (s: unknown) =>
   text(s).replace(
     /[&<>"']/g,
@@ -303,6 +309,20 @@ export function CreativeWorkspace() {
             <p>Discover. Curate. Co-create. Bring a brand journey to life.</p>
           </div>
           <div className="cc-context">
+            <a
+              className="cc-gold"
+              href={`/community/ecosystem?scope=${scope || 'studio'}&tab=studio`}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 8,
+                padding: '12px 16px',
+                border: '1px solid var(--gold)',
+                borderRadius: 4,
+              }}
+            >
+              Visual Poets & partners <ArrowRight size={16} />
+            </a>
             <label>
               Library
               <select
@@ -329,7 +349,7 @@ export function CreativeWorkspace() {
                   <option value="curator">Creative Studio</option>
                   <option value="production">Bloom Production</option>
                   <option value="bee">Bee Core</option>
-                  <option value="contributor">Scout / business development</option>
+                  <option value="contributor">Visual Poet / business development</option>
                   <option value="viewer">Read-only</option>
                 </select>
               </label>
@@ -338,7 +358,7 @@ export function CreativeWorkspace() {
           </div>
         </div>
         <div className="cc-journey" aria-label="Creative workflow">
-          {['Local Scout', 'Creative Studio', 'Bloom Production', 'Brand Journey'].map((s, i) => (
+          {['Visual Poet', 'Creative Studio', 'Bloom Production', 'Brand Journey'].map((s, i) => (
             <span key={s}>
               <small>0{i + 1}</small>
               {s}
@@ -501,8 +521,9 @@ export function CreativeWorkspace() {
                       </div>
                       <div className="cc-card-body">
                         <small>
-                          {text(item.data.country || item.data.discipline || item.data.medium) ||
-                            'BEEYONDTHEWORLD'}
+                          {terminology(
+                            text(item.data.country || item.data.discipline || item.data.medium)
+                          ) || 'BEEYONDTHEWORLD'}
                         </small>
                         <h2>{item.title}</h2>
                         <p>
@@ -571,11 +592,7 @@ export function CreativeWorkspace() {
                                 Open source <ExternalLink size={12} />
                               </a>
                             ) : f.key === 'projectId' ? (
-                              <a
-                                href={
-                                  '/community?project=' + current.data.projectId + '#project'
-                                }
-                              >
+                              <a href={'/community?project=' + current.data.projectId + '#project'}>
                                 {snapshot.projects.find((p) => p.id === current.data.projectId)
                                   ?.title || 'Open production'}{' '}
                                 <ArrowRight size={12} />
@@ -975,7 +992,11 @@ export function CreativeWorkspace() {
                                     {x.title}
                                   </option>
                                 ))
-                            : f.options?.map((x) => <option key={x}>{x}</option>)}
+                            : f.options?.map((x) => (
+                                <option key={x} value={x}>
+                                  {terminology(x)}
+                                </option>
+                              ))}
                         </select>
                       ) : (
                         <input

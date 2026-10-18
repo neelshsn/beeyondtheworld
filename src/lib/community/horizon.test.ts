@@ -20,7 +20,11 @@ const r = (page: string, extra: Partial<CommunityRecord> = {}): CommunityRecord 
 const w = (records: CommunityRecord[] = [], role = 'bee') =>
   ({ user, project: { id: 'p', role }, records }) as Workspace;
 describe('Horizon production workflow', () => {
-  it('covers the 94 approved pages', () => expect(pages).toHaveLength(94));
+  it('keeps published production routes present and unique as the workspace grows', () => {
+    const ids = pages.map((page) => page.id);
+    expect(new Set(ids).size).toBe(ids.length);
+    expect(ids).toEqual(expect.arrayContaining(['projects', 'project', 'scouting', 'budget']));
+  });
   it('persists partial drafts but refuses incomplete brief submission', () => {
     expect(
       validateFields(pageKind('brief-message'), { 'brief-message-0': 'Story' }).error

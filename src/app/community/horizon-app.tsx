@@ -42,6 +42,7 @@ import './studio.css';
 import './production.css';
 import './source-workspaces.css';
 import { CreativeConnections } from './creative-connections';
+import { EcosystemConnections } from './ecosystem-connections';
 
 async function api(path: string, body?: unknown, method = 'POST') {
   const r = await fetch(path, {
@@ -1195,6 +1196,15 @@ export function HorizonApp() {
         {['bee', 'art_director', 'production'].includes(w.project.role) && (
           <a
             className="nav-entry"
+            href={`/community/ecosystem?scope=${w.project.is_demo ? 'demo' : 'studio'}&project=${w.project.id}&tab=studio`}
+          >
+            <Icon name="feather" />
+            <span>Visual Poets & partners</span>
+          </a>
+        )}
+        {['bee', 'art_director', 'production'].includes(w.project.role) && (
+          <a
+            className="nav-entry"
             href={'/community/creative?scope=' + (w.project.is_demo ? 'demo' : 'studio')}
           >
             <Icon name="compass" />
@@ -1337,6 +1347,10 @@ export function HorizonApp() {
             </button>
           )}
           {p.id === 'project' && w.project.is_demo && <RehearsalGuide w={w} go={go} />}
+          {['bee', 'art_director', 'production'].includes(w.project.role) &&
+            ['project', 'scouting', 'budget', 'impact-overview'].includes(p.id) && (
+              <EcosystemConnections project={w.project.id} demo={w.project.is_demo} />
+            )}
         </div>
         {error && (
           <div className="feedback error" role="alert">
@@ -1831,6 +1845,9 @@ function HorizonLogin({ onSuccess }: { onSuccess: () => void }) {
                 {busy ? 'Opening…' : 'Enter the journey'}
                 <Icon name="arrow" />
               </button>
+              <Link className="text-link" href="/community/ecosystem">
+                Visual Poet? Open your creative space <Icon name="feather" />
+              </Link>
             </div>
           </div>
         </form>

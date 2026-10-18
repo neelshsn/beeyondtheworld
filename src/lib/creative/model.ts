@@ -92,7 +92,12 @@ export const schemas: Record<CreativeKind, CreativeField[]> = {
       type: 'link',
       target: 'destination',
     },
-    { key: 'talentId', label: 'Creator / scout · when confirmed', type: 'link', target: 'talent' },
+    {
+      key: 'talentId',
+      label: 'Creator / Visual Poet · when confirmed',
+      type: 'link',
+      target: 'talent',
+    },
     {
       key: 'medium',
       label: 'Medium',
