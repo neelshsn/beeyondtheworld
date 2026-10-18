@@ -341,6 +341,10 @@ export async function GET(request: Request) {
       visible = {
         ...visible,
         applications: visible.applications.filter((item) => item.userId === access.userId),
+        destinations: visible.destinations.map((destination) => ({
+          ...destination,
+          globalBudgetReference: '',
+        })),
         partners: [],
       };
     const readiness = Object.fromEntries(
