@@ -909,26 +909,42 @@
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 18px;
 }
+.eco-kit-disclosure {
+  margin: 0 0 18px;
+  border-block: 1px solid var(--line);
+}
+.eco-kit-disclosure > summary {
+  padding: 13px 0;
+  cursor: pointer;
+  color: var(--gold-soft);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.eco-kit-disclosure[open] > summary {
+  margin-bottom: 12px;
+}
 .eco-kit-strip {
   display: flex;
   gap: 12px;
   overflow-x: auto;
-  margin: -4px 0 28px;
+  margin: 0 0 16px;
   padding-bottom: 8px;
 }
 .eco-kit-strip article {
-  min-width: 290px;
-  display: flex;
-  align-items: center;
-  gap: 18px;
+  min-width: 360px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 12px 16px;
   padding: 15px;
   border: 1px solid var(--line);
   background: rgba(16, 45, 54, 0.54);
 }
-.eco-kit-strip article > div {
+.eco-kit-copy {
   display: grid;
   gap: 4px;
-  flex: 1;
+  min-width: 0;
 }
 .eco-kit-strip small {
   color: var(--muted);
@@ -938,8 +954,16 @@
 }
 .eco-kit-strip strong {
   font-weight: 400;
+  line-height: 1.35;
+  overflow-wrap: break-word;
 }
-.eco-kit-strip article > button {
+.eco-kit-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.eco-kit-actions > button {
   min-height: 34px;
   padding: 7px 10px;
   border: 1px solid var(--line);
@@ -950,7 +974,7 @@
   font-size: 9px;
   white-space: nowrap;
 }
-.eco-kit-strip article > button svg {
+.eco-kit-actions > button svg {
   width: 14px;
 }
 .eco-kit-strip .eco-primary {
@@ -2017,9 +2041,15 @@
 .ecosystem-workspace .eco-panel {
   padding: 18px 0 62px;
 }
+.ecosystem-workspace .eco-asset-review-panel {
+  padding-top: 8px;
+}
 .ecosystem-workspace .eco-panel-intro,
 .ecosystem-workspace .eco-kit-head {
   margin-bottom: 28px;
+}
+.ecosystem-workspace .eco-asset-review-panel .eco-panel-intro {
+  margin-bottom: 14px;
 }
 .ecosystem-workspace .eco-panel-intro h2,
 .ecosystem-workspace .eco-kit-head h2,
@@ -2094,8 +2124,15 @@
   background: linear-gradient(145deg, #80552f, #2f2118);
 }
 .ecosystem-workspace .eco-kit-strip {
-  margin: 0 0 32px;
-  padding: 0 0 12px;
+  margin: 0 0 12px;
+  padding: 0 0 8px;
+}
+.ecosystem-workspace .eco-kit-disclosure {
+  margin-bottom: 12px;
+}
+.ecosystem-workspace .eco-demo-note {
+  margin-bottom: 10px;
+  padding-block: 8px;
 }
 .ecosystem-workspace .eco-links {
   margin-top: 24px;

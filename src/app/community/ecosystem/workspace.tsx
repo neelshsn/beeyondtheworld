@@ -867,7 +867,9 @@ export function EcosystemWorkspace() {
       ? snapshot?.kits.find((kit) => kit.id === spotlight.id)
       : spotlightAsset
         ? snapshot?.kits.find((kit) => kit.id === spotlightAsset.kitId)
-        : creatorKit;
+        : isCreator
+          ? creatorKit
+          : undefined;
   const spotlightDestination =
     snapshot?.destinations.find(
       (destination) =>
@@ -2030,7 +2032,7 @@ function AssetReviewPanel({
     };
   });
   return (
-    <section className="eco-panel" role="tabpanel">
+    <section className="eco-panel eco-asset-review-panel" role="tabpanel">
       <div className="eco-panel-intro">
         <div>
           <p className="eco-eyebrow">Studio review</p>
@@ -2171,56 +2173,64 @@ function AssetReviewPanel({
         </form>
       )}
       {snapshot.kits.length > 0 && (
-        <div className="eco-kit-strip" aria-label="Destination kits">
-          {snapshot.kits.map((kit) => {
-            const readiness = snapshot.readiness[kit.id];
-            const kitAssets = snapshot.assets.filter((asset) => asset.kitId === kit.id);
-            const renditionsReady =
-              kitAssets.length === 14 && kitAssets.every((asset) => asset.publicMediaId);
-            const journeyLinks = snapshot.links.filter(
-              (link) =>
-                link.entityType === 'kit' &&
-                link.entityId === kit.id &&
-                link.targetType === 'journey'
-            );
-            const canPublish =
-              ['bee', 'curator'].includes(snapshot.viewer.role) &&
-              Boolean(readiness?.ready) &&
-              renditionsReady &&
-              journeyLinks.length === 1 &&
-              kit.status !== 'published';
-            return (
-              <article key={kit.id}>
-                <div>
-                  <small>Kit · {readiness?.approved || 0}/14 approved</small>
-                  <strong>{kit.title}</strong>
-                </div>
-                <Status value={kit.status} />
-                <button onClick={() => onOpenKit(kit)}>
-                  {journeyLinks.length === 1 ? 'Connections' : 'Connect Journey'} <Link2 />
-                </button>
-                {canPublish && (
-                  <button
-                    className="eco-primary"
-                    disabled={busy}
-                    onClick={() => void onPublish(kit)}
-                  >
-                    {snapshot.viewer.scope === 'demo'
-                      ? 'Simulate publication'
-                      : 'Publish to Journey'}{' '}
-                    <ArrowRight />
-                  </button>
-                )}
-                {kit.status === 'published' &&
-                  ['bee', 'curator'].includes(snapshot.viewer.role) && (
-                    <button disabled={busy} onClick={() => void onUnpublish(kit)}>
-                      {snapshot.viewer.scope === 'demo' ? 'Stop simulation' : 'Unpublish'} <X />
+        <details className="eco-kit-disclosure">
+          <summary>
+            {snapshot.kits.length} destination {snapshot.kits.length === 1 ? 'kit' : 'kits'} ·
+            connections
+          </summary>
+          <div className="eco-kit-strip" aria-label="Destination kits">
+            {snapshot.kits.map((kit) => {
+              const readiness = snapshot.readiness[kit.id];
+              const kitAssets = snapshot.assets.filter((asset) => asset.kitId === kit.id);
+              const renditionsReady =
+                kitAssets.length === 14 && kitAssets.every((asset) => asset.publicMediaId);
+              const journeyLinks = snapshot.links.filter(
+                (link) =>
+                  link.entityType === 'kit' &&
+                  link.entityId === kit.id &&
+                  link.targetType === 'journey'
+              );
+              const canPublish =
+                ['bee', 'curator'].includes(snapshot.viewer.role) &&
+                Boolean(readiness?.ready) &&
+                renditionsReady &&
+                journeyLinks.length === 1 &&
+                kit.status !== 'published';
+              return (
+                <article key={kit.id}>
+                  <div className="eco-kit-copy">
+                    <small>Kit · {readiness?.approved || 0}/14 approved</small>
+                    <strong>{kit.title}</strong>
+                  </div>
+                  <Status value={kit.status} />
+                  <div className="eco-kit-actions">
+                    <button onClick={() => onOpenKit(kit)}>
+                      {journeyLinks.length === 1 ? 'Connections' : 'Connect Journey'} <Link2 />
                     </button>
-                  )}
-              </article>
-            );
-          })}
-        </div>
+                    {canPublish && (
+                      <button
+                        className="eco-primary"
+                        disabled={busy}
+                        onClick={() => void onPublish(kit)}
+                      >
+                        {snapshot.viewer.scope === 'demo'
+                          ? 'Simulate publication'
+                          : 'Publish to Journey'}{' '}
+                        <ArrowRight />
+                      </button>
+                    )}
+                    {kit.status === 'published' &&
+                      ['bee', 'curator'].includes(snapshot.viewer.role) && (
+                        <button disabled={busy} onClick={() => void onUnpublish(kit)}>
+                          {snapshot.viewer.scope === 'demo' ? 'Stop simulation' : 'Unpublish'} <X />
+                        </button>
+                      )}
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        </details>
       )}
       {assets.length ? (
         <DashboardCarousel

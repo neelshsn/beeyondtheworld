@@ -151,7 +151,7 @@ const primaryNext: Record<string, string> = {
 function Photo({
   src,
   className = '',
-  alt = 'AI visual concept · Morocco',
+  alt = 'AI visual concept',
 }: {
   src: string;
   className?: string;

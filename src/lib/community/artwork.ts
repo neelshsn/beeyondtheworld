@@ -6,6 +6,7 @@ export function journeyArtwork(
   key = 'landscape'
 ) {
   const place = project?.territory.toLowerCase();
+  if (place?.includes('namib')) return '/assets/community/namibia.webp';
   if (place && ['ibiza', 'switzerland', 'greece', 'kenya'].includes(place)) {
     if (['landscape', 'frame-arch', 'frame-shadow', 'field', 'craft'].includes(key))
       return `/assets/community/horizon/${place}-landscape.webp`;
