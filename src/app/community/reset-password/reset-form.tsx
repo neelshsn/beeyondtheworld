@@ -69,7 +69,7 @@ export function PasswordResetForm() {
               Your Community password has been updated. Sign in again to open Community and the
               Creative Studio. Previous Community sessions have ended.
             </p>
-            <Link className="source-export" href="/community">
+            <Link className="source-export" href="/dashboard">
               Sign in <ArrowRight size={16} />
             </Link>
           </>

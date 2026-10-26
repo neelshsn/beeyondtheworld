@@ -503,7 +503,7 @@ export function EditorialWorkspace({
           >
             <Menu />
           </button>
-          <a className="ed-mark" href="/community/test" aria-label="Bee Community home">
+          <a className="ed-mark" href="/dashboard/test" aria-label="Bee Community home">
             <Image width={24} height={28} src="/assets/icones/Ico Gold BEE-13.svg" alt="" />
           </a>
           <span className="ed-test-label">TEST EXPERIENCE</span>

@@ -304,7 +304,7 @@ export function CommunityApp({ experimental = false }: { experimental?: boolean 
     window.history.replaceState(
       null,
       '',
-      `/community${experimental ? '/test' : ''}?project=${activeId.current}&view=${next}`
+      `/dashboard/${experimental ? 'test' : 'operations'}?project=${activeId.current}&view=${next}`
     );
     window.scrollTo({ top: 0, behavior: 'instant' });
   };
@@ -645,7 +645,7 @@ export function CommunityApp({ experimental = false }: { experimental?: boolean 
               </div>
               <div className="bee-topbar-right">
                 {!!w.testRoles?.length && (
-                  <a className="bee-link" href="/community/test">
+                  <a className="bee-link" href="/dashboard/test">
                     Explore new test UI <ArrowUpRight size={14} />
                   </a>
                 )}

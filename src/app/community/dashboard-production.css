@@ -1,0 +1,576 @@
+/* Production tools use the same photographic canvas as Journeys and Campaigns. */
+.horizon.site-dashboard {
+  --gold: #edc58b;
+  --ivory: #fff4e7;
+  --serif: var(--font-cannia), Georgia, serif;
+  --sans: var(--font-avenir), Arial, sans-serif;
+  --line: rgba(255, 232, 204, 0.23);
+  --ink: #fff4e7;
+  --muted: #e5d4c2;
+  --surface: rgba(43, 28, 19, 0.64);
+  min-height: 100svh;
+  background: #38291f;
+  font-family: var(--sans);
+  overflow-x: clip;
+}
+.site-dashboard.horizon .ambient {
+  position: fixed;
+  inset: 0;
+  opacity: 1;
+  background-position: center;
+  transform: scale(1.015);
+}
+.site-dashboard.horizon .ambient::after {
+  background:
+    linear-gradient(
+      100deg,
+      rgba(34, 23, 17, 0.68),
+      rgba(85, 53, 32, 0.3) 65%,
+      rgba(35, 25, 19, 0.42)
+    ),
+    linear-gradient(0deg, rgba(30, 21, 16, 0.8), rgba(73, 48, 31, 0.15) 68%);
+}
+.site-dashboard.horizon .bee-dashboard__header {
+  height: 84px;
+  padding: 18px clamp(22px, 4vw, 72px);
+}
+.site-dashboard.horizon .bee-dashboard__brand img {
+  width: 29px;
+  height: 32px;
+  object-fit: contain;
+}
+.site-dashboard.horizon .bee-dashboard__back {
+  border: 0;
+  background: none;
+  padding: 0;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.site-dashboard.horizon .profile-mark {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  font-size: 10px;
+}
+.site-dashboard.horizon .profile-mark .icon {
+  width: 17px;
+  height: 17px;
+  flex-basis: 17px;
+}
+.site-dashboard.horizon .profile-mark select {
+  max-width: 190px;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  padding: 8px 26px 8px 0;
+  font-size: 11px;
+}
+.site-dashboard.horizon select option {
+  background: #38291f;
+  color: var(--ink);
+}
+.site-dashboard.horizon > main {
+  margin: 0 auto;
+  padding: 30px clamp(24px, 5vw, 80px) 60px;
+  max-width: 1650px;
+}
+.site-dashboard.horizon .heading {
+  gap: 14px;
+  margin: 14px 0 30px;
+}
+.site-dashboard.horizon .heading .icon {
+  width: 24px;
+  height: 24px;
+}
+.site-dashboard.horizon h1 {
+  font-family: var(--serif);
+  font-size: clamp(37px, 4vw, 64px);
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1.05;
+}
+.site-dashboard.horizon h2,
+.site-dashboard.horizon h3 {
+  font-family: var(--serif);
+}
+.site-dashboard.horizon p {
+  color: var(--muted);
+  line-height: 1.65;
+}
+.site-dashboard.horizon .workspace {
+  min-height: 0;
+}
+.production-process {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: clamp(18px, 3vw, 42px);
+  padding: 14px 24px 18px;
+  overflow: auto;
+  border-bottom: 1px solid rgba(255, 233, 207, 0.13);
+  scrollbar-width: none;
+}
+.production-process button {
+  border: 0;
+  background: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  white-space: nowrap;
+  font-size: 9px !important;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: 0.62;
+  position: relative;
+  padding: 6px 0;
+}
+.production-process .icon {
+  width: 17px !important;
+  height: 17px !important;
+  flex-basis: 17px !important;
+}
+.production-process button[aria-current='step'] {
+  opacity: 1;
+  color: var(--gold);
+}
+.production-process button[aria-current='step']::after {
+  content: '';
+  position: absolute;
+  height: 1px;
+  bottom: 0;
+  inset-inline: 0;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+.horizon.site-dashboard[data-page='project'] > main {
+  padding: 28px 0 50px clamp(24px, 4vw, 72px);
+  max-width: none;
+}
+.horizon.site-dashboard[data-page='project'] > main > .page-meta {
+  padding-right: clamp(24px, 4vw, 72px);
+}
+.horizon.site-dashboard[data-page='project'] > main > .heading {
+  display: none;
+}
+.production-atlas {
+  display: grid;
+  grid-template-columns: minmax(225px, 24%) minmax(0, 1fr);
+  gap: clamp(24px, 4vw, 70px);
+  align-items: center;
+  min-height: calc(100svh - 245px);
+}
+.production-atlas__intro h2 {
+  font-family: var(--serif);
+  font-size: clamp(46px, 4.5vw, 86px);
+  overflow-wrap: anywhere;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  margin: 20px 0;
+  text-transform: uppercase;
+}
+.production-atlas__intro > p {
+  font-size: 12px;
+  max-width: 230px;
+}
+.production-atlas__role {
+  display: block;
+  color: var(--gold);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin: 19px 0 30px;
+}
+.production-atlas__intro .text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+.production-atlas .bee-carousel__track {
+  min-height: clamp(380px, 56svh, 690px);
+}
+.horizon.site-dashboard .bee-carousel__card .bee-carousel__title {
+  font: 400 clamp(25px, 2.2vw, 39px)/1.05 var(--serif);
+}
+.horizon.site-dashboard .bee-carousel__card .bee-carousel__caption {
+  color: #fff3e6;
+}
+.production-connected {
+  margin: 24px clamp(24px, 5vw, 72px) 0 0;
+  border-top: 1px solid var(--line);
+  padding: 18px 0;
+  color: var(--muted);
+}
+.production-connected > summary {
+  font-size: 10px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+.production-connected > summary .icon {
+  width: 17px;
+  height: 17px;
+  flex-basis: 17px;
+}
+.production-connected[open] > summary {
+  margin-bottom: 24px;
+  color: var(--gold);
+}
+.site-dashboard.horizon .new-journey-button {
+  float: right;
+  margin-right: clamp(24px, 4vw, 72px);
+  font-size: 10px;
+  padding: 9px 0;
+  background: transparent;
+  border: 0;
+}
+.site-dashboard.horizon .form-layout {
+  grid-template-columns: minmax(250px, 0.85fr) minmax(0, 1fr);
+  gap: clamp(28px, 6vw, 90px);
+  min-height: 480px;
+}
+.site-dashboard.horizon .form-art {
+  border-radius: 0;
+  min-height: 480px;
+  max-height: 660px;
+}
+.site-dashboard.horizon .form-fields {
+  padding: 22px 0;
+  align-content: start;
+  gap: 24px;
+}
+.site-dashboard.horizon .field-label {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.site-dashboard.horizon .field-label .icon {
+  width: 17px;
+  height: 17px;
+  flex-basis: 17px;
+}
+.site-dashboard.horizon .field-value,
+.site-dashboard.horizon .source-filters input,
+.site-dashboard.horizon .source-filters select {
+  background: rgba(42, 28, 20, 0.3);
+  border-color: var(--line);
+  border-radius: 0;
+  color: var(--ink);
+}
+.site-dashboard.horizon input:focus,
+.site-dashboard.horizon textarea:focus,
+.site-dashboard.horizon select:focus {
+  border-color: var(--gold);
+  outline-color: var(--gold);
+}
+.site-dashboard.horizon .visual-option {
+  border-radius: 0;
+  background: rgba(37, 25, 18, 0.3);
+  border-color: rgba(255, 232, 204, 0.18);
+  min-height: 105px;
+}
+.site-dashboard.horizon .visual-option.selected {
+  border-color: var(--gold);
+  background: rgba(183, 127, 67, 0.19);
+}
+.site-dashboard.horizon .choice-illustration,
+.site-dashboard.horizon .option-photo {
+  border-radius: 0;
+}
+.site-dashboard.horizon .option-caption {
+  background: linear-gradient(0deg, rgba(35, 22, 14, 0.86), rgba(59, 35, 22, 0.25));
+  backdrop-filter: none;
+}
+.site-dashboard.horizon .page-action {
+  padding-top: 24px;
+  gap: 24px;
+  margin-top: 34px;
+}
+.site-dashboard.horizon .main-action {
+  border: 0;
+  border-bottom: 1px solid var(--gold);
+  border-radius: 0;
+  background: transparent;
+  color: var(--ivory);
+  padding: 13px 0;
+  min-width: 0;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-size: 10px;
+  box-shadow: none;
+}
+.site-dashboard.horizon .main-action:hover {
+  color: var(--gold);
+  background: transparent;
+}
+.site-dashboard.horizon .text-link,
+.site-dashboard.horizon .detail-button {
+  font-size: 11px;
+}
+.site-dashboard.horizon .access-state {
+  font-size: 10px;
+  color: var(--muted);
+}
+.site-dashboard.horizon .study-footer {
+  position: relative;
+  min-height: 0;
+  inset: auto;
+  border-top: 0;
+  padding: 10px clamp(24px, 4vw, 72px) 28px;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  font-size: 8px;
+  letter-spacing: 0.14em;
+  opacity: 0.65;
+}
+.site-dashboard.horizon .source-panel,
+.site-dashboard.horizon .review-notes,
+.site-dashboard.horizon .studio-glass,
+.site-dashboard.horizon .studio-allocation-tray {
+  background: rgba(42, 29, 21, 0.59);
+  border-color: var(--line);
+  border-radius: 0;
+  backdrop-filter: blur(16px);
+}
+.site-dashboard.horizon .studio {
+  --glass: rgba(42, 29, 21, 0.59);
+  --gold: #edc58b;
+  --line: rgba(255, 232, 204, 0.23);
+}
+.site-dashboard.horizon .community-da {
+  --glass: rgba(42, 29, 21, 0.64);
+  --blue: #4c3525;
+  --gold: #edc58b;
+  --line: rgba(255, 232, 204, 0.23);
+  background: transparent;
+  border-radius: 0;
+  min-height: 0;
+}
+.site-dashboard.horizon .source-heading {
+  margin: 16px 0 26px;
+  gap: 24px;
+}
+.site-dashboard.horizon .source-heading h1 {
+  font-size: clamp(38px, 4.2vw, 65px);
+}
+.site-dashboard.horizon .source-heading p {
+  max-width: 580px;
+  font-size: 12px;
+}
+.site-dashboard.horizon .source-tabs button {
+  font-size: 10px;
+  letter-spacing: 0.15em;
+}
+.site-dashboard.horizon .metric,
+.site-dashboard.horizon .team-member,
+.site-dashboard.horizon .line-item {
+  border-radius: 0;
+  background: rgba(47, 31, 21, 0.38);
+  border-color: var(--line);
+}
+.site-dashboard.horizon .proposal-entry {
+  border-radius: 0;
+  border-color: var(--line);
+  background: rgba(44, 29, 20, 0.25);
+}
+.site-dashboard.horizon .source-layout > main,
+.site-dashboard.horizon.source-layout > main {
+  padding: 20px clamp(24px, 4vw, 72px) 55px;
+  max-width: 1750px;
+}
+.site-dashboard.horizon.source-layout .production-process {
+  display: flex;
+}
+.site-dashboard.horizon .horizon-dialog {
+  background: rgba(42, 29, 21, 0.97);
+  color: var(--ivory);
+  border: 1px solid var(--line);
+  border-radius: 0;
+  max-height: 88svh;
+  max-width: min(940px, 94vw);
+  box-shadow: 0 25px 90px #130b0780;
+}
+.site-dashboard.horizon .horizon-dialog::backdrop {
+  background: rgba(25, 17, 12, 0.58);
+  backdrop-filter: blur(8px);
+}
+.site-dashboard.horizon .horizon-dialog .dialog-head {
+  border-color: var(--line);
+}
+.site-dashboard.horizon .horizon-dialog input,
+.site-dashboard.horizon .horizon-dialog textarea,
+.site-dashboard.horizon .horizon-dialog select {
+  background: rgba(249, 225, 198, 0.04);
+  border: 1px solid var(--line);
+  border-radius: 0;
+  color: var(--ivory);
+}
+.site-dashboard.horizon .horizon-dialog .journey-index {
+  gap: 26px;
+}
+.site-dashboard.horizon .horizon-dialog .journey-index a,
+.site-dashboard.horizon .horizon-dialog .journey-index button {
+  border-radius: 0;
+  background: transparent;
+  border-color: var(--line);
+}
+@media (max-width: 1100px) {
+  .production-atlas {
+    grid-template-columns: minmax(190px, 27%) minmax(0, 1fr);
+    gap: 25px;
+  }
+  .production-atlas__intro h2 {
+    font-size: 65px;
+  }
+  .site-dashboard.horizon .form-layout {
+    gap: 35px;
+  }
+  .production-process {
+    justify-content: flex-start;
+    gap: 25px;
+  }
+}
+@media (max-width: 760px) {
+  .site-dashboard.horizon .bee-dashboard__header {
+    height: 74px;
+    padding: 14px 22px;
+    gap: 12px;
+  }
+  .site-dashboard.horizon .profile-mark {
+    gap: 9px;
+  }
+  .site-dashboard.horizon .profile-mark select {
+    max-width: 145px;
+    font-size: 10px;
+  }
+  .site-dashboard.horizon .profile-mark > span {
+    display: none;
+  }
+  .site-dashboard.horizon > main {
+    padding: 24px 22px 40px;
+  }
+  .site-dashboard.horizon h1 {
+    font-size: 37px;
+  }
+  .site-dashboard.horizon .page-meta {
+    font-size: 8px;
+    letter-spacing: 0.12em;
+    gap: 20px;
+    height: auto;
+    min-height: 25px;
+  }
+  .production-process {
+    gap: 24px;
+    padding: 10px 22px 15px;
+  }
+  .production-process button {
+    font-size: 8px !important;
+    gap: 7px;
+  }
+  .production-process .icon {
+    width: 15px !important;
+    height: 15px !important;
+    flex-basis: 15px !important;
+  }
+  .production-atlas {
+    display: block;
+    min-height: 0;
+  }
+  .production-atlas__intro {
+    padding: 24px 24px 30px 0;
+  }
+  .production-atlas__intro h2 {
+    font-size: 61px;
+    margin: 14px 0;
+  }
+  .production-atlas__intro > p {
+    font-size: 11px;
+    max-width: none;
+  }
+  .production-atlas__role {
+    margin: 14px 0 20px;
+  }
+  .production-atlas .bee-carousel__track {
+    min-height: 0;
+  }
+  .horizon.site-dashboard[data-page='project'] > main {
+    padding: 20px 0 35px 24px;
+  }
+  .site-dashboard.horizon .form-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+    min-height: 0;
+  }
+  .site-dashboard.horizon .form-art {
+    min-height: 0;
+    height: 240px;
+    max-height: 240px;
+    width: 100%;
+  }
+  .site-dashboard.horizon .form-fields {
+    padding: 0;
+    gap: 24px;
+  }
+  .site-dashboard.horizon .page-action {
+    flex-wrap: wrap;
+    gap: 18px;
+    padding-top: 20px;
+  }
+  .site-dashboard.horizon .access-state {
+    max-width: 100%;
+    font-size: 9px;
+  }
+  .site-dashboard.horizon .detail-button {
+    margin-left: auto;
+  }
+  .site-dashboard.horizon .main-action {
+    font-size: 9px;
+  }
+  .site-dashboard.horizon.source-layout > main {
+    padding: 20px 20px 35px;
+  }
+  .site-dashboard.horizon .study-footer {
+    padding: 10px 22px 25px;
+    flex-wrap: wrap;
+    font-size: 7px;
+  }
+  .site-dashboard.horizon .source-heading {
+    align-items: flex-start;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .site-dashboard.horizon .source-heading h1 {
+    font-size: 40px;
+  }
+  .site-dashboard.horizon .horizon-dialog {
+    max-height: 91svh;
+    width: calc(100vw - 24px);
+    padding: 23px 20px;
+  }
+  .production-connected {
+    margin-top: 22px;
+    padding-top: 20px;
+  }
+  .production-connected > summary {
+    font-size: 9px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .site-dashboard.horizon * {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}

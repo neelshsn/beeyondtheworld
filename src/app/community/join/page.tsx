@@ -47,7 +47,7 @@ export default function Join() {
                   });
                   const d = await r.json();
                   if (!r.ok) throw Error(d.error);
-                  location.href = '/community?project=' + d.projectId;
+                  location.href = '/dashboard?project=' + encodeURIComponent(d.projectId);
                 } catch (e) {
                   setError(e instanceof Error ? e.message : 'Please retry.');
                 } finally {
@@ -57,7 +57,7 @@ export default function Join() {
             >
               {invite.existing ? (
                 <p>
-                  <Link href="/community" target="_blank">
+                  <Link href="/dashboard" target="_blank">
                     Sign in with your existing account
                   </Link>
                   , then accept this invitation.

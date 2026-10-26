@@ -16,6 +16,14 @@ const nextConfig: NextConfig = {
           },
         ],
       },
+      {
+        source: '/dashboard/:path*',
+        headers: [{ key: 'Referrer-Policy', value: 'no-referrer' }],
+      },
+      {
+        source: '/community/:path+',
+        headers: [{ key: 'Referrer-Policy', value: 'no-referrer' }],
+      },
     ];
   },
   images: {

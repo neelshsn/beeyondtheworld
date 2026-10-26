@@ -14,8 +14,16 @@ const SAFE_AREA_STYLES: CSSProperties = {
 
 export function Header() {
   const pathname = usePathname();
+  const isCommunityLanding = pathname === '/community';
+  const isPrivateCommunityRoute = pathname.startsWith('/community/');
 
-  if (pathname.startsWith('/admin') || pathname.startsWith('/community')) return null;
+  if (
+    pathname.startsWith('/admin') ||
+    pathname.startsWith('/dashboard') ||
+    isPrivateCommunityRoute
+  ) {
+    return null;
+  }
 
   return (
     <div className="pointer-events-none fixed inset-x-0 top-0 z-40">
@@ -37,7 +45,19 @@ export function Header() {
             priority
           />
         </Link>
-        <div className="pointer-events-auto flex items-center">
+        <div className="pointer-events-auto flex items-center gap-5 sm:gap-7">
+          {isCommunityLanding ? (
+            <Link
+              href="/dashboard"
+              className="group inline-flex min-h-11 flex-col items-start justify-center font-display text-[10px] uppercase leading-none tracking-[0.4em] text-white transition-colors hover:text-[#f6c452] focus-visible:text-[#f6c452] focus-visible:outline-none"
+            >
+              <span>Dashboard</span>
+              <span
+                aria-hidden
+                className="mt-1.5 h-px w-full origin-left scale-x-0 bg-gradient-to-r from-[rgba(249,215,162,0.18)] via-[rgba(244,199,122,0.75)] to-[rgba(255,240,225,0.95)] transition-transform duration-300 ease-out group-hover:scale-x-100 group-focus-visible:scale-x-100"
+              />
+            </Link>
+          ) : null}
           <MainMenu />
         </div>
       </div>

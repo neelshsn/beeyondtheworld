@@ -8,6 +8,7 @@ import {
   grantAllowsScope,
   kitReadiness,
   partnerTransition,
+  requireGrantScope,
   requiredAssetSlots,
 } from '../src/lib/ecosystem/model';
 import type { CreativeAsset, Destination, LocalPartner } from '../src/lib/ecosystem/types';
@@ -89,6 +90,11 @@ describe('Visual Poets ecosystem rules', () => {
     expect(grantAllowsScope({ demo_only: true }, 'studio')).toBe(false);
     expect(grantAllowsScope({ demo_only: true }, 'demo')).toBe(true);
     expect(grantAllowsScope({ demo_only: false }, 'studio')).toBe(true);
+    expect(() => requireGrantScope({ demo_only: true }, 'studio')).toThrowError(
+      expect.objectContaining({ status: 403, code: 'FORBIDDEN' })
+    );
+    expect(() => requireGrantScope({ demo_only: true }, 'demo')).not.toThrow();
+    expect(() => requireGrantScope(null, 'studio')).not.toThrow();
   });
   it('requires the exact 1 Hero, 3 Reels and 10 photos instead of a raw count', () => {
     const complete = requiredAssetSlots.map((key) => asset(key));

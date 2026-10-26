@@ -48,6 +48,19 @@ export const grantAllowsScope = (
   scope: 'studio' | 'demo'
 ) => Boolean(grant && (!grant.demo_only || scope === 'demo'));
 
+export function requireGrantScope(
+  grant: { demo_only: boolean } | null | undefined,
+  scope: 'studio' | 'demo'
+) {
+  if (!grant) return;
+  need(
+    grantAllowsScope(grant, scope),
+    'This account is limited to the demonstration workspace.',
+    403,
+    'FORBIDDEN'
+  );
+}
+
 export function cleanText(value: unknown, label: string, max: number, required = false) {
   need(value === undefined || typeof value === 'string', `Invalid ${label}.`);
   const result = String(value || '').trim();

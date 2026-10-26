@@ -43,6 +43,11 @@ import './production.css';
 import './source-workspaces.css';
 import { CreativeConnections } from './creative-connections';
 import { EcosystemConnections } from './ecosystem-connections';
+import { DashboardNavigation } from '@/components/dashboard/dashboard-shell';
+import { DashboardCarousel } from '@/components/dashboard/dashboard-carousel';
+import { visibleDashboardStages } from '../dashboard/_lib/dashboard-model';
+import { DashboardHome } from '../dashboard/_components/dashboard-home';
+import './dashboard-production.css';
 
 async function api(path: string, body?: unknown, method = 'POST') {
   const r = await fetch(path, {
@@ -210,7 +215,8 @@ export function HorizonApp() {
     [comment, setComment] = useState(''),
     [recordId, setRecordId] = useState<string | null>(null),
     [newRecord, setNewRecord] = useState(false),
-    [projectIndex, setProjectIndex] = useState(0);
+    [projectIndex, setProjectIndex] = useState(0),
+    [stageId, setStageId] = useState('');
   const pending = useRef<(() => void) | null>(null),
     requestCount = useRef(0);
   const load = useCallback(async (project?: string) => {
@@ -688,6 +694,24 @@ export function HorizonApp() {
         : isImpact
           ? 'BEE / FLOWER / HONEY'
           : group.toUpperCase();
+  if (p.id === 'projects') return <DashboardHome />;
+  const processSections = [
+    { label: 'Intention', icon: 'feather', phases: ['Brief', 'Confiance'] },
+    { label: 'Creative', icon: 'palette', phases: ['Création Bee', 'Creative proposal'] },
+    { label: 'Scouting', icon: 'pin', phases: ['Scouting · Bee → Flower'] },
+    { label: 'Production', icon: 'flower', phases: ['Préparation', 'Flower · Production'] },
+    { label: 'Delivery', icon: 'film', phases: ['Postproduction', 'Livraison'] },
+    {
+      label: 'Impact',
+      icon: 'leaf',
+      phases: ['Impact · Bee', 'Impact · Flower', 'Impact · Honey', 'Bilan · Honey'],
+    },
+  ]
+    .map((section) => ({
+      ...section,
+      first: allowed.find((page) => section.phases.includes(page.phase)),
+    }))
+    .filter((section) => section.first);
   let content: ReactNode;
   if (!visible)
     content = (
@@ -703,6 +727,41 @@ export function HorizonApp() {
           </button>
         </div>
       </div>
+    );
+  else if (p.id === 'project')
+    content = (
+      <section className="production-atlas" aria-label="Production stages">
+        <div className="production-atlas__intro">
+          <span className="eyebrow">
+            {w.project.is_demo ? 'PRIVATE REHEARSAL' : 'YOUR PRODUCTION'}
+          </span>
+          <h2>{w.project.territory}</h2>
+          <p>{w.project.title}</p>
+          <span className="production-atlas__role">{roleNames[w.project.role]}</span>
+          <button className="text-link" onClick={() => setPanel('nav')}>
+            View all steps <Icon name="arrow" />
+          </button>
+        </div>
+        <DashboardCarousel
+          label="Your production stages"
+          items={visibleDashboardStages(w).map((stage, index) => ({
+            id: stage.id,
+            title: stage.title,
+            subtitle: `${String(index + 1).padStart(2, '0')} · ${stage.total} steps`,
+            image: ai(['craft', 'frame-arch', 'fashion', 'landscape', 'field'][index % 5]),
+            meta: stage.started
+              ? `${stage.completed} reviewed · ${stage.started} documented`
+              : 'Ready to explore',
+          }))}
+          selectedId={stageId || visibleDashboardStages(w)[0]?.id}
+          onSelect={setStageId}
+          onOpen={(id) => {
+            const stage = visibleDashboardStages(w).find((item) => item.id === id);
+            if (stage) go(stage.firstPageId);
+          }}
+          openLabel="Open stage"
+        />
+      </section>
     );
   else if (p.kind === 'choice')
     content = (
@@ -1154,77 +1213,64 @@ export function HorizonApp() {
   };
   return (
     <div
-      className={`horizon direction-A kind-${p.kind} ${isImpact ? 'is-impact' : ''} mode-${mode} ${visible && [...studioPages, ...productionPages, ...mediaPages, ...impactPages, ...proposalPages].includes(p.id) ? 'source-layout' : ''}`}
+      className={`horizon bee-dashboard site-dashboard direction-A kind-${p.kind} ${isImpact ? 'is-impact' : ''} mode-${mode} ${visible && [...studioPages, ...productionPages, ...mediaPages, ...impactPages, ...proposalPages].includes(p.id) ? 'source-layout' : ''}`}
       data-page={p.id}
       aria-busy={busy}
     >
       <div className="ambient" style={{ backgroundImage: `url('${ai('landscape')}')` }} />
-      <header className="topbar">
-        <button className="back-link" onClick={() => go('projects')}>
-          <Icon name="back" />
-          My projects
-        </button>
-        <button className="wordmark" onClick={() => go('project')}>
-          BEEYONDTHEWORLD
-        </button>
-        <div className="profile-mark">
-          <button className="icon-button" onClick={() => go('inbox')} aria-label="Your next steps">
-            <Icon name="bell" />
-          </button>
-          {w.user.is_test && w.project.is_demo ? (
-            <select
-              aria-label="Test role"
-              value={w.project.role}
-              disabled={busy}
-              onChange={(e) => switchRole(e.target.value)}
+      <DashboardNavigation
+        scope={w.project.is_demo ? 'demo' : 'studio'}
+        onBack={() => go('projects')}
+        topActions={
+          <div className="profile-mark">
+            <button
+              className="icon-button"
+              onClick={() => go('inbox')}
+              aria-label="Your next steps"
             >
-              {w.testRoles?.map((r) => (
-                <option key={r} value={r}>
-                  {roleNames[r]}
-                </option>
-              ))}
-            </select>
-          ) : (
-            <span>{roleNames[w.project.role]}</span>
-          )}
-          <button className="icon-button" aria-label="Your profile" onClick={() => go('profile')}>
-            <Icon name="user" />
-          </button>
-        </div>
-      </header>
-      <aside className="global-nav" aria-label="Journey sections">
-        {['bee', 'art_director', 'production'].includes(w.project.role) && (
-          <a
-            className="nav-entry"
-            href={`/community/ecosystem?scope=${w.project.is_demo ? 'demo' : 'studio'}&project=${w.project.id}&tab=studio`}
-          >
-            <Icon name="feather" />
-            <span>Visual Poets & partners</span>
-          </a>
-        )}
-        {['bee', 'art_director', 'production'].includes(w.project.role) && (
-          <a
-            className="nav-entry"
-            href={'/community/creative?scope=' + (w.project.is_demo ? 'demo' : 'studio')}
-          >
-            <Icon name="compass" />
-            <span>Creative CRM</span>
-          </a>
-        )}
-        {['Creatives', 'Journeys', 'Impacts'].map((name, i) => (
+              <Icon name="bell" />
+            </button>
+            {w.user.is_test && w.project.is_demo ? (
+              <select
+                aria-label="Test role"
+                value={w.project.role}
+                disabled={busy}
+                onChange={(e) => switchRole(e.target.value)}
+              >
+                {w.testRoles?.map((r) => (
+                  <option key={r} value={r}>
+                    {roleNames[r]}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <span>{roleNames[w.project.role]}</span>
+            )}
+            <button className="icon-button" aria-label="Your profile" onClick={() => go('profile')}>
+              <Icon name="user" />
+            </button>
+          </div>
+        }
+      />
+      <nav className="production-process" aria-label="Production process">
+        <button
+          aria-current={p.id === 'project' ? 'step' : undefined}
+          onClick={() => go('project')}
+        >
+          <Icon name="compass" />
+          <span>Overview</span>
+        </button>
+        {processSections.map((section) => (
           <button
-            className={`nav-entry ${group === name ? 'active' : ''}`}
-            key={name}
-            onClick={() => {
-              setNavGroup(name);
-              setPanel('nav');
-            }}
+            key={section.label}
+            aria-current={section.phases.includes(p.phase) ? 'step' : undefined}
+            onClick={() => go(section.first!.id)}
           >
-            <Icon name={['feather', 'flower', 'leaf'][i]} />
-            <span>{name}</span>
+            <Icon name={section.icon} />
+            <span>{section.label}</span>
           </button>
         ))}
-      </aside>
+      </nav>
       <main>
         <div className="page-meta">
           <button onClick={() => go('project')}>{w.project.title}</button>
@@ -1255,7 +1301,7 @@ export function HorizonApp() {
           <h1>{visible ? p.title : 'Your journey'}</h1>
         </div>
         <div className="workspace">
-          {['project', 'tale-brief', 'tale-preview', 'scouting'].includes(p.id) && (
+          {['tale-brief', 'tale-preview', 'scouting'].includes(p.id) && (
             <CreativeConnections
               key={`${w.project.id}:${w.project.role}`}
               project={w.project.id}
@@ -1263,7 +1309,7 @@ export function HorizonApp() {
               expanded={!w.project.is_demo && w.project.season.startsWith('Historical archive')}
             />
           )}
-          {p.id === 'projects' && w.project.role === 'bee' && (
+          {p.id === 'project' && w.project.role === 'bee' && (
             <button
               className="source-export new-journey-button"
               onClick={() => setPanel('create-project')}
@@ -1275,18 +1321,23 @@ export function HorizonApp() {
           {p.id === 'project' &&
           !w.project.is_demo &&
           w.project.season.startsWith('Historical archive') ? (
-            <section className="overview-next">
-              <span className="eyebrow">ORIGINAL PRODUCTION ARCHIVE</span>
-              <h2>{w.project.title}</h2>
-              <p>
-                Original sources, selected images and documented connections are available above.
-                Historical proposals remain separate from confirmed contributions. Credits, dates
-                and rights marked for review are not approved for a new production.
-              </p>
-              <a className="text-link" href="/community/creative?tab=collection">
-                Review the source library <Icon name="arrow" />
-              </a>
-            </section>
+            <details className="production-connected">
+              <summary>
+                Original production archive <Icon name="plus" />
+              </summary>
+              <section className="overview-next">
+                <span className="eyebrow">ORIGINAL PRODUCTION ARCHIVE</span>
+                <h2>{w.project.title}</h2>
+                <p>
+                  Original sources, selected images and documented connections are available above.
+                  Historical proposals remain separate from confirmed contributions. Credits, dates
+                  and rights marked for review are not approved for a new production.
+                </p>
+                <a className="text-link" href="/community/creative?tab=collection">
+                  Review the source library <Icon name="arrow" />
+                </a>
+              </section>
+            </details>
           ) : visible && proposalPages.includes(p.id) ? (
             <ProposalWorkspace
               key={w.project.id + w.project.role}
@@ -1338,18 +1389,29 @@ export function HorizonApp() {
             content
           )}
           {p.id === 'project' && (
-            <button className="proposal-entry" onClick={() => go('tale-brief')}>
-              <span>
-                <strong>Creative Studio</strong>
-                <small>Create the proposal · chapters, contributions, Bee & brand review</small>
-              </span>
-              <Icon name="arrow" />
-            </button>
+            <details className="production-connected">
+              <summary>
+                Creative proposal & production tools <Icon name="plus" />
+              </summary>
+              <button className="proposal-entry" onClick={() => go('tale-brief')}>
+                <span>
+                  <strong>Creative Studio</strong>
+                  <small>Create the proposal · chapters, contributions, Bee & brand review</small>
+                </span>
+                <Icon name="arrow" />
+              </button>
+              <CreativeConnections project={w.project.id} demo={w.project.is_demo} />
+              {w.project.is_demo && <RehearsalGuide w={w} go={go} />}
+            </details>
           )}
-          {p.id === 'project' && w.project.is_demo && <RehearsalGuide w={w} go={go} />}
           {['bee', 'art_director', 'production'].includes(w.project.role) &&
             ['project', 'scouting', 'budget', 'impact-overview'].includes(p.id) && (
-              <EcosystemConnections project={w.project.id} demo={w.project.is_demo} />
+              <details className="production-connected">
+                <summary>
+                  Visual Poets & local partners <Icon name="plus" />
+                </summary>
+                <EcosystemConnections project={w.project.id} demo={w.project.is_demo} />
+              </details>
             )}
         </div>
         {error && (
@@ -1357,7 +1419,7 @@ export function HorizonApp() {
             {error}
           </div>
         )}
-        {!proposalPages.includes(p.id) && (
+        {!proposalPages.includes(p.id) && p.id !== 'project' && (
           <footer className="page-action">
             <span className="access-state" role="status">
               <Icon
@@ -1723,7 +1785,7 @@ export function HorizonApp() {
       {panel === 'legacy' && (
         <Modal title="Project records" onClose={() => setPanel('')}>
           <p>Earlier project records remain available in the operations workspace.</p>
-          <a className="main-action" href={`/community/operations?project=${w.project.id}`}>
+          <a className="main-action" href={`/dashboard/operations?project=${w.project.id}`}>
             Open operations <Icon name="arrow" />
           </a>
         </Modal>
@@ -1789,7 +1851,7 @@ function HorizonLogin({ onSuccess }: { onSuccess: () => void }) {
     }
   }
   return (
-    <div className="horizon kind-form">
+    <div className="horizon bee-dashboard site-dashboard kind-form">
       <div className="ambient" style={{ backgroundImage: `url('${assets.landscape}')` }} />
       <header className="topbar">
         <Link href="/" className="back-link">
@@ -1845,7 +1907,7 @@ function HorizonLogin({ onSuccess }: { onSuccess: () => void }) {
                 {busy ? 'Opening…' : 'Enter the journey'}
                 <Icon name="arrow" />
               </button>
-              <Link className="text-link" href="/community/ecosystem">
+              <Link className="text-link" href="/dashboard/ecosystem">
                 Visual Poet? Open your creative space <Icon name="feather" />
               </Link>
             </div>

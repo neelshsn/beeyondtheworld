@@ -2,7 +2,7 @@ import 'server-only';
 import { currentUser } from '@/lib/community/server';
 import { crmCatalog, type Catalog } from '@/lib/creative/server';
 import { sqlClient } from '@/lib/db/client';
-import { EcosystemError, grantAllowsScope, need } from './model';
+import { EcosystemError, grantAllowsScope, need, requireGrantScope } from './model';
 import type {
   AssetKit,
   CreativeAsset,
@@ -62,11 +62,11 @@ export async function ecosystemAccess(request: Request): Promise<EcosystemAccess
       [scope, user.id]
     ),
   ]);
-  let staffRole: StaffRole | null =
+  requireGrantScope(grant, scope);
+  const staffRole: StaffRole | null =
     grant && ['bee', 'curator', 'production'].includes(grant.role)
       ? (grant.role as StaffRole)
       : null;
-  if (!grantAllowsScope(grant, scope)) staffRole = null;
   const canSwitchDemoRole = Boolean(user.is_test && scope === 'demo');
   const simulated = url.searchParams.get('role');
   const commercial = Boolean(

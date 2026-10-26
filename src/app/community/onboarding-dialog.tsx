@@ -76,7 +76,7 @@ export function OnboardingDialog({
                 const d = await r.json();
                 if (!r.ok) throw Error(d.error);
                 if (kind === 'project') {
-                  location.href = '/community?project=' + d.id + '#brief-scope';
+                  location.href = '/dashboard?project=' + encodeURIComponent(d.id) + '#brief-scope';
                 } else {
                   setLink(location.origin + d.path);
                   await load();

@@ -1,7 +1,6 @@
 'use client';
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import {
-  ArrowLeft,
   ArrowRight,
   Plus,
   X,
@@ -27,6 +26,8 @@ import {
   type CreativeData,
 } from '@/lib/creative/model';
 import type { Catalog } from '@/lib/creative/server';
+import { DashboardCarousel } from '@/components/dashboard/dashboard-carousel';
+import { DashboardShell } from '@/components/dashboard/dashboard-shell';
 import './workspace.css';
 type Snapshot = {
   email: string;
@@ -52,12 +53,68 @@ const blank = (kind: CreativeKind) =>
     ])
   ) as CreativeData;
 const text = (v: unknown) => String(v || '');
+const list = (value: unknown): string[] =>
+  Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string') : [];
+const formatDateTime = (value: unknown) => {
+  if (typeof value !== 'string' || !value.trim()) return 'Date unavailable';
+  const date = new Date(value);
+  return Number.isFinite(date.getTime()) ? date.toLocaleString() : 'Date unavailable';
+};
+const creatorSnapshotLines = (value: unknown): string[] => {
+  if (typeof value !== 'string' || !value) return [];
+  try {
+    const parsed = JSON.parse(value) as unknown;
+    if (!Array.isArray(parsed)) return [];
+    return parsed.flatMap((entry) => {
+      if (!entry || typeof entry !== 'object') return [];
+      const candidate = entry as { name?: unknown; model?: unknown };
+      const name = text(candidate.name).trim();
+      const model = text(candidate.model).trim();
+      return name ? [`${name}${model ? ` · ${model}` : ''}`] : [];
+    });
+  } catch {
+    return [];
+  }
+};
+function normalizeSnapshot(value: Snapshot): Snapshot {
+  const items = Array.isArray(value.items)
+    ? value.items.map((item) => ({
+        ...item,
+        data:
+          item.data && typeof item.data === 'object' && !Array.isArray(item.data) ? item.data : {},
+      }))
+    : [];
+  const crm = value.crm
+    ? {
+        ...value.crm,
+        companies: Array.isArray(value.crm.companies) ? value.crm.companies : [],
+        opportunities: Array.isArray(value.crm.opportunities) ? value.crm.opportunities : [],
+        briefs: Array.isArray(value.crm.briefs) ? value.crm.briefs : [],
+        productions: Array.isArray(value.crm.productions) ? value.crm.productions : [],
+      }
+    : null;
+  return {
+    ...value,
+    items,
+    projects: Array.isArray(value.projects) ? value.projects : [],
+    history: Array.isArray(value.history) ? value.history : [],
+    crm,
+  };
+}
 const terminology = (v: string) =>
   v === 'Local scout'
     ? 'BEE Visual Poet'
     : v === 'Creative Scout Royalty'
       ? 'Visual Poet royalty (proposal)'
       : v;
+const roleLabel = (role: CreativeRole) =>
+  ({
+    bee: 'BEE core',
+    curator: 'Creative Studio',
+    production: 'Bloom Production',
+    contributor: 'Visual Poet / business development',
+    viewer: 'Read-only',
+  })[role];
 const esc = (s: unknown) =>
   text(s).replace(
     /[&<>"']/g,
@@ -90,8 +147,7 @@ export function CreativeWorkspace() {
     [notice, setNotice] = useState(''),
     [busy, setBusy] = useState(false),
     [newProject, setNewProject] = useState(false);
-  const rail = useRef<HTMLDivElement>(null),
-    dialog = useRef<HTMLDialogElement>(null),
+  const dialog = useRef<HTMLDialogElement>(null),
     file = useRef<HTMLInputElement>(null);
   useEffect(() => {
     const q = new URLSearchParams(location.search);
@@ -105,8 +161,9 @@ export function CreativeWorkspace() {
     const r = await fetch(endpoint, { cache: 'no-store' });
     const s = await r.json();
     if (!r.ok) throw Error(s.error);
-    setSnapshot(s);
-    return s as Snapshot;
+    const normalized = normalizeSnapshot(s as Snapshot);
+    setSnapshot(normalized);
+    return normalized;
   }
   useEffect(() => {
     if (!scope) return;
@@ -117,7 +174,7 @@ export function CreativeWorkspace() {
       .then(async (r) => {
         const s = await r.json();
         if (!r.ok) throw Error(s.error);
-        if (active) setSnapshot(s);
+        if (active) setSnapshot(normalizeSnapshot(s as Snapshot));
       })
       .catch((e) => {
         if (active) setError(e.message);
@@ -238,7 +295,7 @@ export function CreativeWorkspace() {
               x.data.mediaId &&
               (x.data.destinationId === item.id ||
                 x.data.talentId === item.id ||
-                ((item.data.contentIds as string[]) || []).includes(x.id))
+                list(item.data.contentIds).includes(x.id))
           );
     if (content?.data.mediaId) return endpoint + '&file=' + content.data.mediaId;
     return scope === 'demo'
@@ -251,7 +308,9 @@ export function CreativeWorkspace() {
     setBusy(true);
     try {
       const fresh = await load();
-      const c = fresh.items.find((x) => x.id === item.id)!;
+      const c = fresh.items.find((x) => x.id === item.id);
+      if (!c)
+        throw Error('This selection changed while it was being prepared. Reopen it and retry.');
       const contents = relatedContent(c, fresh.items);
       if (c.status !== 'approved' || !contents.length || contents.some((x) => !usable(x, true)))
         throw Error('Approve the selection and complete all usage rights before exporting.');
@@ -284,42 +343,45 @@ export function CreativeWorkspace() {
     }
   }
   const label = (id: unknown) => all.find((x) => x.id === id)?.title || text(id);
+  const activeItem = visible.find((item) => item.id === current?.id) || visible[0];
+  const activeImage = activeItem
+    ? hero(activeItem)
+    : '/assets/community/horizon/morocco-landscape.webp';
+  const activePlace = text(
+    activeItem?.data.country || activeItem?.data.territory || activeItem?.data.destination
+  );
+  const carouselItems = visible.map((item) => ({
+    id: item.id,
+    title: item.title,
+    subtitle:
+      terminology(text(item.data.country || item.data.discipline || item.data.medium)) ||
+      'BEEYONDTHEWORLD',
+    image: hero(item) || undefined,
+    meta: text(item.data.style || item.data.intention || item.data.description).slice(0, 92),
+    badge: item.status.replaceAll('_', ' '),
+  }));
   return (
     <div className="creative-crm">
-      <header className="cc-top">
-        <a href="/community">
-          <ArrowLeft size={16} /> Community
-        </a>
-        <a className="cc-word" href="/community/creative">
-          BEEYONDTHEWORLD
-        </a>
-        <a href="/sales/">
-          Sales CRM <ArrowRight size={16} />
-        </a>
-      </header>
-      <main>
-        <div className="cc-title">
-          <div>
-            <span className="cc-eyebrow">THE CREATIVE ECOSYSTEM</span>
-            <h1>
-              Local souls.
-              <br />
-              <em>Shared horizons.</em>
-            </h1>
-            <p>Discover. Curate. Co-create. Bring a brand journey to life.</p>
-          </div>
+      <DashboardShell
+        image={activeImage}
+        eyebrow="The creative ecosystem"
+        title={activePlace || activeItem?.title || 'Creative Studio'}
+        meta={
+          activeItem
+            ? `${tabs.find((item) => item.id === activeItem.kind)?.label || activeItem.kind} · ${activeItem.status.replaceAll('_', ' ')}`
+            : 'Discover · Curate · Co-create'
+        }
+        description="Local souls, visual stories and places shaped into one living creative direction."
+        layout="stacked"
+        className="cc-dashboard-shell"
+        backHref="/dashboard"
+        backLabel="Dashboard"
+        scope={scope === 'demo' ? 'demo' : 'studio'}
+        topActions={
           <div className="cc-context">
             <a
-              className="cc-gold"
-              href={`/community/ecosystem?scope=${scope || 'studio'}&tab=studio`}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 8,
-                padding: '12px 16px',
-                border: '1px solid var(--gold)',
-                borderRadius: 4,
-              }}
+              className="cc-context-link"
+              href={`/dashboard/ecosystem?scope=${scope || 'studio'}&tab=studio`}
             >
               Visual Poets & partners <ArrowRight size={16} />
             </a>
@@ -329,7 +391,7 @@ export function CreativeWorkspace() {
                 value={scope}
                 onChange={(e) => {
                   setSelected('');
-                  location.href = '/community/creative?scope=' + e.target.value;
+                  location.href = '/dashboard/creative?scope=' + e.target.value;
                 }}
               >
                 <option value="studio">Creative Studio</option>
@@ -354,55 +416,13 @@ export function CreativeWorkspace() {
                 </select>
               </label>
             )}
-            <span>{snapshot?.email}</span>
+            {snapshot && <span>{roleLabel(snapshot.role)}</span>}
           </div>
-        </div>
-        <div className="cc-journey" aria-label="Creative workflow">
-          {['Visual Poet', 'Creative Studio', 'Bloom Production', 'Brand Journey'].map((s, i) => (
-            <span key={s}>
-              <small>0{i + 1}</small>
-              {s}
-              {i < 3 && <ArrowRight size={14} />}
-            </span>
-          ))}
-        </div>
-        {scope === 'demo' && (
-          <p className="cc-note">
-            Demonstration only. AI concepts and fictional scout profiles illustrate the Morocco
-            workflow. No real booking, certification or payment.
-          </p>
-        )}
-        {error && (
-          <div className="cc-alert" role="alert">
-            {error}
-            <button
-              onClick={() =>
-                void load()
-                  .then(() => setError(''))
-                  .catch((e) => setError(e.message))
-              }
-            >
-              <RefreshCw size={14} /> Retry
-            </button>
-            {!snapshot && (
-              <>
-                <a href="/community">Community sign in</a>
-                <a href="/sales/login">Sales sign in</a>
-                <a href="?scope=demo">Open demonstration</a>
-              </>
-            )}
-          </div>
-        )}
-        {notice && (
-          <p className="cc-notice" role="status">
-            <Check size={16} />
-            {notice}
-          </p>
-        )}
-        {snapshot && (
-          <>
+        }
+        actions={
+          snapshot ? (
             <nav className="cc-tabs" aria-label="Creative library">
-              {tabs.map(({ id, label, icon: I }) => (
+              {tabs.map(({ id, label, icon: Icon }) => (
                 <button
                   key={id}
                   className={tab === id ? 'active' : ''}
@@ -413,481 +433,488 @@ export function CreativeWorkspace() {
                     setQuery('');
                   }}
                 >
-                  <I size={19} />
+                  <Icon size={17} />
                   {label}
                   <small>
-                    {all.filter((x) => x.kind === id && x.status !== 'archived').length}
+                    {all.filter((item) => item.kind === id && item.status !== 'archived').length}
                   </small>
                 </button>
               ))}
             </nav>
-            <div className="cc-tools">
-              <label className="cc-search">
-                <Search size={17} />
-                <input
-                  aria-label="Search creative library"
-                  placeholder="Style, country, discipline, brand…"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                />
-              </label>
-              <select
-                aria-label="Record visibility"
-                value={filter}
-                onChange={(e) => setFilter(e.target.value)}
-              >
-                <option value="active">Active records</option>
-                <option value="all">Include archived</option>
-              </select>
-              {writable && (
-                <button className="cc-gold" onClick={() => openNew()}>
-                  <Plus size={16} /> Add {tab === 'talent' ? 'local soul' : tab}
-                </button>
+          ) : undefined
+        }
+      >
+        <section className="cc-workspace">
+          <details className="cc-journey">
+            <summary>Creative workflow</summary>
+            <div aria-label="Creative workflow">
+              {['Visual Poet', 'Creative Studio', 'Bloom Production', 'Brand Journey'].map(
+                (s, i) => (
+                  <span key={s}>
+                    <small>0{i + 1}</small>
+                    {s}
+                    {i < 3 && <ArrowRight size={14} />}
+                  </span>
+                )
               )}
             </div>
-            {due.length > 0 && (
-              <details className="cc-follow">
-                <summary>
-                  {due.length} follow-up{due.length > 1 ? 's' : ''} due
-                </summary>
-                {due.map((x) => (
-                  <button
-                    key={x.id}
-                    onClick={() => {
-                      setTab(x.kind);
-                      choose(x);
-                    }}
-                  >
-                    {x.title} · {text(x.data.nextAction)}{' '}
-                    <small>
-                      {text(x.data.owner)} · {text(x.data.nextDate)}
-                    </small>
-                  </button>
-                ))}
-              </details>
-            )}
-            {visible.length ? (
-              <>
-                <div className="cc-rail-head">
-                  <span>{tabs.find((x) => x.id === tab)?.label}</span>
-                  <div>
-                    <button
-                      aria-label="Previous cards"
-                      onClick={() => rail.current?.scrollBy({ left: -460, behavior: 'smooth' })}
-                    >
-                      <ArrowLeft size={18} />
-                    </button>
-                    <button
-                      aria-label="Next cards"
-                      onClick={() => rail.current?.scrollBy({ left: 460, behavior: 'smooth' })}
-                    >
-                      <ArrowRight size={18} />
-                    </button>
-                  </div>
-                </div>
-                <div ref={rail} className="cc-cards">
-                  {visible.map((item) => (
-                    <button
-                      className={'cc-card ' + (selected === item.id ? 'selected' : '')}
-                      key={item.id}
-                      onClick={() => choose(item)}
-                    >
-                      <div className="cc-image">
-                        {hero(item) ? (
-                          // The authenticated endpoint already returns an optimised WebP.
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
-                            src={hero(item)}
-                            alt=""
-                            loading="lazy"
-                            onError={(e) => {
-                              e.currentTarget.style.visibility = 'hidden';
-                            }}
-                          />
-                        ) : (
-                          <Images
-                            size={38}
-                            aria-label="Preview not imported · open original source"
-                            style={{
-                              position: 'absolute',
-                              inset: 0,
-                              margin: 'auto',
-                              color: 'var(--cc-gold, #c7a66c)',
-                            }}
-                          />
-                        )}
-                        <span>{item.status.replaceAll('_', ' ')}</span>
-                        {item.data.provenance === 'AI concept' && <small>AI concept</small>}
-                      </div>
-                      <div className="cc-card-body">
-                        <small>
-                          {terminology(
-                            text(item.data.country || item.data.discipline || item.data.medium)
-                          ) || 'BEEYONDTHEWORLD'}
-                        </small>
-                        <h2>{item.title}</h2>
-                        <p>
-                          {text(
-                            item.data.style ||
-                              item.data.intention ||
-                              item.data.description ||
-                              item.data.nextAction
-                          ).slice(0, 130)}
-                        </p>
-                        <ArrowRight size={19} />
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </>
-            ) : (
-              <div className="cc-empty">
-                <Compass size={38} />
-                <h2>{query ? 'No matching stories.' : 'The next story starts here.'}</h2>
-                <p>
-                  {query
-                    ? 'Try another style, place or discipline.'
-                    : 'Add a local talent, a destination or a first inspiration. The team can build the journey together.'}
-                </p>
+          </details>
+          {scope === 'demo' && (
+            <p className="cc-note">
+              Demonstration only. AI concepts and fictional scout profiles illustrate the Morocco
+              workflow. No real booking, certification or payment.
+            </p>
+          )}
+          {error && (
+            <div className="cc-alert" role="alert">
+              {error}
+              <button
+                onClick={() =>
+                  void load()
+                    .then(() => setError(''))
+                    .catch((e) => setError(e.message))
+                }
+              >
+                <RefreshCw size={14} /> Retry
+              </button>
+              {!snapshot && (
+                <>
+                  <a href="/dashboard">Dashboard sign in</a>
+                  <a href="/sales/login">Sales sign in</a>
+                  <a href="?scope=demo">Open demonstration</a>
+                </>
+              )}
+            </div>
+          )}
+          {notice && (
+            <p className="cc-notice" role="status">
+              <Check size={16} />
+              {notice}
+            </p>
+          )}
+          {snapshot && (
+            <>
+              <div className="cc-tools">
+                <label className="cc-search">
+                  <Search size={17} />
+                  <input
+                    aria-label="Search creative library"
+                    placeholder="Style, country, discipline, brand…"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                  />
+                </label>
+                <select
+                  aria-label="Record visibility"
+                  value={filter}
+                  onChange={(e) => setFilter(e.target.value)}
+                >
+                  <option value="active">Active records</option>
+                  <option value="all">Include archived</option>
+                </select>
                 {writable && (
                   <button className="cc-gold" onClick={() => openNew()}>
-                    <Plus size={16} /> Add the first {tab}
+                    <Plus size={16} /> Add {tab === 'talent' ? 'local soul' : tab}
                   </button>
                 )}
-                {scope === 'studio' && !query && (
-                  <a href="?scope=demo">
-                    Explore the Morocco demonstration <ArrowRight size={14} />
-                  </a>
-                )}
               </div>
-            )}
-            {current && (
-              <section className="cc-detail" aria-label="Selected record">
-                <div className="cc-detail-title">
-                  <div>
-                    <span className="cc-eyebrow">
-                      {current.kind} · {current.status}
-                    </span>
-                    <h2>{current.title}</h2>
-                  </div>
-                  <div>
-                    {writable && <button onClick={() => edit(current)}>Edit record</button>}
-                    <button aria-label="Close record" onClick={() => setSelected('')}>
-                      <X size={19} />
+              {due.length > 0 && (
+                <details className="cc-follow">
+                  <summary>
+                    {due.length} follow-up{due.length > 1 ? 's' : ''} due
+                  </summary>
+                  {due.map((x) => (
+                    <button
+                      key={x.id}
+                      onClick={() => {
+                        setTab(x.kind);
+                        choose(x);
+                      }}
+                    >
+                      {x.title} · {text(x.data.nextAction)}{' '}
+                      <small>
+                        {text(x.data.owner)} · {text(x.data.nextDate)}
+                      </small>
                     </button>
-                  </div>
+                  ))}
+                </details>
+              )}
+              {visible.length ? (
+                <DashboardCarousel
+                  items={carouselItems}
+                  selectedId={activeItem?.id}
+                  onSelect={(id) => {
+                    const item = all.find((entry) => entry.id === id);
+                    if (item) choose(item);
+                  }}
+                  onOpen={(id) => {
+                    const item = all.find((entry) => entry.id === id);
+                    if (item) choose(item);
+                  }}
+                  openLabel="Open record"
+                  label={tabs.find((item) => item.id === tab)?.label || 'Creative library'}
+                  layout="atlas"
+                  renderMedia={(item) =>
+                    item.image ? (
+                      // Authenticated files intentionally bypass the public Next image loader.
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={item.image} alt="" loading="lazy" />
+                    ) : (
+                      <span className="cc-media-placeholder">
+                        <Images aria-hidden="true" />
+                        Preview pending
+                      </span>
+                    )
+                  }
+                />
+              ) : (
+                <div className="cc-empty">
+                  <Compass size={38} />
+                  <h2>{query ? 'No matching stories.' : 'The next story starts here.'}</h2>
+                  <p>
+                    {query
+                      ? 'Try another style, place or discipline.'
+                      : 'Add a local talent, a destination or a first inspiration. The team can build the journey together.'}
+                  </p>
+                  {writable && (
+                    <button className="cc-gold" onClick={() => openNew()}>
+                      <Plus size={16} /> Add the first {tab}
+                    </button>
+                  )}
+                  {scope === 'studio' && !query && (
+                    <a href="?scope=demo">
+                      Explore the Morocco demonstration <ArrowRight size={14} />
+                    </a>
+                  )}
                 </div>
-                <div className="cc-detail-grid">
-                  <dl>
-                    {schemas[current.kind]
-                      .filter(
-                        (f) => current.data[f.key] && !['contentIds', 'talentIds'].includes(f.key)
-                      )
-                      .map((f) => (
-                        <div key={f.key}>
-                          <dt>{f.label}</dt>
-                          <dd>
-                            {f.type === 'url' ? (
-                              <a href={text(current.data[f.key])} target="_blank" rel="noreferrer">
-                                Open source <ExternalLink size={12} />
-                              </a>
-                            ) : f.key === 'projectId' ? (
-                              <a href={'/community?project=' + current.data.projectId + '#project'}>
-                                {snapshot.projects.find((p) => p.id === current.data.projectId)
-                                  ?.title || 'Open production'}{' '}
-                                <ArrowRight size={12} />
-                              </a>
-                            ) : f.key === 'companyId' ? (
-                              <a href={'/sales/#brands/' + current.data.companyId}>
-                                {snapshot.crm?.companies.find(
-                                  (c) => c.id === current.data.companyId
-                                )?.name || 'Open CRM brand'}
-                              </a>
-                            ) : f.key === 'opportunityId' ? (
-                              snapshot.crm?.opportunities.find(
-                                (c) => c.id === current.data.opportunityId
-                              )?.title || 'CRM opportunity'
-                            ) : f.key === 'briefId' ? (
-                              snapshot.crm?.briefs.find((c) => c.id === current.data.briefId)
-                                ?.title || 'CRM brief'
-                            ) : f.type === 'link' ? (
-                              <button
-                                onClick={() => {
-                                  const linked = all.find((x) => x.id === current.data[f.key]);
-                                  if (linked) {
-                                    setTab(linked.kind);
-                                    choose(linked);
-                                  }
-                                }}
-                              >
-                                {label(current.data[f.key])}
-                                <ArrowRight size={12} />
-                              </button>
-                            ) : (
-                              text(current.data[f.key])
-                            )}
-                          </dd>
-                        </div>
-                      ))}
-                  </dl>
-                  <aside>
-                    {current.kind === 'collection' && (
-                      <details open>
-                        <summary>Selected stories & connected people</summary>
-                        {[
-                          ...((current.data.contentIds as string[]) || []),
-                          ...((current.data.talentIds as string[]) || []),
-                        ].map((id) => {
-                          const linked = all.find((x) => x.id === id);
-                          return (
-                            linked && (
-                              <button
-                                key={id}
-                                onClick={() => {
-                                  setTab(linked.kind);
-                                  choose(linked);
-                                }}
-                              >
-                                {linked.title}
-                                {linked.kind === 'talent' && (
-                                  <small> · {text(linked.data.sourceContext)}</small>
-                                )}{' '}
-                                <ArrowRight size={12} />
-                              </button>
-                            )
-                          );
-                        })}
-                      </details>
-                    )}
-                    {all
-                      .filter(
-                        (x) =>
-                          x.kind === 'collection' &&
-                          x.status !== 'archived' &&
-                          (((x.data.talentIds as string[]) || []).includes(current.id) ||
-                            ((x.data.contentIds as string[]) || []).some(
-                              (id) =>
-                                id === current.id ||
-                                all.some(
-                                  (c) =>
-                                    c.id === id &&
-                                    (c.data.destinationId === current.id ||
-                                      c.data.talentId === current.id)
-                                )
-                            ))
-                      )
-                      .map((x) => (
-                        <p key={x.id}>
-                          <button
-                            onClick={() => {
-                              setTab('collection');
-                              choose(x);
-                            }}
-                          >
-                            {x.title} <ArrowRight size={12} />
-                          </button>
-                        </p>
-                      ))}
-                    <span className="cc-eyebrow">NEXT STEP</span>
-                    <div className="cc-actions">
-                      {current.kind === 'talent' && writable && (
-                        <button disabled={busy} onClick={() => void perform('contacted')}>
-                          <Check size={16} /> Mark contacted
-                        </button>
-                      )}
-                      {current.kind === 'destination' &&
-                        ['bee', 'production'].includes(snapshot.role) && (
-                          <button disabled={busy} onClick={() => void perform('feasible')}>
-                            <Check size={16} /> Validate Bloom feasibility
-                          </button>
-                        )}
-                      {current.kind === 'content' && (
-                        <>
-                          {writable && (
-                            <>
-                              <input
-                                ref={file}
-                                type="file"
-                                accept="image/png,image/jpeg,image/webp"
-                                hidden
-                                onChange={async (e) => {
-                                  const f = e.target.files?.[0];
-                                  if (!f) return;
-                                  if (f.size > 3 * 1024 * 1024) {
-                                    setError('Maximum image size: 3 MB.');
-                                    return;
-                                  }
-                                  const r = new FileReader();
-                                  r.onload = () =>
-                                    void perform('upload', { image: r.result, name: f.name });
-                                  r.readAsDataURL(f);
-                                  e.target.value = '';
-                                }}
-                              />
-                              <button disabled={busy} onClick={() => file.current?.click()}>
-                                <Upload size={16} /> Upload image · 3 MB
-                              </button>
-                            </>
-                          )}
-                          {['bee', 'curator'].includes(snapshot.role) && (
-                            <button disabled={busy} onClick={() => void perform('curate')}>
-                              <Check size={16} /> Curate for the studio
-                            </button>
-                          )}
-                          {snapshot.role === 'bee' && (
-                            <button disabled={busy} onClick={() => void perform('verify')}>
-                              Verify original-source evidence
-                            </button>
-                          )}
-                          <p>
-                            Provenance: {text(current.data.verification) || 'pending'}
-                            <br />
-                            Public showreel:{' '}
-                            {current.data.published === 'yes' ? 'Published' : 'Not published'}
-                          </p>
-                          {scope === 'studio' && ['bee', 'curator'].includes(snapshot.role) && (
-                            <button
-                              disabled={busy}
-                              onClick={() =>
-                                void perform(
-                                  current.data.published === 'yes' ? 'unpublish' : 'publish'
-                                )
-                              }
-                            >
-                              {current.data.published === 'yes' ? 'Remove from' : 'Publish to'}{' '}
-                              Travel Showreel
-                            </button>
-                          )}
-                        </>
-                      )}
+              )}
+              {current && (
+                <section className="cc-detail" aria-label="Selected record">
+                  <div className="cc-detail-title">
+                    <div>
+                      <span className="cc-eyebrow">
+                        {current.kind} · {current.status}
+                      </span>
+                      <h2>{current.title}</h2>
+                    </div>
+                    <div>
+                      {writable && <button onClick={() => edit(current)}>Edit record</button>}
+                      <button aria-label="Close record" onClick={() => setSelected('')}>
+                        <X size={19} />
+                      </button>
+                    </div>
+                  </div>
+                  <div className="cc-detail-grid">
+                    <dl>
+                      {schemas[current.kind]
+                        .filter(
+                          (f) => current.data[f.key] && !['contentIds', 'talentIds'].includes(f.key)
+                        )
+                        .map((f) => (
+                          <div key={f.key}>
+                            <dt>{f.label}</dt>
+                            <dd>
+                              {f.type === 'url' ? (
+                                <a
+                                  href={text(current.data[f.key])}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                >
+                                  Open source <ExternalLink size={12} />
+                                </a>
+                              ) : f.key === 'projectId' ? (
+                                <a
+                                  href={'/dashboard?project=' + current.data.projectId + '#project'}
+                                >
+                                  {snapshot.projects.find((p) => p.id === current.data.projectId)
+                                    ?.title || 'Open production'}{' '}
+                                  <ArrowRight size={12} />
+                                </a>
+                              ) : f.key === 'companyId' ? (
+                                <a href={'/sales/#brands/' + current.data.companyId}>
+                                  {snapshot.crm?.companies.find(
+                                    (c) => c.id === current.data.companyId
+                                  )?.name || 'Open CRM brand'}
+                                </a>
+                              ) : f.key === 'opportunityId' ? (
+                                snapshot.crm?.opportunities.find(
+                                  (c) => c.id === current.data.opportunityId
+                                )?.title || 'CRM opportunity'
+                              ) : f.key === 'briefId' ? (
+                                snapshot.crm?.briefs.find((c) => c.id === current.data.briefId)
+                                  ?.title || 'CRM brief'
+                              ) : f.type === 'link' ? (
+                                <button
+                                  onClick={() => {
+                                    const linked = all.find((x) => x.id === current.data[f.key]);
+                                    if (linked) {
+                                      setTab(linked.kind);
+                                      choose(linked);
+                                    }
+                                  }}
+                                >
+                                  {label(current.data[f.key])}
+                                  <ArrowRight size={12} />
+                                </button>
+                              ) : (
+                                text(current.data[f.key])
+                              )}
+                            </dd>
+                          </div>
+                        ))}
+                    </dl>
+                    <aside>
                       {current.kind === 'collection' && (
-                        <>
-                          {relatedContent(current, all).map((x) => (
+                        <details open>
+                          <summary>Selected stories & connected people</summary>
+                          {[...list(current.data.contentIds), ...list(current.data.talentIds)].map(
+                            (id) => {
+                              const linked = all.find((x) => x.id === id);
+                              return (
+                                linked && (
+                                  <button
+                                    key={id}
+                                    onClick={() => {
+                                      setTab(linked.kind);
+                                      choose(linked);
+                                    }}
+                                  >
+                                    {linked.title}
+                                    {linked.kind === 'talent' && (
+                                      <small> · {text(linked.data.sourceContext)}</small>
+                                    )}{' '}
+                                    <ArrowRight size={12} />
+                                  </button>
+                                )
+                              );
+                            }
+                          )}
+                        </details>
+                      )}
+                      {all
+                        .filter(
+                          (x) =>
+                            x.kind === 'collection' &&
+                            x.status !== 'archived' &&
+                            (list(x.data.talentIds).includes(current.id) ||
+                              list(x.data.contentIds).some(
+                                (id) =>
+                                  id === current.id ||
+                                  all.some(
+                                    (c) =>
+                                      c.id === id &&
+                                      (c.data.destinationId === current.id ||
+                                        c.data.talentId === current.id)
+                                  )
+                              ))
+                        )
+                        .map((x) => (
+                          <p key={x.id}>
                             <button
-                              key={x.id}
                               onClick={() => {
-                                setTab('content');
+                                setTab('collection');
                                 choose(x);
                               }}
                             >
-                              <Images size={15} />
-                              {x.title}
-                              <span>{usable(x, true) ? 'Ready' : 'Rights / review needed'}</span>
+                              {x.title} <ArrowRight size={12} />
                             </button>
-                          ))}
-                          {['bee', 'curator'].includes(snapshot.role) && (
-                            <button disabled={busy} onClick={() => void perform('approve')}>
-                              <Check size={16} /> Approve brand portfolio
-                            </button>
-                          )}
-                          <button disabled={busy} onClick={() => void portfolio(current)}>
-                            <Download size={16} /> Export approved portfolio
-                          </button>
-                          {writable && (
-                            <button
-                              onClick={() =>
-                                setEditing({
-                                  kind: 'activation',
-                                  title: current.title + ' · journey',
-                                  data: {
-                                    ...blank('activation'),
-                                    collectionId: current.id,
-                                    projectId: text(current.data.projectId),
-                                    opportunityId: text(current.data.opportunityId),
-                                  },
-                                })
-                              }
-                            >
-                              <ArrowRight size={16} /> Prepare brand journey
-                            </button>
-                          )}
-                        </>
-                      )}
-                      {current.kind === 'activation' && (
-                        <>
-                          <p>
-                            Sale → signed booking → creator agreement record.
-                            <br />
-                            Finance and payments are deferred.
-                          </p>
-                          {snapshot.role === 'bee' &&
-                            (current.status !== 'confirmed' ? (
-                              <button disabled={busy} onClick={() => void perform('confirm')}>
-                                <Check size={16} /> Confirm booking
-                              </button>
-                            ) : (
-                              <>
-                                <span className="cc-note">
-                                  Creator agreements recorded. No royalty amount calculated or
-                                  payment initiated.
-                                </span>
-                                <button
-                                  disabled={busy}
-                                  onClick={() => {
-                                    const reason = prompt('Cancellation reason');
-                                    if (reason) void perform('cancel', { reason });
-                                  }}
-                                >
-                                  Cancel booking
-                                </button>
-                              </>
-                            ))}
-                          {current.data.creatorSnapshot && (
-                            <p>
-                              {(
-                                JSON.parse(text(current.data.creatorSnapshot)) as {
-                                  name: string;
-                                  model: string;
-                                }[]
-                              )
-                                .map((s) => s.name + ' · ' + s.model)
-                                .join('\n')}
-                            </p>
-                          )}
-                        </>
-                      )}
-                      {writable && current.status !== 'confirmed' && (
-                        <button disabled={busy} onClick={() => void perform('reopen')}>
-                          Reopen for review
-                        </button>
-                      )}
-                      {['bee', 'curator'].includes(snapshot.role) &&
-                        current.kind !== 'activation' && (
-                          <button disabled={busy} onClick={() => void perform('archive')}>
-                            Archive record
-                          </button>
-                        )}
-                    </div>
-                    <details>
-                      <summary>Activity history</summary>
-                      {snapshot.history
-                        .filter((h) => h.item_id === current.id)
-                        .map((h) => (
-                          <p key={h.id}>
-                            {h.action} · {h.actor}
-                            <small>{new Date(h.created_at).toLocaleString()}</small>
                           </p>
                         ))}
-                    </details>
-                  </aside>
-                </div>
-              </section>
-            )}
-            <footer className="cc-footer">
-              <a href="/travel-showreel">
-                Travel Showreel <ExternalLink size={14} />
-              </a>
-              <span>Finance deferred · Revolut Business API not connected</span>
-              {snapshot.role === 'bee' && (
-                <button onClick={() => setNewProject(true)}>
-                  <Plus size={15} /> Create a Community production
-                </button>
+                      <span className="cc-eyebrow">NEXT STEP</span>
+                      <div className="cc-actions">
+                        {current.kind === 'talent' && writable && (
+                          <button disabled={busy} onClick={() => void perform('contacted')}>
+                            <Check size={16} /> Mark contacted
+                          </button>
+                        )}
+                        {current.kind === 'destination' &&
+                          ['bee', 'production'].includes(snapshot.role) && (
+                            <button disabled={busy} onClick={() => void perform('feasible')}>
+                              <Check size={16} /> Validate Bloom feasibility
+                            </button>
+                          )}
+                        {current.kind === 'content' && (
+                          <>
+                            {writable && (
+                              <>
+                                <input
+                                  ref={file}
+                                  type="file"
+                                  accept="image/png,image/jpeg,image/webp"
+                                  hidden
+                                  onChange={async (e) => {
+                                    const f = e.target.files?.[0];
+                                    if (!f) return;
+                                    if (f.size > 3 * 1024 * 1024) {
+                                      setError('Maximum image size: 3 MB.');
+                                      return;
+                                    }
+                                    const r = new FileReader();
+                                    r.onload = () =>
+                                      void perform('upload', { image: r.result, name: f.name });
+                                    r.readAsDataURL(f);
+                                    e.target.value = '';
+                                  }}
+                                />
+                                <button disabled={busy} onClick={() => file.current?.click()}>
+                                  <Upload size={16} /> Upload image · 3 MB
+                                </button>
+                              </>
+                            )}
+                            {['bee', 'curator'].includes(snapshot.role) && (
+                              <button disabled={busy} onClick={() => void perform('curate')}>
+                                <Check size={16} /> Curate for the studio
+                              </button>
+                            )}
+                            {snapshot.role === 'bee' && (
+                              <button disabled={busy} onClick={() => void perform('verify')}>
+                                Verify original-source evidence
+                              </button>
+                            )}
+                            <p>
+                              Provenance: {text(current.data.verification) || 'pending'}
+                              <br />
+                              Public showreel:{' '}
+                              {current.data.published === 'yes' ? 'Published' : 'Not published'}
+                            </p>
+                            {scope === 'studio' && ['bee', 'curator'].includes(snapshot.role) && (
+                              <button
+                                disabled={busy}
+                                onClick={() =>
+                                  void perform(
+                                    current.data.published === 'yes' ? 'unpublish' : 'publish'
+                                  )
+                                }
+                              >
+                                {current.data.published === 'yes' ? 'Remove from' : 'Publish to'}{' '}
+                                Travel Showreel
+                              </button>
+                            )}
+                          </>
+                        )}
+                        {current.kind === 'collection' && (
+                          <>
+                            {relatedContent(current, all).map((x) => (
+                              <button
+                                key={x.id}
+                                onClick={() => {
+                                  setTab('content');
+                                  choose(x);
+                                }}
+                              >
+                                <Images size={15} />
+                                {x.title}
+                                <span>{usable(x, true) ? 'Ready' : 'Rights / review needed'}</span>
+                              </button>
+                            ))}
+                            {['bee', 'curator'].includes(snapshot.role) && (
+                              <button disabled={busy} onClick={() => void perform('approve')}>
+                                <Check size={16} /> Approve brand portfolio
+                              </button>
+                            )}
+                            <button disabled={busy} onClick={() => void portfolio(current)}>
+                              <Download size={16} /> Export approved portfolio
+                            </button>
+                            {writable && (
+                              <button
+                                onClick={() =>
+                                  setEditing({
+                                    kind: 'activation',
+                                    title: current.title + ' · journey',
+                                    data: {
+                                      ...blank('activation'),
+                                      collectionId: current.id,
+                                      projectId: text(current.data.projectId),
+                                      opportunityId: text(current.data.opportunityId),
+                                    },
+                                  })
+                                }
+                              >
+                                <ArrowRight size={16} /> Prepare brand journey
+                              </button>
+                            )}
+                          </>
+                        )}
+                        {current.kind === 'activation' && (
+                          <>
+                            <p>
+                              Sale → signed booking → creator agreement record.
+                              <br />
+                              Finance and payments are deferred.
+                            </p>
+                            {snapshot.role === 'bee' &&
+                              (current.status !== 'confirmed' ? (
+                                <button disabled={busy} onClick={() => void perform('confirm')}>
+                                  <Check size={16} /> Confirm booking
+                                </button>
+                              ) : (
+                                <>
+                                  <span className="cc-note">
+                                    Creator agreements recorded. No royalty amount calculated or
+                                    payment initiated.
+                                  </span>
+                                  <button
+                                    disabled={busy}
+                                    onClick={() => {
+                                      const reason = prompt('Cancellation reason');
+                                      if (reason) void perform('cancel', { reason });
+                                    }}
+                                  >
+                                    Cancel booking
+                                  </button>
+                                </>
+                              ))}
+                            {current.data.creatorSnapshot && (
+                              <p>
+                                {creatorSnapshotLines(current.data.creatorSnapshot).join('\n') ||
+                                  'Creator agreement snapshot unavailable.'}
+                              </p>
+                            )}
+                          </>
+                        )}
+                        {writable && current.status !== 'confirmed' && (
+                          <button disabled={busy} onClick={() => void perform('reopen')}>
+                            Reopen for review
+                          </button>
+                        )}
+                        {['bee', 'curator'].includes(snapshot.role) &&
+                          current.kind !== 'activation' && (
+                            <button disabled={busy} onClick={() => void perform('archive')}>
+                              Archive record
+                            </button>
+                          )}
+                      </div>
+                      <details>
+                        <summary>Activity history</summary>
+                        {snapshot.history
+                          .filter((h) => h.item_id === current.id)
+                          .map((h) => (
+                            <p key={h.id}>
+                              {h.action} · {h.actor}
+                              <small>{formatDateTime(h.created_at)}</small>
+                            </p>
+                          ))}
+                      </details>
+                    </aside>
+                  </div>
+                </section>
               )}
-            </footer>
-          </>
-        )}
-        {!snapshot && !error && <p role="status">Opening the creative library…</p>}
-      </main>
+              <footer className="cc-footer">
+                <a href="/travel-showreel">
+                  Travel Showreel <ExternalLink size={14} />
+                </a>
+                <span>Finance deferred · Revolut Business API not connected</span>
+                {snapshot.role === 'bee' && (
+                  <button onClick={() => setNewProject(true)}>
+                    <Plus size={15} /> Create a production
+                  </button>
+                )}
+              </footer>
+            </>
+          )}
+          {!snapshot && !error && <p role="status">Opening the creative library…</p>}
+        </section>
+      </DashboardShell>
       <dialog
         ref={dialog}
         onCancel={() => {
@@ -1109,15 +1136,13 @@ export function CreativeWorkspace() {
                         <label key={x.id}>
                           <input
                             type="checkbox"
-                            checked={((editing.data.talentIds as string[]) || []).includes(x.id)}
+                            checked={list(editing.data.talentIds).includes(x.id)}
                             onChange={(e) =>
                               setField(
                                 'talentIds',
                                 e.target.checked
-                                  ? [...((editing.data.talentIds as string[]) || []), x.id]
-                                  : ((editing.data.talentIds as string[]) || []).filter(
-                                      (id) => id !== x.id
-                                    )
+                                  ? [...list(editing.data.talentIds), x.id]
+                                  : list(editing.data.talentIds).filter((id) => id !== x.id)
                               )
                             }
                           />
@@ -1135,8 +1160,7 @@ export function CreativeWorkspace() {
               {editing.kind === 'collection' && (
                 <fieldset>
                   <legend>
-                    Choose the stories · {((editing.data.contentIds as string[]) || []).length}{' '}
-                    selected
+                    Choose the stories · {list(editing.data.contentIds).length} selected
                   </legend>
                   <p>
                     Select by style, territory and credit. External export requires valid brand-use
@@ -1149,15 +1173,13 @@ export function CreativeWorkspace() {
                         <label key={x.id}>
                           <input
                             type="checkbox"
-                            checked={((editing.data.contentIds as string[]) || []).includes(x.id)}
+                            checked={list(editing.data.contentIds).includes(x.id)}
                             onChange={(e) =>
                               setField(
                                 'contentIds',
                                 e.target.checked
-                                  ? [...((editing.data.contentIds as string[]) || []), x.id]
-                                  : (editing.data.contentIds as string[]).filter(
-                                      (id) => id !== x.id
-                                    )
+                                  ? [...list(editing.data.contentIds), x.id]
+                                  : list(editing.data.contentIds).filter((id) => id !== x.id)
                               )
                             }
                           />

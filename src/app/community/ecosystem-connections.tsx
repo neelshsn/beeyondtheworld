@@ -9,7 +9,7 @@ type Connections = {
 };
 export function EcosystemConnections({ project, demo }: { project: string; demo: boolean }) {
   const [data, setData] = useState<Connections | null>(null);
-  const base = `/community/ecosystem?scope=${demo ? 'demo' : 'studio'}&project=${project}`;
+  const base = `/dashboard/ecosystem?scope=${demo ? 'demo' : 'studio'}&project=${project}`;
   useEffect(() => {
     const abort = new AbortController();
     setData(null);

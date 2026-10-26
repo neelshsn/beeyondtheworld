@@ -100,7 +100,7 @@ export function CreativeConnections({
           ))}
           {data.internal && (
             <a
-              href={`/community/creative?scope=${demo ? 'demo' : 'studio'}&tab=collection&item=${c.id}`}
+              href={`/dashboard/creative?scope=${demo ? 'demo' : 'studio'}&tab=collection&item=${c.id}`}
               style={{ color: 'var(--gold)' }}
             >
               Open selection & rights →
@@ -110,7 +110,7 @@ export function CreativeConnections({
       ))}
       {data.internal && (
         <a
-          href={'/community/creative?scope=' + (demo ? 'demo' : 'studio')}
+          href={'/dashboard/creative?scope=' + (demo ? 'demo' : 'studio')}
           style={{ display: 'inline-block', marginTop: 18, color: 'var(--gold)' }}
         >
           Open Creative Studio →

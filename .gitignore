@@ -18,6 +18,7 @@
 # next.js
 /.next/
 /.next-ecosystem-*/
+/.next-dashboard-*/
 /.next-interrupted-qa/
 /out/
 

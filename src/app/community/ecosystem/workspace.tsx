@@ -4,7 +4,6 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent, type KeyboardEvent } from 'react';
 import {
   AlertCircle,
-  ArrowLeft,
   ArrowRight,
   Building2,
   Check,
@@ -19,7 +18,6 @@ import {
   Link2,
   LoaderCircle,
   LogOut,
-  MapPin,
   Plus,
   RefreshCw,
   Search,
@@ -42,6 +40,8 @@ import type {
   PartnerType,
   ReviewGate,
 } from '@/lib/ecosystem/types';
+import { DashboardCarousel } from '@/components/dashboard/dashboard-carousel';
+import { DashboardShell } from '@/components/dashboard/dashboard-shell';
 import './ecosystem.css';
 
 type CreatorTab = 'application' | 'kit';
@@ -60,6 +60,7 @@ type UploadState = {
   progress: number;
   status: 'reading' | 'uploading' | 'finishing';
 };
+type Spotlight = { kind: 'asset' | 'kit' | 'creator' | 'partner'; id: string } | null;
 
 const demoRoles: { value: EcosystemRole; label: string }[] = [
   { value: 'creator', label: 'Visual Poet' },
@@ -100,6 +101,64 @@ const partnerSteps = [
 
 const pretty = (value: string) =>
   value.replaceAll('_', ' ').replace(/\b\w/g, (letter) => letter.toUpperCase());
+const formatDateTime = (value: unknown) => {
+  if (typeof value !== 'string' || !value.trim()) return 'Date unavailable';
+  const date = new Date(value);
+  return Number.isFinite(date.getTime()) ? date.toLocaleString('en-GB') : 'Date unavailable';
+};
+function normalizeSnapshot(value: EcosystemSnapshot): EcosystemSnapshot {
+  const crm = value.crm
+    ? {
+        ...value.crm,
+        companies: Array.isArray(value.crm.companies) ? value.crm.companies : [],
+        opportunities: Array.isArray(value.crm.opportunities) ? value.crm.opportunities : [],
+        productions: Array.isArray(value.crm.productions) ? value.crm.productions : [],
+      }
+    : null;
+  return {
+    ...value,
+    applications: Array.isArray(value.applications)
+      ? value.applications.map((application) => ({
+          ...application,
+          languages: Array.isArray(application.languages) ? application.languages : [],
+          coveredDestinations: Array.isArray(application.coveredDestinations)
+            ? application.coveredDestinations
+            : [],
+        }))
+      : [],
+    destinations: Array.isArray(value.destinations) ? value.destinations : [],
+    kits: Array.isArray(value.kits) ? value.kits : [],
+    assets: Array.isArray(value.assets) ? value.assets : [],
+    partners: Array.isArray(value.partners)
+      ? value.partners.map((partner) => ({
+          ...partner,
+          description: partner.description || '',
+        }))
+      : [],
+    links: Array.isArray(value.links) ? value.links : [],
+    targetOptions: Array.isArray(value.targetOptions) ? value.targetOptions : [],
+    readiness: value.readiness && typeof value.readiness === 'object' ? value.readiness : {},
+    destinationReadiness:
+      value.destinationReadiness && typeof value.destinationReadiness === 'object'
+        ? value.destinationReadiness
+        : {},
+    crm,
+  };
+}
+function normalizeConnectionSummary(value: EcosystemConnectionSummary): EcosystemConnectionSummary {
+  return {
+    ...value,
+    summary: {
+      ...value.summary,
+      kits: Array.isArray(value.summary.kits) ? value.summary.kits : [],
+      destinations: Array.isArray(value.summary.destinations) ? value.summary.destinations : [],
+      partnerStatuses:
+        value.summary.partnerStatuses && typeof value.summary.partnerStatuses === 'object'
+          ? value.summary.partnerStatuses
+          : {},
+    },
+  };
+}
 const roleLabel = (role: EcosystemRole) =>
   role === 'commercial'
     ? 'CRM contributor'
@@ -274,6 +333,7 @@ export function EcosystemWorkspace() {
   const [tab, setTab] = useState<Tab>('application');
   const [creatorKitId, setCreatorKitId] = useState('');
   const [drawer, setDrawer] = useState<Drawer>(null);
+  const [spotlight, setSpotlight] = useState<Spotlight>(null);
   const [query, setQuery] = useState('');
   const [busy, setBusy] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
@@ -292,6 +352,7 @@ export function EcosystemWorkspace() {
   const activeMediaId = useRef<string | null>(null);
   const uploadCancelled = useRef(false);
   const uploadInFlight = useRef(false);
+  const preferredTab = useRef<Tab | null>(null);
   const drawerClose = useRef<HTMLButtonElement>(null);
   const lastFocus = useRef<HTMLElement | null>(null);
 
@@ -306,9 +367,10 @@ export function EcosystemWorkspace() {
     setContextQuery(context.size ? `&${context.toString()}` : '');
     setHasCrmContext(Boolean(params.get('company') || params.get('production')));
     const requestedTab = params.get('tab');
-    if (requestedTab === 'kits') setTab('assets');
-    else if (requestedTab === 'partners') setTab('partners');
-    else if (requestedTab === 'studio') setTab('creators');
+    if (requestedTab === 'kits') preferredTab.current = 'assets';
+    else if (requestedTab === 'partners') preferredTab.current = 'partners';
+    else if (requestedTab === 'studio') preferredTab.current = 'creators';
+    if (preferredTab.current) setTab(preferredTab.current);
   }, []);
 
   const endpoint = scope ? endpointFor(scope, contextQuery, demoRole) : '';
@@ -338,7 +400,7 @@ export function EcosystemWorkspace() {
       setAuthRequired(false);
       setError('');
       setSnapshot(null);
-      setCommercialSummary(body);
+      setCommercialSummary(normalizeConnectionSummary(body));
       return null;
     }
     if (body.viewer.role === 'commercial') {
@@ -350,15 +412,23 @@ export function EcosystemWorkspace() {
       if (!response.ok) throw new Error(body.error || 'The workspace could not be opened.');
     }
     if ('summary' in body) throw new Error('The detailed workspace is unavailable.');
+    const normalized = normalizeSnapshot(body);
     setAuthRequired(false);
     setError('');
     setCommercialSummary(null);
-    setSnapshot(body);
-    if (body.viewer.role === 'creator')
+    setSnapshot(normalized);
+    if (normalized.viewer.role === 'creator')
       setTab((value) => (value === 'application' || value === 'kit' ? value : 'application'));
     else
-      setTab((value) => (['creators', 'assets', 'partners'].includes(value) ? value : 'creators'));
-    return body;
+      setTab((value) => {
+        const preferred = preferredTab.current;
+        return preferred && ['creators', 'assets', 'partners'].includes(preferred)
+          ? preferred
+          : ['creators', 'assets', 'partners'].includes(value)
+            ? value
+            : 'creators';
+      });
+    return normalized;
   }
 
   useEffect(() => {
@@ -780,104 +850,114 @@ export function EcosystemWorkspace() {
     [query, snapshot]
   );
 
+  const spotlightAsset =
+    spotlight?.kind === 'asset'
+      ? snapshot?.assets.find((asset) => asset.id === spotlight.id)
+      : undefined;
+  const spotlightPartner =
+    spotlight?.kind === 'partner'
+      ? snapshot?.partners.find((partner) => partner.id === spotlight.id)
+      : undefined;
+  const spotlightCreator =
+    spotlight?.kind === 'creator'
+      ? snapshot?.applications.find((creator) => creator.id === spotlight.id)
+      : undefined;
+  const spotlightKit =
+    spotlight?.kind === 'kit'
+      ? snapshot?.kits.find((kit) => kit.id === spotlight.id)
+      : spotlightAsset
+        ? snapshot?.kits.find((kit) => kit.id === spotlightAsset.kitId)
+        : creatorKit;
+  const spotlightDestination =
+    snapshot?.destinations.find(
+      (destination) =>
+        destination.id ===
+        (spotlightAsset?.destinationId ||
+          spotlightPartner?.destinationId ||
+          spotlightKit?.destinationId)
+    ) || snapshot?.destinations[0];
+  const backdropAsset =
+    (spotlightAsset?.slot === 'photo' && spotlightAsset.mediaId ? spotlightAsset : undefined) ||
+    snapshot?.assets.find(
+      (asset) =>
+        asset.destinationId === spotlightDestination?.id &&
+        asset.slot === 'photo' &&
+        Boolean(asset.mediaId)
+    ) ||
+    snapshot?.assets.find((asset) => asset.slot === 'photo' && Boolean(asset.mediaId));
+  const backdropImage =
+    backdropAsset?.mediaId && viewer
+      ? mediaEndpoint(backdropAsset.mediaId, backdropAsset.scope, viewer.role)
+      : '/assets/community/horizon/morocco-landscape.webp';
+  const shellTitle =
+    spotlightCreator?.homeDestination ||
+    (isCreator && tab === 'application' ? application?.homeDestination : undefined) ||
+    spotlightDestination?.country ||
+    spotlightDestination?.title ||
+    (isCreator ? 'Visual Poet' : 'Ecosystem');
+  const shellMeta = spotlightKit
+    ? `${spotlightKit.title} · ${pretty(spotlightKit.status)}`
+    : spotlightPartner
+      ? `${partnerLabels[spotlightPartner.type]} · ${pretty(spotlightPartner.status)}`
+      : viewer
+        ? `${roleLabel(viewer.role)} · ${viewer.scope === 'demo' ? 'Demonstration' : 'Private studio'}`
+        : 'Visual Poets · Local partners';
+
   return (
     <div className="ecosystem-workspace">
-      <header className="eco-topbar">
-        <Link href="/community" className="eco-back">
-          <ArrowLeft aria-hidden="true" /> Community
-        </Link>
-        <span className="eco-wordmark">BEEYONDTHEWORLD</span>
-        <div className="eco-account">
-          <span className="eco-private">
-            <ShieldCheck aria-hidden="true" /> Private workspace
-          </span>
-          {viewer?.role === 'creator' ? (
-            <button
-              type="button"
-              onClick={signOut}
-              disabled={busy || signingOut}
-              aria-label="Sign out"
-            >
-              {signingOut ? (
-                <LoaderCircle className="eco-spin" aria-hidden="true" />
-              ) : (
-                <LogOut aria-hidden="true" />
-              )}
-              <span>Sign out</span>
-            </button>
-          ) : null}
-        </div>
-      </header>
-
-      <main>
-        <section className="eco-hero" aria-labelledby="eco-title">
-          <div>
-            <p className="eco-eyebrow">Visual Poets · Local ecosystem</p>
-            <h1 id="eco-title">
-              Stories rooted in <em>place.</em>
-            </h1>
-            <p>
-              Original travel imagery, reviewed by people and connected to trusted local production.
-            </p>
-          </div>
-          {viewer && (
-            <div className="eco-session">
-              <span>{viewer.scope === 'demo' ? 'Demonstration data' : 'Studio data'}</span>
-              {snapshot?.viewer.canSwitchDemoRole && scope === 'demo' ? (
-                <label>
-                  Explore a role
-                  <select
-                    value={demoRole || snapshot.viewer.role}
-                    onChange={(event) => changeRole(event.target.value as EcosystemRole)}
-                  >
-                    {demoRoles.map((role) => (
-                      <option key={role.value} value={role.value}>
-                        {role.label}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              ) : (
-                <strong>{roleLabel(viewer.role)}</strong>
-              )}
-              <small>{viewer.email}</small>
-            </div>
-          )}
-        </section>
-
-        {scope === 'demo' && (
-          <p className="eco-demo-note">
-            <AlertCircle aria-hidden="true" /> Demonstration records are fictional and are never
-            evidence of a real partner, creator or impact result.
-          </p>
-        )}
-        {error && (
-          <div className="eco-feedback is-error" role="alert">
-            <AlertCircle aria-hidden="true" />
-            <span>{error}</span>
-            <button onClick={() => void load()}>
-              <RefreshCw aria-hidden="true" /> Retry
-            </button>
-            {hasCrmContext && (
-              <a href="/sales/">
-                <ExternalLink aria-hidden="true" /> Sign in to CRM
-              </a>
+      <DashboardShell
+        image={backdropImage}
+        eyebrow="Visual Poets · Local ecosystem"
+        title={shellTitle}
+        meta={shellMeta}
+        description="Original travel imagery, reviewed by people and connected to trusted local production."
+        layout="stacked"
+        className="eco-dashboard-shell"
+        backHref="/dashboard"
+        backLabel="Dashboard"
+        scope={scope || undefined}
+        topActions={
+          <div className="eco-shell-actions">
+            {viewer && (
+              <div className="eco-session">
+                {snapshot?.viewer.canSwitchDemoRole && scope === 'demo' ? (
+                  <label>
+                    Explore a role
+                    <select
+                      value={demoRole || snapshot.viewer.role}
+                      onChange={(event) => changeRole(event.target.value as EcosystemRole)}
+                    >
+                      {demoRoles.map((role) => (
+                        <option key={role.value} value={role.value}>
+                          {role.label}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                ) : (
+                  <strong>{roleLabel(viewer.role)}</strong>
+                )}
+              </div>
             )}
+            {viewer?.role === 'creator' ? (
+              <button
+                type="button"
+                onClick={signOut}
+                disabled={busy || signingOut}
+                aria-label="Sign out"
+              >
+                {signingOut ? (
+                  <LoaderCircle className="eco-spin" aria-hidden="true" />
+                ) : (
+                  <LogOut aria-hidden="true" />
+                )}
+                <span>Sign out</span>
+              </button>
+            ) : null}
           </div>
-        )}
-        {notice && (
-          <div className="eco-feedback" role="status">
-            <CheckCircle2 aria-hidden="true" />
-            {notice}
-          </div>
-        )}
-
-        {authRequired && <InlineLogin onSuccess={() => void load()} />}
-
-        {commercialSummary && <CommercialSummaryPanel data={commercialSummary} />}
-
-        {snapshot && (
-          <>
+        }
+        actions={
+          snapshot ? (
             <nav
               className="eco-tabs"
               role="tablist"
@@ -890,8 +970,18 @@ export function EcosystemWorkspace() {
                   aria-selected={tab === item}
                   tabIndex={tab === item ? 0 : -1}
                   className={tab === item ? 'active' : ''}
-                  onKeyDown={(event) => tabKeyboard(event, tabs, index, setTab)}
-                  onClick={() => setTab(item)}
+                  onKeyDown={(event) =>
+                    tabKeyboard(event, tabs, index, (nextTab) => {
+                      preferredTab.current = nextTab;
+                      setTab(nextTab);
+                      setSpotlight(null);
+                    })
+                  }
+                  onClick={() => {
+                    preferredTab.current = item;
+                    setTab(item);
+                    setSpotlight(null);
+                  }}
                 >
                   {item === 'application' && <UserRound aria-hidden="true" />}
                   {item === 'kit' && <ImageIcon aria-hidden="true" />}
@@ -912,121 +1002,180 @@ export function EcosystemWorkspace() {
                 </button>
               ))}
             </nav>
+          ) : undefined
+        }
+      >
+        <section className="eco-workspace-body">
+          {scope === 'demo' && (
+            <p className="eco-demo-note">
+              <AlertCircle aria-hidden="true" /> Demonstration records are fictional and are never
+              evidence of a real partner, creator or impact result.
+            </p>
+          )}
+          {error && (
+            <div className="eco-feedback is-error" role="alert">
+              <AlertCircle aria-hidden="true" />
+              <span>{error}</span>
+              <button onClick={() => void load()}>
+                <RefreshCw aria-hidden="true" /> Retry
+              </button>
+              {hasCrmContext && (
+                <a href="/sales/">
+                  <ExternalLink aria-hidden="true" /> Sign in to CRM
+                </a>
+              )}
+            </div>
+          )}
+          {notice && (
+            <div className="eco-feedback" role="status">
+              <CheckCircle2 aria-hidden="true" />
+              {notice}
+            </div>
+          )}
 
-            {isCreator && tab === 'application' && (
-              <CreatorApplicationPanel
-                application={application}
-                draft={applicationDraft}
-                setDraft={setApplicationDraft}
-                onSubmit={saveApplication}
-                busy={busy}
-              />
-            )}
-            {isCreator && tab === 'kit' && (
-              <CreatorKitPanel
-                application={application}
-                kit={creatorKit}
-                kits={snapshot.kits}
-                assets={snapshot.assets}
-                role={snapshot.viewer.role}
-                readiness={creatorKit ? snapshot.readiness[creatorKit.id] : undefined}
-                upload={upload}
-                onOpen={(asset) => setDrawer({ kind: 'asset', entity: asset })}
-                onChooseKit={setCreatorKitId}
-                onUpload={uploadOriginal}
-                onCancelUpload={() => void cancelUpload()}
-              />
-            )}
-            {!isCreator && tab === 'creators' && (
-              <CreatorReviewPanel
-                applications={snapshot.applications}
-                role={snapshot.viewer.role}
-                busy={busy}
-                onOpen={(entity) => setDrawer({ kind: 'creator', entity })}
-                mutate={mutate}
-              />
-            )}
-            {!isCreator && tab === 'assets' && (
-              <AssetReviewPanel
-                snapshot={snapshot}
-                busy={busy}
-                onOpen={(entity) => setDrawer({ kind: 'asset', entity })}
-                onOpenKit={(entity) => setDrawer({ kind: 'kit', entity })}
-                mutate={mutate}
-                onPublish={(kit) =>
-                  mutate(
-                    'PATCH',
-                    { action: 'publish-kit', entityId: kit.id, version: kit.version },
-                    snapshot.viewer.scope === 'demo'
-                      ? 'Demo publication simulated privately. No Journey was changed.'
-                      : 'Kit published to its linked Journey.'
-                  )
-                }
-                onUnpublish={(kit) =>
-                  mutate(
-                    'PATCH',
-                    { action: 'unpublish-kit', entityId: kit.id, version: kit.version },
-                    snapshot.viewer.scope === 'demo'
-                      ? 'Demo publication simulation stopped. No Journey was changed.'
-                      : 'Kit unpublished and removed from its Journey.'
-                  )
-                }
-              />
-            )}
-            {!isCreator && tab === 'partners' && (
-              <PartnersPanel
-                partners={filteredPartners}
-                query={query}
-                setQuery={setQuery}
-                onOpen={(entity) => setDrawer({ kind: 'partner', entity })}
-                onNew={() => setDrawer({ kind: 'new-partner' })}
-              />
-            )}
+          {authRequired && <InlineLogin onSuccess={() => void load()} />}
 
-            {!isCreator && (
-              <section className="eco-links" aria-labelledby="connected-title">
-                <div>
-                  <p className="eco-eyebrow">Connected operations</p>
-                  <h2 id="connected-title">One story, shared identifiers.</h2>
-                </div>
-                <div className="eco-link-list">
-                  <a href="/sales/">
-                    <span>CRM</span>
-                    <ExternalLink aria-hidden="true" />
-                  </a>
-                  <Link href="/community">
-                    <span>Community</span>
-                    <ExternalLink aria-hidden="true" />
-                  </Link>
-                  <Link href="/community/creative">
-                    <span>Creative Studio</span>
-                    <ExternalLink aria-hidden="true" />
-                  </Link>
-                  <Link href="/journeys">
-                    <span>Journeys</span>
-                    <ExternalLink aria-hidden="true" />
-                  </Link>
-                  <Link href="/client">
-                    <span>Bookings</span>
-                    <ExternalLink aria-hidden="true" />
-                  </Link>
-                </div>
-                <p className="eco-link-note">
-                  Links preserve Creator, Asset, Destination, Journey and Booking IDs. Commercial
-                  catalogues, budgets and brand briefs remain available only in authorised internal
-                  systems.
-                </p>
-              </section>
-            )}
-          </>
-        )}
+          {commercialSummary && <CommercialSummaryPanel data={commercialSummary} />}
 
-        {!snapshot && !commercialSummary && !error && !authRequired && (
-          <div className="eco-loading" role="status">
-            <LoaderCircle aria-hidden="true" /> Opening the workspace…
-          </div>
-        )}
-      </main>
+          {snapshot && (
+            <>
+              {isCreator && tab === 'application' && (
+                <CreatorApplicationPanel
+                  application={application}
+                  draft={applicationDraft}
+                  setDraft={setApplicationDraft}
+                  onSubmit={saveApplication}
+                  busy={busy}
+                />
+              )}
+              {isCreator && tab === 'kit' && (
+                <CreatorKitPanel
+                  application={application}
+                  kit={creatorKit}
+                  kits={snapshot.kits}
+                  assets={snapshot.assets}
+                  role={snapshot.viewer.role}
+                  readiness={creatorKit ? snapshot.readiness[creatorKit.id] : undefined}
+                  upload={upload}
+                  onSpotlight={(asset) => setSpotlight({ kind: 'asset', id: asset.id })}
+                  onOpen={(asset) => {
+                    setSpotlight({ kind: 'asset', id: asset.id });
+                    setDrawer({ kind: 'asset', entity: asset });
+                  }}
+                  onChooseKit={(kitId) => {
+                    setCreatorKitId(kitId);
+                    setSpotlight({ kind: 'kit', id: kitId });
+                  }}
+                  onUpload={uploadOriginal}
+                  onCancelUpload={() => void cancelUpload()}
+                />
+              )}
+              {!isCreator && tab === 'creators' && (
+                <CreatorReviewPanel
+                  applications={snapshot.applications}
+                  role={snapshot.viewer.role}
+                  busy={busy}
+                  onSpotlight={(entity) => setSpotlight({ kind: 'creator', id: entity.id })}
+                  onOpen={(entity) => {
+                    setSpotlight({ kind: 'creator', id: entity.id });
+                    setDrawer({ kind: 'creator', entity });
+                  }}
+                  mutate={mutate}
+                />
+              )}
+              {!isCreator && tab === 'assets' && (
+                <AssetReviewPanel
+                  snapshot={snapshot}
+                  busy={busy}
+                  onSpotlight={(entity) => setSpotlight({ kind: 'asset', id: entity.id })}
+                  onOpen={(entity) => {
+                    setSpotlight({ kind: 'asset', id: entity.id });
+                    setDrawer({ kind: 'asset', entity });
+                  }}
+                  onOpenKit={(entity) => {
+                    setSpotlight({ kind: 'kit', id: entity.id });
+                    setDrawer({ kind: 'kit', entity });
+                  }}
+                  mutate={mutate}
+                  onPublish={(kit) =>
+                    mutate(
+                      'PATCH',
+                      { action: 'publish-kit', entityId: kit.id, version: kit.version },
+                      snapshot.viewer.scope === 'demo'
+                        ? 'Demo publication simulated privately. No Journey was changed.'
+                        : 'Kit published to its linked Journey.'
+                    )
+                  }
+                  onUnpublish={(kit) =>
+                    mutate(
+                      'PATCH',
+                      { action: 'unpublish-kit', entityId: kit.id, version: kit.version },
+                      snapshot.viewer.scope === 'demo'
+                        ? 'Demo publication simulation stopped. No Journey was changed.'
+                        : 'Kit unpublished and removed from its Journey.'
+                    )
+                  }
+                />
+              )}
+              {!isCreator && tab === 'partners' && (
+                <PartnersPanel
+                  partners={filteredPartners}
+                  query={query}
+                  setQuery={setQuery}
+                  onSpotlight={(entity) => setSpotlight({ kind: 'partner', id: entity.id })}
+                  onOpen={(entity) => {
+                    setSpotlight({ kind: 'partner', id: entity.id });
+                    setDrawer({ kind: 'partner', entity });
+                  }}
+                  onNew={() => setDrawer({ kind: 'new-partner' })}
+                />
+              )}
+
+              {!isCreator && (
+                <section className="eco-links" aria-labelledby="connected-title">
+                  <div>
+                    <p className="eco-eyebrow">Connected operations</p>
+                    <h2 id="connected-title">One story, shared identifiers.</h2>
+                  </div>
+                  <div className="eco-link-list">
+                    <a href="/sales/">
+                      <span>CRM</span>
+                      <ExternalLink aria-hidden="true" />
+                    </a>
+                    <Link href="/dashboard">
+                      <span>Dashboard</span>
+                      <ExternalLink aria-hidden="true" />
+                    </Link>
+                    <Link href="/dashboard/creative">
+                      <span>Creative Studio</span>
+                      <ExternalLink aria-hidden="true" />
+                    </Link>
+                    <Link href="/journeys">
+                      <span>Journeys</span>
+                      <ExternalLink aria-hidden="true" />
+                    </Link>
+                    <Link href="/client">
+                      <span>Bookings</span>
+                      <ExternalLink aria-hidden="true" />
+                    </Link>
+                  </div>
+                  <p className="eco-link-note">
+                    Links preserve Creator, Asset, Destination, Journey and Booking IDs. Commercial
+                    catalogues, budgets and brand briefs remain available only in authorised
+                    internal systems.
+                  </p>
+                </section>
+              )}
+            </>
+          )}
+
+          {!snapshot && !commercialSummary && !error && !authRequired && (
+            <div className="eco-loading" role="status">
+              <LoaderCircle aria-hidden="true" /> Opening the workspace…
+            </div>
+          )}
+        </section>
+      </DashboardShell>
 
       {drawer && snapshot && (
         <div
@@ -1409,6 +1558,7 @@ function CreatorKitPanel({
   role,
   readiness,
   upload,
+  onSpotlight,
   onOpen,
   onChooseKit,
   onUpload,
@@ -1427,11 +1577,13 @@ function CreatorKitPanel({
     invalid: string[];
   };
   upload: UploadState | null;
+  onSpotlight: (asset: CreativeAsset) => void;
   onOpen: (asset: CreativeAsset) => void;
   onChooseKit: (kitId: string) => void;
   onUpload: (asset: CreativeAsset, file: File) => void;
   onCancelUpload: () => void;
 }) {
+  const [selectedAssetId, setSelectedAssetId] = useState('');
   if (!application || !['approved', 'active'].includes(application.status))
     return (
       <EmptyState
@@ -1453,6 +1605,16 @@ function CreatorKitPanel({
         ['hero', 'reel', 'photo'].indexOf(a.slot) - ['hero', 'reel', 'photo'].indexOf(b.slot) ||
         a.slotIndex - b.slotIndex
     );
+  const selectedId = ordered.some((asset) => asset.id === selectedAssetId)
+    ? selectedAssetId
+    : ordered[0]?.id;
+  const slides = ordered.map((asset) => ({
+    id: asset.id,
+    title: asset.title || `${pretty(asset.slot)} ${asset.slotIndex}`,
+    subtitle: asset.slot === 'hero' ? 'Hero · 15–30s' : `${pretty(asset.slot)} ${asset.slotIndex}`,
+    meta: asset.reviewNote || asset.location || 'Original and usage details',
+    badge: pretty(asset.status),
+  }));
   return (
     <section className="eco-panel" role="tabpanel">
       {kits.length > 1 && (
@@ -1487,19 +1649,51 @@ function CreatorKitPanel({
           <Status value={kit.status} />
         </div>
       </div>
-      <div className="eco-assets-grid">
-        {ordered.map((asset) => (
-          <AssetCard
-            key={asset.id}
-            asset={asset}
-            role={role}
-            upload={upload}
-            onOpen={onOpen}
-            onUpload={onUpload}
-            onCancelUpload={onCancelUpload}
+      {ordered.length ? (
+        <>
+          <DashboardCarousel
+            items={slides}
+            selectedId={selectedId}
+            onSelect={(id) => {
+              setSelectedAssetId(id);
+              const asset = ordered.find((item) => item.id === id);
+              if (asset) onSpotlight(asset);
+            }}
+            onOpen={(id) => {
+              const asset = ordered.find((item) => item.id === id);
+              if (asset) onOpen(asset);
+            }}
+            openLabel="Open asset"
+            label={`${kit.title} · 14 asset slots`}
+            layout="atlas"
+            renderMedia={(item) => {
+              const asset = ordered.find((entry) => entry.id === item.id);
+              return asset ? <AssetPreview asset={asset} role={role} /> : null;
+            }}
           />
-        ))}
-      </div>
+          <details className="eco-operational-details">
+            <summary>Manage uploads and all 14 slots</summary>
+            <div className="eco-assets-grid">
+              {ordered.map((asset) => (
+                <AssetCard
+                  key={asset.id}
+                  asset={asset}
+                  role={role}
+                  upload={upload}
+                  onOpen={onOpen}
+                  onUpload={onUpload}
+                  onCancelUpload={onCancelUpload}
+                />
+              ))}
+            </div>
+          </details>
+        </>
+      ) : (
+        <EmptyState
+          title="Asset slots are not available yet."
+          copy="The Studio needs to recreate this destination kit before originals can be uploaded."
+        />
+      )}
     </section>
   );
 }
@@ -1582,12 +1776,14 @@ function CreatorReviewPanel({
   applications,
   role,
   busy,
+  onSpotlight,
   onOpen,
   mutate,
 }: {
   applications: CreatorApplication[];
   role: EcosystemRole;
   busy: boolean;
+  onSpotlight: (application: CreatorApplication) => void;
   onOpen: (application: CreatorApplication) => void;
   mutate: (
     method: 'POST' | 'PATCH',
@@ -1596,6 +1792,7 @@ function CreatorReviewPanel({
   ) => Promise<boolean>;
 }) {
   const [creating, setCreating] = useState(false);
+  const [selectedCreatorId, setSelectedCreatorId] = useState('');
   async function createCreator(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -1620,6 +1817,17 @@ function CreatorReviewPanel({
     );
     if (ok) setCreating(false);
   }
+  const selectedId = applications.some((application) => application.id === selectedCreatorId)
+    ? selectedCreatorId
+    : applications[0]?.id;
+  const slides = applications.map((application) => ({
+    id: application.id,
+    title: application.displayName,
+    subtitle: application.homeDestination || 'Visual Poet',
+    image: '/assets/community/horizon/morocco-talent.webp',
+    meta: application.languages.join(' · ') || application.coveredDestinations.join(' · '),
+    badge: pretty(application.status),
+  }));
   return (
     <section className="eco-panel" role="tabpanel">
       <div className="eco-panel-intro">
@@ -1687,30 +1895,51 @@ function CreatorReviewPanel({
         </form>
       )}
       {applications.length ? (
-        <div className="eco-table-list">
-          {applications.map((application) => (
-            <button
-              key={application.id}
-              className="eco-table-row"
-              onClick={() => onOpen(application)}
-            >
-              <span className="eco-avatar">
-                <UserRound />
-              </span>
-              <span>
-                <strong>{application.displayName}</strong>
-                <small>{application.homeDestination}</small>
-              </span>
-              <span>
-                <Status value={application.status} />
-              </span>
-              <span className="eco-row-portfolio">
-                {application.portfolioUrl.replace(/^https?:\/\//, '')}
-              </span>
-              <ArrowRight />
-            </button>
-          ))}
-        </div>
+        <>
+          <DashboardCarousel
+            items={slides}
+            selectedId={selectedId}
+            onSelect={(id) => {
+              setSelectedCreatorId(id);
+              const application = applications.find((item) => item.id === id);
+              if (application) onSpotlight(application);
+            }}
+            onOpen={(id) => {
+              const application = applications.find((item) => item.id === id);
+              if (application) onOpen(application);
+            }}
+            openLabel="Open profile"
+            label="Visual Poet applications"
+            layout="atlas"
+          />
+          <details className="eco-operational-details">
+            <summary>Review all applications</summary>
+            <div className="eco-table-list">
+              {applications.map((application) => (
+                <button
+                  key={application.id}
+                  className="eco-table-row"
+                  onClick={() => onOpen(application)}
+                >
+                  <span className="eco-avatar">
+                    <UserRound />
+                  </span>
+                  <span>
+                    <strong>{application.displayName}</strong>
+                    <small>{application.homeDestination}</small>
+                  </span>
+                  <span>
+                    <Status value={application.status} />
+                  </span>
+                  <span className="eco-row-portfolio">
+                    {application.portfolioUrl.replace(/^https?:\/\//, '')}
+                  </span>
+                  <ArrowRight />
+                </button>
+              ))}
+            </div>
+          </details>
+        </>
       ) : (
         !creating && (
           <EmptyState
@@ -1726,6 +1955,7 @@ function CreatorReviewPanel({
 function AssetReviewPanel({
   snapshot,
   busy,
+  onSpotlight,
   onOpen,
   onOpenKit,
   onPublish,
@@ -1734,6 +1964,7 @@ function AssetReviewPanel({
 }: {
   snapshot: EcosystemSnapshot;
   busy: boolean;
+  onSpotlight: (asset: CreativeAsset) => void;
   onOpen: (asset: CreativeAsset) => void;
   onOpenKit: (kit: AssetKit) => void;
   onPublish: (kit: AssetKit) => Promise<boolean>;
@@ -1745,6 +1976,7 @@ function AssetReviewPanel({
   ) => Promise<boolean>;
 }) {
   const [setup, setSetup] = useState<'destination' | 'kit' | null>(null);
+  const [selectedAssetId, setSelectedAssetId] = useState('');
   const assets = snapshot.assets.filter((asset) => asset.status !== 'draft');
   const approvedCreators = snapshot.applications.filter((creator) =>
     ['approved', 'active'].includes(creator.status)
@@ -1783,6 +2015,20 @@ function AssetReviewPanel({
     );
     if (ok) setSetup(null);
   }
+  const selectedId = assets.some((asset) => asset.id === selectedAssetId)
+    ? selectedAssetId
+    : assets[0]?.id;
+  const slides = assets.map((asset) => {
+    const destination = snapshot.destinations.find((item) => item.id === asset.destinationId);
+    const approvedGates = gates.filter((gate) => asset[gate.key] === 'approved').length;
+    return {
+      id: asset.id,
+      title: asset.title || `${pretty(asset.slot)} ${asset.slotIndex}`,
+      subtitle: `${destination?.title || 'Destination'} · ${pretty(asset.slot)} ${asset.slotIndex}`,
+      meta: `${approvedGates}/4 human review gates approved`,
+      badge: pretty(asset.status),
+    };
+  });
   return (
     <section className="eco-panel" role="tabpanel">
       <div className="eco-panel-intro">
@@ -1977,36 +2223,26 @@ function AssetReviewPanel({
         </div>
       )}
       {assets.length ? (
-        <div className="eco-review-grid">
-          {assets.map((asset) => {
-            const destination = snapshot.destinations.find(
-              (item) => item.id === asset.destinationId
-            );
-            return (
-              <button key={asset.id} className="eco-review-card" onClick={() => onOpen(asset)}>
-                <div className="eco-review-media">
-                  <AssetPreview asset={asset} role={snapshot.viewer.role} />
-                </div>
-                <div className="eco-review-card-body">
-                  <span>
-                    {destination?.title || 'Destination'} · {pretty(asset.slot)} {asset.slotIndex}
-                  </span>
-                  <h3>{asset.title || 'Untitled original'}</h3>
-                  <div className="eco-gate-dots">
-                    {gates.map((gate) => (
-                      <i
-                        key={gate.key}
-                        className={`is-${asset[gate.key]}`}
-                        title={`${gate.label}: ${asset[gate.key]}`}
-                      />
-                    ))}
-                  </div>
-                  <Status value={asset.status} />
-                </div>
-              </button>
-            );
-          })}
-        </div>
+        <DashboardCarousel
+          items={slides}
+          selectedId={selectedId}
+          onSelect={(id) => {
+            setSelectedAssetId(id);
+            const asset = assets.find((item) => item.id === id);
+            if (asset) onSpotlight(asset);
+          }}
+          onOpen={(id) => {
+            const asset = assets.find((item) => item.id === id);
+            if (asset) onOpen(asset);
+          }}
+          openLabel="Review asset"
+          label="Submitted creative assets"
+          layout="atlas"
+          renderMedia={(item) => {
+            const asset = assets.find((entry) => entry.id === item.id);
+            return asset ? <AssetPreview asset={asset} role={snapshot.viewer.role} /> : null;
+          }}
+        />
       ) : (
         !setup && (
           <EmptyState
@@ -2023,15 +2259,40 @@ function PartnersPanel({
   partners,
   query,
   setQuery,
+  onSpotlight,
   onOpen,
   onNew,
 }: {
   partners: LocalPartner[];
   query: string;
   setQuery: (value: string) => void;
+  onSpotlight: (partner: LocalPartner) => void;
   onOpen: (partner: LocalPartner) => void;
   onNew: () => void;
 }) {
+  const [selectedPartnerId, setSelectedPartnerId] = useState('');
+  const selectedId = partners.some((partner) => partner.id === selectedPartnerId)
+    ? selectedPartnerId
+    : partners[0]?.id;
+  const imageForType = (type: PartnerType) =>
+    type === 'artisan'
+      ? '/assets/community/horizon/morocco-craft.webp'
+      : ['hospitality', 'venue', 'territorial'].includes(type)
+        ? '/assets/community/horizon/morocco-landscape.webp'
+        : type === 'association'
+          ? '/assets/community/horizon/morocco-field.webp'
+          : '/assets/community/horizon/morocco-product.webp';
+  const slides = partners.map((partner) => {
+    const done = readinessFor(partner).filter(Boolean).length;
+    return {
+      id: partner.id,
+      title: partner.name,
+      subtitle: partnerLabels[partner.type],
+      image: imageForType(partner.type),
+      meta: `${done}/8 readiness · ${partner.description.slice(0, 72)}`,
+      badge: pretty(partner.status),
+    };
+  });
   return (
     <section className="eco-panel" role="tabpanel">
       <div className="eco-panel-intro">
@@ -2056,37 +2317,22 @@ function PartnersPanel({
         </label>
       </div>
       {partners.length ? (
-        <div className="eco-partner-grid">
-          {partners.map((partner) => {
-            const checks = readinessFor(partner);
-            const done = checks.filter(Boolean).length;
-            return (
-              <button key={partner.id} className="eco-partner-card" onClick={() => onOpen(partner)}>
-                <div className="eco-partner-top">
-                  <span>
-                    <Building2 />
-                  </span>
-                  <Status value={partner.status} />
-                </div>
-                <small>{partnerLabels[partner.type]}</small>
-                <h3>{partner.name}</h3>
-                <p>{partner.description}</p>
-                <div className="eco-readiness">
-                  <span>{done}/8 readiness</span>
-                  <progress max={8} value={done}>
-                    {done}/8
-                  </progress>
-                </div>
-                <div className="eco-partner-meta">
-                  <span>
-                    <MapPin /> Connected destination
-                  </span>
-                  <ArrowRight />
-                </div>
-              </button>
-            );
-          })}
-        </div>
+        <DashboardCarousel
+          items={slides}
+          selectedId={selectedId}
+          onSelect={(id) => {
+            setSelectedPartnerId(id);
+            const partner = partners.find((item) => item.id === id);
+            if (partner) onSpotlight(partner);
+          }}
+          onOpen={(id) => {
+            const partner = partners.find((item) => item.id === id);
+            if (partner) onOpen(partner);
+          }}
+          openLabel="Open partner"
+          label="Territorial partners"
+          layout="atlas"
+        />
       ) : (
         <EmptyState
           title="No partners found."
@@ -2640,7 +2886,7 @@ function CreatorDrawer({
                   <Link2 /> Copy link
                 </button>
               </div>
-              <small>Expires {new Date(invite.expiresAt).toLocaleString('en-GB')}</small>
+              <small>Expires {formatDateTime(invite.expiresAt)}</small>
             </>
           ) : (
             <button disabled={inviteBusy} onClick={() => void issueInvite()}>
